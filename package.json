@@ -1,0 +1,9 @@
+{
+  "name": "halo",
+  "private": true,
+  "version": "0.1.0",
+  "description": "AI Investigation Platform for Production Systems",
+  "packageManager": "pnpm@10",
+  "scripts": {},
+  "devDependencies": {}
+}
