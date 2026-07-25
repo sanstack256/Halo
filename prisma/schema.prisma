@@ -32,6 +32,7 @@ model Project {
   organization   Organization @relation(fields: [organizationId], references: [id])
 
   environments   Environment[]
+  apiKeys ApiKey[]
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -46,8 +47,28 @@ model Environment {
   projectId String
   project   Project  @relation(fields: [projectId], references: [id])
 
+  apiKeys ApiKey[]
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
   @@unique([projectId, name])
+}
+
+model ApiKey {
+  id             String      @id @default(cuid())
+  name           String
+
+  keyHash        String
+
+  projectId      String
+  project         Project     @relation(fields: [projectId], references: [id])
+
+  environmentId  String
+  environment    Environment @relation(fields: [environmentId], references: [id])
+
+  lastUsedAt     DateTime?
+
+  createdAt      DateTime    @default(now())
+  updatedAt      DateTime    @updatedAt
 }
