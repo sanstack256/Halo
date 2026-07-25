@@ -12,6 +12,12 @@ datasource db {
   provider = "postgresql"
 }
 
+enum EventType {
+  ERROR
+  LOG
+  MESSAGE
+}
+
 model Organization {
   id        String   @id @default(cuid())
   name      String
@@ -33,6 +39,7 @@ model Project {
 
   environments   Environment[]
   apiKeys ApiKey[]
+  events Event[]
 
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
@@ -48,6 +55,7 @@ model Environment {
   project   Project  @relation(fields: [projectId], references: [id])
 
   apiKeys ApiKey[]
+  events Event[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -71,4 +79,23 @@ model ApiKey {
 
   createdAt      DateTime    @default(now())
   updatedAt      DateTime    @updatedAt
+}
+
+model Event {
+  id             String      @id @default(cuid())
+
+  type           EventType
+
+  title          String
+  message        String?
+
+  timestamp      DateTime
+
+  projectId      String
+  project        Project     @relation(fields: [projectId], references: [id])
+
+  environmentId  String
+  environment    Environment @relation(fields: [environmentId], references: [id])
+
+  createdAt      DateTime    @default(now())
 }
