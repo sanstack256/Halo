@@ -1,45 +1,58 @@
 @import "tailwindcss";
 
-
 @theme inline {
+  /* Colors */
   --color-background: var(--background);
 
   --color-surface: var(--surface);
   --color-surface-2: var(--surface-2);
 
   --color-border: var(--border);
+  --color-border-strong: var(--border-strong);
 
   --color-primary: var(--primary);
+  --color-primary-hover: var(--primary-hover);
+  --color-primary-foreground: var(--primary-foreground);
 
   --color-text: var(--text);
   --color-text-secondary: var(--text-secondary);
   --color-text-muted: var(--text-muted);
 
+  /* Fonts */
   --font-sans: var(--font-geist-sans);
   --font-mono: var(--font-geist-mono);
 }
 
+:root {
+  /* Backgrounds */
+  --background: #05070a;
 
+  --surface: #0c1117;
+  --surface-2: #131a22;
+
+  /* Borders */
+  --border: #1e2732;
+  --border-strong: rgba(255, 255, 255, 0.12);
+
+  /* Primary */
+  --primary: #7dd3fc;
+  --primary-hover: #92dbff;
+  --primary-foreground: #07121c;
+  --primary-glow: rgba(125, 211, 252, 0.18);
+
+  /* Typography */
+  --text: #f5f8fb;
+  --text-secondary: #a2b2c4;
+  --text-muted: #6d7a88;
+}
 
 body {
   background: var(--background);
   color: var(--text);
+  font-family: var(--font-geist-sans);
 }
 
-:root {
-  --background: #05070A;
-
-  --surface: #0C1117;
-  --surface-2: #131A22;
-
-  --border: #1E2732;
-
-  --primary: #53B9FF;
-
-  --text: #F5F8FB;
-  --text-secondary: #A2B2C4;
-  --text-muted: #6D7A88;
-}
+/* Utility Classes */
 
 .bg-background {
   background: var(--background);
@@ -55,6 +68,10 @@ body {
 
 .border-border {
   border-color: var(--border);
+}
+
+.border-border-strong {
+  border-color: var(--border-strong);
 }
 
 .text-primary {
@@ -75,4 +92,30 @@ body {
 
 .bg-accent {
   background: var(--primary);
+}
+
+.bg-accent-hover {
+  background: var(--primary-hover);
+}
+
+.text-accent-foreground {
+  color: var(--primary-foreground);
+}
+
+/* Animations */
+
+@keyframes border-spin {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.animate-border-spin {
+  animation: border-spin 7s linear infinite;
+  transform-origin: center;
+  will-change: transform;
 }
