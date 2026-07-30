@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import { createProject } from "@/actions/project";
 
 import { Button } from "@/components/ui/button";
 
@@ -81,6 +82,9 @@ export default function CreateProjectDialog() {
 
                         <Button
                             disabled={!projectName.trim()}
+                            onClick={async () => {
+                                await createProject();
+                            }}
                         >
                             Create Project
                         </Button>
