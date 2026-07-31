@@ -10,10 +10,28 @@ const titles: Record<string, string> = {
   "/settings": "Settings",
 };
 
+
+import { authClient } from "@/lib/auth-client";
+import { useRouter } from "next/navigation";
+
+
 export default function Topbar() {
   const pathname = usePathname();
+  const router = useRouter();
 
   const title = titles[pathname] ?? "Halo";
+
+  async function handleLogout() {
+  const { error } = await authClient.signOut();
+
+  if (error) {
+    console.error(error);
+    return;
+  }
+
+  router.replace("/sign-in");
+  router.refresh();
+}
 
   return (
     <header className="flex h-16 items-center justify-between border-b border-zinc-800 bg-zinc-950 px-8">
@@ -26,7 +44,12 @@ export default function Topbar() {
           Search
         </button>
 
-        <div className="h-9 w-9 rounded-full bg-zinc-800" />
+        <button
+          onClick={handleLogout}
+          className="rounded-lg border border-zinc-800 px-3 py-2 text-sm text-zinc-400 transition-colors hover:border-zinc-700 hover:text-white"
+        >
+          Logout
+        </button>
       </div>
     </header>
   );

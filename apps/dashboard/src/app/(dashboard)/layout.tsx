@@ -1,11 +1,20 @@
 import Sidebar from "@/components/overview/sidebar";
 import Topbar from "@/components/overview/topbar";
+import { getSession } from "@/lib/session";
+import { redirect } from "next/navigation";
 
-export default function DashboardLayout({
+export default async function DashboardLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
+
+const session = await getSession();
+
+if (!session) {
+  redirect("/sign-in");
+}
+
   return (
     <div className="flex h-screen">
       <Sidebar />
