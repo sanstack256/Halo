@@ -37,7 +37,7 @@ export function SignUpForm() {
             console.log("RESULT:", result);
 
             if (result.error) {
-                console.log("ERROR:", result.error);
+                console.dir(result.error, { depth: null });
                 return;
             }
 

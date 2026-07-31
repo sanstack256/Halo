@@ -23,3 +23,15 @@ export const signUpSchema = z
   });
 
 export type SignUpFormValues = z.infer<typeof signUpSchema>;
+
+export const signInSchema = z.object({
+  email: z
+    .email("Enter a valid email address")
+    .trim(),
+
+  password: z
+    .string()
+    .min(8, "Password must be at least 8 characters"),
+});
+
+export type SignInFormValues = z.infer<typeof signInSchema>;
