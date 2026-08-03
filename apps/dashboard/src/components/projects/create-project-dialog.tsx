@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { createProject } from "@/actions/project";
-
+import { useRouter } from "next/navigation";
 import { Button } from "@/components/ui/button";
 
 import {
@@ -14,6 +14,7 @@ import {
 } from "@/components/ui/dialog";
 
 export default function CreateProjectDialog() {
+    const router = useRouter();
     const [open, setOpen] = useState(false);
     const [projectName, setProjectName] = useState("");
     const [description, setDescription] = useState("");
@@ -83,7 +84,16 @@ export default function CreateProjectDialog() {
                         <Button
                             disabled={!projectName.trim()}
                             onClick={async () => {
-                                await createProject();
+                                await createProject(
+                                    projectName.trim(),
+                                    description.trim() || undefined
+                                );
+
+                                setOpen(false);
+                                setProjectName("");
+                                setDescription("");
+
+                                router.refresh();
                             }}
                         >
                             Create Project
