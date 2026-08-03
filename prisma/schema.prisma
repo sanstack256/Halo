@@ -5,7 +5,7 @@
 
 generator client {
   provider = "prisma-client"
-  output   = "../generated/prisma"
+  output = "../apps/dashboard/src/generated/prisma"
 }
 
 datasource db {
@@ -19,43 +19,45 @@ enum EventType {
 }
 
 model Organization {
-  id        String   @id @default(cuid())
-  name      String
-  slug      String   @unique
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
 
-  projects  Project[]
+  owner User?
+
+  projects Project[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
 
 model Project {
-  id             String   @id @default(cuid())
-  name           String
-  slug           String
+  id   String @id @default(cuid())
+  name String
+  slug String
 
   organizationId String
   organization   Organization @relation(fields: [organizationId], references: [id])
 
-  environments   Environment[]
-  apiKeys ApiKey[]
-  events Event[]
+  environments Environment[]
+  apiKeys      ApiKey[]
+  events       Event[]
 
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 
   @@unique([organizationId, slug])
 }
 
 model Environment {
-  id        String   @id @default(cuid())
-  name      String
+  id   String @id @default(cuid())
+  name String
 
   projectId String
-  project   Project  @relation(fields: [projectId], references: [id])
+  project   Project @relation(fields: [projectId], references: [id])
 
   apiKeys ApiKey[]
-  events Event[]
+  events  Event[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -64,38 +66,105 @@ model Environment {
 }
 
 model ApiKey {
-  id             String      @id @default(cuid())
-  name           String
+  id   String @id @default(cuid())
+  name String
 
-  keyHash        String
+  keyHash String
 
-  projectId      String
-  project         Project     @relation(fields: [projectId], references: [id])
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
-  environmentId  String
-  environment    Environment @relation(fields: [environmentId], references: [id])
+  environmentId String
+  environment   Environment @relation(fields: [environmentId], references: [id])
 
-  lastUsedAt     DateTime?
+  lastUsedAt DateTime?
 
-  createdAt      DateTime    @default(now())
-  updatedAt      DateTime    @updatedAt
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
 }
 
 model Event {
-  id             String      @id @default(cuid())
+  id String @id @default(cuid())
 
-  type           EventType
+  type EventType
 
-  title          String
-  message        String?
+  title   String
+  message String?
 
-  timestamp      DateTime
+  timestamp DateTime
 
-  projectId      String
-  project        Project     @relation(fields: [projectId], references: [id])
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
 
-  environmentId  String
-  environment    Environment @relation(fields: [environmentId], references: [id])
+  environmentId String
+  environment   Environment @relation(fields: [environmentId], references: [id])
 
-  createdAt      DateTime    @default(now())
+  createdAt DateTime @default(now())
+}
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  organizationId String?        @unique
+  organization   Organization?  @relation(fields: [organizationId], references: [id])
+
+  sessions Session[]
+  accounts Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
 }

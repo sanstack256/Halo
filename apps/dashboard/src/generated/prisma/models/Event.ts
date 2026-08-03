@@ -473,6 +473,10 @@ export type EnumEventTypeFieldUpdateOperationsInput = {
   set?: $Enums.EventType
 }
 
+export type NullableStringFieldUpdateOperationsInput = {
+  set?: string | null
+}
+
 export type EventCreateWithoutProjectInput = {
   id?: string
   type: $Enums.EventType

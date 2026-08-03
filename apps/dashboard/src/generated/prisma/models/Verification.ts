@@ -203,7 +203,6 @@ export type VerificationOrderByWithRelationInput = {
 
 export type VerificationWhereUniqueInput = Prisma.AtLeast<{
   id?: string
-  identifier_value?: Prisma.VerificationIdentifierValueCompoundUniqueInput
   AND?: Prisma.VerificationWhereInput | Prisma.VerificationWhereInput[]
   OR?: Prisma.VerificationWhereInput[]
   NOT?: Prisma.VerificationWhereInput | Prisma.VerificationWhereInput[]
@@ -212,7 +211,7 @@ export type VerificationWhereUniqueInput = Prisma.AtLeast<{
   expiresAt?: Prisma.DateTimeFilter<"Verification"> | Date | string
   createdAt?: Prisma.DateTimeFilter<"Verification"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Verification"> | Date | string
-}, "id" | "identifier_value">
+}, "id">
 
 export type VerificationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
@@ -243,8 +242,8 @@ export type VerificationCreateInput = {
   identifier: string
   value: string
   expiresAt: Date | string
-  createdAt: Date | string
-  updatedAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type VerificationUncheckedCreateInput = {
@@ -252,8 +251,8 @@ export type VerificationUncheckedCreateInput = {
   identifier: string
   value: string
   expiresAt: Date | string
-  createdAt: Date | string
-  updatedAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type VerificationUpdateInput = {
@@ -279,8 +278,8 @@ export type VerificationCreateManyInput = {
   identifier: string
   value: string
   expiresAt: Date | string
-  createdAt: Date | string
-  updatedAt: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
 }
 
 export type VerificationUpdateManyMutationInput = {
@@ -299,11 +298,6 @@ export type VerificationUncheckedUpdateManyInput = {
   expiresAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-}
-
-export type VerificationIdentifierValueCompoundUniqueInput = {
-  identifier: string
-  value: string
 }
 
 export type VerificationCountOrderByAggregateInput = {
