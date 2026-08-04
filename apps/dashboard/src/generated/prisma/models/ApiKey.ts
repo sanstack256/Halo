@@ -27,6 +27,7 @@ export type AggregateApiKey = {
 export type ApiKeyMinAggregateOutputType = {
   id: string | null
   name: string | null
+  prefix: string | null
   keyHash: string | null
   projectId: string | null
   environmentId: string | null
@@ -38,6 +39,7 @@ export type ApiKeyMinAggregateOutputType = {
 export type ApiKeyMaxAggregateOutputType = {
   id: string | null
   name: string | null
+  prefix: string | null
   keyHash: string | null
   projectId: string | null
   environmentId: string | null
@@ -49,6 +51,7 @@ export type ApiKeyMaxAggregateOutputType = {
 export type ApiKeyCountAggregateOutputType = {
   id: number
   name: number
+  prefix: number
   keyHash: number
   projectId: number
   environmentId: number
@@ -62,6 +65,7 @@ export type ApiKeyCountAggregateOutputType = {
 export type ApiKeyMinAggregateInputType = {
   id?: true
   name?: true
+  prefix?: true
   keyHash?: true
   projectId?: true
   environmentId?: true
@@ -73,6 +77,7 @@ export type ApiKeyMinAggregateInputType = {
 export type ApiKeyMaxAggregateInputType = {
   id?: true
   name?: true
+  prefix?: true
   keyHash?: true
   projectId?: true
   environmentId?: true
@@ -84,6 +89,7 @@ export type ApiKeyMaxAggregateInputType = {
 export type ApiKeyCountAggregateInputType = {
   id?: true
   name?: true
+  prefix?: true
   keyHash?: true
   projectId?: true
   environmentId?: true
@@ -168,6 +174,7 @@ export type ApiKeyGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalA
 export type ApiKeyGroupByOutputType = {
   id: string
   name: string
+  prefix: string
   keyHash: string
   projectId: string
   environmentId: string
@@ -200,6 +207,7 @@ export type ApiKeyWhereInput = {
   NOT?: Prisma.ApiKeyWhereInput | Prisma.ApiKeyWhereInput[]
   id?: Prisma.StringFilter<"ApiKey"> | string
   name?: Prisma.StringFilter<"ApiKey"> | string
+  prefix?: Prisma.StringFilter<"ApiKey"> | string
   keyHash?: Prisma.StringFilter<"ApiKey"> | string
   projectId?: Prisma.StringFilter<"ApiKey"> | string
   environmentId?: Prisma.StringFilter<"ApiKey"> | string
@@ -213,6 +221,7 @@ export type ApiKeyWhereInput = {
 export type ApiKeyOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  prefix?: Prisma.SortOrder
   keyHash?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
@@ -229,6 +238,7 @@ export type ApiKeyWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.ApiKeyWhereInput[]
   NOT?: Prisma.ApiKeyWhereInput | Prisma.ApiKeyWhereInput[]
   name?: Prisma.StringFilter<"ApiKey"> | string
+  prefix?: Prisma.StringFilter<"ApiKey"> | string
   keyHash?: Prisma.StringFilter<"ApiKey"> | string
   projectId?: Prisma.StringFilter<"ApiKey"> | string
   environmentId?: Prisma.StringFilter<"ApiKey"> | string
@@ -242,6 +252,7 @@ export type ApiKeyWhereUniqueInput = Prisma.AtLeast<{
 export type ApiKeyOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  prefix?: Prisma.SortOrder
   keyHash?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
@@ -259,6 +270,7 @@ export type ApiKeyScalarWhereWithAggregatesInput = {
   NOT?: Prisma.ApiKeyScalarWhereWithAggregatesInput | Prisma.ApiKeyScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
   name?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
+  prefix?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
   keyHash?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
   projectId?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
   environmentId?: Prisma.StringWithAggregatesFilter<"ApiKey"> | string
@@ -270,6 +282,7 @@ export type ApiKeyScalarWhereWithAggregatesInput = {
 export type ApiKeyCreateInput = {
   id?: string
   name: string
+  prefix: string
   keyHash: string
   lastUsedAt?: Date | string | null
   createdAt?: Date | string
@@ -281,6 +294,7 @@ export type ApiKeyCreateInput = {
 export type ApiKeyUncheckedCreateInput = {
   id?: string
   name: string
+  prefix: string
   keyHash: string
   projectId: string
   environmentId: string
@@ -292,6 +306,7 @@ export type ApiKeyUncheckedCreateInput = {
 export type ApiKeyUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  prefix?: Prisma.StringFieldUpdateOperationsInput | string
   keyHash?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -303,6 +318,7 @@ export type ApiKeyUpdateInput = {
 export type ApiKeyUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  prefix?: Prisma.StringFieldUpdateOperationsInput | string
   keyHash?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   environmentId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -314,6 +330,7 @@ export type ApiKeyUncheckedUpdateInput = {
 export type ApiKeyCreateManyInput = {
   id?: string
   name: string
+  prefix: string
   keyHash: string
   projectId: string
   environmentId: string
@@ -325,6 +342,7 @@ export type ApiKeyCreateManyInput = {
 export type ApiKeyUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  prefix?: Prisma.StringFieldUpdateOperationsInput | string
   keyHash?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -334,6 +352,7 @@ export type ApiKeyUpdateManyMutationInput = {
 export type ApiKeyUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  prefix?: Prisma.StringFieldUpdateOperationsInput | string
   keyHash?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   environmentId?: Prisma.StringFieldUpdateOperationsInput | string
@@ -355,6 +374,7 @@ export type ApiKeyOrderByRelationAggregateInput = {
 export type ApiKeyCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  prefix?: Prisma.SortOrder
   keyHash?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
@@ -366,6 +386,7 @@ export type ApiKeyCountOrderByAggregateInput = {
 export type ApiKeyMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  prefix?: Prisma.SortOrder
   keyHash?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
@@ -377,6 +398,7 @@ export type ApiKeyMaxOrderByAggregateInput = {
 export type ApiKeyMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
+  prefix?: Prisma.SortOrder
   keyHash?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
@@ -476,6 +498,7 @@ export type NullableDateTimeFieldUpdateOperationsInput = {
 export type ApiKeyCreateWithoutProjectInput = {
   id?: string
   name: string
+  prefix: string
   keyHash: string
   lastUsedAt?: Date | string | null
   createdAt?: Date | string
@@ -486,6 +509,7 @@ export type ApiKeyCreateWithoutProjectInput = {
 export type ApiKeyUncheckedCreateWithoutProjectInput = {
   id?: string
   name: string
+  prefix: string
   keyHash: string
   environmentId: string
   lastUsedAt?: Date | string | null
@@ -525,6 +549,7 @@ export type ApiKeyScalarWhereInput = {
   NOT?: Prisma.ApiKeyScalarWhereInput | Prisma.ApiKeyScalarWhereInput[]
   id?: Prisma.StringFilter<"ApiKey"> | string
   name?: Prisma.StringFilter<"ApiKey"> | string
+  prefix?: Prisma.StringFilter<"ApiKey"> | string
   keyHash?: Prisma.StringFilter<"ApiKey"> | string
   projectId?: Prisma.StringFilter<"ApiKey"> | string
   environmentId?: Prisma.StringFilter<"ApiKey"> | string
@@ -536,6 +561,7 @@ export type ApiKeyScalarWhereInput = {
 export type ApiKeyCreateWithoutEnvironmentInput = {
   id?: string
   name: string
+  prefix: string
   keyHash: string
   lastUsedAt?: Date | string | null
   createdAt?: Date | string
@@ -546,6 +572,7 @@ export type ApiKeyCreateWithoutEnvironmentInput = {
 export type ApiKeyUncheckedCreateWithoutEnvironmentInput = {
   id?: string
   name: string
+  prefix: string
   keyHash: string
   projectId: string
   lastUsedAt?: Date | string | null
@@ -582,6 +609,7 @@ export type ApiKeyUpdateManyWithWhereWithoutEnvironmentInput = {
 export type ApiKeyCreateManyProjectInput = {
   id?: string
   name: string
+  prefix: string
   keyHash: string
   environmentId: string
   lastUsedAt?: Date | string | null
@@ -592,6 +620,7 @@ export type ApiKeyCreateManyProjectInput = {
 export type ApiKeyUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  prefix?: Prisma.StringFieldUpdateOperationsInput | string
   keyHash?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -602,6 +631,7 @@ export type ApiKeyUpdateWithoutProjectInput = {
 export type ApiKeyUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  prefix?: Prisma.StringFieldUpdateOperationsInput | string
   keyHash?: Prisma.StringFieldUpdateOperationsInput | string
   environmentId?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -612,6 +642,7 @@ export type ApiKeyUncheckedUpdateWithoutProjectInput = {
 export type ApiKeyUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  prefix?: Prisma.StringFieldUpdateOperationsInput | string
   keyHash?: Prisma.StringFieldUpdateOperationsInput | string
   environmentId?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -622,6 +653,7 @@ export type ApiKeyUncheckedUpdateManyWithoutProjectInput = {
 export type ApiKeyCreateManyEnvironmentInput = {
   id?: string
   name: string
+  prefix: string
   keyHash: string
   projectId: string
   lastUsedAt?: Date | string | null
@@ -632,6 +664,7 @@ export type ApiKeyCreateManyEnvironmentInput = {
 export type ApiKeyUpdateWithoutEnvironmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  prefix?: Prisma.StringFieldUpdateOperationsInput | string
   keyHash?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -642,6 +675,7 @@ export type ApiKeyUpdateWithoutEnvironmentInput = {
 export type ApiKeyUncheckedUpdateWithoutEnvironmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  prefix?: Prisma.StringFieldUpdateOperationsInput | string
   keyHash?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -652,6 +686,7 @@ export type ApiKeyUncheckedUpdateWithoutEnvironmentInput = {
 export type ApiKeyUncheckedUpdateManyWithoutEnvironmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
+  prefix?: Prisma.StringFieldUpdateOperationsInput | string
   keyHash?: Prisma.StringFieldUpdateOperationsInput | string
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   lastUsedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
@@ -664,6 +699,7 @@ export type ApiKeyUncheckedUpdateManyWithoutEnvironmentInput = {
 export type ApiKeySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  prefix?: boolean
   keyHash?: boolean
   projectId?: boolean
   environmentId?: boolean
@@ -677,6 +713,7 @@ export type ApiKeySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs =
 export type ApiKeySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  prefix?: boolean
   keyHash?: boolean
   projectId?: boolean
   environmentId?: boolean
@@ -690,6 +727,7 @@ export type ApiKeySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type ApiKeySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
+  prefix?: boolean
   keyHash?: boolean
   projectId?: boolean
   environmentId?: boolean
@@ -703,6 +741,7 @@ export type ApiKeySelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type ApiKeySelectScalar = {
   id?: boolean
   name?: boolean
+  prefix?: boolean
   keyHash?: boolean
   projectId?: boolean
   environmentId?: boolean
@@ -711,7 +750,7 @@ export type ApiKeySelectScalar = {
   updatedAt?: boolean
 }
 
-export type ApiKeyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "keyHash" | "projectId" | "environmentId" | "lastUsedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["apiKey"]>
+export type ApiKeyOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "prefix" | "keyHash" | "projectId" | "environmentId" | "lastUsedAt" | "createdAt" | "updatedAt", ExtArgs["result"]["apiKey"]>
 export type ApiKeyInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
@@ -734,6 +773,7 @@ export type $ApiKeyPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     name: string
+    prefix: string
     keyHash: string
     projectId: string
     environmentId: string
@@ -1167,6 +1207,7 @@ export interface Prisma__ApiKeyClient<T, Null = never, ExtArgs extends runtime.T
 export interface ApiKeyFieldRefs {
   readonly id: Prisma.FieldRef<"ApiKey", 'String'>
   readonly name: Prisma.FieldRef<"ApiKey", 'String'>
+  readonly prefix: Prisma.FieldRef<"ApiKey", 'String'>
   readonly keyHash: Prisma.FieldRef<"ApiKey", 'String'>
   readonly projectId: Prisma.FieldRef<"ApiKey", 'String'>
   readonly environmentId: Prisma.FieldRef<"ApiKey", 'String'>

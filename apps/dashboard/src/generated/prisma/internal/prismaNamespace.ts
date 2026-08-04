@@ -1168,6 +1168,7 @@ export type EnvironmentScalarFieldEnum = (typeof EnvironmentScalarFieldEnum)[key
 export const ApiKeyScalarFieldEnum = {
   id: 'id',
   name: 'name',
+  prefix: 'prefix',
   keyHash: 'keyHash',
   projectId: 'projectId',
   environmentId: 'environmentId',

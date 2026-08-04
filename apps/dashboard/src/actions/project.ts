@@ -37,12 +37,71 @@ export async function createProject(
     slug = `${baseSlug}-${count++}`;
   }
 
-  return prisma.project.create({
-    data: {
-      name,
-      description,
-      slug,
+  return prisma.$transaction(async (tx) => {
+    const project = await tx.project.create({
+      data: {
+        name,
+        description,
+        slug,
+        organizationId: organization.id,
+      },
+    });
+
+    await tx.environment.create({
+      data: {
+        name: "Production",
+        projectId: project.id,
+      },
+    });
+
+    return project;
+  });
+}
+
+export async function getProjects() {
+  const session = await getSession();
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  const organization = await getOrganization(session.user.id);
+
+  if (!organization) {
+    return [];
+  }
+
+  return prisma.project.findMany({
+    where: {
       organizationId: organization.id,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+}
+
+export async function getProject(projectId: string) {
+  const session = await getSession();
+
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
+
+  const organization = await getOrganization(session.user.id);
+
+  if (!organization) {
+    throw new Error("Organization not found");
+  }
+
+  return prisma.project.findFirst({
+    where: {
+      id: projectId,
+      organizationId: organization.id,
+    },
+    include: {
+      environments: true,
+      events: true,
     },
   });
 }
