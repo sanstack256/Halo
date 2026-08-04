@@ -1,5 +1,6 @@
 import CreateApiKeyDialog from "./create-api-key-dialog";
 import { formatDistanceToNow } from "date-fns";
+import { Badge } from "@/components/ui/badge";
 
 type ApiKey = {
     id: string;
@@ -46,9 +47,15 @@ export default function ApiKeysSection({
                             className="flex items-center justify-between p-6"
                         >
                             <div>
-                                <h3 className="font-medium text-white">
-                                    {key.name}
-                                </h3>
+                                <div className="flex items-center gap-3">
+                                    <h3 className="font-medium text-white">
+                                        {key.name}
+                                    </h3>
+
+                                    <Badge className="border-emerald-800 bg-emerald-950 text-emerald-300">
+                                        Production
+                                    </Badge>
+                                </div>
 
                                 <p className="mt-1 font-mono text-sm text-zinc-500">
                                     {key.prefix}••••••••••••
