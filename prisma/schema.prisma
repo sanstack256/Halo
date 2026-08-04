@@ -18,6 +18,13 @@ enum EventType {
   MESSAGE
 }
 
+enum EventSeverity {
+  INFO
+  WARNING
+  ERROR
+  FATAL
+}
+
 model Organization {
   id   String @id @default(cuid())
   name String
@@ -92,16 +99,26 @@ model Event {
 
   type EventType
 
-  title   String
+  severity EventSeverity
+
+  title String
+
   message String?
+
+  metadata Json?
 
   timestamp DateTime
 
+  sdkName String?
+  sdkVersion String?
+
+  release String?
+
   projectId String
-  project   Project @relation(fields: [projectId], references: [id])
+  project Project @relation(fields: [projectId], references: [id])
 
   environmentId String
-  environment   Environment @relation(fields: [environmentId], references: [id])
+  environment Environment @relation(fields: [environmentId], references: [id])
 
   createdAt DateTime @default(now())
 }

@@ -4,6 +4,7 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { getProject } from "@/actions/project";
 import { generateApiKey } from "@/lib/api-key";
+import bcrypt from "bcrypt";
 
 export async function createApiKey(
   projectId: string,
@@ -65,4 +66,30 @@ export async function getApiKeys(projectId: string) {
             createdAt: "desc",
         },
     });
+}
+
+export async function verifyApiKey(apiKey: string) {
+
+    const keys = await prisma.apiKey.findMany({
+        include: {
+            project: true,
+            environment: true,
+        },
+    });
+
+
+    for (const key of keys) {
+
+        const valid = await bcrypt.compare(
+            apiKey,
+            key.keyHash
+        );
+
+
+        if (valid) {
+            return key;
+        }
+    }
+
+    return null;
 }

@@ -27,9 +27,13 @@ export type AggregateEvent = {
 export type EventMinAggregateOutputType = {
   id: string | null
   type: $Enums.EventType | null
+  severity: $Enums.EventSeverity | null
   title: string | null
   message: string | null
   timestamp: Date | null
+  sdkName: string | null
+  sdkVersion: string | null
+  release: string | null
   projectId: string | null
   environmentId: string | null
   createdAt: Date | null
@@ -38,9 +42,13 @@ export type EventMinAggregateOutputType = {
 export type EventMaxAggregateOutputType = {
   id: string | null
   type: $Enums.EventType | null
+  severity: $Enums.EventSeverity | null
   title: string | null
   message: string | null
   timestamp: Date | null
+  sdkName: string | null
+  sdkVersion: string | null
+  release: string | null
   projectId: string | null
   environmentId: string | null
   createdAt: Date | null
@@ -49,9 +57,14 @@ export type EventMaxAggregateOutputType = {
 export type EventCountAggregateOutputType = {
   id: number
   type: number
+  severity: number
   title: number
   message: number
+  metadata: number
   timestamp: number
+  sdkName: number
+  sdkVersion: number
+  release: number
   projectId: number
   environmentId: number
   createdAt: number
@@ -62,9 +75,13 @@ export type EventCountAggregateOutputType = {
 export type EventMinAggregateInputType = {
   id?: true
   type?: true
+  severity?: true
   title?: true
   message?: true
   timestamp?: true
+  sdkName?: true
+  sdkVersion?: true
+  release?: true
   projectId?: true
   environmentId?: true
   createdAt?: true
@@ -73,9 +90,13 @@ export type EventMinAggregateInputType = {
 export type EventMaxAggregateInputType = {
   id?: true
   type?: true
+  severity?: true
   title?: true
   message?: true
   timestamp?: true
+  sdkName?: true
+  sdkVersion?: true
+  release?: true
   projectId?: true
   environmentId?: true
   createdAt?: true
@@ -84,9 +105,14 @@ export type EventMaxAggregateInputType = {
 export type EventCountAggregateInputType = {
   id?: true
   type?: true
+  severity?: true
   title?: true
   message?: true
+  metadata?: true
   timestamp?: true
+  sdkName?: true
+  sdkVersion?: true
+  release?: true
   projectId?: true
   environmentId?: true
   createdAt?: true
@@ -168,9 +194,14 @@ export type EventGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type EventGroupByOutputType = {
   id: string
   type: $Enums.EventType
+  severity: $Enums.EventSeverity
   title: string
   message: string | null
+  metadata: runtime.JsonValue | null
   timestamp: Date
+  sdkName: string | null
+  sdkVersion: string | null
+  release: string | null
   projectId: string
   environmentId: string
   createdAt: Date
@@ -200,9 +231,14 @@ export type EventWhereInput = {
   NOT?: Prisma.EventWhereInput | Prisma.EventWhereInput[]
   id?: Prisma.StringFilter<"Event"> | string
   type?: Prisma.EnumEventTypeFilter<"Event"> | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFilter<"Event"> | $Enums.EventSeverity
   title?: Prisma.StringFilter<"Event"> | string
   message?: Prisma.StringNullableFilter<"Event"> | string | null
+  metadata?: Prisma.JsonNullableFilter<"Event">
   timestamp?: Prisma.DateTimeFilter<"Event"> | Date | string
+  sdkName?: Prisma.StringNullableFilter<"Event"> | string | null
+  sdkVersion?: Prisma.StringNullableFilter<"Event"> | string | null
+  release?: Prisma.StringNullableFilter<"Event"> | string | null
   projectId?: Prisma.StringFilter<"Event"> | string
   environmentId?: Prisma.StringFilter<"Event"> | string
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
@@ -213,9 +249,14 @@ export type EventWhereInput = {
 export type EventOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrderInput | Prisma.SortOrder
+  metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   timestamp?: Prisma.SortOrder
+  sdkName?: Prisma.SortOrderInput | Prisma.SortOrder
+  sdkVersion?: Prisma.SortOrderInput | Prisma.SortOrder
+  release?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -229,9 +270,14 @@ export type EventWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.EventWhereInput[]
   NOT?: Prisma.EventWhereInput | Prisma.EventWhereInput[]
   type?: Prisma.EnumEventTypeFilter<"Event"> | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFilter<"Event"> | $Enums.EventSeverity
   title?: Prisma.StringFilter<"Event"> | string
   message?: Prisma.StringNullableFilter<"Event"> | string | null
+  metadata?: Prisma.JsonNullableFilter<"Event">
   timestamp?: Prisma.DateTimeFilter<"Event"> | Date | string
+  sdkName?: Prisma.StringNullableFilter<"Event"> | string | null
+  sdkVersion?: Prisma.StringNullableFilter<"Event"> | string | null
+  release?: Prisma.StringNullableFilter<"Event"> | string | null
   projectId?: Prisma.StringFilter<"Event"> | string
   environmentId?: Prisma.StringFilter<"Event"> | string
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
@@ -242,9 +288,14 @@ export type EventWhereUniqueInput = Prisma.AtLeast<{
 export type EventOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrderInput | Prisma.SortOrder
+  metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   timestamp?: Prisma.SortOrder
+  sdkName?: Prisma.SortOrderInput | Prisma.SortOrder
+  sdkVersion?: Prisma.SortOrderInput | Prisma.SortOrder
+  release?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -259,9 +310,14 @@ export type EventScalarWhereWithAggregatesInput = {
   NOT?: Prisma.EventScalarWhereWithAggregatesInput | Prisma.EventScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Event"> | string
   type?: Prisma.EnumEventTypeWithAggregatesFilter<"Event"> | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityWithAggregatesFilter<"Event"> | $Enums.EventSeverity
   title?: Prisma.StringWithAggregatesFilter<"Event"> | string
   message?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  metadata?: Prisma.JsonNullableWithAggregatesFilter<"Event">
   timestamp?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
+  sdkName?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  sdkVersion?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  release?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
   projectId?: Prisma.StringWithAggregatesFilter<"Event"> | string
   environmentId?: Prisma.StringWithAggregatesFilter<"Event"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
@@ -270,9 +326,14 @@ export type EventScalarWhereWithAggregatesInput = {
 export type EventCreateInput = {
   id?: string
   type: $Enums.EventType
+  severity: $Enums.EventSeverity
   title: string
   message?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  sdkName?: string | null
+  sdkVersion?: string | null
+  release?: string | null
   createdAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutEventsInput
   environment: Prisma.EnvironmentCreateNestedOneWithoutEventsInput
@@ -281,9 +342,14 @@ export type EventCreateInput = {
 export type EventUncheckedCreateInput = {
   id?: string
   type: $Enums.EventType
+  severity: $Enums.EventSeverity
   title: string
   message?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  sdkName?: string | null
+  sdkVersion?: string | null
+  release?: string | null
   projectId: string
   environmentId: string
   createdAt?: Date | string
@@ -292,9 +358,14 @@ export type EventUncheckedCreateInput = {
 export type EventUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
   environment?: Prisma.EnvironmentUpdateOneRequiredWithoutEventsNestedInput
@@ -303,9 +374,14 @@ export type EventUpdateInput = {
 export type EventUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   environmentId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -314,9 +390,14 @@ export type EventUncheckedUpdateInput = {
 export type EventCreateManyInput = {
   id?: string
   type: $Enums.EventType
+  severity: $Enums.EventSeverity
   title: string
   message?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  sdkName?: string | null
+  sdkVersion?: string | null
+  release?: string | null
   projectId: string
   environmentId: string
   createdAt?: Date | string
@@ -325,18 +406,28 @@ export type EventCreateManyInput = {
 export type EventUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
 export type EventUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   environmentId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -355,9 +446,14 @@ export type EventOrderByRelationAggregateInput = {
 export type EventCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrder
+  metadata?: Prisma.SortOrder
   timestamp?: Prisma.SortOrder
+  sdkName?: Prisma.SortOrder
+  sdkVersion?: Prisma.SortOrder
+  release?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -366,9 +462,13 @@ export type EventCountOrderByAggregateInput = {
 export type EventMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrder
   timestamp?: Prisma.SortOrder
+  sdkName?: Prisma.SortOrder
+  sdkVersion?: Prisma.SortOrder
+  release?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -377,9 +477,13 @@ export type EventMaxOrderByAggregateInput = {
 export type EventMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrder
   timestamp?: Prisma.SortOrder
+  sdkName?: Prisma.SortOrder
+  sdkVersion?: Prisma.SortOrder
+  release?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
@@ -473,12 +577,21 @@ export type EnumEventTypeFieldUpdateOperationsInput = {
   set?: $Enums.EventType
 }
 
+export type EnumEventSeverityFieldUpdateOperationsInput = {
+  set?: $Enums.EventSeverity
+}
+
 export type EventCreateWithoutProjectInput = {
   id?: string
   type: $Enums.EventType
+  severity: $Enums.EventSeverity
   title: string
   message?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  sdkName?: string | null
+  sdkVersion?: string | null
+  release?: string | null
   createdAt?: Date | string
   environment: Prisma.EnvironmentCreateNestedOneWithoutEventsInput
 }
@@ -486,9 +599,14 @@ export type EventCreateWithoutProjectInput = {
 export type EventUncheckedCreateWithoutProjectInput = {
   id?: string
   type: $Enums.EventType
+  severity: $Enums.EventSeverity
   title: string
   message?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  sdkName?: string | null
+  sdkVersion?: string | null
+  release?: string | null
   environmentId: string
   createdAt?: Date | string
 }
@@ -525,9 +643,14 @@ export type EventScalarWhereInput = {
   NOT?: Prisma.EventScalarWhereInput | Prisma.EventScalarWhereInput[]
   id?: Prisma.StringFilter<"Event"> | string
   type?: Prisma.EnumEventTypeFilter<"Event"> | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFilter<"Event"> | $Enums.EventSeverity
   title?: Prisma.StringFilter<"Event"> | string
   message?: Prisma.StringNullableFilter<"Event"> | string | null
+  metadata?: Prisma.JsonNullableFilter<"Event">
   timestamp?: Prisma.DateTimeFilter<"Event"> | Date | string
+  sdkName?: Prisma.StringNullableFilter<"Event"> | string | null
+  sdkVersion?: Prisma.StringNullableFilter<"Event"> | string | null
+  release?: Prisma.StringNullableFilter<"Event"> | string | null
   projectId?: Prisma.StringFilter<"Event"> | string
   environmentId?: Prisma.StringFilter<"Event"> | string
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
@@ -536,9 +659,14 @@ export type EventScalarWhereInput = {
 export type EventCreateWithoutEnvironmentInput = {
   id?: string
   type: $Enums.EventType
+  severity: $Enums.EventSeverity
   title: string
   message?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  sdkName?: string | null
+  sdkVersion?: string | null
+  release?: string | null
   createdAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutEventsInput
 }
@@ -546,9 +674,14 @@ export type EventCreateWithoutEnvironmentInput = {
 export type EventUncheckedCreateWithoutEnvironmentInput = {
   id?: string
   type: $Enums.EventType
+  severity: $Enums.EventSeverity
   title: string
   message?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  sdkName?: string | null
+  sdkVersion?: string | null
+  release?: string | null
   projectId: string
   createdAt?: Date | string
 }
@@ -582,9 +715,14 @@ export type EventUpdateManyWithWhereWithoutEnvironmentInput = {
 export type EventCreateManyProjectInput = {
   id?: string
   type: $Enums.EventType
+  severity: $Enums.EventSeverity
   title: string
   message?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  sdkName?: string | null
+  sdkVersion?: string | null
+  release?: string | null
   environmentId: string
   createdAt?: Date | string
 }
@@ -592,9 +730,14 @@ export type EventCreateManyProjectInput = {
 export type EventUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   environment?: Prisma.EnvironmentUpdateOneRequiredWithoutEventsNestedInput
 }
@@ -602,9 +745,14 @@ export type EventUpdateWithoutProjectInput = {
 export type EventUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   environmentId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -612,9 +760,14 @@ export type EventUncheckedUpdateWithoutProjectInput = {
 export type EventUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   environmentId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -622,9 +775,14 @@ export type EventUncheckedUpdateManyWithoutProjectInput = {
 export type EventCreateManyEnvironmentInput = {
   id?: string
   type: $Enums.EventType
+  severity: $Enums.EventSeverity
   title: string
   message?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  sdkName?: string | null
+  sdkVersion?: string | null
+  release?: string | null
   projectId: string
   createdAt?: Date | string
 }
@@ -632,9 +790,14 @@ export type EventCreateManyEnvironmentInput = {
 export type EventUpdateWithoutEnvironmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
 }
@@ -642,9 +805,14 @@ export type EventUpdateWithoutEnvironmentInput = {
 export type EventUncheckedUpdateWithoutEnvironmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -652,9 +820,14 @@ export type EventUncheckedUpdateWithoutEnvironmentInput = {
 export type EventUncheckedUpdateManyWithoutEnvironmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -664,9 +837,14 @@ export type EventUncheckedUpdateManyWithoutEnvironmentInput = {
 export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   type?: boolean
+  severity?: boolean
   title?: boolean
   message?: boolean
+  metadata?: boolean
   timestamp?: boolean
+  sdkName?: boolean
+  sdkVersion?: boolean
+  release?: boolean
   projectId?: boolean
   environmentId?: boolean
   createdAt?: boolean
@@ -677,9 +855,14 @@ export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
 export type EventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   type?: boolean
+  severity?: boolean
   title?: boolean
   message?: boolean
+  metadata?: boolean
   timestamp?: boolean
+  sdkName?: boolean
+  sdkVersion?: boolean
+  release?: boolean
   projectId?: boolean
   environmentId?: boolean
   createdAt?: boolean
@@ -690,9 +873,14 @@ export type EventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type EventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   type?: boolean
+  severity?: boolean
   title?: boolean
   message?: boolean
+  metadata?: boolean
   timestamp?: boolean
+  sdkName?: boolean
+  sdkVersion?: boolean
+  release?: boolean
   projectId?: boolean
   environmentId?: boolean
   createdAt?: boolean
@@ -703,15 +891,20 @@ export type EventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
 export type EventSelectScalar = {
   id?: boolean
   type?: boolean
+  severity?: boolean
   title?: boolean
   message?: boolean
+  metadata?: boolean
   timestamp?: boolean
+  sdkName?: boolean
+  sdkVersion?: boolean
+  release?: boolean
   projectId?: boolean
   environmentId?: boolean
   createdAt?: boolean
 }
 
-export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "title" | "message" | "timestamp" | "projectId" | "environmentId" | "createdAt", ExtArgs["result"]["event"]>
+export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "severity" | "title" | "message" | "metadata" | "timestamp" | "sdkName" | "sdkVersion" | "release" | "projectId" | "environmentId" | "createdAt", ExtArgs["result"]["event"]>
 export type EventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
@@ -734,9 +927,14 @@ export type $EventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     type: $Enums.EventType
+    severity: $Enums.EventSeverity
     title: string
     message: string | null
+    metadata: runtime.JsonValue | null
     timestamp: Date
+    sdkName: string | null
+    sdkVersion: string | null
+    release: string | null
     projectId: string
     environmentId: string
     createdAt: Date
@@ -1167,9 +1365,14 @@ export interface Prisma__EventClient<T, Null = never, ExtArgs extends runtime.Ty
 export interface EventFieldRefs {
   readonly id: Prisma.FieldRef<"Event", 'String'>
   readonly type: Prisma.FieldRef<"Event", 'EventType'>
+  readonly severity: Prisma.FieldRef<"Event", 'EventSeverity'>
   readonly title: Prisma.FieldRef<"Event", 'String'>
   readonly message: Prisma.FieldRef<"Event", 'String'>
+  readonly metadata: Prisma.FieldRef<"Event", 'Json'>
   readonly timestamp: Prisma.FieldRef<"Event", 'DateTime'>
+  readonly sdkName: Prisma.FieldRef<"Event", 'String'>
+  readonly sdkVersion: Prisma.FieldRef<"Event", 'String'>
+  readonly release: Prisma.FieldRef<"Event", 'String'>
   readonly projectId: Prisma.FieldRef<"Event", 'String'>
   readonly environmentId: Prisma.FieldRef<"Event", 'String'>
   readonly createdAt: Prisma.FieldRef<"Event", 'DateTime'>

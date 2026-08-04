@@ -16,3 +16,13 @@ export const EventType = {
 } as const
 
 export type EventType = (typeof EventType)[keyof typeof EventType]
+
+
+export const EventSeverity = {
+  INFO: 'INFO',
+  WARNING: 'WARNING',
+  ERROR: 'ERROR',
+  FATAL: 'FATAL'
+} as const
+
+export type EventSeverity = (typeof EventSeverity)[keyof typeof EventSeverity]
