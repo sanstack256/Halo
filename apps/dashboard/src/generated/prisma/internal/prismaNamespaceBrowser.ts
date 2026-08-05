@@ -56,6 +56,7 @@ export const ModelName = {
   Environment: 'Environment',
   ApiKey: 'ApiKey',
   Event: 'Event',
+  Issue: 'Issue',
   User: 'User',
   Session: 'Session',
   Account: 'Account',
@@ -141,10 +142,28 @@ export const EventScalarFieldEnum = {
   release: 'release',
   projectId: 'projectId',
   environmentId: 'environmentId',
+  issueId: 'issueId',
   createdAt: 'createdAt'
 } as const
 
 export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
+
+
+export const IssueScalarFieldEnum = {
+  id: 'id',
+  fingerprint: 'fingerprint',
+  title: 'title',
+  status: 'status',
+  severity: 'severity',
+  firstSeen: 'firstSeen',
+  lastSeen: 'lastSeen',
+  eventCount: 'eventCount',
+  projectId: 'projectId',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IssueScalarFieldEnum = (typeof IssueScalarFieldEnum)[keyof typeof IssueScalarFieldEnum]
 
 
 export const UserScalarFieldEnum = {

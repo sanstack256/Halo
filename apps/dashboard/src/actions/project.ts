@@ -105,3 +105,29 @@ export async function getProject(projectId: string) {
     },
   });
 }
+
+export async function getProjectHeader(projectId: string) {
+    const session = await getSession();
+
+    if (!session) {
+        throw new Error("Unauthorized");
+    }
+
+    const organization = await getOrganization(session.user.id);
+
+    if (!organization) {
+        throw new Error("Organization not found");
+    }
+
+    return prisma.project.findFirst({
+        where: {
+            id: projectId,
+            organizationId: organization.id,
+        },
+        select: {
+            id: true,
+            name: true,
+            description: true,
+        },
+    });
+}

@@ -1,8 +1,9 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyApiKey } from "@/actions/api-key";
-import { prisma } from "@/lib/prisma";
+import { createEvent } from "@/actions/event";
 
 export async function POST(request: NextRequest) {
+    console.log("=== INGEST HIT ===");
     const authorization =
         request.headers.get("authorization");
 
@@ -37,27 +38,23 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    console.log("Authorization:", authorization);
+    await createEvent({
+        type: body.type,
+        severity: body.severity,
 
-    console.log("Event:", body);
+        title: body.title,
+        message: body.message,
 
-    await prisma.event.create({
-        data: {
-            type: body.type,
-            severity: body.severity,
-            title: body.title,
-            message: body.message,
+        metadata: body.metadata,
 
-            metadata: undefined,
-            timestamp: new Date(body.timestamp),
+        timestamp: body.timestamp,
 
-            sdkName: body.sdkName,
-            sdkVersion: body.sdkVersion,
-            release: undefined,
+        sdkName: body.sdkName,
+        sdkVersion: body.sdkVersion,
+        release: body.release,
 
-            projectId: verified.project.id,
-            environmentId: verified.environment.id,
-        },
+        projectId: verified.project.id,
+        environmentId: verified.environment.id,
     });
 
     return NextResponse.json({

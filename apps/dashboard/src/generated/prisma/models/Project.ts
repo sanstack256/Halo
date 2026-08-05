@@ -202,6 +202,7 @@ export type ProjectWhereInput = {
   environments?: Prisma.EnvironmentListRelationFilter
   apiKeys?: Prisma.ApiKeyListRelationFilter
   events?: Prisma.EventListRelationFilter
+  issues?: Prisma.IssueListRelationFilter
 }
 
 export type ProjectOrderByWithRelationInput = {
@@ -216,6 +217,7 @@ export type ProjectOrderByWithRelationInput = {
   environments?: Prisma.EnvironmentOrderByRelationAggregateInput
   apiKeys?: Prisma.ApiKeyOrderByRelationAggregateInput
   events?: Prisma.EventOrderByRelationAggregateInput
+  issues?: Prisma.IssueOrderByRelationAggregateInput
 }
 
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -234,6 +236,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   environments?: Prisma.EnvironmentListRelationFilter
   apiKeys?: Prisma.ApiKeyListRelationFilter
   events?: Prisma.EventListRelationFilter
+  issues?: Prisma.IssueListRelationFilter
 }, "id" | "organizationId_slug">
 
 export type ProjectOrderByWithAggregationInput = {
@@ -273,6 +276,7 @@ export type ProjectCreateInput = {
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateInput = {
@@ -286,6 +290,7 @@ export type ProjectUncheckedCreateInput = {
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUpdateInput = {
@@ -299,6 +304,7 @@ export type ProjectUpdateInput = {
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateInput = {
@@ -312,6 +318,7 @@ export type ProjectUncheckedUpdateInput = {
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyInput = {
@@ -481,6 +488,20 @@ export type ProjectUpdateOneRequiredWithoutEventsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutEventsInput, Prisma.ProjectUpdateWithoutEventsInput>, Prisma.ProjectUncheckedUpdateWithoutEventsInput>
 }
 
+export type ProjectCreateNestedOneWithoutIssuesInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutIssuesInput, Prisma.ProjectUncheckedCreateWithoutIssuesInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutIssuesInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneRequiredWithoutIssuesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutIssuesInput, Prisma.ProjectUncheckedCreateWithoutIssuesInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutIssuesInput
+  upsert?: Prisma.ProjectUpsertWithoutIssuesInput
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutIssuesInput, Prisma.ProjectUpdateWithoutIssuesInput>, Prisma.ProjectUncheckedUpdateWithoutIssuesInput>
+}
+
 export type ProjectCreateWithoutOrganizationInput = {
   id?: string
   name: string
@@ -491,6 +512,7 @@ export type ProjectCreateWithoutOrganizationInput = {
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutOrganizationInput = {
@@ -503,6 +525,7 @@ export type ProjectUncheckedCreateWithoutOrganizationInput = {
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutOrganizationInput = {
@@ -554,6 +577,7 @@ export type ProjectCreateWithoutEnvironmentsInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
@@ -566,6 +590,7 @@ export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
   updatedAt?: Date | string
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutEnvironmentsInput = {
@@ -594,6 +619,7 @@ export type ProjectUpdateWithoutEnvironmentsInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
@@ -606,6 +632,7 @@ export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutApiKeysInput = {
@@ -618,6 +645,7 @@ export type ProjectCreateWithoutApiKeysInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutApiKeysInput = {
@@ -630,6 +658,7 @@ export type ProjectUncheckedCreateWithoutApiKeysInput = {
   updatedAt?: Date | string
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutApiKeysInput = {
@@ -658,6 +687,7 @@ export type ProjectUpdateWithoutApiKeysInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutApiKeysInput = {
@@ -670,6 +700,7 @@ export type ProjectUncheckedUpdateWithoutApiKeysInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutEventsInput = {
@@ -682,6 +713,7 @@ export type ProjectCreateWithoutEventsInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutEventsInput = {
@@ -694,6 +726,7 @@ export type ProjectUncheckedCreateWithoutEventsInput = {
   updatedAt?: Date | string
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutEventsInput = {
@@ -722,6 +755,7 @@ export type ProjectUpdateWithoutEventsInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutEventsInput = {
@@ -734,6 +768,75 @@ export type ProjectUncheckedUpdateWithoutEventsInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutIssuesInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
+  environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
+  events?: Prisma.EventCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutIssuesInput = {
+  id?: string
+  name: string
+  slug: string
+  description?: string | null
+  organizationId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutIssuesInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutIssuesInput, Prisma.ProjectUncheckedCreateWithoutIssuesInput>
+}
+
+export type ProjectUpsertWithoutIssuesInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutIssuesInput, Prisma.ProjectUncheckedUpdateWithoutIssuesInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutIssuesInput, Prisma.ProjectUncheckedCreateWithoutIssuesInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutIssuesInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutIssuesInput, Prisma.ProjectUncheckedUpdateWithoutIssuesInput>
+}
+
+export type ProjectUpdateWithoutIssuesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
+  environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
+  events?: Prisma.EventUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutIssuesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
+  events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyOrganizationInput = {
@@ -755,6 +858,7 @@ export type ProjectUpdateWithoutOrganizationInput = {
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutOrganizationInput = {
@@ -767,6 +871,7 @@ export type ProjectUncheckedUpdateWithoutOrganizationInput = {
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateManyWithoutOrganizationInput = {
@@ -787,12 +892,14 @@ export type ProjectCountOutputType = {
   environments: number
   apiKeys: number
   events: number
+  issues: number
 }
 
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   environments?: boolean | ProjectCountOutputTypeCountEnvironmentsArgs
   apiKeys?: boolean | ProjectCountOutputTypeCountApiKeysArgs
   events?: boolean | ProjectCountOutputTypeCountEventsArgs
+  issues?: boolean | ProjectCountOutputTypeCountIssuesArgs
 }
 
 /**
@@ -826,6 +933,13 @@ export type ProjectCountOutputTypeCountEventsArgs<ExtArgs extends runtime.Types.
   where?: Prisma.EventWhereInput
 }
 
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountIssuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.IssueWhereInput
+}
+
 
 export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -839,6 +953,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   environments?: boolean | Prisma.Project$environmentsArgs<ExtArgs>
   apiKeys?: boolean | Prisma.Project$apiKeysArgs<ExtArgs>
   events?: boolean | Prisma.Project$eventsArgs<ExtArgs>
+  issues?: boolean | Prisma.Project$issuesArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -880,6 +995,7 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   environments?: boolean | Prisma.Project$environmentsArgs<ExtArgs>
   apiKeys?: boolean | Prisma.Project$apiKeysArgs<ExtArgs>
   events?: boolean | Prisma.Project$eventsArgs<ExtArgs>
+  issues?: boolean | Prisma.Project$issuesArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -896,6 +1012,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     environments: Prisma.$EnvironmentPayload<ExtArgs>[]
     apiKeys: Prisma.$ApiKeyPayload<ExtArgs>[]
     events: Prisma.$EventPayload<ExtArgs>[]
+    issues: Prisma.$IssuePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1303,6 +1420,7 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   environments<T extends Prisma.Project$environmentsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$environmentsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EnvironmentPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   apiKeys<T extends Prisma.Project$apiKeysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$apiKeysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApiKeyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   events<T extends Prisma.Project$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  issues<T extends Prisma.Project$issuesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$issuesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IssuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1809,6 +1927,30 @@ export type Project$eventsArgs<ExtArgs extends runtime.Types.Extensions.Internal
   take?: number
   skip?: number
   distinct?: Prisma.EventScalarFieldEnum | Prisma.EventScalarFieldEnum[]
+}
+
+/**
+ * Project.issues
+ */
+export type Project$issuesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Issue
+   */
+  select?: Prisma.IssueSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Issue
+   */
+  omit?: Prisma.IssueOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.IssueInclude<ExtArgs> | null
+  where?: Prisma.IssueWhereInput
+  orderBy?: Prisma.IssueOrderByWithRelationInput | Prisma.IssueOrderByWithRelationInput[]
+  cursor?: Prisma.IssueWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.IssueScalarFieldEnum | Prisma.IssueScalarFieldEnum[]
 }
 
 /**

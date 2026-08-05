@@ -43,6 +43,11 @@ export type ApiKey = Prisma.ApiKeyModel
  */
 export type Event = Prisma.EventModel
 /**
+ * Model Issue
+ * 
+ */
+export type Issue = Prisma.IssueModel
+/**
  * Model User
  * 
  */

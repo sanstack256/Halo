@@ -25,6 +25,12 @@ enum EventSeverity {
   FATAL
 }
 
+enum IssueStatus {
+  OPEN
+  RESOLVED
+  IGNORED
+}
+
 model Organization {
   id   String @id @default(cuid())
   name String
@@ -51,6 +57,7 @@ model Project {
   environments Environment[]
   apiKeys      ApiKey[]
   events       Event[]
+  issues       Issue[]
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
@@ -99,7 +106,7 @@ model Event {
 
   type EventType
 
-  severity EventSeverity
+  severity EventSeverity @default(INFO)
 
   title String
 
@@ -120,8 +127,41 @@ model Event {
   environmentId String
   environment Environment @relation(fields: [environmentId], references: [id])
 
+  issueId String?
+
+  issue Issue? @relation(fields: [issueId], references: [id])
+
   createdAt DateTime @default(now())
 }
+
+
+model Issue {
+  id String @id @default(cuid())
+
+  fingerprint String
+
+  title String
+
+  status IssueStatus @default(OPEN)
+
+  severity EventSeverity @default(INFO)
+
+  firstSeen DateTime @default(now())
+  lastSeen DateTime @default(now())
+
+  eventCount Int @default(1)
+
+  projectId String
+  project Project @relation(fields: [projectId], references: [id])
+
+  events Event[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, fingerprint])
+}
+
 
 model User {
   id            String    @id
@@ -189,3 +229,4 @@ model Verification {
   @@index([identifier])
   @@map("verification")
 }
+

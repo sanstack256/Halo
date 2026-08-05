@@ -26,3 +26,12 @@ export const EventSeverity = {
 } as const
 
 export type EventSeverity = (typeof EventSeverity)[keyof typeof EventSeverity]
+
+
+export const IssueStatus = {
+  OPEN: 'OPEN',
+  RESOLVED: 'RESOLVED',
+  IGNORED: 'IGNORED'
+} as const
+
+export type IssueStatus = (typeof IssueStatus)[keyof typeof IssueStatus]

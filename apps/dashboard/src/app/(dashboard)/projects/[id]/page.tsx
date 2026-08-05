@@ -26,12 +26,7 @@ export default async function ProjectPage({
     const apiKeys = await getApiKeys(project.id);
 
     return (
-        <div className="mx-auto max-w-7xl p-8">
-            <ProjectHeader
-                name={project.name}
-                description={project.description}
-            />
-
+        <>
             <ProjectOverview />
 
             <ProjectQuickStart
@@ -44,6 +39,6 @@ export default async function ProjectPage({
                 apiKeys={apiKeys}
             />
 
-        </div>
+        </>
     );
 }
