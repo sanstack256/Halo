@@ -1,4 +1,5 @@
 import { HaloClient } from "./client";
+import { registerGlobalHandlers } from "./capture";
 
 import type {
     HaloBreadcrumb,
@@ -38,6 +39,10 @@ export class Halo {
         this.release = options.release;
 
         this.environment = options.environment;
+
+        if (options.autoCapture) {
+            registerGlobalHandlers(this);
+        }
     }
 
     setUser(user: HaloUser) {
@@ -142,8 +147,7 @@ export class Halo {
 
                 breadcrumbs: [
                     ...this.breadcrumbs,
-                    ...(event.breadcrumbs ??
-                        []),
+                    ...(event.breadcrumbs ?? []),
                 ],
 
                 user:
@@ -152,14 +156,11 @@ export class Halo {
 
                 sdkName: SDK_NAME,
 
-                sdkVersion:
-                    SDK_VERSION,
+                sdkVersion: SDK_VERSION,
 
-                release:
-                    this.release,
+                release: this.release,
 
-                environment:
-                    this.environment,
+                environment: this.environment,
             }
         );
     }
