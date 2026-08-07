@@ -1,20 +1,16 @@
 import { NextRequest, NextResponse } from "next/server";
+
 import { verifyApiKey } from "@/actions/api-key";
 import { createEvent } from "@/actions/event";
 
 export async function POST(request: NextRequest) {
-    console.log("=== INGEST HIT ===");
     const authorization =
         request.headers.get("authorization");
 
     if (!authorization?.startsWith("Bearer ")) {
         return NextResponse.json(
-            {
-                error: "Missing API key",
-            },
-            {
-                status: 401,
-            }
+            { error: "Missing API key" },
+            { status: 401 }
         );
     }
 
@@ -27,12 +23,8 @@ export async function POST(request: NextRequest) {
 
     if (!verified) {
         return NextResponse.json(
-            {
-                error: "Invalid API key",
-            },
-            {
-                status: 401,
-            }
+            { error: "Invalid API key" },
+            { status: 401 }
         );
     }
 
@@ -45,7 +37,12 @@ export async function POST(request: NextRequest) {
         title: body.title,
         message: body.message,
 
+        stack: body.stack,
+        fingerprint: body.fingerprint,
+
         metadata: body.metadata,
+        tags: body.tags,
+        breadcrumbs: body.breadcrumbs,
 
         timestamp: body.timestamp,
 

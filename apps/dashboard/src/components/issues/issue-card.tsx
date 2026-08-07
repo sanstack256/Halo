@@ -22,16 +22,14 @@ export default function IssueCard({
             className={`
                 group
                 block
-                px-6
-                py-5
                 transition-colors
-                hover:bg-white/[0.02]
+                hover:bg-surface-interactive
                 ${!isLast ? "border-b border-border" : ""}
             `}
         >
-            <div className="grid grid-cols-[1.8fr_120px_140px_180px] items-center gap-6">
+            <div className="grid grid-cols-[minmax(0,1fr)_120px_170px_170px] items-center gap-8 px-6 py-5">
 
-                {/* Left */}
+                {/* Issue */}
 
                 <div className="min-w-0">
 
@@ -41,32 +39,64 @@ export default function IssueCard({
                             {issue.status}
                         </Badge>
 
-                        <SeverityBadge severity={issue.severity} />
+                        <SeverityBadge
+                            severity={issue.severity}
+                        />
 
                     </div>
 
                     <h3 className="truncate text-[15px] font-medium transition-colors group-hover:text-accent">
+
                         {issue.title}
+
                     </h3>
 
                 </div>
 
                 {/* Events */}
 
-                <div className="text-sm text-secondary">
-                    {issue.eventCount} events
+                <div>
+
+                    <p className="text-xs text-muted">
+                        Events
+                    </p>
+
+                    <p className="mt-1 font-medium">
+                        {issue.eventCount}
+                    </p>
+
                 </div>
 
                 {/* First Seen */}
 
-                <div className="text-sm text-secondary">
-                    <RelativeTime date={issue.firstSeen} />
+                <div>
+
+                    <p className="text-xs text-muted">
+                        First Seen
+                    </p>
+
+                    <p className="mt-1 text-secondary">
+                        <RelativeTime
+                            date={issue.firstSeen}
+                        />
+                    </p>
+
                 </div>
 
                 {/* Last Seen */}
 
-                <div className="text-right text-sm text-muted">
-                    <RelativeTime date={issue.lastSeen} />
+                <div>
+
+                    <p className="text-xs text-muted">
+                        Last Seen
+                    </p>
+
+                    <p className="mt-1 text-secondary">
+                        <RelativeTime
+                            date={issue.lastSeen}
+                        />
+                    </p>
+
                 </div>
 
             </div>

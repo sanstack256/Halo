@@ -4,11 +4,10 @@ import { prisma } from "@/lib/prisma";
 import {
     EventSeverity,
     EventType,
+    Prisma,
 } from "@/generated/prisma/client";
 
 import { findOrCreateIssue } from "@/actions/issue";
-import { Prisma } from "@/generated/prisma/client";
-
 
 type CreateEventInput = {
     type: EventType;
@@ -17,7 +16,12 @@ type CreateEventInput = {
     title: string;
     message?: string;
 
+    stack?: string;
+    fingerprint?: string;
+
     metadata?: Prisma.InputJsonValue;
+    tags?: Prisma.InputJsonValue;
+    breadcrumbs?: Prisma.InputJsonValue;
 
     timestamp: string;
 
@@ -33,6 +37,7 @@ export async function createEvent(
     data: CreateEventInput
 ) {
     const fingerprint =
+        data.fingerprint ??
         `${data.type}:${data.title}`;
 
     const issue = await findOrCreateIssue(
@@ -50,7 +55,12 @@ export async function createEvent(
             title: data.title,
             message: data.message,
 
+            stack: data.stack,
+            fingerprint,
+
             metadata: data.metadata,
+            tags: data.tags,
+            breadcrumbs: data.breadcrumbs,
 
             timestamp: new Date(data.timestamp),
 

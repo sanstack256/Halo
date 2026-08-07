@@ -43,6 +43,7 @@ export type IssueMinAggregateOutputType = {
   firstSeen: Date | null
   lastSeen: Date | null
   eventCount: number | null
+  lastEventId: string | null
   projectId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -57,6 +58,7 @@ export type IssueMaxAggregateOutputType = {
   firstSeen: Date | null
   lastSeen: Date | null
   eventCount: number | null
+  lastEventId: string | null
   projectId: string | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -71,6 +73,7 @@ export type IssueCountAggregateOutputType = {
   firstSeen: number
   lastSeen: number
   eventCount: number
+  lastEventId: number
   projectId: number
   createdAt: number
   updatedAt: number
@@ -95,6 +98,7 @@ export type IssueMinAggregateInputType = {
   firstSeen?: true
   lastSeen?: true
   eventCount?: true
+  lastEventId?: true
   projectId?: true
   createdAt?: true
   updatedAt?: true
@@ -109,6 +113,7 @@ export type IssueMaxAggregateInputType = {
   firstSeen?: true
   lastSeen?: true
   eventCount?: true
+  lastEventId?: true
   projectId?: true
   createdAt?: true
   updatedAt?: true
@@ -123,6 +128,7 @@ export type IssueCountAggregateInputType = {
   firstSeen?: true
   lastSeen?: true
   eventCount?: true
+  lastEventId?: true
   projectId?: true
   createdAt?: true
   updatedAt?: true
@@ -224,6 +230,7 @@ export type IssueGroupByOutputType = {
   firstSeen: Date
   lastSeen: Date
   eventCount: number
+  lastEventId: string | null
   projectId: string
   createdAt: Date
   updatedAt: Date
@@ -261,6 +268,7 @@ export type IssueWhereInput = {
   firstSeen?: Prisma.DateTimeFilter<"Issue"> | Date | string
   lastSeen?: Prisma.DateTimeFilter<"Issue"> | Date | string
   eventCount?: Prisma.IntFilter<"Issue"> | number
+  lastEventId?: Prisma.StringNullableFilter<"Issue"> | string | null
   projectId?: Prisma.StringFilter<"Issue"> | string
   createdAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
@@ -277,6 +285,7 @@ export type IssueOrderByWithRelationInput = {
   firstSeen?: Prisma.SortOrder
   lastSeen?: Prisma.SortOrder
   eventCount?: Prisma.SortOrder
+  lastEventId?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -297,6 +306,7 @@ export type IssueWhereUniqueInput = Prisma.AtLeast<{
   firstSeen?: Prisma.DateTimeFilter<"Issue"> | Date | string
   lastSeen?: Prisma.DateTimeFilter<"Issue"> | Date | string
   eventCount?: Prisma.IntFilter<"Issue"> | number
+  lastEventId?: Prisma.StringNullableFilter<"Issue"> | string | null
   projectId?: Prisma.StringFilter<"Issue"> | string
   createdAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
@@ -313,6 +323,7 @@ export type IssueOrderByWithAggregationInput = {
   firstSeen?: Prisma.SortOrder
   lastSeen?: Prisma.SortOrder
   eventCount?: Prisma.SortOrder
+  lastEventId?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -335,6 +346,7 @@ export type IssueScalarWhereWithAggregatesInput = {
   firstSeen?: Prisma.DateTimeWithAggregatesFilter<"Issue"> | Date | string
   lastSeen?: Prisma.DateTimeWithAggregatesFilter<"Issue"> | Date | string
   eventCount?: Prisma.IntWithAggregatesFilter<"Issue"> | number
+  lastEventId?: Prisma.StringNullableWithAggregatesFilter<"Issue"> | string | null
   projectId?: Prisma.StringWithAggregatesFilter<"Issue"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Issue"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Issue"> | Date | string
@@ -349,6 +361,7 @@ export type IssueCreateInput = {
   firstSeen?: Date | string
   lastSeen?: Date | string
   eventCount?: number
+  lastEventId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
@@ -364,6 +377,7 @@ export type IssueUncheckedCreateInput = {
   firstSeen?: Date | string
   lastSeen?: Date | string
   eventCount?: number
+  lastEventId?: string | null
   projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -379,6 +393,7 @@ export type IssueUpdateInput = {
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
@@ -394,6 +409,7 @@ export type IssueUncheckedUpdateInput = {
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -409,6 +425,7 @@ export type IssueCreateManyInput = {
   firstSeen?: Date | string
   lastSeen?: Date | string
   eventCount?: number
+  lastEventId?: string | null
   projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -423,6 +440,7 @@ export type IssueUpdateManyMutationInput = {
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -436,6 +454,7 @@ export type IssueUncheckedUpdateManyInput = {
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -470,6 +489,7 @@ export type IssueCountOrderByAggregateInput = {
   firstSeen?: Prisma.SortOrder
   lastSeen?: Prisma.SortOrder
   eventCount?: Prisma.SortOrder
+  lastEventId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -488,6 +508,7 @@ export type IssueMaxOrderByAggregateInput = {
   firstSeen?: Prisma.SortOrder
   lastSeen?: Prisma.SortOrder
   eventCount?: Prisma.SortOrder
+  lastEventId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -502,6 +523,7 @@ export type IssueMinOrderByAggregateInput = {
   firstSeen?: Prisma.SortOrder
   lastSeen?: Prisma.SortOrder
   eventCount?: Prisma.SortOrder
+  lastEventId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -590,6 +612,7 @@ export type IssueCreateWithoutProjectInput = {
   firstSeen?: Date | string
   lastSeen?: Date | string
   eventCount?: number
+  lastEventId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   events?: Prisma.EventCreateNestedManyWithoutIssueInput
@@ -604,6 +627,7 @@ export type IssueUncheckedCreateWithoutProjectInput = {
   firstSeen?: Date | string
   lastSeen?: Date | string
   eventCount?: number
+  lastEventId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   events?: Prisma.EventUncheckedCreateNestedManyWithoutIssueInput
@@ -647,6 +671,7 @@ export type IssueScalarWhereInput = {
   firstSeen?: Prisma.DateTimeFilter<"Issue"> | Date | string
   lastSeen?: Prisma.DateTimeFilter<"Issue"> | Date | string
   eventCount?: Prisma.IntFilter<"Issue"> | number
+  lastEventId?: Prisma.StringNullableFilter<"Issue"> | string | null
   projectId?: Prisma.StringFilter<"Issue"> | string
   createdAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
@@ -661,6 +686,7 @@ export type IssueCreateWithoutEventsInput = {
   firstSeen?: Date | string
   lastSeen?: Date | string
   eventCount?: number
+  lastEventId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
@@ -675,6 +701,7 @@ export type IssueUncheckedCreateWithoutEventsInput = {
   firstSeen?: Date | string
   lastSeen?: Date | string
   eventCount?: number
+  lastEventId?: string | null
   projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -705,6 +732,7 @@ export type IssueUpdateWithoutEventsInput = {
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
@@ -719,6 +747,7 @@ export type IssueUncheckedUpdateWithoutEventsInput = {
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -733,6 +762,7 @@ export type IssueCreateManyProjectInput = {
   firstSeen?: Date | string
   lastSeen?: Date | string
   eventCount?: number
+  lastEventId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -746,6 +776,7 @@ export type IssueUpdateWithoutProjectInput = {
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   events?: Prisma.EventUpdateManyWithoutIssueNestedInput
@@ -760,6 +791,7 @@ export type IssueUncheckedUpdateWithoutProjectInput = {
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   events?: Prisma.EventUncheckedUpdateManyWithoutIssueNestedInput
@@ -774,6 +806,7 @@ export type IssueUncheckedUpdateManyWithoutProjectInput = {
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -818,6 +851,7 @@ export type IssueSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   firstSeen?: boolean
   lastSeen?: boolean
   eventCount?: boolean
+  lastEventId?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -835,6 +869,7 @@ export type IssueSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   firstSeen?: boolean
   lastSeen?: boolean
   eventCount?: boolean
+  lastEventId?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -850,6 +885,7 @@ export type IssueSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   firstSeen?: boolean
   lastSeen?: boolean
   eventCount?: boolean
+  lastEventId?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -865,12 +901,13 @@ export type IssueSelectScalar = {
   firstSeen?: boolean
   lastSeen?: boolean
   eventCount?: boolean
+  lastEventId?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type IssueOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fingerprint" | "title" | "status" | "severity" | "firstSeen" | "lastSeen" | "eventCount" | "projectId" | "createdAt" | "updatedAt", ExtArgs["result"]["issue"]>
+export type IssueOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fingerprint" | "title" | "status" | "severity" | "firstSeen" | "lastSeen" | "eventCount" | "lastEventId" | "projectId" | "createdAt" | "updatedAt", ExtArgs["result"]["issue"]>
 export type IssueInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   events?: boolean | Prisma.Issue$eventsArgs<ExtArgs>
@@ -898,6 +935,7 @@ export type $IssuePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     firstSeen: Date
     lastSeen: Date
     eventCount: number
+    lastEventId: string | null
     projectId: string
     createdAt: Date
     updatedAt: Date
@@ -1334,6 +1372,7 @@ export interface IssueFieldRefs {
   readonly firstSeen: Prisma.FieldRef<"Issue", 'DateTime'>
   readonly lastSeen: Prisma.FieldRef<"Issue", 'DateTime'>
   readonly eventCount: Prisma.FieldRef<"Issue", 'Int'>
+  readonly lastEventId: Prisma.FieldRef<"Issue", 'String'>
   readonly projectId: Prisma.FieldRef<"Issue", 'String'>
   readonly createdAt: Prisma.FieldRef<"Issue", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Issue", 'DateTime'>

@@ -112,7 +112,15 @@ model Event {
 
   message String?
 
+  stack String?
+
+  fingerprint String?
+
   metadata Json?
+
+  tags Json?
+
+  breadcrumbs Json?
 
   timestamp DateTime
 
@@ -128,7 +136,6 @@ model Event {
   environment Environment @relation(fields: [environmentId], references: [id])
 
   issueId String?
-
   issue Issue? @relation(fields: [issueId], references: [id])
 
   createdAt DateTime @default(now())
@@ -150,6 +157,8 @@ model Issue {
   lastSeen DateTime @default(now())
 
   eventCount Int @default(1)
+
+  lastEventId String?
 
   projectId String
   project Project @relation(fields: [projectId], references: [id])
