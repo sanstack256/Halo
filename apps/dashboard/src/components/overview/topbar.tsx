@@ -36,8 +36,8 @@ export default function Topbar() {
 
             <div>
 
-                <h1 className="text-xl font-semibold tracking-tight text-primary">
-                    {title}
+                <h1 className="text-lg font-semibold text-white">
+                    Halo
                 </h1>
 
             </div>

@@ -1,54 +1,75 @@
 import { FolderOpen } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import CreateProjectDialog from "@/components/projects/create-project-dialog";
-import { getProjects } from "@/actions/project";
-import ProjectsGrid from "@/components/projects/projects-grid";
-import ProjectCard from "@/components/projects/project-card";
 
+import { getProjects } from "@/actions/project";
+
+import CreateProjectDialog from "@/components/projects/create-project-dialog";
+import ProjectsGrid from "@/components/projects/projects-grid";
+import { PageHeader } from "@/components/ui/page-header";
 
 export default async function ProjectsPage() {
     const projects = await getProjects();
+
     return (
-        <div className="mx-auto max-w-7xl p-8">
-            <div className="flex items-start justify-between">
-                <div>
-                    <h1 className="text-3xl font-semibold text-white">
-                        Projects
-                    </h1>
+        <div className="space-y-10">
 
-                    <p className="mt-2 text-zinc-400">
-                        Create and manage the applications that send events to Halo.
-                    </p>
-                </div>
-
-                <CreateProjectDialog />
-            </div>
+            <PageHeader
+                title="Projects"
+                description="Manage the applications connected to Halo."
+                action={<CreateProjectDialog />}
+            />
 
             {projects.length === 0 ? (
-                <div className="mt-16 flex flex-col items-center justify-center rounded-2xl border border-dashed border-zinc-800 bg-zinc-950 py-24">
-                    <div className="rounded-2xl border border-zinc-800 bg-zinc-900 p-5">
-                        <FolderOpen className="h-10 w-10 text-zinc-500" />
+
+                <div className="rounded-2xl border border-border bg-surface py-24">
+
+                    <div className="mx-auto flex max-w-md flex-col items-center text-center">
+
+                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10">
+
+                            <FolderOpen className="h-8 w-8 text-accent" />
+
+                        </div>
+
+                        <h2 className="mt-6 text-2xl font-semibold">
+                            No projects yet
+                        </h2>
+
+                        <p className="mt-3 text-secondary">
+                            Create your first project to start sending events to Halo.
+                        </p>
+
+                        <div className="mt-8">
+
+                            <CreateProjectDialog />
+
+                        </div>
+
                     </div>
 
-                    <h2 className="mt-6 text-xl font-semibold text-white">
-                        No projects yet
-                    </h2>
-
-                    <p className="mt-2 max-w-md text-center text-zinc-500">
-                        Create your first project to start monitoring your application.
-                    </p>
-
-                    <CreateProjectDialog />
                 </div>
+
             ) : (
-                <div className="mt-10">
-                    <p className="text-zinc-400">
-                        {projects.length} project{projects.length !== 1 ? "s" : ""}
-                    </p>
 
-                    <ProjectsGrid projects={projects} />
-                </div>
+                <>
+
+                    <div className="flex items-center justify-between">
+
+                        <p className="text-sm text-secondary">
+                            {projects.length} project{projects.length !== 1 ? "s" : ""}
+                        </p>
+
+                        {/* Search will go here */}
+
+                    </div>
+
+                    <ProjectsGrid
+                        projects={projects}
+                    />
+
+                </>
+
             )}
+
         </div>
     );
 }

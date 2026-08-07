@@ -71,14 +71,60 @@ export async function getProjects() {
     return [];
   }
 
-  return prisma.project.findMany({
+  const projects = await prisma.project.findMany({
     where: {
       organizationId: organization.id,
     },
     orderBy: {
       createdAt: "desc",
     },
+    include: {
+      _count: {
+        select: {
+          events: true,
+          issues: true,
+        },
+      },
+
+      events: {
+        orderBy: {
+          timestamp: "desc",
+        },
+        take: 1,
+        select: {
+          timestamp: true,
+        },
+      },
+
+      issues: {
+        where: {
+          status: "OPEN",
+        },
+        select: {
+          id: true,
+        },
+      },
+    },
   });
+
+  return projects.map((project) => ({
+    id: project.id,
+
+    name: project.name,
+
+    description: project.description,
+
+    createdAt: project.createdAt,
+
+    eventCount: project._count.events,
+
+    openIssueCount: project.issues.length,
+
+    lastEventAt:
+      project.events.length > 0
+        ? project.events[0].timestamp
+        : null,
+  }));
 }
 
 export async function getProject(projectId: string) {
@@ -107,27 +153,27 @@ export async function getProject(projectId: string) {
 }
 
 export async function getProjectHeader(projectId: string) {
-    const session = await getSession();
+  const session = await getSession();
 
-    if (!session) {
-        throw new Error("Unauthorized");
-    }
+  if (!session) {
+    throw new Error("Unauthorized");
+  }
 
-    const organization = await getOrganization(session.user.id);
+  const organization = await getOrganization(session.user.id);
 
-    if (!organization) {
-        throw new Error("Organization not found");
-    }
+  if (!organization) {
+    throw new Error("Organization not found");
+  }
 
-    return prisma.project.findFirst({
-        where: {
-            id: projectId,
-            organizationId: organization.id,
-        },
-        select: {
-            id: true,
-            name: true,
-            description: true,
-        },
-    });
+  return prisma.project.findFirst({
+    where: {
+      id: projectId,
+      organizationId: organization.id,
+    },
+    select: {
+      id: true,
+      name: true,
+      description: true,
+    },
+  });
 }
