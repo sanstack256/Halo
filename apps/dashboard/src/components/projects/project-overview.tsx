@@ -1,42 +1,71 @@
 import {
-    Boxes,
-    KeyRound,
     Activity,
+    AlertTriangle,
     Clock3,
 } from "lucide-react";
 
-import ProjectStatCard from "./project-stat-card";
-
 export default function ProjectOverview() {
     return (
-        <div className="mt-8 grid gap-6 md:grid-cols-2 xl:grid-cols-4">
-            <ProjectStatCard
-                title="Environments"
-                value={1}
-                subtitle="Production"
-                icon={<Boxes className="h-5 w-5" />}
-            />
+        <section className="mt-10">
 
-            <ProjectStatCard
-                title="API Keys"
-                value={0}
-                subtitle="No keys generated"
-                icon={<KeyRound className="h-5 w-5" />}
-            />
+            <div className="grid grid-cols-3 gap-8">
 
-            <ProjectStatCard
-                title="Events"
-                value={0}
-                subtitle="No events received"
-                icon={<Activity className="h-5 w-5" />}
-            />
+                <div>
 
-            <ProjectStatCard
-                title="Last Event"
-                value="—"
-                subtitle="Never"
-                icon={<Clock3 className="h-5 w-5" />}
-            />
-        </div>
+                    <div className="mb-3 flex items-center gap-2 text-secondary">
+
+                        <Activity className="h-4 w-4" />
+
+                        <span className="text-sm">
+                            Events Today
+                        </span>
+
+                    </div>
+
+                    <p className="text-5xl font-semibold tracking-tight">
+                        0
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <div className="mb-3 flex items-center gap-2 text-secondary">
+
+                        <AlertTriangle className="h-4 w-4" />
+
+                        <span className="text-sm">
+                            Open Issues
+                        </span>
+
+                    </div>
+
+                    <p className="text-5xl font-semibold tracking-tight">
+                        0
+                    </p>
+
+                </div>
+
+                <div>
+
+                    <div className="mb-3 flex items-center gap-2 text-secondary">
+
+                        <Clock3 className="h-4 w-4" />
+
+                        <span className="text-sm">
+                            Last Event
+                        </span>
+
+                    </div>
+
+                    <p className="text-xl font-medium">
+                        Never
+                    </p>
+
+                </div>
+
+            </div>
+
+        </section>
     );
 }

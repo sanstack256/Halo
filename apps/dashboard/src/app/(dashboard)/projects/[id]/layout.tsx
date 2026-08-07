@@ -1,7 +1,8 @@
 import Link from "next/link";
-import { getProjectHeader } from "@/actions/project";
 import { notFound } from "next/navigation";
 import { ArrowLeft } from "lucide-react";
+
+import { getProjectHeader } from "@/actions/project";
 import { ProjectNavigation } from "@/components/projects/project-navigation";
 
 type Props = {
@@ -24,43 +25,62 @@ export default async function ProjectLayout({
     }
 
     return (
-        <div className="mx-auto max-w-7xl p-8">
+        <div className="mx-auto w-full max-w-[1600px] px-10 py-8">
 
             <Link
                 href="/projects"
-                className="mb-8 flex items-center gap-2 text-sm text-muted-foreground hover:text-white"
+                className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-primary"
             >
                 <ArrowLeft className="h-4 w-4" />
                 Projects
             </Link>
 
-            <div className="mb-8 rounded-xl border p-8">
+            <header className="mt-8">
 
-                <div className="flex items-center gap-4">
+                <div className="flex items-center gap-5">
 
-                    <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-sky-950 text-3xl font-bold text-sky-400">
+                    <div
+                        className="
+                            flex
+                            h-12
+                            w-12
+                            items-center
+                            justify-center
+                            rounded-xl
+                            bg-accent/10
+                            text-lg
+                            font-semibold
+                            text-accent
+                        "
+                    >
                         {project.name.charAt(0).toUpperCase()}
                     </div>
 
                     <div>
-                        <h1 className="text-5xl font-bold">
+
+                        <h1 className="text-5xl font-semibold tracking-[-0.05em]">
                             {project.name}
                         </h1>
 
-                        <p className="mt-2 text-muted-foreground">
-                            {project.description}
-                        </p>
+                        {project.description && (
+                            <p className="mt-1 text-secondary">
+                                {project.description}
+                            </p>
+                        )}
+
                     </div>
 
                 </div>
 
+            </header>
+
+            <div className="mt-10">
+                <ProjectNavigation projectId={id} />
             </div>
 
-            <ProjectNavigation projectId={id} />
-
-            <div className="mt-8">
+            <main className="mt-10">
                 {children}
-            </div>
+            </main>
 
         </div>
     );

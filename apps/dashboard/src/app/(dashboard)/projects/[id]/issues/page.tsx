@@ -1,5 +1,6 @@
 import { getIssues } from "@/actions/issue";
 import IssueCard from "@/components/issues/issue-card";
+import { PageHeader } from "@/components/ui/page-header";
 
 type Props = {
     params: Promise<{
@@ -15,26 +16,24 @@ export default async function IssuesPage({
     const issues = await getIssues(id);
 
     return (
-        <div className="space-y-6">
+        <div className="space-y-10">
 
-            <div>
-                <h1 className="text-3xl font-bold">
-                    Issues
-                </h1>
+            <PageHeader
+                title="Issues"
+                description="Grouped production issues."
+            />
 
-                <p className="text-muted-foreground">
-                    Grouped production issues.
-                </p>
-            </div>
+            <div className="overflow-hidden rounded-2xl border border-border bg-surface">
 
-            <div className="space-y-3">
+                {issues.map((issue, index) => (
 
-                {issues.map((issue) => (
                     <IssueCard
                         key={issue.id}
                         projectId={id}
                         issue={issue}
+                        isLast={index === issues.length - 1}
                     />
+
                 ))}
 
             </div>

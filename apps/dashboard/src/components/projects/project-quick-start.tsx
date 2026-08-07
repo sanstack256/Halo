@@ -6,7 +6,6 @@ type Step = {
     completed: boolean;
 };
 
-
 type Props = {
     hasApiKey: boolean;
     hasEvents: boolean;
@@ -16,66 +15,96 @@ export default function ProjectQuickStart({
     hasApiKey,
     hasEvents,
 }: Props) {
-
     const steps: Step[] = [
-    {
-        title: "Create Project",
-        description: "Your project has been created successfully.",
-        completed: true,
-    },
-    {
-        title: "Generate API Key",
-        description: "Create an ingestion key for your application.",
-        completed: hasApiKey,
-    },
-    {
-        title: "Install the SDK",
-        description: "Install the Halo SDK into your application.",
-        completed: false,
-    },
-    {
-        title: "Send your First Event",
-        description: "Verify that Halo is receiving telemetry.",
-        completed: hasEvents,
-    },
-];
+        {
+            title: "Create Project",
+            description: "Your project has been created successfully.",
+            completed: true,
+        },
+        {
+            title: "Generate API Key",
+            description: "Create an ingestion key for your application.",
+            completed: hasApiKey,
+        },
+        {
+            title: "Install SDK",
+            description: "Install Halo into your application.",
+            completed: false,
+        },
+        {
+            title: "Send First Event",
+            description: "Verify Halo is receiving telemetry.",
+            completed: hasEvents,
+        },
+    ];
 
     return (
-        <div className="mt-10 rounded-2xl border border-zinc-800 bg-zinc-950 p-8">
-            <h2 className="text-xl font-semibold text-white">
-                Quick Start
-            </h2>
+        <section className="mt-12 rounded-2xl border border-border bg-surface overflow-hidden">
 
-            <p className="mt-2 text-sm text-zinc-400">
-                Complete these steps to start monitoring your application.
-            </p>
+            <div className="border-b border-border px-8 py-6">
 
-            <div className="mt-8 space-y-6">
-                {steps.map((step) => (
+                <h2 className="text-xl font-semibold">
+                    Quick Start
+                </h2>
+
+                <p className="mt-1 text-secondary">
+                    Complete these steps to start monitoring your application.
+                </p>
+
+            </div>
+
+            <div>
+
+                {steps.map((step, index) => (
+
                     <div
                         key={step.title}
-                        className="flex items-start gap-4"
+                        className={`
+                            flex
+                            items-start
+                            gap-5
+                            px-8
+                            py-6
+                            ${index !== steps.length - 1 ? "border-b border-border" : ""}
+                        `}
                     >
-                        <div className="mt-0.5">
+
+                        <div className="mt-0.5 shrink-0">
+
                             {step.completed ? (
-                                <CheckCircle2 className="h-5 w-5 text-emerald-400" />
+
+                                <CheckCircle2
+                                    className="h-5 w-5 text-accent"
+                                />
+
                             ) : (
-                                <Circle className="h-5 w-5 text-zinc-600" />
+
+                                <Circle
+                                    className="h-5 w-5 text-muted"
+                                />
+
                             )}
+
                         </div>
 
-                        <div>
-                            <h3 className="font-medium text-white">
+                        <div className="min-w-0">
+
+                            <h3 className="font-medium text-primary">
                                 {step.title}
                             </h3>
 
-                            <p className="mt-1 text-sm text-zinc-500">
+                            <p className="mt-1 text-sm leading-6 text-secondary">
                                 {step.description}
                             </p>
+
                         </div>
+
                     </div>
+
                 ))}
+
             </div>
-        </div>
+
+        </section>
     );
 }

@@ -1,62 +1,72 @@
 import Link from "next/link";
-import { Badge } from "@/components/ui/badge";
 import { Issue } from "@/generated/prisma/client";
+
+import { Badge } from "@/components/ui/badge";
+import { SeverityBadge } from "@/components/ui/severity-badge";
+import { RelativeTime } from "@/components/ui/relative-time";
 
 type Props = {
     projectId: string;
     issue: Issue;
+    isLast?: boolean;
 };
 
 export default function IssueCard({
     projectId,
     issue,
+    isLast = false,
 }: Props) {
     return (
         <Link
             href={`/projects/${projectId}/issues/${issue.id}`}
+            className={`
+                group
+                block
+                px-6
+                py-5
+                transition-colors
+                hover:bg-white/[0.02]
+                ${!isLast ? "border-b border-border" : ""}
+            `}
         >
-            <div className="rounded-xl border p-5 transition-all hover:border-primary/50 hover:bg-muted/30">
+            <div className="grid grid-cols-[1.8fr_120px_140px_180px] items-center gap-6">
 
-                <div className="flex items-start justify-between">
+                {/* Left */}
 
-                    <div className="space-y-3">
+                <div className="min-w-0">
 
-                        <div className="flex items-center gap-3">
+                    <div className="mb-2 flex items-center gap-2">
 
-                            <Badge>
-                                {issue.status}
-                            </Badge>
+                        <Badge>
+                            {issue.status}
+                        </Badge>
 
-                            <span className="text-sm text-muted-foreground">
-                                {issue.severity}
-                            </span>
-
-                        </div>
-
-                        <h2 className="text-lg font-semibold">
-                            {issue.title}
-                        </h2>
-
-                        <div className="flex gap-6 text-sm text-muted-foreground">
-
-                            <span>
-                                {issue.eventCount} events
-                            </span>
-
-                            <span>
-                                First seen{" "}
-                                {issue.firstSeen.toLocaleString()}
-                            </span>
-
-                            <span>
-                                Last seen{" "}
-                                {issue.lastSeen.toLocaleString()}
-                            </span>
-
-                        </div>
+                        <SeverityBadge severity={issue.severity} />
 
                     </div>
 
+                    <h3 className="truncate text-[15px] font-medium transition-colors group-hover:text-accent">
+                        {issue.title}
+                    </h3>
+
+                </div>
+
+                {/* Events */}
+
+                <div className="text-sm text-secondary">
+                    {issue.eventCount} events
+                </div>
+
+                {/* First Seen */}
+
+                <div className="text-sm text-secondary">
+                    <RelativeTime date={issue.firstSeen} />
+                </div>
+
+                {/* Last Seen */}
+
+                <div className="text-right text-sm text-muted">
+                    <RelativeTime date={issue.lastSeen} />
                 </div>
 
             </div>

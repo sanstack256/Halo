@@ -1,10 +1,10 @@
 import { notFound } from "next/navigation";
+
 import { getProject } from "@/actions/project";
-import ProjectOverview from "@/components/projects/project-overview";
-import ProjectHeader from "@/components/projects/project-header";
-import ProjectQuickStart from "@/components/projects/project-quick-start";
-import CreateApiKeyDialog from "@/components/projects/create-api-key-dialog";
 import { getApiKeys } from "@/actions/api-key";
+
+import ProjectOverview from "@/components/projects/project-overview";
+import ProjectQuickStart from "@/components/projects/project-quick-start";
 import ApiKeysSection from "@/components/projects/api-keys-section";
 
 type Props = {
@@ -23,10 +23,12 @@ export default async function ProjectPage({
     if (!project) {
         notFound();
     }
+
     const apiKeys = await getApiKeys(project.id);
 
     return (
-        <>
+        <div className="space-y-12">
+
             <ProjectOverview />
 
             <ProjectQuickStart
@@ -39,6 +41,6 @@ export default async function ProjectPage({
                 apiKeys={apiKeys}
             />
 
-        </>
+        </div>
     );
 }

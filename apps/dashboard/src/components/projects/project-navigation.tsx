@@ -37,32 +37,35 @@ export function ProjectNavigation({
     const pathname = usePathname();
 
     return (
-        <nav className="border-b">
-            <div className="flex gap-8">
+        <nav className="border-b border-border pb-3">
+
+            <div className="flex items-center gap-2">
 
                 {tabs.map((tab) => {
+
                     const href = `/projects/${projectId}${tab.href}`;
 
-                    const active =
-                        pathname === href;
+                    const active = pathname === href;
 
                     return (
                         <Link
                             key={tab.name}
                             href={href}
                             className={clsx(
-                                "border-b-2 pb-4 text-sm transition-colors",
+                                "rounded-xl px-4 py-2 text-sm font-medium transition-all duration-200",
                                 active
-                                    ? "border-white text-white"
-                                    : "border-transparent text-muted-foreground hover:text-white"
+                                    ? "bg-accent/10 text-accent"
+                                    : "text-secondary hover:bg-white/[0.03] hover:text-primary"
                             )}
                         >
                             {tab.name}
                         </Link>
                     );
+
                 })}
 
             </div>
+
         </nav>
     );
 }

@@ -1,8 +1,11 @@
-import { notFound } from "next/navigation";
-import { getIssue } from "@/actions/issue";
-import { Badge } from "@/components/ui/badge";
 import Link from "next/link";
+import { notFound } from "next/navigation";
 
+import { getIssue } from "@/actions/issue";
+
+import { Badge } from "@/components/ui/badge";
+import { SeverityBadge } from "@/components/ui/severity-badge";
+import { RelativeTime } from "@/components/ui/relative-time";
 
 type Props = {
     params: Promise<{
@@ -14,7 +17,6 @@ type Props = {
 export default async function IssuePage({
     params,
 }: Props) {
-
     const { issueId } = await params;
 
     const issue = await getIssue(issueId);
@@ -24,157 +26,156 @@ export default async function IssuePage({
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-10">
 
-            <div className="rounded-xl border p-6 space-y-6">
+            {/* Header */}
 
-                <div className="space-y-2">
+            <header className="space-y-5">
 
-                    <h1 className="text-3xl font-bold">
-                        {issue.title}
-                    </h1>
+                <div className="flex items-center gap-3">
 
-                    <div className="flex items-center gap-3">
+                    <Badge>{issue.status}</Badge>
 
-                        <Badge>
-                            {issue.status}
-                        </Badge>
-
-                        <Badge variant="outline">
-                            {issue.severity}
-                        </Badge>
-
-                    </div>
+                    <SeverityBadge severity={issue.severity} />
 
                 </div>
 
-                <div className="grid grid-cols-3 gap-6">
+                <h1 className="text-5xl font-semibold tracking-tight">
+                    {issue.title}
+                </h1>
 
-                    <div>
+            </header>
 
-                        <p className="text-sm text-muted-foreground">
-                            Occurrences
-                        </p>
+            <div className="grid grid-cols-[1fr_300px] gap-14">
 
-                        <p className="text-xl font-semibold">
-                            {issue.eventCount}
-                        </p>
+                {/* Timeline */}
 
-                    </div>
+                <section>
 
-                    <div>
-
-                        <p className="text-sm text-muted-foreground">
-                            First Seen
-                        </p>
-
-                        <p>
-                            {issue.firstSeen.toLocaleString()}
-                        </p>
-
-                    </div>
-
-                    <div>
-
-                        <p className="text-sm text-muted-foreground">
-                            Last Seen
-                        </p>
-
-                        <p>
-                            {issue.lastSeen.toLocaleString()}
-                        </p>
-
-                    </div>
-
-                </div>
-
-            </div>
-
-            <div className="rounded-xl border overflow-hidden">
-
-                <div className="border-b p-4">
-
-                    <h2 className="font-semibold">
+                    <h2 className="mb-6 text-lg font-semibold">
                         Timeline
                     </h2>
 
-                </div>
+                    <div className="overflow-hidden rounded-2xl border border-border bg-surface">
 
-                <div className="divide-y">
+                        {issue.events.map((event, index) => (
 
-                    {issue.events.map((event) => (
+                            <Link
+                                key={event.id}
+                                href={`/projects/${issue.projectId}/events/${event.id}`}
+                                className={`
+                                    group
+                                    block
+                                    px-6
+                                    py-5
+                                    transition-colors
+                                    hover:bg-white/[0.02]
+                                    ${index !== issue.events.length - 1 ? "border-b border-border" : ""}
+                                `}
+                            >
 
-                        <Link
-                            key={event.id}
-                            href={`/projects/${issue.projectId}/events/${event.id}`}
-                            className="block p-5 space-y-4 hover:bg-muted/30 transition-colors"
-                        >
+                                <div className="grid grid-cols-[1fr_170px] gap-6">
 
-                            <div className="flex items-center gap-3">
+                                    <div>
 
-                                <Badge>
-                                    {event.type}
-                                </Badge>
+                                        <div className="mb-3 flex items-center gap-2">
 
-                                <Badge variant="outline">
-                                    {event.severity}
-                                </Badge>
+                                            <Badge>
+                                                {event.type}
+                                            </Badge>
 
+                                            <SeverityBadge
+                                                severity={event.severity}
+                                            />
+
+                                        </div>
+
+                                        <h3 className="font-medium transition-colors group-hover:text-accent">
+                                            {event.title}
+                                        </h3>
+
+                                        {event.message && (
+                                            <p className="mt-2 text-sm text-secondary line-clamp-2">
+                                                {event.message}
+                                            </p>
+                                        )}
+
+                                    </div>
+
+                                    <div className="space-y-1 text-right">
+
+                                        <p className="text-sm text-secondary">
+                                            <RelativeTime
+                                                date={event.timestamp}
+                                            />
+                                        </p>
+
+                                        <p className="text-xs text-muted">
+                                            {event.sdkName ?? "-"}
+                                        </p>
+
+                                    </div>
+
+                                </div>
+
+                            </Link>
+
+                        ))}
+
+                    </div>
+
+                </section>
+
+                {/* Sidebar */}
+
+                <aside className="sticky top-8 h-fit">
+
+                    <div className="rounded-2xl border border-border bg-surface p-6">
+
+                        <h3 className="mb-6 text-sm font-semibold uppercase tracking-wide text-muted">
+                            Overview
+                        </h3>
+
+                        <div className="space-y-5">
+
+                            <div>
+                                <p className="text-xs text-muted">
+                                    Occurrences
+                                </p>
+
+                                <p className="mt-1 text-lg font-semibold">
+                                    {issue.eventCount}
+                                </p>
                             </div>
 
                             <div>
+                                <p className="text-xs text-muted">
+                                    First Seen
+                                </p>
 
-                                <h3 className="font-semibold">
-                                    {event.title}
-                                </h3>
-
-                                {event.message && (
-                                    <p className="mt-2 text-sm text-muted-foreground">
-                                        {event.message}
-                                    </p>
-                                )}
-
+                                <p className="mt-1">
+                                    <RelativeTime date={issue.firstSeen} />
+                                </p>
                             </div>
 
-                            <div className="grid grid-cols-2 gap-6 text-sm">
+                            <div>
+                                <p className="text-xs text-muted">
+                                    Last Seen
+                                </p>
 
-                                <div>
-
-                                    <p className="text-muted-foreground">
-                                        SDK
-                                    </p>
-
-                                    <p>
-                                        {event.sdkName ?? "-"}{" "}
-                                        {event.sdkVersion ?? ""}
-                                    </p>
-
-                                </div>
-
-                                <div>
-
-                                    <p className="text-muted-foreground">
-                                        Timestamp
-                                    </p>
-
-                                    <p>
-                                        {event.timestamp.toLocaleString()}
-                                    </p>
-
-                                </div>
-
+                                <p className="mt-1">
+                                    <RelativeTime date={issue.lastSeen} />
+                                </p>
                             </div>
 
-                        </Link>
+                        </div>
 
-                    ))}
+                    </div>
 
-                </div>
-
+                </aside>
 
             </div>
 
         </div>
-
     );
 }

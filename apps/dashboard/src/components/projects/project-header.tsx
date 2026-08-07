@@ -11,32 +11,49 @@ export default function ProjectHeader({
     description,
 }: Props) {
     return (
-        <div>
+        <div className="space-y-8">
+
             <Link
                 href="/projects"
-                className="inline-flex items-center gap-2 text-sm text-zinc-500 transition hover:text-zinc-300"
+                className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-primary"
             >
                 <ArrowLeft className="h-4 w-4" />
                 Projects
             </Link>
 
-            <div className="mt-6 rounded-2xl border border-zinc-800 bg-zinc-950 p-8">
-                <div className="flex items-center gap-4">
-                    <div className="flex h-14 w-14 items-center justify-center rounded-xl bg-sky-500/15 text-xl font-semibold text-sky-400">
-                        {name.charAt(0).toUpperCase()}
-                    </div>
+            <div className="flex items-center gap-5">
 
-                    <div>
-                        <h1 className="text-3xl font-semibold text-white">
-                            {name}
-                        </h1>
-
-                        <p className="mt-1 text-zinc-400">
-                            {description || "No description"}
-                        </p>
-                    </div>
+                <div
+                    className="
+                        flex
+                        h-12
+                        w-12
+                        items-center
+                        justify-center
+                        rounded-xl
+                        bg-accent/10
+                        text-lg
+                        font-semibold
+                        text-accent
+                    "
+                >
+                    {name.charAt(0).toUpperCase()}
                 </div>
+
+                <div className="min-w-0">
+
+                    <h1 className="truncate text-5xl font-semibold tracking-[-0.05em] text-primary">
+                        {name}
+                    </h1>
+
+                    <p className="mt-1 text-base text-secondary">
+                        {description || "No description"}
+                    </p>
+
+                </div>
+
             </div>
+
         </div>
     );
 }

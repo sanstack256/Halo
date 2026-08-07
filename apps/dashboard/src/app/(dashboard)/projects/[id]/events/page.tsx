@@ -1,4 +1,11 @@
+import Link from "next/link";
+
 import { getEvents } from "@/actions/event";
+
+import { Badge } from "@/components/ui/badge";
+import { SeverityBadge } from "@/components/ui/severity-badge";
+import { RelativeTime } from "@/components/ui/relative-time";
+import { PageHeader } from "@/components/ui/page-header";
 
 type Props = {
     params: Promise<{
@@ -11,64 +18,105 @@ export default async function EventsPage({
 }: Props) {
     const { id } = await params;
 
-    console.log("Project ID from URL:", id);
-
     const events = await getEvents(id);
 
-    console.log("Events:", events);
-
-
     return (
-        <div className="space-y-6">
-            <div>
-                <h1 className="text-3xl font-bold">
-                    Events
-                </h1>
+        <div className="space-y-10">
 
-                <p className="text-muted-foreground">
-                    Incoming SDK events.
-                </p>
-            </div>
+            <PageHeader
+                title="Events"
+                description="Every event received from your SDK."
+            />
 
-            <div className="rounded-lg border">
-                <table className="w-full">
-                    <thead className="border-b">
-                        <tr className="text-left">
-                            <th className="p-4">Time</th>
-                            <th className="p-4">Type</th>
-                            <th className="p-4">Severity</th>
-                            <th className="p-4">Title</th>
-                        </tr>
-                    </thead>
+            <div className="overflow-hidden rounded-2xl border border-border bg-surface">
 
-                    <tbody>
-                        {events.map((event) => (
-                            <tr
-                                key={event.id}
-                                className="border-b"
-                            >
-                                <td className="p-4">
-                                    {new Date(
-                                        event.timestamp
-                                    ).toLocaleString()}
-                                </td>
+                {/* Header */}
 
-                                <td className="p-4">
-                                    {event.type}
-                                </td>
+                <div className="grid grid-cols-[1.8fr_140px_140px_170px] border-b border-border px-6 py-3 text-xs font-medium uppercase tracking-wide text-muted">
 
-                                <td className="p-4">
-                                    {event.severity}
-                                </td>
+                    <span>Event</span>
+                    <span>Severity</span>
+                    <span>SDK</span>
+                    <span className="text-right">Time</span>
 
-                                <td className="p-4">
+                </div>
+
+                {events.map((event, index) => (
+
+                    <Link
+                        key={event.id}
+                        href={`/projects/${id}/events/${event.id}`}
+                        className="block"
+                    >
+
+                        <div
+                            className={`
+                                grid
+                                grid-cols-[1.8fr_140px_140px_170px]
+                                items-center
+                                gap-6
+                                px-6
+                                py-5
+                                transition-colors
+                                hover:bg-white/[0.02]
+                                ${index !== events.length - 1 ? "border-b border-border" : ""}
+                            `}
+                        >
+
+                            {/* Event */}
+
+                            <div className="min-w-0">
+
+                                <div className="mb-2 flex items-center gap-2">
+
+                                    <Badge>
+                                        {event.type}
+                                    </Badge>
+
+                                </div>
+
+                                <p className="truncate font-medium">
                                     {event.title}
-                                </td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+                                </p>
+
+                                {event.message && (
+                                    <p className="mt-1 truncate text-sm text-secondary">
+                                        {event.message}
+                                    </p>
+                                )}
+
+                            </div>
+
+                            {/* Severity */}
+
+                            <SeverityBadge severity={event.severity} />
+
+                            {/* SDK */}
+
+                            <div className="text-sm text-secondary">
+
+                                {event.sdkName ?? "-"}
+
+                            </div>
+
+                            {/* Time */}
+
+                            <div className="text-right text-sm text-muted">
+
+                                <RelativeTime
+                                    date={event.timestamp}
+                                />
+
+                            </div>
+
+                        </div>
+
+                    </Link>
+
+                ))}
+
             </div>
+
         </div>
     );
 }

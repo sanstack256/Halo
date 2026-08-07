@@ -1,6 +1,10 @@
 import { notFound } from "next/navigation";
-import { Badge } from "@/components/ui/badge";
+
 import { getEvent } from "@/actions/event";
+
+import { Badge } from "@/components/ui/badge";
+import { SeverityBadge } from "@/components/ui/severity-badge";
+import { RelativeTime } from "@/components/ui/relative-time";
 
 type Props = {
     params: Promise<{
@@ -21,110 +25,165 @@ export default async function EventPage({
     }
 
     return (
-        <div className="space-y-8">
+        <div className="space-y-10">
 
-            <div className="rounded-xl border p-6 space-y-6">
+            {/* Header */}
 
-                <div>
+            <header className="space-y-5">
 
-                    <h1 className="text-3xl font-bold">
-                        {event.title}
-                    </h1>
+                <div className="flex items-center gap-2">
 
-                    <div className="mt-3 flex items-center gap-3">
+                    <Badge>
+                        {event.type}
+                    </Badge>
 
-                        <Badge>
-                            {event.type}
-                        </Badge>
-
-                        <Badge variant="outline">
-                            {event.severity}
-                        </Badge>
-
-                    </div>
+                    <SeverityBadge
+                        severity={event.severity}
+                    />
 
                 </div>
 
-                <div className="grid grid-cols-2 gap-6">
+                <h1 className="text-5xl font-semibold tracking-tight">
+                    {event.title}
+                </h1>
 
-                    <div>
+                <div className="flex flex-wrap items-center gap-4 text-sm text-secondary">
 
-                        <p className="text-sm text-muted-foreground">
-                            Timestamp
-                        </p>
+                    <RelativeTime
+                        date={event.timestamp}
+                    />
 
-                        <p>
-                            {event.timestamp.toLocaleString()}
-                        </p>
+                    <span>•</span>
 
-                    </div>
+                    <span>
+                        {event.sdkName ?? "-"}{" "}
+                        {event.sdkVersion ?? ""}
+                    </span>
 
-                    <div>
+                    <span>•</span>
 
-                        <p className="text-sm text-muted-foreground">
-                            Issue
-                        </p>
-
-                        <p>
-                            {event.issue?.title ?? "-"}
-                        </p>
-
-                    </div>
-
-                    <div>
-
-                        <p className="text-sm text-muted-foreground">
-                            SDK
-                        </p>
-
-                        <p>
-                            {event.sdkName ?? "-"}{" "}
-                            {event.sdkVersion ?? ""}
-                        </p>
-
-                    </div>
-
-                    <div>
-
-                        <p className="text-sm text-muted-foreground">
-                            Release
-                        </p>
-
-                        <p>
-                            {event.release ?? "-"}
-                        </p>
-
-                    </div>
+                    <span>
+                        {event.release ?? "No release"}
+                    </span>
 
                 </div>
 
-            </div>
+            </header>
 
-            <div className="rounded-xl border">
+            <div className="grid grid-cols-[1fr_320px] gap-14">
 
-                <div className="border-b p-4 font-semibold">
-                    Message
+                {/* Left */}
+
+                <div className="space-y-10">
+
+                    <section>
+
+                        <h2 className="mb-5 text-lg font-semibold">
+                            Message
+                        </h2>
+
+                        <div className="rounded-xl bg-surface p-6">
+
+                            <pre className="whitespace-pre-wrap break-words font-mono text-sm leading-7 text-secondary">
+
+                                {event.message ?? "No message"}
+
+                            </pre>
+
+                        </div>
+
+                    </section>
+
+                    <section>
+
+                        <h2 className="mb-5 text-lg font-semibold">
+                            Metadata
+                        </h2>
+
+                        <div className="overflow-hidden rounded-xl bg-surface">
+
+                            <pre className="overflow-x-auto p-6 font-mono text-sm leading-7 text-secondary">
+
+                                {JSON.stringify(
+                                    event.metadata,
+                                    null,
+                                    2
+                                )}
+
+                            </pre>
+
+                        </div>
+
+                    </section>
+
                 </div>
 
-                <pre className="overflow-x-auto p-6 text-sm">
-                    {event.message ?? "No message"}
-                </pre>
+                {/* Right */}
 
-            </div>
+                <aside className="sticky top-8 h-fit">
 
-            <div className="rounded-xl border">
+                    <div className="rounded-xl border border-border bg-surface p-6">
 
-                <div className="border-b p-4 font-semibold">
-                    Metadata
-                </div>
+                        <h2 className="mb-6 text-sm font-semibold uppercase tracking-wide text-muted">
+                            Evidence
+                        </h2>
 
-                <pre className="overflow-x-auto p-6 text-sm">
-                    {JSON.stringify(
-                        event.metadata,
-                        null,
-                        2
-                    )}
-                </pre>
+                        <div className="space-y-6">
+
+                            <div>
+
+                                <p className="text-xs text-muted">
+                                    Timestamp
+                                </p>
+
+                                <p className="mt-1">
+                                    {event.timestamp.toLocaleString()}
+                                </p>
+
+                            </div>
+
+                            <div>
+
+                                <p className="text-xs text-muted">
+                                    Issue
+                                </p>
+
+                                <p className="mt-1">
+                                    {event.issue?.title ?? "-"}
+                                </p>
+
+                            </div>
+
+                            <div>
+
+                                <p className="text-xs text-muted">
+                                    SDK
+                                </p>
+
+                                <p className="mt-1">
+                                    {event.sdkName ?? "-"}{" "}
+                                    {event.sdkVersion ?? ""}
+                                </p>
+
+                            </div>
+
+                            <div>
+
+                                <p className="text-xs text-muted">
+                                    Release
+                                </p>
+
+                                <p className="mt-1">
+                                    {event.release ?? "-"}
+                                </p>
+
+                            </div>
+
+                        </div>
+
+                    </div>
+
+                </aside>
 
             </div>
 
