@@ -17,16 +17,36 @@ function buildHypotheses(
 ): Hypothesis[] {
     const hypotheses: Hypothesis[] = [];
 
+    /*
+     * Cross-service failure
+     */
+    const crossServiceFindings =
+        findings.filter(
+            finding =>
+                finding.id ===
+                "cross-service-failure"
+        );
+
+    for (const finding of crossServiceFindings) {
+        hypotheses.push(
+            createCrossServiceHypothesis(
+                finding
+            )
+        );
+    }
+
+    /*
+     * Deployment regression
+     */
     const deploymentFindings =
         findings.filter(
             finding =>
                 finding.type === "TEMPORAL" ||
                 finding.type === "PATTERN" ||
                 finding.type === "SCOPE" ||
-                finding.type === "RECOVERY"
+                finding.type === "RECOVERY" ||
+                finding.type === "ANOMALY"
         );
-
-   
 
     for (const deployment of context.deployments) {
         const text = [
@@ -64,10 +84,14 @@ function buildHypotheses(
         );
     }
 
+    /*
+     * Shared dependency failure
+     */
     const dependencyFindings =
         findings.filter(
             finding =>
-                finding.type === "DEPENDENCY"
+                finding.type ===
+                "DEPENDENCY"
         );
 
     for (const finding of dependencyFindings) {
@@ -78,6 +102,9 @@ function buildHypotheses(
         );
     }
 
+    /*
+     * Infrastructure failure
+     */
     const infrastructureFindings =
         findings.filter(
             finding =>
@@ -101,6 +128,73 @@ function buildHypotheses(
     return hypotheses;
 }
 
+function createCrossServiceHypothesis(
+    finding: Finding
+): Hypothesis {
+    const supportingReasons =
+        finding.reasons.filter(
+            reason =>
+                reason.type ===
+                "SUPPORTING"
+        );
+
+    const contradictingReasons =
+        finding.reasons.filter(
+            reason =>
+                reason.type ===
+                "CONTRADICTING"
+        );
+
+    return {
+        id: "cross-service-failure",
+
+        title: "Cross-Service Failure",
+
+        description:
+            finding.description,
+
+        score: {
+            positive:
+                supportingReasons.reduce(
+                    (total, reason) =>
+                        total +
+                        reason.strength,
+                    0
+                ),
+
+            negative:
+                contradictingReasons.reduce(
+                    (total, reason) =>
+                        total +
+                        reason.strength,
+                    0
+                ),
+
+            unknown: 0,
+        },
+
+        confidence: 0,
+
+        status: "CANDIDATE",
+
+        supportingReasons,
+
+        contradictingReasons,
+
+        missingReasons: [],
+
+        findingIds: [finding.id],
+
+        evidenceIds: [
+            ...new Set(
+                finding.evidenceIds
+            ),
+        ],
+
+        alternativeIds: [],
+    };
+}
+
 function createDeploymentHypothesis(
     deploymentId: string,
     findings: Finding[]
@@ -108,7 +202,8 @@ function createDeploymentHypothesis(
     const evidenceIds = [
         deploymentId,
         ...findings.flatMap(
-            finding => finding.evidenceIds
+            finding =>
+                finding.evidenceIds
         ),
     ];
 
@@ -119,32 +214,38 @@ function createDeploymentHypothesis(
     const supportingReasons =
         findings
             .flatMap(
-                finding => finding.reasons
+                finding =>
+                    finding.reasons
             )
             .filter(
                 reason =>
-                    reason.type === "SUPPORTING"
+                    reason.type ===
+                    "SUPPORTING"
             );
 
     const contradictingReasons =
         findings
             .flatMap(
-                finding => finding.reasons
+                finding =>
+                    finding.reasons
             )
             .filter(
                 reason =>
-                    reason.type === "CONTRADICTING"
+                    reason.type ===
+                    "CONTRADICTING"
             );
 
     return {
-        id: `deployment-regression:${deploymentId}`,
+        id:
+            `deployment-regression:${deploymentId}`,
 
         title: "Deployment Regression",
 
         findingIds: [
             ...new Set(
                 findings.map(
-                    finding => finding.id
+                    finding =>
+                        finding.id
                 )
             ),
         ],
@@ -156,14 +257,16 @@ function createDeploymentHypothesis(
             positive:
                 supportingReasons.reduce(
                     (total, reason) =>
-                        total + reason.strength,
+                        total +
+                        reason.strength,
                     0
                 ),
 
             negative:
                 contradictingReasons.reduce(
                     (total, reason) =>
-                        total + reason.strength,
+                        total +
+                        reason.strength,
                     0
                 ),
 
@@ -193,7 +296,8 @@ function createSharedDependencyHypothesis(
     const supportingReasons =
         finding.reasons.filter(
             reason =>
-                reason.type === "SUPPORTING"
+                reason.type ===
+                "SUPPORTING"
         );
 
     const contradictingReasons =
@@ -204,10 +308,10 @@ function createSharedDependencyHypothesis(
         );
 
     return {
-        id: `shared-dependency:${finding.id}`,
+        id:
+            `shared-dependency:${finding.id}`,
 
         title: "Shared Dependency Failure",
-
 
         description:
             finding.description,
@@ -216,18 +320,20 @@ function createSharedDependencyHypothesis(
             positive:
                 supportingReasons.reduce(
                     (total, reason) =>
-                        total + reason.strength,
+                        total +
+                        reason.strength,
                     0
                 ),
 
             negative:
                 contradictingReasons.reduce(
                     (total, reason) =>
-                        total + reason.strength,
+                        total +
+                        reason.strength,
                     0
                 ),
 
-            unknown: 0,
+            unknown: finding.strength,
         },
 
         confidence: 0,
@@ -262,7 +368,8 @@ function createInfrastructureHypothesis(
     const evidenceIds = [
         ...finding.evidenceIds,
         ...infrastructureEvidence.map(
-            evidence => evidence.id
+            evidence =>
+                evidence.id
         ),
     ];
 
@@ -293,6 +400,7 @@ function createInfrastructureHypothesis(
         supportingReasons: [
             {
                 type: "SUPPORTING",
+
                 causalRole: "CONTEXT",
 
                 title:

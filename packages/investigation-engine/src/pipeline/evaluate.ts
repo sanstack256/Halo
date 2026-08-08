@@ -125,7 +125,18 @@ function uniqueReasonStrength(
     const evidenceStrength =
         new Map<string, number>();
 
+    let unlinkedStrength = 0;
+
     for (const reason of reasons) {
+        if (
+            reason.evidenceIds.length === 0
+        ) {
+            unlinkedStrength +=
+                reason.strength;
+
+            continue;
+        }
+
         for (const evidenceId of reason.evidenceIds) {
             const existing =
                 evidenceStrength.get(
@@ -142,12 +153,15 @@ function uniqueReasonStrength(
         }
     }
 
-    return [...evidenceStrength.values()]
-        .reduce(
-            (total, strength) =>
-                total + strength,
-            0
-        );
+    return (
+        [...evidenceStrength.values()]
+            .reduce(
+                (total, strength) =>
+                    total + strength,
+                0
+            ) +
+        unlinkedStrength
+    );
 }
 
 function findMissingEvidence(
@@ -185,17 +199,18 @@ function findMissingEvidence(
                 description:
                     "Evidence showing whether the failure recovered after reverting the deployment would materially strengthen or weaken this hypothesis.",
                 evidenceIds: [],
-                strength: 0.8,
+                strength: 0.5,
             });
         }
     }
 
     if (
-        hypothesis.id ===
-        "shared-dependency-failure"
+        hypothesis.id.startsWith(
+            "shared-dependency:"
+        )
     ) {
         const hasDependencyEvidence =
-            context.traces.some(
+            context.evidence.some(
                 evidence =>
                     Boolean(
                         evidence.resource
@@ -208,12 +223,17 @@ function findMissingEvidence(
         if (!hasDependencyEvidence) {
             missing.push({
                 type: "MISSING",
+
                 causalRole: "CONTEXT",
+
                 title:
                     "Dependency relationship is unclear",
+
                 description:
-                    "Trace or dependency evidence is needed to determine whether the affected services share a failing dependency.",
+                    "Evidence identifying a shared resource or operation is needed to validate the shared dependency explanation.",
+
                 evidenceIds: [],
+
                 strength: 0.8,
             });
         }

@@ -61,15 +61,36 @@ function validateHypothesis(
     const alternativeGap =
         strongestAlternative
             ? hypothesis.confidence -
-              strongestAlternative.confidence
+            strongestAlternative.confidence
             : hypothesis.confidence;
 
+    const rankedAboveAlternative =
+        !strongestAlternative ||
+        hypotheses.indexOf(hypothesis) <
+        hypotheses.indexOf(
+            strongestAlternative
+        );
+
+    const isBareCrossServiceFailure =
+        hypothesis.title ===
+        "Cross-Service Failure" &&
+        hypothesis.supportingReasons.every(
+            reason =>
+                reason.causalRole ===
+                "CONTEXT"
+        );
+
+
     const validated =
+        !isBareCrossServiceFailure &&
         isLeading &&
         hypothesis.confidence >= 70 &&
         supportStrength > contradictionStrength &&
         missingStrength < supportStrength &&
-        alternativeGap >= 10 &&
+        (
+            alternativeGap >= 10 ||
+            rankedAboveAlternative
+        ) &&
         hasRelevantEvidence(
             hypothesis,
             context
@@ -81,8 +102,8 @@ function validateHypothesis(
         status: validated
             ? "VALIDATED"
             : isLeading
-              ? "UNCERTAIN"
-              : hypothesis.status,
+                ? "UNCERTAIN"
+                : hypothesis.status,
 
         validation: {
             validated,
@@ -91,9 +112,9 @@ function validateHypothesis(
                 validated
                     ? hypothesis.confidence
                     : Math.min(
-                          hypothesis.confidence,
-                          69
-                      ),
+                        hypothesis.confidence,
+                        69
+                    ),
 
             evidenceIds:
                 hypothesis.evidenceIds,

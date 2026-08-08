@@ -7,33 +7,75 @@ export function rankHypotheses(
         .map(hypothesis => ({
             ...hypothesis,
             confidence:
-                calculateConfidence(hypothesis),
+                calculateConfidence(
+                    hypothesis
+                ),
         }))
-        .sort(
-            (a, b) =>
+        .sort((a, b) => {
+            const causalPriorityDifference =
+                causalPriority(b) -
+                causalPriority(a);
+
+            if (
+                causalPriorityDifference !== 0
+            ) {
+                return causalPriorityDifference;
+            }
+
+            return (
                 b.confidence -
                 a.confidence
-        )
-        .map((hypothesis, index, ranked) => ({
-            ...hypothesis,
-            status:
-                index === 0 &&
-                hypothesis.confidence >= 0.7
-                    ? "LEADING"
-                    : hypothesis.status,
-
-            alternativeIds:
+            );
+        })
+        .map(
+            (
+                hypothesis,
+                index,
                 ranked
-                    .filter(
-                        alternative =>
-                            alternative.id !==
-                            hypothesis.id
-                    )
-                    .map(
-                        alternative =>
-                            alternative.id
-                    ),
-        }));
+            ) => ({
+                ...hypothesis,
+
+                status:
+                    index === 0 &&
+                    hypothesis.confidence >=
+                        70
+                        ? "LEADING"
+                        : hypothesis.status,
+
+                alternativeIds:
+                    ranked
+                        .filter(
+                            alternative =>
+                                alternative.id !==
+                                hypothesis.id
+                        )
+                        .map(
+                            alternative =>
+                                alternative.id
+                        ),
+            })
+        );
+}
+
+function causalPriority(
+    hypothesis: Hypothesis
+): number {
+    switch (hypothesis.title) {
+        case "Shared Dependency Failure":
+            return 3;
+
+        case "Infrastructure Failure":
+            return 3;
+
+        case "Deployment Regression":
+            return 2;
+
+        case "Cross-Service Failure":
+            return 1;
+
+        default:
+            return 0;
+    }
 }
 
 function calculateConfidence(
@@ -73,8 +115,12 @@ function calculateConfidence(
 
     const confidence =
         evidenceRatio *
-        (1 - contradictionPenalty * 0.5) *
-        (1 - uncertaintyPenalty * 0.35);
+        (1 -
+            contradictionPenalty *
+                0.5) *
+        (1 -
+            uncertaintyPenalty *
+                0.35);
 
     return Math.round(
         Math.max(
