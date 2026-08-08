@@ -10,15 +10,25 @@ export function registerGlobalHandlers(
     ) {
         process.on(
             "uncaughtException",
-            (error) => {
-                void halo.captureException(error);
+            async (error) => {
+                try {
+                    await halo.captureException(error);
+                    await halo.flush();
+                } finally {
+                    process.exit(1);
+                }
             }
         );
 
         process.on(
             "unhandledRejection",
-            (reason) => {
-                void halo.captureException(reason);
+            async (reason) => {
+                try {
+                    await halo.captureException(reason);
+                    await halo.flush();
+                } finally {
+                    process.exit(1);
+                }
             }
         );
     }

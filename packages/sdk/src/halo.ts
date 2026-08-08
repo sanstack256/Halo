@@ -1,5 +1,6 @@
 import { HaloClient } from "./client";
 import { registerGlobalHandlers } from "./capture";
+import { EventQueue } from "./queue";
 
 import type {
     HaloBreadcrumb,
@@ -23,6 +24,8 @@ export class Halo {
 
     private user?: HaloUser;
 
+    private queue: EventQueue;
+
     private tags: Record<string, HaloTagValue> = {};
 
     private breadcrumbs: HaloBreadcrumb[] = [];
@@ -30,9 +33,16 @@ export class Halo {
     constructor(options: HaloOptions) {
         this.client = new HaloClient(
             options.endpoint ??
-                "http://localhost:3000/api",
+            "http://localhost:3000/api",
             options.apiKey
         );
+
+        this.queue = new EventQueue(async (event: unknown) => {
+            await this.client.post(
+                "/ingest/events",
+                event
+            );
+        });
 
         this.enabled = options.enabled ?? true;
 
@@ -83,6 +93,10 @@ export class Halo {
         this.breadcrumbs = [];
     }
 
+    async flush() {
+        await this.queue.flush();
+    }
+
     async captureMessage(
         message: string
     ) {
@@ -116,52 +130,49 @@ export class Halo {
             return;
         }
 
-        return this.client.post(
-            "/ingest/events",
-            {
-                type: "MESSAGE",
+        return this.queue.enqueue({
+            type: "MESSAGE",
 
-                title: event.title,
+            title: event.title,
 
-                message: event.message,
+            message: event.message,
 
-                severity:
-                    event.severity ??
-                    "INFO",
+            severity:
+                event.severity ??
+                "INFO",
 
-                timestamp:
-                    new Date().toISOString(),
+            timestamp:
+                new Date().toISOString(),
 
-                stack: event.stack,
+            stack: event.stack,
 
-                fingerprint:
-                    event.fingerprint,
+            fingerprint:
+                event.fingerprint,
 
-                metadata:
-                    event.metadata,
+            metadata:
+                event.metadata,
 
-                tags: {
-                    ...this.tags,
-                    ...(event.tags ?? {}),
-                },
+            tags: {
+                ...this.tags,
+                ...(event.tags ?? {}),
+            },
 
-                breadcrumbs: [
-                    ...this.breadcrumbs,
-                    ...(event.breadcrumbs ?? []),
-                ],
+            breadcrumbs: [
+                ...this.breadcrumbs,
+                ...(event.breadcrumbs ?? []),
+            ],
 
-                user:
-                    event.user ??
-                    this.user,
+            user:
+                event.user ??
+                this.user,
 
-                sdkName: SDK_NAME,
+            sdkName: SDK_NAME,
 
-                sdkVersion: SDK_VERSION,
+            sdkVersion: SDK_VERSION,
 
-                release: this.release,
+            release: this.release,
 
-                environment: this.environment,
-            }
-        );
+            environment: this.environment,
+        });
     }
 }

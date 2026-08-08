@@ -19,8 +19,12 @@ export async function POST(request: NextRequest) {
         ""
     );
 
+    console.log("Received API key:", apiKey);
+
     const verified = await verifyApiKey(apiKey);
 
+    console.log("Verification result:", verified);
+    
     if (!verified) {
         return NextResponse.json(
             { error: "Invalid API key" },
