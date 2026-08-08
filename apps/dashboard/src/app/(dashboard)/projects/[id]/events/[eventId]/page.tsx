@@ -8,6 +8,7 @@ import { RelativeTime } from "@/components/ui/relative-time";
 
 import StackTrace from "@/components/events/stack-trace";
 import Breadcrumbs from "@/components/events/breadcrumbs";
+import Tags from "@/components/events/tags";
 
 type Props = {
     params: Promise<{
@@ -112,6 +113,21 @@ export default async function EventPage({
                                         message: string;
                                         timestamp?: string;
                                     }[]
+                                }
+                            />
+                        )}
+
+                    {event.tags &&
+                        typeof event.tags === "object" &&
+                        Object.keys(
+                            event.tags as Record<string, unknown>
+                        ).length > 0 && (
+                            <Tags
+                                tags={
+                                    event.tags as Record<
+                                        string,
+                                        unknown
+                                    >
                                 }
                             />
                         )}
