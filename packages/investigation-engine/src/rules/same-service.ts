@@ -1,47 +1,53 @@
-import type { Evidence } from "../types/evidence";
-import type { RuleResult } from "../types/rule-result";
+import type { InvestigationContext } from "../types/context";
+import type { Finding } from "../types/finding";
 
 export function sameService(
-    evidence: Evidence[]
-): RuleResult[] {
+    context: InvestigationContext
+): Finding[] {
+    const { deployments, errors } = context;
 
-    const deployment = evidence.find(
-        e => e.type === "DEPLOYMENT"
-    );
-
-    if (!deployment) {
+    if (deployments.length === 0 || errors.length === 0) {
         return [];
     }
 
-    const matchingErrors = evidence.filter(
-        e =>
-            e.type === "ERROR" &&
-            e.service === deployment.service
-    );
+    const findings: Finding[] = [];
 
-    if (matchingErrors.length === 0) {
-        return [];
+    for (const deployment of deployments) {
+        const matchingErrors = errors.filter(
+            error => error.service === deployment.service
+        );
+
+        if (matchingErrors.length === 0) {
+            continue;
+        }
+
+        const evidenceIds = [
+            deployment.id,
+            ...matchingErrors.map(error => error.id),
+        ];
+
+        findings.push({
+            id: `service-scope:${deployment.id}`,
+            type: "SCOPE",
+            causalRole: "CONTRIBUTOR",
+            title: "Deployment and errors affect the same service",
+            description:
+                `${matchingErrors.length} error(s) were observed in ${deployment.service}, the same service targeted by the deployment.`,
+            strength: 0.55,
+            evidenceIds,
+            reasons: [
+                {
+                    type: "SUPPORTING",
+                    causalRole: "CONTRIBUTOR",
+                    title: "Same service is affected",
+                    description:
+                        "The deployment and observed errors belong to the same service, making the deployment more relevant to the failure.",
+                    evidenceIds,
+                    strength: 0.55,
+                },
+            ],
+        });
     }
 
-    return [
-        {
-            hypothesis: "Deployment Regression",
-
-            reason: {
-                title: "Same service affected",
-
-                description:
-                    `${matchingErrors.length} error(s) occurred in ${deployment.service}.`,
-
-                score: 15,
-
-                evidenceIds: [
-                    deployment.id,
-                    ...matchingErrors.map(
-                        e => e.id
-                    ),
-                ],
-            },
-        },
-    ];
+    return findings;
 }

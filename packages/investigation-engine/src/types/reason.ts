@@ -1,11 +1,20 @@
+import type { CausalRole } from "./finding";
+
+export type ReasonType =
+    | "SUPPORTING"
+    | "CONTRADICTING"
+    | "MISSING";
+
 export interface Reason {
+    type: ReasonType;
+
+    causalRole: CausalRole;
 
     title: string;
 
     description: string;
 
-    score: number;
+    strength: number;
 
     evidenceIds: string[];
-
 }

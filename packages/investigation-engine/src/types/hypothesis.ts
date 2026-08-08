@@ -1,8 +1,14 @@
 import type { EvidenceScore } from "./evidence-score";
 import type { Reason } from "./reason";
 
-export interface Hypothesis {
+export type HypothesisStatus =
+    | "CANDIDATE"
+    | "LEADING"
+    | "VALIDATED"
+    | "REJECTED"
+    | "UNCERTAIN";
 
+export interface Hypothesis {
     id: string;
 
     title: string;
@@ -13,10 +19,23 @@ export interface Hypothesis {
 
     confidence: number;
 
+    status: HypothesisStatus;
+
     supportingReasons: Reason[];
 
     contradictingReasons: Reason[];
 
     missingReasons: Reason[];
 
+    findingIds: string[];
+
+    evidenceIds: string[];
+
+    alternativeIds: string[];
+
+    validation?: {
+        validated: boolean;
+        confidence: number;
+        evidenceIds: string[];
+    };
 }

@@ -1,0 +1,244 @@
+import type { Finding } from "../types/finding";
+import type { Hypothesis } from "../types/hypothesis";
+import type { InvestigationContext } from "../types/context";
+import type { Reason } from "../types/reason";
+
+export function evaluateHypotheses(
+    hypotheses: Hypothesis[],
+    context: InvestigationContext
+): Hypothesis[] {
+    return hypotheses.map(hypothesis =>
+        evaluateHypothesis(
+            hypothesis,
+            context.findings,
+            context
+        )
+    );
+}
+
+function evaluateHypothesis(
+    hypothesis: Hypothesis,
+    findings: Finding[],
+    context: InvestigationContext
+): Hypothesis {
+    const relevantFindings = findings.filter(
+        finding =>
+            hypothesis.findingIds.includes(
+                finding.id
+            )
+    );
+
+    const supportingReasons =
+        collectReasons(
+            relevantFindings,
+            "SUPPORTING"
+        );
+
+    const contradictingReasons =
+        collectReasons(
+            relevantFindings,
+            "CONTRADICTING"
+        );
+
+    const missingReasons =
+        findMissingEvidence(
+            hypothesis,
+            context
+        );
+
+    const positive =
+        uniqueReasonStrength(
+            supportingReasons
+        );
+
+    const negative =
+        uniqueReasonStrength(
+            contradictingReasons
+        );
+
+    const unknown =
+        uniqueReasonStrength(
+            missingReasons
+        );
+
+    return {
+        ...hypothesis,
+
+        score: {
+            positive,
+            negative,
+            unknown,
+        },
+
+        confidence: 0,
+
+        supportingReasons,
+
+        contradictingReasons,
+
+        missingReasons,
+    };
+}
+
+function collectReasons(
+    findings: Finding[],
+    type: Reason["type"]
+): Reason[] {
+    const reasons = findings.flatMap(
+        finding =>
+            finding.reasons.filter(
+                reason =>
+                    reason.type === type
+            )
+    );
+
+    return deduplicateReasons(reasons);
+}
+
+function deduplicateReasons(
+    reasons: Reason[]
+): Reason[] {
+    const seen = new Set<string>();
+
+    return reasons.filter(reason => {
+        const key = [
+            reason.type,
+            reason.title,
+            [...reason.evidenceIds]
+                .sort()
+                .join(","),
+        ].join(":");
+
+        if (seen.has(key)) {
+            return false;
+        }
+
+        seen.add(key);
+
+        return true;
+    });
+}
+
+function uniqueReasonStrength(
+    reasons: Reason[]
+): number {
+    const evidenceStrength =
+        new Map<string, number>();
+
+    for (const reason of reasons) {
+        for (const evidenceId of reason.evidenceIds) {
+            const existing =
+                evidenceStrength.get(
+                    evidenceId
+                ) ?? 0;
+
+            evidenceStrength.set(
+                evidenceId,
+                Math.max(
+                    existing,
+                    reason.strength
+                )
+            );
+        }
+    }
+
+    return [...evidenceStrength.values()]
+        .reduce(
+            (total, strength) =>
+                total + strength,
+            0
+        );
+}
+
+function findMissingEvidence(
+    hypothesis: Hypothesis,
+    context: InvestigationContext
+): Reason[] {
+    const missing: Reason[] = [];
+
+    if (
+        hypothesis.id.startsWith(
+            "deployment-regression:"
+        )
+    ) {
+        const hasRollbackEvidence =
+            context.evidence.some(
+                evidence =>
+                    evidence.type ===
+                    "DEPLOYMENT" &&
+                    (
+                        evidence.title
+                            .toLowerCase()
+                            .includes("rollback") ||
+                        evidence.title
+                            .toLowerCase()
+                            .includes("revert")
+                    )
+            );
+
+        if (!hasRollbackEvidence) {
+            missing.push({
+                type: "MISSING",
+                causalRole: "CONTEXT",
+                title:
+                    "Rollback or recovery evidence is unavailable",
+                description:
+                    "Evidence showing whether the failure recovered after reverting the deployment would materially strengthen or weaken this hypothesis.",
+                evidenceIds: [],
+                strength: 0.8,
+            });
+        }
+    }
+
+    if (
+        hypothesis.id ===
+        "shared-dependency-failure"
+    ) {
+        const hasDependencyEvidence =
+            context.traces.some(
+                evidence =>
+                    Boolean(
+                        evidence.resource
+                    ) ||
+                    Boolean(
+                        evidence.operation
+                    )
+            );
+
+        if (!hasDependencyEvidence) {
+            missing.push({
+                type: "MISSING",
+                causalRole: "CONTEXT",
+                title:
+                    "Dependency relationship is unclear",
+                description:
+                    "Trace or dependency evidence is needed to determine whether the affected services share a failing dependency.",
+                evidenceIds: [],
+                strength: 0.8,
+            });
+        }
+    }
+
+    if (
+        hypothesis.id ===
+        "infrastructure-failure"
+    ) {
+        if (
+            context.infrastructure.length ===
+            0
+        ) {
+            missing.push({
+                type: "MISSING",
+                causalRole: "CONTEXT",
+                title:
+                    "Infrastructure evidence is unavailable",
+                description:
+                    "Infrastructure health or resource evidence is needed to validate an infrastructure-level explanation.",
+                evidenceIds: [],
+                strength: 0.9,
+            });
+        }
+    }
+
+    return missing;
+}

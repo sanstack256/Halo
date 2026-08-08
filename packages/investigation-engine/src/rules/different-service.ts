@@ -1,51 +1,53 @@
-import type { Evidence } from "../types/evidence";
-import type { RuleResult } from "../types/rule-result";
+import type { InvestigationContext } from "../types/context";
+import type { Finding } from "../types/finding";
 
 export function differentService(
-    evidence: Evidence[]
-): RuleResult[] {
+    context: InvestigationContext
+): Finding[] {
+    const { deployments, errors } = context;
 
-    const deployment = evidence.find(
-        e => e.type === "DEPLOYMENT"
-    );
-
-    if (!deployment) {
+    if (deployments.length === 0 || errors.length === 0) {
         return [];
     }
 
-    const errors = evidence.filter(
-        e => e.type === "ERROR"
-    );
+    const findings: Finding[] = [];
 
-    if (errors.length === 0) {
-        return [];
+    for (const deployment of deployments) {
+        const differentServiceErrors = errors.filter(
+            error => error.service !== deployment.service
+        );
+
+        if (differentServiceErrors.length === 0) {
+            continue;
+        }
+
+        const evidenceIds = [
+            deployment.id,
+            ...differentServiceErrors.map(error => error.id),
+        ];
+
+        findings.push({
+            id: `cross-service:${deployment.id}`,
+            type: "SCOPE",
+            causalRole: "CONTRADICTION",
+            title: "Failure extends beyond deployed service",
+            description:
+                `${differentServiceErrors.length} error(s) were observed in services other than ${deployment.service}.`,
+            strength: 0.65,
+            evidenceIds,
+            reasons: [
+                {
+                    type: "CONTRADICTING",
+                    causalRole: "CONTRADICTION",
+                    title: "Cross-service impact weakens an isolated deployment explanation",
+                    description:
+                        "Errors outside the deployed service suggest that the incident may involve a shared dependency, infrastructure component, or broader failure mechanism.",
+                    evidenceIds,
+                    strength: 0.65,
+                },
+            ],
+        });
     }
 
-    const different = errors.filter(
-        e => e.service !== deployment.service
-    );
-
-    if (different.length === 0) {
-        return [];
-    }
-
-    return [
-        {
-            hypothesis: "Deployment Regression",
-
-            reason: {
-                title: "Errors occurred in another service",
-
-                description:
-                    `${different.length} error(s) occurred outside ${deployment.service}.`,
-
-                score: -30,
-
-                evidenceIds: [
-                    deployment.id,
-                    ...different.map(e => e.id),
-                ],
-            },
-        },
-    ];
+    return findings;
 }

@@ -1,12 +1,19 @@
+import type { Change } from "./change";
 import type { Evidence } from "./evidence";
 import type { EvidenceGraph } from "./graph";
-import type { Timeline } from "./timeline";
+import type { Finding } from "./finding";
 import type { Hypothesis } from "./hypothesis";
-import type { Recommendation } from "./recommendation";
-import type { Change } from "./change";
 import type { Impact } from "./impact";
+import type { Recommendation } from "./recommendation";
+import type { Timeline } from "./timeline";
+
+export type InvestigationStatus =
+    | "INVESTIGATING"
+    | "CONCLUDED"
+    | "UNCERTAIN";
 
 export interface Investigation {
+    status: InvestigationStatus;
 
     evidence: Evidence[];
 
@@ -16,6 +23,8 @@ export interface Investigation {
 
     changes: Change[];
 
+    findings: Finding[];
+
     hypotheses: Hypothesis[];
 
     rootCause: Hypothesis | null;
@@ -23,4 +32,10 @@ export interface Investigation {
     impact: Impact | null;
 
     recommendations: Recommendation[];
+
+    nextInvestigation?: {
+        question: string;
+        reason: string;
+        evidenceIds: string[];
+    };
 }

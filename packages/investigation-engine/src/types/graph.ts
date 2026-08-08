@@ -2,32 +2,34 @@ import type { Evidence } from "./evidence";
 
 export interface EvidenceNode {
     id: string;
-
     evidence: Evidence;
 }
 
 export type RelationshipType =
-    | "RELATED_TO"
-    | "CAUSED_BY"
-    | "DEPLOYED"
-    | "MODIFIED"
+    | "PRECEDES"
+    | "FOLLOWS"
+    | "SAME_SERVICE"
+    | "SAME_RELEASE"
+    | "SAME_TRACE"
+    | "SAME_REQUEST"
+    | "SAME_RESOURCE"
     | "DEPENDS_ON"
-    | "TRIGGERED"
     | "AFFECTS"
-    | "OBSERVED_WITH";
+    | "TRIGGERS"
+    | "MODIFIES"
+    | "CORRELATED_WITH"
+    | "CAUSES"
+    | "CONTRADICTS";
 
 export interface EvidenceEdge {
     from: string;
-
     to: string;
-
     relationship: RelationshipType;
-
     confidence: number;
+    evidenceIds: string[];
 }
 
 export interface EvidenceGraph {
     nodes: EvidenceNode[];
-
     edges: EvidenceEdge[];
 }

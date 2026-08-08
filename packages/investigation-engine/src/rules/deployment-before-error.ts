@@ -1,63 +1,56 @@
-import type { Evidence } from "../types/evidence";
-import type { RuleResult } from "../types/rule-result";
+import type { InvestigationContext } from "../types/context";
+import type { Finding } from "../types/finding";
 
 export function deploymentBeforeError(
-    evidence: Evidence[]
-): RuleResult[] {
+    context: InvestigationContext
+): Finding[] {
+    const { deployments, errors } = context;
 
-    const deployments = evidence.filter(
-        e => e.type === "DEPLOYMENT"
-    );
-
-    const errors = evidence.filter(
-        e => e.type === "ERROR"
-    );
-
-    if (
-        deployments.length === 0 ||
-        errors.length === 0
-    ) {
+    if (deployments.length === 0 || errors.length === 0) {
         return [];
     }
 
-    const firstError = errors[0];
-
-    const results: RuleResult[] = [];
+    const findings: Finding[] = [];
 
     for (const deployment of deployments) {
+        const firstError = errors.find(
+            error =>
+                error.timestamp.getTime() >
+                deployment.timestamp.getTime()
+        );
 
-        if (
-            deployment.timestamp <
-            firstError.timestamp
-        ) {
+        if (!firstError) {
+            continue;
+        }
 
-            results.push({
-
-                hypothesis:
-                    "Deployment Regression",
-
-                reason: {
-
-                    title:
-                        "Deployment before first error",
-
+        findings.push({
+            id: `temporal:${deployment.id}:${firstError.id}`,
+            type: "TEMPORAL",
+            causalRole: "TRIGGER",
+            title: "Deployment preceded error onset",
+            description:
+                `Deployment "${deployment.title}" occurred before the first observed error associated with this investigation.`,
+            strength: 0.5,
+            evidenceIds: [
+                deployment.id,
+                firstError.id,
+            ],
+            reasons: [
+                {
+                    type: "SUPPORTING",
+                    causalRole: "TRIGGER",
+                    title: "Deployment occurred before the error",
                     description:
-                        "Deployment occurred before the first error.",
-
-                    score: 40,
-
+                        "The deployment is temporally ordered before the first observed error.",
                     evidenceIds: [
                         deployment.id,
                         firstError.id,
                     ],
-
+                    strength: 0.5,
                 },
-
-            });
-
-        }
-
+            ],
+        });
     }
 
-    return results;
+    return findings;
 }
