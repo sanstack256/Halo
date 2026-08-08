@@ -7,6 +7,7 @@ import { SeverityBadge } from "@/components/ui/severity-badge";
 import { RelativeTime } from "@/components/ui/relative-time";
 
 import StackTrace from "@/components/events/stack-trace";
+import Breadcrumbs from "@/components/events/breadcrumbs";
 
 type Props = {
     params: Promise<{
@@ -101,6 +102,19 @@ export default async function EventPage({
                             stack={event.stack}
                         />
                     )}
+
+                    {Array.isArray(event.breadcrumbs) &&
+                        event.breadcrumbs.length > 0 && (
+                            <Breadcrumbs
+                                breadcrumbs={
+                                    event.breadcrumbs as {
+                                        category: string;
+                                        message: string;
+                                        timestamp?: string;
+                                    }[]
+                                }
+                            />
+                        )}
 
                     <section>
 
