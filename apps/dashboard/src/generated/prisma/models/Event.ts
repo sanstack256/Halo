@@ -71,6 +71,7 @@ export type EventCountAggregateOutputType = {
   metadata: number
   tags: number
   breadcrumbs: number
+  user: number
   timestamp: number
   sdkName: number
   sdkVersion: number
@@ -130,6 +131,7 @@ export type EventCountAggregateInputType = {
   metadata?: true
   tags?: true
   breadcrumbs?: true
+  user?: true
   timestamp?: true
   sdkName?: true
   sdkVersion?: true
@@ -224,6 +226,7 @@ export type EventGroupByOutputType = {
   metadata: runtime.JsonValue | null
   tags: runtime.JsonValue | null
   breadcrumbs: runtime.JsonValue | null
+  user: runtime.JsonValue | null
   timestamp: Date
   sdkName: string | null
   sdkVersion: string | null
@@ -266,6 +269,7 @@ export type EventWhereInput = {
   metadata?: Prisma.JsonNullableFilter<"Event">
   tags?: Prisma.JsonNullableFilter<"Event">
   breadcrumbs?: Prisma.JsonNullableFilter<"Event">
+  user?: Prisma.JsonNullableFilter<"Event">
   timestamp?: Prisma.DateTimeFilter<"Event"> | Date | string
   sdkName?: Prisma.StringNullableFilter<"Event"> | string | null
   sdkVersion?: Prisma.StringNullableFilter<"Event"> | string | null
@@ -290,6 +294,7 @@ export type EventOrderByWithRelationInput = {
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   tags?: Prisma.SortOrderInput | Prisma.SortOrder
   breadcrumbs?: Prisma.SortOrderInput | Prisma.SortOrder
+  user?: Prisma.SortOrderInput | Prisma.SortOrder
   timestamp?: Prisma.SortOrder
   sdkName?: Prisma.SortOrderInput | Prisma.SortOrder
   sdkVersion?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -317,6 +322,7 @@ export type EventWhereUniqueInput = Prisma.AtLeast<{
   metadata?: Prisma.JsonNullableFilter<"Event">
   tags?: Prisma.JsonNullableFilter<"Event">
   breadcrumbs?: Prisma.JsonNullableFilter<"Event">
+  user?: Prisma.JsonNullableFilter<"Event">
   timestamp?: Prisma.DateTimeFilter<"Event"> | Date | string
   sdkName?: Prisma.StringNullableFilter<"Event"> | string | null
   sdkVersion?: Prisma.StringNullableFilter<"Event"> | string | null
@@ -341,6 +347,7 @@ export type EventOrderByWithAggregationInput = {
   metadata?: Prisma.SortOrderInput | Prisma.SortOrder
   tags?: Prisma.SortOrderInput | Prisma.SortOrder
   breadcrumbs?: Prisma.SortOrderInput | Prisma.SortOrder
+  user?: Prisma.SortOrderInput | Prisma.SortOrder
   timestamp?: Prisma.SortOrder
   sdkName?: Prisma.SortOrderInput | Prisma.SortOrder
   sdkVersion?: Prisma.SortOrderInput | Prisma.SortOrder
@@ -368,6 +375,7 @@ export type EventScalarWhereWithAggregatesInput = {
   metadata?: Prisma.JsonNullableWithAggregatesFilter<"Event">
   tags?: Prisma.JsonNullableWithAggregatesFilter<"Event">
   breadcrumbs?: Prisma.JsonNullableWithAggregatesFilter<"Event">
+  user?: Prisma.JsonNullableWithAggregatesFilter<"Event">
   timestamp?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
   sdkName?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
   sdkVersion?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
@@ -389,6 +397,7 @@ export type EventCreateInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
   sdkName?: string | null
   sdkVersion?: string | null
@@ -410,6 +419,7 @@ export type EventUncheckedCreateInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
   sdkName?: string | null
   sdkVersion?: string | null
@@ -431,6 +441,7 @@ export type EventUpdateInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -452,6 +463,7 @@ export type EventUncheckedUpdateInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -473,6 +485,7 @@ export type EventCreateManyInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
   sdkName?: string | null
   sdkVersion?: string | null
@@ -494,6 +507,7 @@ export type EventUpdateManyMutationInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -512,6 +526,7 @@ export type EventUncheckedUpdateManyInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -543,6 +558,7 @@ export type EventCountOrderByAggregateInput = {
   metadata?: Prisma.SortOrder
   tags?: Prisma.SortOrder
   breadcrumbs?: Prisma.SortOrder
+  user?: Prisma.SortOrder
   timestamp?: Prisma.SortOrder
   sdkName?: Prisma.SortOrder
   sdkVersion?: Prisma.SortOrder
@@ -734,6 +750,7 @@ export type EventCreateWithoutProjectInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
   sdkName?: string | null
   sdkVersion?: string | null
@@ -754,6 +771,7 @@ export type EventUncheckedCreateWithoutProjectInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
   sdkName?: string | null
   sdkVersion?: string | null
@@ -803,6 +821,7 @@ export type EventScalarWhereInput = {
   metadata?: Prisma.JsonNullableFilter<"Event">
   tags?: Prisma.JsonNullableFilter<"Event">
   breadcrumbs?: Prisma.JsonNullableFilter<"Event">
+  user?: Prisma.JsonNullableFilter<"Event">
   timestamp?: Prisma.DateTimeFilter<"Event"> | Date | string
   sdkName?: Prisma.StringNullableFilter<"Event"> | string | null
   sdkVersion?: Prisma.StringNullableFilter<"Event"> | string | null
@@ -824,6 +843,7 @@ export type EventCreateWithoutEnvironmentInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
   sdkName?: string | null
   sdkVersion?: string | null
@@ -844,6 +864,7 @@ export type EventUncheckedCreateWithoutEnvironmentInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
   sdkName?: string | null
   sdkVersion?: string | null
@@ -890,6 +911,7 @@ export type EventCreateWithoutIssueInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
   sdkName?: string | null
   sdkVersion?: string | null
@@ -910,6 +932,7 @@ export type EventUncheckedCreateWithoutIssueInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
   sdkName?: string | null
   sdkVersion?: string | null
@@ -956,6 +979,7 @@ export type EventCreateManyProjectInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
   sdkName?: string | null
   sdkVersion?: string | null
@@ -976,6 +1000,7 @@ export type EventUpdateWithoutProjectInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -996,6 +1021,7 @@ export type EventUncheckedUpdateWithoutProjectInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1016,6 +1042,7 @@ export type EventUncheckedUpdateManyWithoutProjectInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1036,6 +1063,7 @@ export type EventCreateManyEnvironmentInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
   sdkName?: string | null
   sdkVersion?: string | null
@@ -1056,6 +1084,7 @@ export type EventUpdateWithoutEnvironmentInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1076,6 +1105,7 @@ export type EventUncheckedUpdateWithoutEnvironmentInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1096,6 +1126,7 @@ export type EventUncheckedUpdateManyWithoutEnvironmentInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1116,6 +1147,7 @@ export type EventCreateManyIssueInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
   sdkName?: string | null
   sdkVersion?: string | null
@@ -1136,6 +1168,7 @@ export type EventUpdateWithoutIssueInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1156,6 +1189,7 @@ export type EventUncheckedUpdateWithoutIssueInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1176,6 +1210,7 @@ export type EventUncheckedUpdateManyWithoutIssueInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
@@ -1198,6 +1233,7 @@ export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   metadata?: boolean
   tags?: boolean
   breadcrumbs?: boolean
+  user?: boolean
   timestamp?: boolean
   sdkName?: boolean
   sdkVersion?: boolean
@@ -1222,6 +1258,7 @@ export type EventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   metadata?: boolean
   tags?: boolean
   breadcrumbs?: boolean
+  user?: boolean
   timestamp?: boolean
   sdkName?: boolean
   sdkVersion?: boolean
@@ -1246,6 +1283,7 @@ export type EventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   metadata?: boolean
   tags?: boolean
   breadcrumbs?: boolean
+  user?: boolean
   timestamp?: boolean
   sdkName?: boolean
   sdkVersion?: boolean
@@ -1270,6 +1308,7 @@ export type EventSelectScalar = {
   metadata?: boolean
   tags?: boolean
   breadcrumbs?: boolean
+  user?: boolean
   timestamp?: boolean
   sdkName?: boolean
   sdkVersion?: boolean
@@ -1280,7 +1319,7 @@ export type EventSelectScalar = {
   createdAt?: boolean
 }
 
-export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "severity" | "title" | "message" | "stack" | "fingerprint" | "metadata" | "tags" | "breadcrumbs" | "timestamp" | "sdkName" | "sdkVersion" | "release" | "projectId" | "environmentId" | "issueId" | "createdAt", ExtArgs["result"]["event"]>
+export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "severity" | "title" | "message" | "stack" | "fingerprint" | "metadata" | "tags" | "breadcrumbs" | "user" | "timestamp" | "sdkName" | "sdkVersion" | "release" | "projectId" | "environmentId" | "issueId" | "createdAt", ExtArgs["result"]["event"]>
 export type EventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
@@ -1315,6 +1354,7 @@ export type $EventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     metadata: runtime.JsonValue | null
     tags: runtime.JsonValue | null
     breadcrumbs: runtime.JsonValue | null
+    user: runtime.JsonValue | null
     timestamp: Date
     sdkName: string | null
     sdkVersion: string | null
@@ -1759,6 +1799,7 @@ export interface EventFieldRefs {
   readonly metadata: Prisma.FieldRef<"Event", 'Json'>
   readonly tags: Prisma.FieldRef<"Event", 'Json'>
   readonly breadcrumbs: Prisma.FieldRef<"Event", 'Json'>
+  readonly user: Prisma.FieldRef<"Event", 'Json'>
   readonly timestamp: Prisma.FieldRef<"Event", 'DateTime'>
   readonly sdkName: Prisma.FieldRef<"Event", 'String'>
   readonly sdkVersion: Prisma.FieldRef<"Event", 'String'>

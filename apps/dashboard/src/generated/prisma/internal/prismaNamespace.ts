@@ -1266,6 +1266,7 @@ export const EventScalarFieldEnum = {
   metadata: 'metadata',
   tags: 'tags',
   breadcrumbs: 'breadcrumbs',
+  user: 'user',
   timestamp: 'timestamp',
   sdkName: 'sdkName',
   sdkVersion: 'sdkVersion',

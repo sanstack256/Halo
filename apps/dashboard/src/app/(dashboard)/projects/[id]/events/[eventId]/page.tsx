@@ -9,6 +9,7 @@ import { RelativeTime } from "@/components/ui/relative-time";
 import StackTrace from "@/components/events/stack-trace";
 import Breadcrumbs from "@/components/events/breadcrumbs";
 import Tags from "@/components/events/tags";
+import User from "@/components/events/user";
 
 type Props = {
     params: Promise<{
@@ -113,6 +114,19 @@ export default async function EventPage({
                                         message: string;
                                         timestamp?: string;
                                     }[]
+                                }
+                            />
+                        )}
+
+                    {event.user &&
+                        typeof event.user === "object" && (
+                            <User
+                                user={
+                                    event.user as {
+                                        id?: string;
+                                        email?: string;
+                                        username?: string;
+                                    }
                                 }
                             />
                         )}

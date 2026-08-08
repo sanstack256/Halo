@@ -22,6 +22,7 @@ type CreateEventInput = {
     metadata?: Prisma.InputJsonValue;
     tags?: Prisma.InputJsonValue;
     breadcrumbs?: Prisma.InputJsonValue;
+    user?: Prisma.InputJsonValue;
 
     timestamp: string;
 
@@ -61,6 +62,7 @@ export async function createEvent(
             metadata: data.metadata,
             tags: data.tags,
             breadcrumbs: data.breadcrumbs,
+            user: data.user,
 
             timestamp: new Date(data.timestamp),
 

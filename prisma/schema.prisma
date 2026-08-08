@@ -122,6 +122,8 @@ model Event {
 
   breadcrumbs Json?
 
+  user Json?
+
   timestamp DateTime
 
   sdkName String?

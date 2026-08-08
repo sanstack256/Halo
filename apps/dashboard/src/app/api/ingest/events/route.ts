@@ -24,7 +24,7 @@ export async function POST(request: NextRequest) {
     const verified = await verifyApiKey(apiKey);
 
     console.log("Verification result:", verified);
-    
+
     if (!verified) {
         return NextResponse.json(
             { error: "Invalid API key" },
@@ -47,6 +47,7 @@ export async function POST(request: NextRequest) {
         metadata: body.metadata,
         tags: body.tags,
         breadcrumbs: body.breadcrumbs,
+        user: body.user,
 
         timestamp: body.timestamp,
 
