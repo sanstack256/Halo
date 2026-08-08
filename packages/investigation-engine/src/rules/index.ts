@@ -7,6 +7,7 @@ import { sameService } from "./same-service";
 import { timeWindow } from "./time-window";
 import { differentService } from "./different-service";
 import { sharedDependency } from "./shared-dependency";
+import { recovery } from "./recovery";
 
 export type InvestigationRule = (
     context: InvestigationContext
@@ -19,4 +20,5 @@ export const rules: InvestigationRule[] = [
     timeWindow,
     differentService,
     sharedDependency,
+    recovery,
 ];

@@ -393,4 +393,110 @@ describe("Investigation Engine", () => {
             "Shared Dependency Failure"
         );
     });
+
+    it("strengthens deployment regression when rollback is followed by recovery", () => {
+        const evidence: Evidence[] = [
+            {
+                id: "deployment",
+                type: "DEPLOYMENT",
+                timestamp: new Date(
+                    "2026-08-08T13:40:00"
+                ),
+                source: "vercel",
+                service: "payment",
+                title: "Deployment v1.3.0",
+                description:
+                    "Production deployment",
+                release: "v1.3.0",
+                metadata: {},
+            },
+
+            {
+                id: "error-1",
+                type: "ERROR",
+                timestamp: new Date(
+                    "2026-08-08T13:41:00"
+                ),
+                source: "sdk",
+                service: "payment",
+                title: "Payment timeout",
+                description:
+                    "Payment requests are timing out.",
+                metadata: {},
+            },
+
+            {
+                id: "rollback",
+                type: "DEPLOYMENT",
+                timestamp: new Date(
+                    "2026-08-08T13:43:00"
+                ),
+                source: "vercel",
+                service: "payment",
+                title: "Rollback v1.3.0",
+                description:
+                    "Rolled back the production deployment.",
+                release: "v1.2.0",
+                metadata: {},
+            },
+
+            {
+                id: "recovery",
+                type: "METRIC",
+                timestamp: new Date(
+                    "2026-08-08T13:44:00"
+                ),
+                source: "monitoring",
+                service: "payment",
+                title: "Error rate recovered",
+                description:
+                    "Payment error rate returned to normal after rollback.",
+                value: 0.01,
+                metadata: {},
+            },
+        ];
+
+        const investigation =
+            investigate(evidence);
+
+        const deploymentHypothesis =
+            investigation.hypotheses.find(
+                hypothesis =>
+                    hypothesis.title ===
+                    "Deployment Regression"
+            );
+
+        expect(
+            deploymentHypothesis
+        ).toBeDefined();
+
+        expect(
+            deploymentHypothesis?.confidence
+        ).toBeGreaterThanOrEqual(70);
+
+        expect(
+            deploymentHypothesis?.supportingReasons.some(
+                reason =>
+                    reason.causalRole ===
+                    "CAUSE" ||
+                    reason.causalRole ===
+                    "MECHANISM"
+            )
+        ).toBe(true);
+
+        expect(
+            deploymentHypothesis?.evidenceIds
+        ).toContain("rollback");
+
+        expect(
+            deploymentHypothesis?.evidenceIds
+        ).toContain("recovery");
+
+        expect(
+            investigation.rootCause?.title
+        ).toBe(
+            "Deployment Regression"
+        );
+    });
+
 });

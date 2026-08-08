@@ -4,15 +4,14 @@
   "version": "0.1.0",
   "description": "AI Investigation Platform for Production Systems",
   "packageManager": "pnpm@11.11.0",
-
   "scripts": {
     "dashboard": "pnpm --filter dashboard",
     "dashboard:dev": "pnpm --filter dashboard dev"
   },
-
   "devDependencies": {
     "@types/node": "^26.1.1",
     "prisma": "7.9.1",
+    "tsx": "^4.23.10",
     "typescript": "^7.0.2"
   }
 }

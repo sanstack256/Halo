@@ -22,10 +22,28 @@ function buildHypotheses(
             finding =>
                 finding.type === "TEMPORAL" ||
                 finding.type === "PATTERN" ||
-                finding.type === "SCOPE"
+                finding.type === "SCOPE" ||
+                finding.type === "RECOVERY"
         );
 
+   
+
     for (const deployment of context.deployments) {
+        const text = [
+            deployment.title,
+            deployment.description ?? "",
+        ]
+            .join(" ")
+            .toLowerCase();
+
+        const isRollback =
+            text.includes("rollback") ||
+            text.includes("revert");
+
+        if (isRollback) {
+            continue;
+        }
+
         const relatedFindings =
             deploymentFindings.filter(
                 finding =>
