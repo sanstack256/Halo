@@ -6,6 +6,8 @@ import { Badge } from "@/components/ui/badge";
 import { SeverityBadge } from "@/components/ui/severity-badge";
 import { RelativeTime } from "@/components/ui/relative-time";
 
+import StackTrace from "@/components/events/stack-trace";
+
 type Props = {
     params: Promise<{
         id: string;
@@ -93,6 +95,12 @@ export default async function EventPage({
                         </div>
 
                     </section>
+
+                    {event.stack && (
+                        <StackTrace
+                            stack={event.stack}
+                        />
+                    )}
 
                     <section>
 
