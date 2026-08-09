@@ -11,9 +11,14 @@ export function generateRecommendations(
     const leading =
         hypotheses.find(
             hypothesis =>
+                hypothesis.status === "VALIDATED"
+        ) ??
+        hypotheses.find(
+            hypothesis =>
                 hypothesis.status === "LEADING" ||
                 hypothesis.status === "UNCERTAIN"
-        ) ?? hypotheses[0];
+        ) ??
+        hypotheses[0];
 
     if (!leading) {
         return recommendations;
@@ -46,7 +51,7 @@ export function generateRecommendations(
         strongestAlternative &&
         Math.abs(
             leading.confidence -
-                strongestAlternative.confidence
+            strongestAlternative.confidence
         ) < 15
     ) {
         recommendations.push({
@@ -60,7 +65,7 @@ export function generateRecommendations(
                 1 -
                 Math.abs(
                     leading.confidence -
-                        strongestAlternative.confidence
+                    strongestAlternative.confidence
                 ) / 100,
             evidenceIds: [
                 ...new Set([
@@ -75,11 +80,24 @@ export function generateRecommendations(
         leading.title ===
         "Deployment Regression"
     ) {
+        recommendations.push({
+            id: "investigate:deployment",
+            title:
+                "Investigate the deployment",
+            description:
+                "Review the changes introduced by the suspected deployment and determine how they contributed to the observed failure.",
+            priority: "HIGH",
+            confidence:
+                leading.confidence / 100,
+            evidenceIds:
+                leading.evidenceIds,
+        });
+
         const hasRecoveryEvidence =
             context.evidence.some(
                 evidence =>
                     evidence.type ===
-                        "DEPLOYMENT" &&
+                    "DEPLOYMENT" &&
                     (
                         evidence.title
                             .toLowerCase()

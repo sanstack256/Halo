@@ -34,11 +34,16 @@ function evaluateHypothesis(
             "SUPPORTING"
         );
 
-    const contradictingReasons =
-        collectReasons(
+    const contradictingReasons = [
+        ...collectReasons(
             relevantFindings,
             "CONTRADICTING"
-        );
+        ),
+        ...collectDeploymentContradictions(
+            hypothesis,
+            context
+        ),
+    ];
 
     const missingReasons =
         findMissingEvidence(
@@ -162,6 +167,79 @@ function uniqueReasonStrength(
             ) +
         unlinkedStrength
     );
+}
+
+function collectDeploymentContradictions(
+    hypothesis: Hypothesis,
+    context: InvestigationContext
+): Reason[] {
+    if (
+        !hypothesis.id.startsWith(
+            "deployment-regression:"
+        )
+    ) {
+        return [];
+    }
+
+    const deploymentId =
+        hypothesis.id.replace(
+            "deployment-regression:",
+            ""
+        );
+
+    const deployment =
+        context.deployments.find(
+            evidence =>
+                evidence.id === deploymentId
+        );
+
+    if (!deployment) {
+        return [];
+    }
+
+    const firstError =
+        context.firstError;
+
+    if (!firstError) {
+        return [];
+    }
+
+    const earlierEvidence =
+    context.evidence.filter(
+        evidence =>
+            evidence.id !== deployment.id &&
+            evidence.type !== "DEPLOYMENT" &&
+            evidence.timestamp <
+                deployment.timestamp
+    );
+
+    const relevantEvidence =
+        earlierEvidence.filter(
+            evidence =>
+                evidence.service ===
+                deployment.service
+        );
+
+    if (relevantEvidence.length === 0) {
+        return [];
+    }
+
+    return [
+        {
+            type: "CONTRADICTING",
+            causalRole: "CONTEXT",
+            title:
+                "Failure-related evidence existed before the deployment",
+            description:
+                "Relevant evidence from the same service existed before the deployment, weakening the case that the deployment introduced the failure.",
+            evidenceIds:
+                relevantEvidence.map(
+                    evidence =>
+                        evidence.id
+                ),
+            strength: 0.9,
+        },
+    ];
 }
 
 function findMissingEvidence(

@@ -1,10 +1,12 @@
 import type { Change } from "../types/change";
 import type { InvestigationContext } from "../types/context";
 import type { Evidence } from "../types/evidence";
+import type { EvidenceGraph } from "../types/graph";
 
 export function buildContext(
     evidence: Evidence[],
-    changes: Change[]
+    changes: Change[],
+    graph: EvidenceGraph
 ): InvestigationContext {
     const deployments = evidence.filter(
         e => e.type === "DEPLOYMENT"
@@ -74,6 +76,7 @@ export function buildContext(
 
     return {
         evidence,
+        graph,
         changes,
         findings: [],
 

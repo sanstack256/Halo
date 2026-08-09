@@ -10,6 +10,8 @@ import { sharedDependency } from "./shared-dependency";
 import { recovery } from "./recovery";
 import { preExistingError } from "./pre-existing-error";
 import { crossService } from "./cross-service";
+import { distributedTrace } from "./distributed-trace";
+import { evidenceSignals } from "./evidence-signals";
 
 export type InvestigationRule = (
     context: InvestigationContext
@@ -25,4 +27,6 @@ export const rules: InvestigationRule[] = [
     sharedDependency,
     recovery,
     crossService,
+    distributedTrace,
+    evidenceSignals,
 ];

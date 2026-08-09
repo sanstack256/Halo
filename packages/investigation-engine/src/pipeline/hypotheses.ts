@@ -66,10 +66,47 @@ function buildHypotheses(
 
         const relatedFindings =
             deploymentFindings.filter(
-                finding =>
-                    finding.evidenceIds.includes(
-                        deployment.id
-                    )
+                finding => {
+                    if (
+                        finding.evidenceIds.includes(
+                            deployment.id
+                        )
+                    ) {
+                        return true;
+                    }
+
+                    /*
+                     * Recovery evidence can strongly validate
+                     * the deployment even when the recovery
+                     * event itself is not directly attached
+                     * to the deployment by the rule.
+                     *
+                     * The recovery finding must still belong
+                     * to the same service and occur after the
+                     * deployment.
+                     */
+                    if (
+                        finding.type !== "RECOVERY"
+                    ) {
+                        return false;
+                    }
+
+                    const findingEvidence =
+                        context.evidence.filter(
+                            evidence =>
+                                finding.evidenceIds.includes(
+                                    evidence.id
+                                )
+                        );
+
+                    return findingEvidence.some(
+                        evidence =>
+                            evidence.service ===
+                            deployment.service &&
+                            evidence.timestamp.getTime() >=
+                            deployment.timestamp.getTime()
+                    );
+                }
             );
 
         if (relatedFindings.length === 0) {
@@ -79,7 +116,8 @@ function buildHypotheses(
         hypotheses.push(
             createDeploymentHypothesis(
                 deployment.id,
-                relatedFindings
+                relatedFindings,
+                context
             )
         );
     }
@@ -197,7 +235,8 @@ function createCrossServiceHypothesis(
 
 function createDeploymentHypothesis(
     deploymentId: string,
-    findings: Finding[]
+    findings: Finding[],
+    context?: InvestigationContext
 ): Hypothesis {
     const evidenceIds = [
         deploymentId,
@@ -207,12 +246,176 @@ function createDeploymentHypothesis(
         ),
     ];
 
+    /*
+     * Relevant metric anomalies can strengthen
+     * an existing deployment hypothesis.
+     *
+     * A metric must belong to the same service as
+     * evidence already associated with the deployment.
+     *
+     * When operation/resource information exists,
+     * prefer metrics that match those dimensions too.
+     */
+    const relatedEvidence = context
+        ? context.evidence.filter(
+            evidence =>
+                evidence.type === "METRIC" &&
+                evidence.id !== deploymentId
+        )
+        : [];
+
+    const existingEvidence =
+        context
+            ? context.evidence.filter(
+                evidence =>
+                    evidenceIds.includes(
+                        evidence.id
+                    )
+            )
+            : [];
+
+    const services = new Set(
+        existingEvidence
+            .map(
+                evidence =>
+                    evidence.service
+            )
+            .filter(Boolean)
+    );
+
+    const operations = new Set(
+        existingEvidence
+            .map(
+                evidence =>
+                    evidence.operation
+            )
+            .filter(
+                (
+                    operation
+                ): operation is string =>
+                    Boolean(operation)
+            )
+    );
+
+    const resources = new Set(
+        existingEvidence
+            .map(
+                evidence =>
+                    evidence.resource
+            )
+            .filter(
+                (
+                    resource
+                ): resource is string =>
+                    Boolean(resource)
+            )
+    );
+
+    const relevantMetricIds =
+        relatedEvidence
+            .filter(metric => {
+                if (
+                    !services.has(
+                        metric.service
+                    )
+                ) {
+                    return false;
+                }
+
+                const operationMatches =
+                    !metric.operation ||
+                    operations.size === 0 ||
+                    operations.has(
+                        metric.operation
+                    );
+
+                const resourceMatches =
+                    !metric.resource ||
+                    resources.size === 0 ||
+                    resources.has(
+                        metric.resource
+                    );
+
+                return (
+                    operationMatches &&
+                    resourceMatches
+                );
+            })
+            .map(
+                metric =>
+                    metric.id
+            );
+
+    const evidenceSignalFindings =
+        context
+            ? context.findings.filter(
+                finding =>
+                    finding.type ===
+                    "ANOMALY" ||
+                    finding.type ===
+                    "CHANGE_IMPACT" ||
+                    finding.type ===
+                    "RELATIONSHIP"
+            )
+            : [];
+
+    const deployment =
+        context?.evidence.find(
+            evidence =>
+                evidence.id ===
+                deploymentId
+        );
+
+    const relatedSignalFindings =
+        deployment
+            ? evidenceSignalFindings.filter(
+                finding => {
+                    const hasSupportingReason =
+                        finding.reasons.some(
+                            reason =>
+                                reason.type ===
+                                "SUPPORTING"
+                        );
+
+                    if (!hasSupportingReason) {
+                        return false;
+                    }
+
+                    const findingEvidence =
+                        context!.evidence.filter(
+                            evidence =>
+                                finding.evidenceIds.includes(
+                                    evidence.id
+                                )
+                        );
+
+                    return findingEvidence.some(
+                        evidence =>
+                            evidence.service ===
+                            deployment.service &&
+                            evidence.timestamp.getTime() >=
+                            deployment.timestamp.getTime()
+                    );
+                }
+            )
+            : [];
+
+    const signalEvidenceIds =
+        relatedSignalFindings.flatMap(
+            finding =>
+                finding.evidenceIds
+        );
+
     const uniqueEvidenceIds = [
-        ...new Set(evidenceIds),
+        ...new Set([
+            ...evidenceIds,
+            ...relevantMetricIds,
+            ...signalEvidenceIds,
+        ]),
     ];
 
-    const supportingReasons =
-        findings
+    const supportingReasons = [
+        ...findings
             .flatMap(
                 finding =>
                     finding.reasons
@@ -221,7 +424,20 @@ function createDeploymentHypothesis(
                 reason =>
                     reason.type ===
                     "SUPPORTING"
-            );
+            ),
+
+        ...relatedSignalFindings.flatMap(
+            finding =>
+                finding.reasons
+                    .filter(
+                        reason =>
+                            reason.type ===
+                            "SUPPORTING"
+                    )
+        ),
+    ];
+
+    
 
     const contradictingReasons =
         findings
@@ -242,12 +458,16 @@ function createDeploymentHypothesis(
         title: "Deployment Regression",
 
         findingIds: [
-            ...new Set(
-                findings.map(
+            ...new Set([
+                ...findings.map(
                     finding =>
                         finding.id
-                )
-            ),
+                ),
+                ...relatedSignalFindings.map(
+                    finding =>
+                        finding.id
+                ),
+            ]),
         ],
 
         description:

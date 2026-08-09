@@ -8,6 +8,7 @@ import { evaluateHypotheses } from "./pipeline/evaluate";
 import { rankHypotheses } from "./pipeline/rank";
 import { validateHypotheses } from "./pipeline/validate";
 import { generateRecommendations } from "./pipeline/recommend";
+import { buildReport } from "./pipeline/report";
 import { rules } from "./rules";
 
 import { analyzeImpact } from "./pipeline/impact";
@@ -32,7 +33,8 @@ export function investigate(
     const initialContext =
         buildContext(
             normalized,
-            changes
+            changes,
+            graph
         );
 
     const findings =
@@ -71,6 +73,12 @@ export function investigate(
             context
         );
 
+    const report =
+        buildReport(
+            hypotheses,
+            recommendations
+        );
+
     const impact =
         analyzeImpact(normalized);
 
@@ -104,5 +112,7 @@ export function investigate(
         impact,
 
         recommendations,
+
+        report,
     };
 }

@@ -12,6 +12,25 @@ export type InvestigationStatus =
     | "CONCLUDED"
     | "UNCERTAIN";
 
+export interface InvestigationReport {
+    summary: string;
+
+    rootCause: {
+        title: string;
+        confidence: number;
+        explanation: string;
+    } | null;
+
+    alternatives: {
+        title: string;
+        confidence: number;
+    }[];
+
+    uncertainties: string[];
+
+    nextSteps: string[];
+}
+
 export interface Investigation {
     status: InvestigationStatus;
 
@@ -32,6 +51,8 @@ export interface Investigation {
     impact: Impact | null;
 
     recommendations: Recommendation[];
+
+    report: InvestigationReport;
 
     nextInvestigation?: {
         question: string;

@@ -83,11 +83,11 @@ export function recovery(
                 .find(
                     candidate =>
                         candidate.timestamp.getTime() >
-                            firstError.timestamp.getTime() &&
+                        firstError.timestamp.getTime() &&
                         candidate.timestamp.getTime() >
-                            deployment.timestamp.getTime() &&
+                        deployment.timestamp.getTime() &&
                         candidate.service ===
-                            deployment.service
+                        deployment.service
                 );
 
         if (!rollback) {

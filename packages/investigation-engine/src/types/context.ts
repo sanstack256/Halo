@@ -1,9 +1,12 @@
 import type { Change } from "./change";
 import type { Evidence } from "./evidence";
 import type { Finding } from "./finding";
+import type { EvidenceGraph } from "./graph";
 
 export interface InvestigationContext {
     evidence: Evidence[];
+
+    graph: EvidenceGraph;
 
     changes: Change[];
 
