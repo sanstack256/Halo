@@ -190,15 +190,35 @@ function findMissingEvidence(
                     )
             );
 
-        if (!hasRollbackEvidence) {
+        const hasRecoveryEvidence =
+            context.findings.some(
+                finding =>
+                    finding.type ===
+                    "RECOVERY" &&
+                    finding.evidenceIds.some(
+                        evidenceId =>
+                            hypothesis.evidenceIds.includes(
+                                evidenceId
+                            )
+                    )
+            );
+
+        if (
+            !hasRollbackEvidence ||
+            !hasRecoveryEvidence
+        ) {
             missing.push({
                 type: "MISSING",
                 causalRole: "CONTEXT",
+
                 title:
-                    "Rollback or recovery evidence is unavailable",
+                    "Rollback and recovery evidence is incomplete",
+
                 description:
-                    "Evidence showing whether the failure recovered after reverting the deployment would materially strengthen or weaken this hypothesis.",
+                    "Evidence showing that the failure recovered after reverting the deployment would materially strengthen the deployment regression hypothesis.",
+
                 evidenceIds: [],
+
                 strength: 0.5,
             });
         }

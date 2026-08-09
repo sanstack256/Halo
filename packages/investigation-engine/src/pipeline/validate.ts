@@ -37,64 +37,143 @@ function validateHypothesis(
             hypothesis.missingReasons
         );
 
-    const strongestAlternative =
-        hypotheses
-            .filter(
-                alternative =>
-                    alternative.id !==
-                    hypothesis.id
-            )
-            .reduce<Hypothesis | null>(
-                (strongest, alternative) => {
-                    if (!strongest) {
-                        return alternative;
-                    }
-
-                    return alternative.confidence >
-                        strongest.confidence
-                        ? alternative
-                        : strongest;
-                },
-                null
-            );
-
-    const alternativeGap =
-        strongestAlternative
-            ? hypothesis.confidence -
-            strongestAlternative.confidence
-            : hypothesis.confidence;
-
-    const rankedAboveAlternative =
-        !strongestAlternative ||
-        hypotheses.indexOf(hypothesis) <
-        hypotheses.indexOf(
-            strongestAlternative
-        );
-
-    const isBareCrossServiceFailure =
+    /*
+     * Cross-service failure describes the blast
+     * radius of an incident. It is not itself a
+     * causal explanation.
+     */
+    if (
         hypothesis.title ===
-        "Cross-Service Failure" &&
-        hypothesis.supportingReasons.every(
-            reason =>
-                reason.causalRole ===
-                "CONTEXT"
+        "Cross-Service Failure"
+    ) {
+        return {
+            ...hypothesis,
+
+            status: "CANDIDATE",
+
+            validation: {
+                validated: false,
+                confidence: Math.min(
+                    hypothesis.confidence,
+                    69
+                ),
+                evidenceIds:
+                    hypothesis.evidenceIds,
+            },
+        };
+    }
+
+    /*
+     * Contradicting evidence must prevent
+     * validation.
+     */
+    if (
+        contradictionStrength >=
+        supportStrength
+    ) {
+        return {
+            ...hypothesis,
+
+            status:
+                hypothesis.status ===
+                "VALIDATED"
+                    ? "UNCERTAIN"
+                    : hypothesis.status,
+
+            validation: {
+                validated: false,
+                confidence: Math.min(
+                    hypothesis.confidence,
+                    69
+                ),
+                evidenceIds:
+                    hypothesis.evidenceIds,
+            },
+        };
+    }
+
+    /*
+     * A rollback by itself is not proof that the
+     * deployment caused the failure.
+     *
+     * Require actual causal evidence in addition
+     * to rollback evidence.
+     */
+    if (
+        hypothesis.title ===
+            "Deployment Regression" &&
+        hasRollbackEvidence(context) &&
+        !hasRecoveryEvidence(
+            context,
+            hypothesis
+        )
+    ) {
+        return {
+            ...hypothesis,
+
+            status:
+                isLeading
+                    ? "UNCERTAIN"
+                    : hypothesis.status,
+
+            validation: {
+                validated: false,
+                confidence: Math.min(
+                    hypothesis.confidence,
+                    69
+                ),
+                evidenceIds:
+                    hypothesis.evidenceIds,
+            },
+        };
+    }
+
+    const hasRelevantEvidence =
+        hypothesis.evidenceIds.some(
+            id =>
+                context.evidence.some(
+                    evidence =>
+                        evidence.id === id
+                )
         );
 
+    /*
+     * A hypothesis must have actual evidence
+     * attached to it.
+     */
+    if (!hasRelevantEvidence) {
+        return {
+            ...hypothesis,
 
+            status:
+                isLeading
+                    ? "UNCERTAIN"
+                    : hypothesis.status,
+
+            validation: {
+                validated: false,
+                confidence: Math.min(
+                    hypothesis.confidence,
+                    69
+                ),
+                evidenceIds:
+                    hypothesis.evidenceIds,
+            },
+        };
+    }
+
+    /*
+     * Missing evidence should reduce certainty,
+     * but should not automatically invalidate a
+     * strong hypothesis.
+     */
     const validated =
-        !isBareCrossServiceFailure &&
         isLeading &&
         hypothesis.confidence >= 70 &&
-        supportStrength > contradictionStrength &&
-        missingStrength < supportStrength &&
-        (
-            alternativeGap >= 10 ||
-            rankedAboveAlternative
-        ) &&
-        hasRelevantEvidence(
-            hypothesis,
-            context
-        );
+        supportStrength >
+            contradictionStrength &&
+        missingStrength <
+            supportStrength;
 
     return {
         ...hypothesis,
@@ -102,8 +181,8 @@ function validateHypothesis(
         status: validated
             ? "VALIDATED"
             : isLeading
-                ? "UNCERTAIN"
-                : hypothesis.status,
+              ? "UNCERTAIN"
+              : hypothesis.status,
 
         validation: {
             validated,
@@ -112,9 +191,9 @@ function validateHypothesis(
                 validated
                     ? hypothesis.confidence
                     : Math.min(
-                        hypothesis.confidence,
-                        69
-                    ),
+                          hypothesis.confidence,
+                          69
+                      ),
 
             evidenceIds:
                 hypothesis.evidenceIds,
@@ -132,15 +211,51 @@ function totalStrength(
     );
 }
 
-function hasRelevantEvidence(
-    hypothesis: Hypothesis,
+function hasRollbackEvidence(
     context: InvestigationContext
 ): boolean {
-    return hypothesis.evidenceIds.some(
-        id =>
-            context.evidence.some(
-                evidence =>
-                    evidence.id === id
+    return context.evidence.some(
+        evidence =>
+            evidence.type ===
+                "DEPLOYMENT" &&
+            (
+                evidence.title
+                    .toLowerCase()
+                    .includes("rollback") ||
+                evidence.title
+                    .toLowerCase()
+                    .includes("revert")
+            )
+    );
+}
+
+function hasRecoveryEvidence(
+    context: InvestigationContext,
+    hypothesis: Hypothesis
+): boolean {
+    const hypothesisEvidence =
+        new Set(
+            hypothesis.evidenceIds
+        );
+
+    return context.evidence.some(
+        evidence =>
+            hypothesisEvidence.has(
+                evidence.id
+            ) &&
+            (
+                evidence.title
+                    .toLowerCase()
+                    .includes("recovery") ||
+                evidence.title
+                    .toLowerCase()
+                    .includes("recovered") ||
+                evidence.title
+                    .toLowerCase()
+                    .includes("resolved") ||
+                evidence.title
+                    .toLowerCase()
+                    .includes("restored")
             )
     );
 }

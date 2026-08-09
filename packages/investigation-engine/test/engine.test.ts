@@ -1032,4 +1032,284 @@ describe("Investigation Engine", () => {
         );
     });
 
+    it("weakens deployment regression when the failure extends across services", () => {
+        const investigation = investigate([
+            {
+                id: "deployment-payment",
+                type: "DEPLOYMENT",
+                title: "Deploy payment service",
+                description: "Payment service release",
+                timestamp: new Date("2026-01-01T10:00:00Z"),
+                service: "payment-service",
+                source: "test",
+                metadata: {},
+            },
+            {
+                id: "payment-error",
+                type: "ERROR",
+                title: "Payment failed",
+                description: "Payment requests are failing",
+                timestamp: new Date("2026-01-01T10:01:00Z"),
+                service: "payment-service",
+                source: "test",
+                metadata: {},
+            },
+            {
+                id: "auth-error",
+                type: "ERROR",
+                title: "Authentication failed",
+                description: "Authentication requests are failing",
+                timestamp: new Date("2026-01-01T10:01:30Z"),
+                service: "auth-service",
+                source: "test",
+                metadata: {},
+            },
+        ]);
+
+        const deploymentHypothesis =
+            investigation.hypotheses.find(
+                hypothesis =>
+                    hypothesis.title ===
+                    "Deployment Regression"
+            );
+
+        expect(deploymentHypothesis).toBeDefined();
+
+        expect(
+            deploymentHypothesis?.contradictingReasons.some(
+                reason =>
+                    reason.title ===
+                    "Cross-service impact weakens an isolated deployment explanation"
+            )
+        ).toBe(true);
+
+        expect(
+            deploymentHypothesis?.confidence
+        ).toBeLessThan(70);
+
+        expect(
+            investigation.rootCause?.title
+        ).not.toBe("Deployment Regression");
+    });
+
+    it("does not blame a deployment that occurred after the failure", () => {
+        const investigation = investigate([
+            {
+                id: "payment-error",
+                type: "ERROR",
+                title: "Payment failed",
+                description: "Payment requests are failing",
+                timestamp: new Date("2026-01-01T10:00:00Z"),
+                service: "payment-service",
+                source: "test",
+                metadata: {},
+            },
+
+            {
+                id: "deployment-payment",
+                type: "DEPLOYMENT",
+                title: "Deploy payment service",
+                description: "Payment service release",
+                timestamp: new Date("2026-01-01T10:05:00Z"),
+                service: "payment-service",
+                source: "test",
+                metadata: {},
+            },
+        ]);
+
+        const deploymentHypothesis =
+            investigation.hypotheses.find(
+                hypothesis =>
+                    hypothesis.title ===
+                    "Deployment Regression"
+            );
+
+        expect(
+            deploymentHypothesis
+        ).toBeDefined();
+
+        expect(
+            deploymentHypothesis?.contradictingReasons.some(
+                reason =>
+                    reason.title ===
+                    "Error predates deployment"
+            )
+        ).toBe(true);
+
+        expect(
+            deploymentHypothesis?.confidence
+        ).toBeLessThan(70);
+
+        expect(
+            deploymentHypothesis?.status
+        ).not.toBe("VALIDATED");
+
+        expect(
+            investigation.rootCause?.title
+        ).not.toBe("Deployment Regression");
+    });
+
+    it("uses rollback and recovery evidence as strong support for deployment regression", () => {
+        const investigation = investigate([
+            {
+                id: "deployment-payment",
+                type: "DEPLOYMENT",
+                title: "Deploy payment service",
+                description: "Payment service release",
+                timestamp: new Date("2026-01-01T10:00:00Z"),
+                service: "payment-service",
+                source: "test",
+                metadata: {},
+            },
+
+            {
+                id: "payment-error",
+                type: "ERROR",
+                title: "Payment failed",
+                description: "Payment requests are failing",
+                timestamp: new Date("2026-01-01T10:01:00Z"),
+                service: "payment-service",
+                source: "test",
+                metadata: {},
+            },
+
+            {
+                id: "rollback-payment",
+                type: "DEPLOYMENT",
+                title: "Rollback payment service",
+                description:
+                    "Reverted payment service deployment",
+                timestamp: new Date("2026-01-01T10:05:00Z"),
+                service: "payment-service",
+                source: "test",
+                metadata: {},
+            },
+            {
+                id: "payment-recovered",
+                type: "LOG",
+                title: "Payment service recovered",
+                description:
+                    "Payment failures stopped after rollback",
+                timestamp: new Date("2026-01-01T10:06:00Z"),
+                service: "payment-service",
+                source: "test",
+                status: "success",
+                metadata: {},
+            },
+        ]);
+
+        const deploymentHypothesis =
+            investigation.hypotheses.find(
+                hypothesis =>
+                    hypothesis.title ===
+                    "Deployment Regression"
+            );
+
+        expect(
+            deploymentHypothesis
+        ).toBeDefined();
+
+        expect(
+            deploymentHypothesis?.supportingReasons.some(
+                reason =>
+                    reason.causalRole ===
+                    "MECHANISM"
+            )
+        ).toBe(true);
+
+        expect(
+            deploymentHypothesis?.missingReasons.some(
+                reason =>
+                    reason.title ===
+                    "Rollback or recovery evidence is unavailable"
+            )
+        ).toBe(false);
+
+        expect(
+            deploymentHypothesis?.confidence
+        ).toBeGreaterThanOrEqual(70);
+
+        expect(
+            deploymentHypothesis?.status
+        ).toBe("VALIDATED");
+
+        expect(
+            investigation.rootCause?.title
+        ).toBe("Deployment Regression");
+    });
+
+    it(
+        "does not treat rollback alone as proof of deployment regression",
+        () => {
+            const investigation = investigate([
+                {
+                    id: "deployment-payment",
+                    type: "DEPLOYMENT",
+                    title: "Deploy payment service",
+                    description:
+                        "Released payment service version 2.4.0",
+                    timestamp:
+                        new Date("2026-01-01T10:00:00Z"),
+                    service: "payment-service",
+                    source: "test",
+                    metadata: {},
+                },
+
+                {
+                    id: "payment-error",
+                    type: "ERROR",
+                    title: "Payment failed",
+                    description:
+                        "Payment requests are failing",
+                    timestamp:
+                        new Date("2026-01-01T10:01:00Z"),
+                    service: "payment-service",
+                    source: "test",
+                    status: 500,
+                    metadata: {},
+                },
+
+                {
+                    id: "rollback-payment",
+                    type: "DEPLOYMENT",
+                    title: "Rollback payment service",
+                    description:
+                        "Reverted payment service deployment",
+                    timestamp:
+                        new Date("2026-01-01T10:05:00Z"),
+                    service: "payment-service",
+                    source: "test",
+                    metadata: {},
+                },
+            ]);
+
+            const deploymentHypothesis =
+                investigation.hypotheses.find(
+                    hypothesis =>
+                        hypothesis.title ===
+                        "Deployment Regression"
+                );
+
+            expect(
+                deploymentHypothesis
+            ).toBeDefined();
+
+            expect(
+                deploymentHypothesis?.supportingReasons.some(
+                    reason =>
+                        reason.causalRole ===
+                        "MECHANISM"
+                )
+            ).toBe(false);
+
+            expect(
+                deploymentHypothesis?.status
+            ).not.toBe("VALIDATED");
+
+            expect(
+                investigation.rootCause
+            ).toBeNull();
+        }
+    );
+
 });

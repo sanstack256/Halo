@@ -136,7 +136,7 @@ export function recovery(
                 {
                     type: "SUPPORTING",
 
-                    causalRole: "CAUSE",
+                    causalRole: "MECHANISM",
 
                     title:
                         "Rollback was followed by recovery",
