@@ -43,9 +43,7 @@ function buildHypotheses(
             finding =>
                 finding.type === "TEMPORAL" ||
                 finding.type === "PATTERN" ||
-                finding.type === "SCOPE" ||
-                finding.type === "RECOVERY" ||
-                finding.type === "ANOMALY"
+                finding.type === "RECOVERY"
         );
 
     for (const deployment of context.deployments) {
@@ -64,62 +62,64 @@ function buildHypotheses(
             continue;
         }
 
-        const relatedFindings =
-            deploymentFindings.filter(
-                finding => {
-                    if (
-                        finding.evidenceIds.includes(
-                            deployment.id
-                        )
-                    ) {
-                        return true;
-                    }
+        const deploymentTime =
+            deployment.timestamp.getTime();
 
-                    /*
-                     * Recovery evidence can strongly validate
-                     * the deployment even when the recovery
-                     * event itself is not directly attached
-                     * to the deployment by the rule.
-                     *
-                     * The recovery finding must still belong
-                     * to the same service and occur after the
-                     * deployment.
-                     */
-                    if (
-                        finding.type !== "RECOVERY"
-                    ) {
-                        return false;
-                    }
-
-                    const findingEvidence =
-                        context.evidence.filter(
-                            evidence =>
-                                finding.evidenceIds.includes(
-                                    evidence.id
-                                )
-                        );
-
-                    return findingEvidence.some(
-                        evidence =>
-                            evidence.service ===
-                            deployment.service &&
-                            evidence.timestamp.getTime() >=
-                            deployment.timestamp.getTime()
-                    );
-                }
+        /*
+         * Find errors associated with this deployment.
+         *
+         * An error is relevant only when:
+         * 1. it happened after the deployment
+         * 2. it belongs to the same service
+         */
+        const relatedErrors =
+            context.errors.filter(
+                error =>
+                    error.service ===
+                    deployment.service &&
+                    error.timestamp.getTime() >
+                    deploymentTime
             );
 
-        if (relatedFindings.length === 0) {
+        const hasAnyFailure =
+            context.errors.length > 0;
+
+        if (
+            relatedErrors.length === 0 &&
+            !hasAnyFailure
+        ) {
             continue;
         }
 
-        hypotheses.push(
+
+        const relatedFindings =
+            deploymentFindings.filter(
+                finding =>
+                    finding.evidenceIds.includes(
+                        deployment.id
+                    ) &&
+                    (
+                        finding.type !==
+                        "TEMPORAL" ||
+                        relatedErrors.some(
+                            error =>
+                                finding.evidenceIds.includes(
+                                    error.id
+                                )
+                        )
+                    )
+            );
+
+
+        const hypothesis =
             createDeploymentHypothesis(
                 deployment.id,
                 relatedFindings,
                 context
-            )
-        );
+            );
+
+
+        hypotheses.push(hypothesis);
     }
 
     /*
@@ -128,8 +128,10 @@ function buildHypotheses(
     const dependencyFindings =
         findings.filter(
             finding =>
-                finding.type ===
-                "DEPENDENCY"
+                finding.type === "DEPENDENCY" &&
+                finding.id.startsWith(
+                    "dependency:"
+                )
         );
 
     for (const finding of dependencyFindings) {
@@ -141,23 +143,23 @@ function buildHypotheses(
     }
 
     /*
-     * Infrastructure failure
-     */
+ * Infrastructure failure
+ */
     const infrastructureFindings =
         findings.filter(
             finding =>
-                finding.type === "SCOPE" &&
-                finding.title ===
-                "Failure extends beyond deployed service"
+                finding.id.startsWith(
+                    "infrastructure-failure:"
+                )
         );
 
-    if (
-        infrastructureFindings.length > 0 &&
-        context.infrastructure.length > 0
+    for (
+        const finding
+        of infrastructureFindings
     ) {
         hypotheses.push(
             createInfrastructureHypothesis(
-                infrastructureFindings[0],
+                finding,
                 context
             )
         );
@@ -359,6 +361,19 @@ function createDeploymentHypothesis(
             )
             : [];
 
+    const commitAttributionFindings =
+        context
+            ? evidenceSignalFindings.filter(
+                finding =>
+                    finding.id.startsWith(
+                        "commit-attribution:"
+                    ) &&
+                    finding.evidenceIds.includes(
+                        deploymentId
+                    )
+            )
+            : [];
+
     const deployment =
         context?.evidence.find(
             evidence =>
@@ -400,8 +415,17 @@ function createDeploymentHypothesis(
             )
             : [];
 
+    const relatedCommitFindings =
+        commitAttributionFindings;
+
     const signalEvidenceIds =
         relatedSignalFindings.flatMap(
+            finding =>
+                finding.evidenceIds
+        );
+
+    const commitEvidenceIds =
+        relatedCommitFindings.flatMap(
             finding =>
                 finding.evidenceIds
         );
@@ -411,6 +435,7 @@ function createDeploymentHypothesis(
             ...evidenceIds,
             ...relevantMetricIds,
             ...signalEvidenceIds,
+            ...commitEvidenceIds,
         ]),
     ];
 
@@ -428,16 +453,24 @@ function createDeploymentHypothesis(
 
         ...relatedSignalFindings.flatMap(
             finding =>
-                finding.reasons
-                    .filter(
-                        reason =>
-                            reason.type ===
-                            "SUPPORTING"
-                    )
+                finding.reasons.filter(
+                    reason =>
+                        reason.type ===
+                        "SUPPORTING"
+                )
+        ),
+
+        ...relatedCommitFindings.flatMap(
+            finding =>
+                finding.reasons.filter(
+                    reason =>
+                        reason.type ===
+                        "SUPPORTING"
+                )
         ),
     ];
 
-    
+
 
     const contradictingReasons =
         findings
@@ -597,50 +630,66 @@ function createInfrastructureHypothesis(
         ...new Set(evidenceIds),
     ];
 
-    return {
-        id: "infrastructure-failure",
+    const supportingReasons =
+        finding.reasons.filter(
+            reason =>
+                reason.type ===
+                "SUPPORTING"
+        );
 
-        title: "Infrastructure Failure",
+    const contradictingReasons =
+        finding.reasons.filter(
+            reason =>
+                reason.type ===
+                "CONTRADICTING"
+        );
+
+    const positive =
+        supportingReasons.reduce(
+            (total, reason) =>
+                total + reason.strength,
+            0
+        );
+
+    const negative =
+        contradictingReasons.reduce(
+            (total, reason) =>
+                total + reason.strength,
+            0
+        );
+
+    return {
+        id:
+            "infrastructure-failure",
+
+        title:
+            "Infrastructure Failure",
 
         description:
-            "An infrastructure-level failure may be responsible for the observed incident.",
+            finding.description,
 
         score: {
-            positive: 0.4,
+            positive,
 
-            negative: 0,
+            negative,
 
             unknown: 0,
         },
 
         confidence: 0,
 
-        status: "CANDIDATE",
+        status:
+            "CANDIDATE",
 
-        supportingReasons: [
-            {
-                type: "SUPPORTING",
+        supportingReasons,
 
-                causalRole: "CONTEXT",
-
-                title:
-                    "Infrastructure evidence is present",
-
-                description:
-                    "Infrastructure events were observed while the incident affected multiple services.",
-
-                evidenceIds:
-                    uniqueEvidenceIds,
-
-                strength: 0.4,
-            },
-        ],
-
-        contradictingReasons: [],
+        contradictingReasons,
 
         missingReasons: [],
 
-        findingIds: [finding.id],
+        findingIds: [
+            finding.id,
+        ],
 
         evidenceIds:
             uniqueEvidenceIds,

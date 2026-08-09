@@ -197,49 +197,85 @@ function collectDeploymentContradictions(
         return [];
     }
 
-    const firstError =
-        context.firstError;
+    const deploymentTime =
+        deployment.timestamp.getTime();
 
-    if (!firstError) {
-        return [];
-    }
+    const contradictions: Reason[] = [];
 
-    const earlierEvidence =
-    context.evidence.filter(
-        evidence =>
-            evidence.id !== deployment.id &&
-            evidence.type !== "DEPLOYMENT" &&
-            evidence.timestamp <
-                deployment.timestamp
-    );
-
-    const relevantEvidence =
-        earlierEvidence.filter(
+    /*
+     * Evidence from the same service that existed
+     * before the deployment weakens the deployment
+     * regression hypothesis.
+     */
+    const preDeploymentEvidence =
+        context.evidence.filter(
             evidence =>
+                evidence.id !== deployment.id &&
+                evidence.type !== "DEPLOYMENT" &&
                 evidence.service ===
-                deployment.service
+                    deployment.service &&
+                evidence.timestamp.getTime() <=
+                    deploymentTime
         );
 
-    if (relevantEvidence.length === 0) {
-        return [];
-    }
-
-    return [
-        {
+    if (
+        preDeploymentEvidence.length > 0
+    ) {
+        contradictions.push({
             type: "CONTRADICTING",
             causalRole: "CONTEXT",
+
             title:
-                "Failure-related evidence existed before the deployment",
+                "Error predates deployment",
+
             description:
-                "Relevant evidence from the same service existed before the deployment, weakening the case that the deployment introduced the failure.",
+                "Failure-related evidence from the same service existed before the deployment, weakening the case that the deployment introduced the failure.",
+
             evidenceIds:
-                relevantEvidence.map(
+                preDeploymentEvidence.map(
                     evidence =>
                         evidence.id
                 ),
+
             strength: 0.9,
-        },
-    ];
+        });
+    }
+
+    /*
+     * If the incident affects another service as well,
+     * an isolated deployment explanation becomes weaker.
+     */
+    const crossServiceEvidence =
+        context.errors.filter(
+            error =>
+                error.service !==
+                deployment.service
+        );
+
+    if (
+        crossServiceEvidence.length > 0
+    ) {
+        contradictions.push({
+            type: "CONTRADICTING",
+            causalRole: "CONTEXT",
+
+            title:
+                "Cross-service impact weakens an isolated deployment explanation",
+
+            description:
+                "Errors were observed in services outside the deployed service, weakening the hypothesis that this deployment alone caused the incident.",
+
+            evidenceIds:
+                crossServiceEvidence.map(
+                    error =>
+                        error.id
+                ),
+
+            strength: 0.9,
+        });
+    }
+
+    return contradictions;
 }
 
 function findMissingEvidence(

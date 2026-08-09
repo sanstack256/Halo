@@ -15,4 +15,6 @@ export interface Recommendation {
     confidence: number;
 
     evidenceIds: string[];
+
+    question?: string;
 }

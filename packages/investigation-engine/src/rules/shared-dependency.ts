@@ -31,6 +31,10 @@ export function sharedDependency(
     >();
 
     for (const item of evidence) {
+        if (item.type !== "ERROR") {
+            continue;
+        }
+
         const key = getSharedKey(item);
 
         if (!key) {
@@ -77,6 +81,46 @@ export function sharedDependency(
             continue;
         }
 
+        const sharedResource =
+            key.startsWith("resource:")
+                ? key.replace("resource:", "")
+                : null;
+
+        const infrastructureExplainsFailure =
+            sharedResource !== null &&
+            context.infrastructure.some(
+                infrastructure => {
+                    if (
+                        infrastructure.resource !==
+                        sharedResource
+                    ) {
+                        return false;
+                    }
+
+                    const infrastructureTime =
+                        infrastructure.timestamp.getTime();
+
+                    return errorEvidence.some(
+                        error => {
+                            const difference =
+                                Math.abs(
+                                    error.timestamp.getTime() -
+                                    infrastructureTime
+                                );
+
+                            return (
+                                difference <=
+                                5 * 60 * 1000
+                            );
+                        }
+                    );
+                }
+            );
+
+        if (infrastructureExplainsFailure) {
+            continue;
+        }
+
         const evidenceIds = [
             ...new Set(
                 items.map(
@@ -97,13 +141,13 @@ export function sharedDependency(
         const strength = Math.min(
             0.95,
             0.55 +
-                affectedServices.length *
-                    0.1 +
-                Math.min(
-                    errorEvidence.length *
-                        0.05,
-                    0.2
-                )
+            affectedServices.length *
+            0.1 +
+            Math.min(
+                errorEvidence.length *
+                0.05,
+                0.2
+            )
         );
 
         findings.push({

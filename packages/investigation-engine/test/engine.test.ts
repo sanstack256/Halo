@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 
 import { investigate } from "../src";
 import type { Evidence } from "../src";
+import { selectRootCause } from "../src/pipeline/root-cause";
 
 describe("Investigation Engine", () => {
     it("detects deployment regression", () => {
@@ -3185,94 +3186,485 @@ describe("Investigation Engine", () => {
     );
 
     it(
-    "creates dependency evidence from a failing third-party service",
-    () => {
-        const investigation =
-            investigate([
-                {
-                    id: "error",
-                    type: "ERROR",
-                    timestamp: new Date(
-                        "2026-01-01T10:01:00Z"
-                    ),
-                    source: "halo-sdk",
-                    service: "checkout",
-                    title: "Checkout failed",
-                    metadata: {},
-                },
+        "creates dependency evidence from a failing third-party service",
+        () => {
+            const investigation =
+                investigate([
+                    {
+                        id: "error",
+                        type: "ERROR",
+                        timestamp: new Date(
+                            "2026-01-01T10:01:00Z"
+                        ),
+                        source: "halo-sdk",
+                        service: "checkout",
+                        title: "Checkout failed",
+                        metadata: {},
+                    },
 
-                {
-                    id: "stripe-timeout",
-                    type: "THIRD_PARTY",
-                    timestamp: new Date(
-                        "2026-01-01T10:01:10Z"
-                    ),
-                    source: "stripe",
-                    service: "checkout",
-                    title: "Stripe request timed out",
-                    status: "timeout",
-                    metadata: {},
-                },
-            ]);
+                    {
+                        id: "stripe-timeout",
+                        type: "THIRD_PARTY",
+                        timestamp: new Date(
+                            "2026-01-01T10:01:10Z"
+                        ),
+                        source: "stripe",
+                        service: "checkout",
+                        title: "Stripe request timed out",
+                        status: "timeout",
+                        metadata: {},
+                    },
+                ]);
+
+            expect(
+                investigation.findings
+            ).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        type: "DEPENDENCY",
+                        title:
+                            "Third-party failure coincided with application errors",
+                    }),
+                ])
+            );
+        }
+    );
+
+    it(
+        "treats a configuration change followed by errors as a possible trigger",
+        () => {
+            const investigation =
+                investigate([
+                    {
+                        id: "config",
+                        type: "CONFIG",
+                        timestamp: new Date(
+                            "2026-01-01T10:00:00Z"
+                        ),
+                        source: "config-service",
+                        service: "checkout",
+                        title: "Database pool configuration changed",
+                        metadata: {},
+                    },
+
+                    {
+                        id: "error",
+                        type: "ERROR",
+                        timestamp: new Date(
+                            "2026-01-01T10:01:00Z"
+                        ),
+                        source: "halo-sdk",
+                        service: "checkout",
+                        title: "Database connection failed",
+                        metadata: {},
+                    },
+                ]);
+
+            expect(
+                investigation.findings
+            ).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        type: "CHANGE_IMPACT",
+                        causalRole: "TRIGGER",
+                        title:
+                            "Configuration change preceded failure",
+                    }),
+                ])
+            );
+        }
+    );
+
+    it(
+        "attributes a deployment to its source commit",
+        () => {
+            const investigation =
+                investigate([
+                    {
+                        id: "commit-checkout",
+                        type: "COMMIT",
+                        timestamp: new Date(
+                            "2026-01-01T09:58:00Z"
+                        ),
+                        source: "github",
+                        service: "checkout",
+                        title: "Fix checkout database handling",
+                        commit: "abc123",
+                        metadata: {},
+                    },
+
+                    {
+                        id: "deployment-checkout",
+                        type: "DEPLOYMENT",
+                        timestamp: new Date(
+                            "2026-01-01T10:00:00Z"
+                        ),
+                        source: "github",
+                        service: "checkout",
+                        title: "Deploy checkout",
+                        commit: "abc123",
+                        release: "checkout-42",
+                        metadata: {},
+                    },
+                ]);
+
+            expect(
+                investigation.findings
+            ).toEqual(
+                expect.arrayContaining([
+                    expect.objectContaining({
+                        type: "CHANGE_IMPACT",
+
+                        causalRole: "TRIGGER",
+
+                        title:
+                            "Deployment is attributed to a source commit",
+                    }),
+                ])
+            );
+
+            const finding =
+                investigation.findings.find(
+                    finding =>
+                        finding.title ===
+                        "Deployment is attributed to a source commit"
+                );
+
+            expect(
+                finding?.evidenceIds
+            ).toEqual(
+                expect.arrayContaining([
+                    "deployment-checkout",
+                    "commit-checkout",
+                ])
+            );
+        }
+    );
+
+    it("provides a next investigation question when recovery evidence is missing", () => {
+        const investigation = investigate([
+            {
+                id: "deployment-payment",
+                type: "DEPLOYMENT",
+                timestamp: new Date(
+                    "2026-01-01T10:00:00Z"
+                ),
+                service: "payment",
+                source: "test",
+                title: "Deploy payment",
+                metadata: {},
+            },
+
+            {
+                id: "payment-error",
+                type: "ERROR",
+                timestamp: new Date(
+                    "2026-01-01T10:01:00Z"
+                ),
+                service: "payment",
+                source: "test",
+                title: "Payment failed",
+                description:
+                    "Payment requests are failing.",
+                metadata: {},
+            },
+        ]);
 
         expect(
-            investigation.findings
-        ).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    type: "DEPENDENCY",
-                    title:
-                        "Third-party failure coincided with application errors",
-                }),
-            ])
-        );
-    }
-);
-
-it(
-    "treats a configuration change followed by errors as a possible trigger",
-    () => {
-        const investigation =
-            investigate([
-                {
-                    id: "config",
-                    type: "CONFIG",
-                    timestamp: new Date(
-                        "2026-01-01T10:00:00Z"
-                    ),
-                    source: "config-service",
-                    service: "checkout",
-                    title: "Database pool configuration changed",
-                    metadata: {},
-                },
-
-                {
-                    id: "error",
-                    type: "ERROR",
-                    timestamp: new Date(
-                        "2026-01-01T10:01:00Z"
-                    ),
-                    source: "halo-sdk",
-                    service: "checkout",
-                    title: "Database connection failed",
-                    metadata: {},
-                },
-            ]);
+            investigation.nextInvestigation
+        ).toBeDefined();
 
         expect(
-            investigation.findings
-        ).toEqual(
-            expect.arrayContaining([
-                expect.objectContaining({
-                    type: "CHANGE_IMPACT",
-                    causalRole: "TRIGGER",
-                    title:
-                        "Configuration change preceded failure",
-                }),
-            ])
+            investigation.nextInvestigation?.question
+        ).toBe(
+            "Did the service recover after the suspected deployment was rolled back?"
         );
-    }
-);
+
+        expect(
+            investigation.nextInvestigation?.reason
+        ).toBeTruthy();
+
+        expect(
+            investigation.nextInvestigation?.evidenceIds
+        ).toContain(
+            "deployment-payment"
+        );
+    });
+
+    it("selects the strongest validated hypothesis as the root cause", () => {
+        const investigation = investigate([
+            {
+                id: "deployment",
+                type: "DEPLOYMENT",
+                timestamp: new Date(
+                    "2026-01-01T10:00:00Z"
+                ),
+                service: "payment",
+                source: "test",
+                title: "Deploy payment",
+                metadata: {},
+            },
+
+            {
+                id: "payment-error",
+                type: "ERROR",
+                timestamp: new Date(
+                    "2026-01-01T10:01:00Z"
+                ),
+                service: "payment",
+                source: "test",
+                title: "Payment failed",
+                metadata: {},
+            },
+        ]);
+
+        expect(
+            investigation.rootCause
+        ).toBeDefined();
+
+        expect(
+            investigation.rootCause?.status
+        ).toBe("VALIDATED");
+    });
+
+    it("selects the highest-confidence validated hypothesis", () => {
+        const hypotheses = [
+            {
+                id: "shared-dependency:db",
+                title: "Shared Dependency Failure",
+                description: "",
+                score: {
+                    positive: 0,
+                    negative: 0,
+                    unknown: 0,
+                },
+                confidence: 72,
+                status: "VALIDATED" as const,
+                supportingReasons: [],
+                contradictingReasons: [],
+                missingReasons: [],
+                findingIds: [],
+                evidenceIds: ["db-error"],
+                alternativeIds: [],
+            },
+
+            {
+                id: "deployment-regression:deploy",
+                title: "Deployment Regression",
+                description: "",
+                score: {
+                    positive: 0,
+                    negative: 0,
+                    unknown: 0,
+                },
+                confidence: 88,
+                status: "VALIDATED" as const,
+                supportingReasons: [],
+                contradictingReasons: [],
+                missingReasons: [],
+                findingIds: [],
+                evidenceIds: ["deploy"],
+                alternativeIds: [],
+            },
+        ];
+
+        const rootCause =
+            selectRootCause(hypotheses);
+
+        expect(
+            rootCause?.title
+        ).toBe(
+            "Deployment Regression"
+        );
+    });
+
+    it("never selects an unvalidated hypothesis as the root cause", () => {
+        const hypotheses = [
+            {
+                id: "shared-dependency:db",
+                title: "Shared Dependency Failure",
+                description: "",
+                score: {
+                    positive: 0,
+                    negative: 0,
+                    unknown: 0,
+                },
+                confidence: 95,
+                status: "LEADING" as const,
+                supportingReasons: [],
+                contradictingReasons: [],
+                missingReasons: [],
+                findingIds: [],
+                evidenceIds: ["db-error"],
+                alternativeIds: [],
+            },
+
+            {
+                id: "deployment-regression:deploy",
+                title: "Deployment Regression",
+                description: "",
+                score: {
+                    positive: 0,
+                    negative: 0,
+                    unknown: 0,
+                },
+                confidence: 75,
+                status: "VALIDATED" as const,
+                supportingReasons: [],
+                contradictingReasons: [],
+                missingReasons: [],
+                findingIds: [],
+                evidenceIds: ["deploy"],
+                alternativeIds: [],
+            },
+        ];
+
+        const rootCause =
+            selectRootCause(hypotheses);
+
+        expect(
+            rootCause?.title
+        ).toBe(
+            "Deployment Regression"
+        );
+    });
+
+    it("does not select a root cause when no hypothesis is validated", () => {
+        const hypotheses = [
+            {
+                id: "deployment-regression:deploy",
+                title: "Deployment Regression",
+                description: "",
+                score: {
+                    positive: 0,
+                    negative: 0,
+                    unknown: 0,
+                },
+                confidence: 92,
+                status: "UNCERTAIN" as const,
+                supportingReasons: [],
+                contradictingReasons: [],
+                missingReasons: [],
+                findingIds: [],
+                evidenceIds: ["deploy"],
+                alternativeIds: [],
+            },
+        ];
+
+        const rootCause =
+            selectRootCause(hypotheses);
+
+        expect(rootCause).toBeNull();
+    });
+
+    it("golden scenario: infrastructure degradation causes a multi-service failure", () => {
+        const investigation = investigate([
+            {
+                id: "infra-degradation",
+                type: "INFRASTRUCTURE",
+                timestamp: new Date(
+                    "2026-08-08T13:40:00"
+                ),
+                source: "kubernetes",
+                service: "platform",
+                title: "Database connection exhaustion",
+                description:
+                    "Database connections are exhausted across the production cluster.",
+                resource: "postgres-primary",
+                value: 98,
+                metadata: {},
+            },
+
+            {
+                id: "payment-error",
+                type: "ERROR",
+                timestamp: new Date(
+                    "2026-08-08T13:41:00"
+                ),
+                source: "halo-sdk",
+                service: "payment",
+                title: "Payment database timeout",
+                description:
+                    "Payment requests cannot acquire a database connection.",
+                resource: "postgres-primary",
+                metadata: {},
+            },
+
+            {
+                id: "checkout-error",
+                type: "ERROR",
+                timestamp: new Date(
+                    "2026-08-08T13:41:10"
+                ),
+                source: "halo-sdk",
+                service: "checkout",
+                title: "Checkout database timeout",
+                description:
+                    "Checkout requests cannot acquire a database connection.",
+                resource: "postgres-primary",
+                metadata: {},
+            },
+        ]);
+
+        const infrastructureHypothesis =
+            investigation.hypotheses.find(
+                hypothesis =>
+                    hypothesis.title ===
+                    "Infrastructure Failure"
+            );
+
+        expect(
+            infrastructureHypothesis
+        ).toBeDefined();
+
+        expect(
+            infrastructureHypothesis?.confidence
+        ).toBeGreaterThanOrEqual(70);
+
+        expect(
+            investigation.rootCause?.title
+        ).toBe(
+            "Infrastructure Failure"
+        );
+
+        expect(
+            investigation.rootCause?.status
+        ).toBe("VALIDATED");
+    });
+
+    it("golden scenario: insufficient evidence does not produce a root cause", () => {
+        const investigation = investigate([
+            {
+                id: "unrelated-log",
+                type: "LOG",
+                timestamp: new Date(
+                    "2026-08-08T13:40:00"
+                ),
+                source: "application",
+                service: "payment",
+                title: "Background job completed",
+                description:
+                    "Scheduled background job completed successfully.",
+                metadata: {},
+            },
+        ]);
+
+        expect(
+            investigation.rootCause
+        ).toBeNull();
+
+        expect(
+            investigation.status
+        ).toBe("UNCERTAIN");
+
+        expect(
+            investigation.hypotheses.some(
+                hypothesis =>
+                    hypothesis.status ===
+                    "VALIDATED"
+            )
+        ).toBe(false);
+    });
 
 
 });

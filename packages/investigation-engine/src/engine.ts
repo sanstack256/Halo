@@ -10,6 +10,7 @@ import { validateHypotheses } from "./pipeline/validate";
 import { generateRecommendations } from "./pipeline/recommend";
 import { buildReport } from "./pipeline/report";
 import { rules } from "./rules";
+import { selectRootCause } from "./pipeline/root-cause";
 
 import { analyzeImpact } from "./pipeline/impact";
 import type { Evidence } from "./types/evidence";
@@ -83,11 +84,27 @@ export function investigate(
         analyzeImpact(normalized);
 
     const rootCause =
-        hypotheses.find(
-            hypothesis =>
-                hypothesis.status ===
-                "VALIDATED"
-        ) ?? null;
+    selectRootCause(hypotheses);
+
+    const nextRecommendation =
+        recommendations.find(
+            recommendation =>
+                recommendation.question
+        );
+
+    const nextInvestigation =
+        nextRecommendation?.question
+            ? {
+                question:
+                    nextRecommendation.question,
+
+                reason:
+                    nextRecommendation.description,
+
+                evidenceIds:
+                    nextRecommendation.evidenceIds,
+            }
+            : undefined;
 
     return {
         status:
@@ -114,5 +131,7 @@ export function investigate(
         recommendations,
 
         report,
+
+        nextInvestigation,
     };
 }

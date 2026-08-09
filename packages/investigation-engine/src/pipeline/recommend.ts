@@ -56,23 +56,31 @@ export function generateRecommendations(
     ) {
         recommendations.push({
             id: "investigate:alternative",
+
             title:
                 `Distinguish ${leading.title} from ${strongestAlternative.title}`,
+
             description:
                 `The leading hypotheses are close in confidence. Find evidence that can distinguish ${leading.title} from ${strongestAlternative.title}.`,
+
             priority: "HIGH",
+
             confidence:
                 1 -
                 Math.abs(
                     leading.confidence -
                     strongestAlternative.confidence
                 ) / 100,
+
             evidenceIds: [
                 ...new Set([
                     ...leading.evidenceIds,
                     ...strongestAlternative.evidenceIds,
                 ]),
             ],
+
+            question:
+                `What evidence would distinguish ${leading.title} from ${strongestAlternative.title}?`,
         });
     }
 
@@ -119,6 +127,9 @@ export function generateRecommendations(
                 confidence: 0.85,
                 evidenceIds:
                     leading.evidenceIds,
+
+                question:
+                    "Did the service recover after the suspected deployment was rolled back?",
             });
         }
     }
@@ -146,14 +157,22 @@ export function generateRecommendations(
         if (affectedServices.length > 1) {
             recommendations.push({
                 id: "investigate:dependency",
+
                 title:
                     "Trace the shared dependency",
+
                 description:
                     `Identify the dependency shared by ${affectedServices.length} affected services and inspect its health during the incident window.`,
+
                 priority: "HIGH",
+
                 confidence: 0.85,
+
                 evidenceIds:
                     leading.evidenceIds,
+
+                question:
+                    `Which shared dependency was failing when the affected services began failing?`,
             });
         }
     }

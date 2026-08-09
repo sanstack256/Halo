@@ -12,6 +12,9 @@ import { preExistingError } from "./pre-existing-error";
 import { crossService } from "./cross-service";
 import { distributedTrace } from "./distributed-trace";
 import { evidenceSignals } from "./evidence-signals";
+import { commitAttribution } from "./commit-attribution";
+import { infrastructureFailure } from "./infrastructure-failure";
+
 
 export type InvestigationRule = (
     context: InvestigationContext
@@ -19,6 +22,7 @@ export type InvestigationRule = (
 
 export const rules: InvestigationRule[] = [
     deploymentBeforeError,
+    commitAttribution,
     preExistingError,
     multipleErrors,
     sameService,
@@ -27,6 +31,7 @@ export const rules: InvestigationRule[] = [
     sharedDependency,
     recovery,
     crossService,
+    infrastructureFailure,
     distributedTrace,
     evidenceSignals,
 ];
