@@ -1,0 +1,181 @@
+"filename", "language", "TypeScript", "YAML", "TypeScript JSX", "JSON with Comments", "JavaScript", "JSON", "Markdown", "XML", "PostCSS", "MS SQL", "comment", "blank", "total"
+"/Users/nssanjeev/Development/Halo/README.md", "Markdown", 0, 0, 0, 0, 0, 0, 3, 0, 0, 0, 0, 2, 5
+"/Users/nssanjeev/Development/Halo/apps/dashboard/README.md", "Markdown", 0, 0, 0, 0, 0, 0, 23, 0, 0, 0, 0, 14, 37
+"/Users/nssanjeev/Development/Halo/apps/dashboard/components.json", "JSON", 0, 0, 0, 0, 0, 25, 0, 0, 0, 0, 0, 1, 26
+"/Users/nssanjeev/Development/Halo/apps/dashboard/eslint.config.mjs", "JavaScript", 0, 0, 0, 0, 14, 0, 0, 0, 0, 0, 2, 3, 19
+"/Users/nssanjeev/Development/Halo/apps/dashboard/layout.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/nssanjeev/Development/Halo/apps/dashboard/next.config.ts", "TypeScript", 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3, 8
+"/Users/nssanjeev/Development/Halo/apps/dashboard/package.json", "JSON", 0, 0, 0, 0, 0, 46, 0, 0, 0, 0, 0, 1, 47
+"/Users/nssanjeev/Development/Halo/apps/dashboard/postcss.config.mjs", "JavaScript", 0, 0, 0, 0, 6, 0, 0, 0, 0, 0, 0, 2, 8
+"/Users/nssanjeev/Development/Halo/apps/dashboard/public/file.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+"/Users/nssanjeev/Development/Halo/apps/dashboard/public/globe.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+"/Users/nssanjeev/Development/Halo/apps/dashboard/public/next.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+"/Users/nssanjeev/Development/Halo/apps/dashboard/public/vercel.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+"/Users/nssanjeev/Development/Halo/apps/dashboard/public/window.svg", "XML", 0, 0, 0, 0, 0, 0, 0, 1, 0, 0, 0, 0, 1
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/api-key.ts", "TypeScript", 72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 23, 95
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/event.ts", "TypeScript", 84, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 105
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/issue.ts", "TypeScript", 65, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 71
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/project.ts", "TypeScript", 144, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 35, 179
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(auth)/layout.tsx", "TypeScript JSX", 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 3, 16
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(auth)/sign-in/page.tsx", "TypeScript JSX", 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 3, 26
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(auth)/sign-up/page.tsx", "TypeScript JSX", 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 3, 26
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/incidents/page.tsx", "TypeScript JSX", 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/layout.tsx", "TypeScript JSX", 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 0, 14, 43
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/overview/page.tsx", "TypeScript JSX", 0, 0, 20, 0, 0, 0, 0, 0, 0, 0, 0, 2, 22
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/api-keys/page.tsx", "TypeScript JSX", 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 1, 13
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/events/[eventId]/page.tsx", "TypeScript JSX", 0, 0, 168, 0, 0, 0, 0, 0, 0, 0, 3, 73, 244
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/events/page.tsx", "TypeScript JSX", 0, 0, 79, 0, 0, 0, 0, 0, 0, 0, 5, 38, 122
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/investigations/new/page.tsx", "TypeScript JSX", 0, 0, 833, 0, 0, 0, 0, 0, 0, 0, 45, 121, 999
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/issues/[issueId]/page.tsx", "TypeScript JSX", 0, 0, 142, 0, 0, 0, 0, 0, 0, 0, 3, 59, 204
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/issues/page.tsx", "TypeScript JSX", 0, 0, 75, 0, 0, 0, 0, 0, 0, 0, 1, 33, 109
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/layout.tsx", "TypeScript JSX", 0, 0, 68, 0, 0, 0, 0, 0, 0, 0, 0, 19, 87
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/page.tsx", "TypeScript JSX", 0, 0, 34, 0, 0, 0, 0, 0, 0, 0, 0, 12, 46
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/settings/page.tsx", "TypeScript JSX", 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 1, 13
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/page.tsx", "TypeScript JSX", 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 1, 28, 75
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/sdk/page.tsx", "TypeScript JSX", 0, 0, 12, 0, 0, 0, 0, 0, 0, 0, 0, 3, 15
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/page.tsx", "TypeScript JSX", 0, 0, 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/api/auth/[...all]/route.ts", "TypeScript", 3, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 5
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/api/ingest/events/route.ts", "TypeScript", 48, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 17, 65
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/api/test-key/route.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 8
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/globals.css", "PostCSS", 0, 0, 0, 0, 0, 0, 0, 0, 171, 0, 34, 151, 356
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/layout.tsx", "TypeScript JSX", 0, 0, 29, 0, 0, 0, 0, 0, 0, 0, 0, 5, 34
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/page.tsx", "TypeScript JSX", 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/auth-card.tsx", "TypeScript JSX", 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 3, 8, 34
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/auth-footer.tsx", "TypeScript JSX", 0, 0, 23, 0, 0, 0, 0, 0, 0, 0, 0, 2, 25
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/auth-header.tsx", "TypeScript JSX", 0, 0, 19, 0, 0, 0, 0, 0, 0, 0, 0, 2, 21
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/auth-layout.tsx", "TypeScript JSX", 0, 0, 11, 0, 0, 0, 0, 0, 0, 0, 0, 2, 13
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/sign-in-form.tsx", "TypeScript JSX", 0, 0, 94, 0, 0, 0, 0, 0, 0, 0, 0, 13, 107
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/sign-up-form.tsx", "TypeScript JSX", 0, 0, 123, 0, 0, 0, 0, 0, 0, 0, 0, 17, 140
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/events/breadcrumbs.tsx", "TypeScript JSX", 0, 0, 56, 0, 0, 0, 0, 0, 0, 0, 0, 12, 68
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/events/stack-trace.tsx", "TypeScript JSX", 0, 0, 19, 0, 0, 0, 0, 0, 0, 0, 0, 2, 21
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/events/tags.tsx", "TypeScript JSX", 0, 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 6, 44
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/events/user.tsx", "TypeScript JSX", 0, 0, 66, 0, 0, 0, 0, 0, 0, 0, 0, 13, 79
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/issues/issue-card.tsx", "TypeScript JSX", 0, 0, 72, 0, 0, 0, 0, 0, 0, 0, 4, 29, 105
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/overview/sidebar.tsx", "TypeScript JSX", 0, 0, 93, 0, 0, 0, 0, 0, 0, 0, 3, 40, 136
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/overview/topbar.tsx", "TypeScript JSX", 0, 0, 73, 0, 0, 0, 0, 0, 0, 0, 0, 17, 90
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/api-keys-section.tsx", "TypeScript JSX", 0, 0, 78, 0, 0, 0, 0, 0, 0, 0, 0, 10, 88
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/create-api-key-dialog.tsx", "TypeScript JSX", 0, 0, 119, 0, 0, 0, 0, 0, 0, 0, 0, 26, 145
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/create-project-dialog.tsx", "TypeScript JSX", 0, 0, 93, 0, 0, 0, 0, 0, 0, 0, 0, 13, 106
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/empty-state.tsx", "TypeScript JSX", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/project-card.tsx", "TypeScript JSX", 0, 0, 112, 0, 0, 0, 0, 0, 0, 0, 0, 41, 153
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/project-header.tsx", "TypeScript JSX", 0, 0, 48, 0, 0, 0, 0, 0, 0, 0, 0, 11, 59
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/project-navigation.tsx", "TypeScript JSX", 0, 0, 58, 0, 0, 0, 0, 0, 0, 0, 0, 13, 71
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/project-overview.tsx", "TypeScript JSX", 0, 0, 46, 0, 0, 0, 0, 0, 0, 0, 0, 25, 71
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/project-quick-start.tsx", "TypeScript JSX", 0, 0, 84, 0, 0, 0, 0, 0, 0, 0, 0, 26, 110
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/project-stat-card.tsx", "TypeScript JSX", 0, 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 5, 47
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/projects-grid.tsx", "TypeScript JSX", 0, 0, 82, 0, 0, 0, 0, 0, 0, 0, 0, 26, 108
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/badge.tsx", "TypeScript JSX", 0, 0, 42, 0, 0, 0, 0, 0, 0, 0, 0, 8, 50
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/button.tsx", "TypeScript JSX", 0, 0, 59, 0, 0, 0, 0, 0, 0, 0, 0, 18, 77
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/card.tsx", "TypeScript JSX", 0, 0, 63, 0, 0, 0, 0, 0, 0, 0, 0, 7, 70
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/dialog.tsx", "TypeScript JSX", 0, 0, 147, 0, 0, 0, 0, 0, 0, 0, 0, 14, 161
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/input.tsx", "TypeScript JSX", 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 0, 4, 21
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/label.tsx", "TypeScript JSX", 0, 0, 16, 0, 0, 0, 0, 0, 0, 0, 0, 5, 21
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/page-header.tsx", "TypeScript JSX", 0, 0, 38, 0, 0, 0, 0, 0, 0, 0, 0, 7, 45
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/relative-time.tsx", "TypeScript JSX", 0, 0, 13, 0, 0, 0, 0, 0, 0, 0, 0, 2, 15
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/select.tsx", "TypeScript JSX", 0, 0, 188, 0, 0, 0, 0, 0, 0, 0, 0, 14, 202
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/severity-badge.tsx", "TypeScript JSX", 0, 0, 53, 0, 0, 0, 0, 0, 0, 0, 0, 8, 61
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/browser.ts", "TypeScript", 14, 0, 0, 0, 0, 0, 0, 0, 0, 0, 53, 3, 70
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/client.ts", "TypeScript", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 65, 6, 94
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/commonInputTypes.ts", "TypeScript", 470, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 51, 530
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/enums.ts", "TypeScript", 19, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 10, 38
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/class.ts", "TypeScript", 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 178, 39, 295
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/prismaNamespace.ts", "TypeScript", 1262, 0, 0, 0, 0, 0, 0, 0, 0, 0, 285, 202, 1749
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/prismaNamespaceBrowser.ts", "TypeScript", 180, 0, 0, 0, 0, 0, 0, 0, 0, 0, 33, 61, 274
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models.ts", "TypeScript", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 1, 21
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Account.ts", "TypeScript", 880, 0, 0, 0, 0, 0, 0, 0, 0, 0, 643, 103, 1626
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/ApiKey.ts", "TypeScript", 872, 0, 0, 0, 0, 0, 0, 0, 0, 0, 643, 119, 1634
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Environment.ts", "TypeScript", 794, 0, 0, 0, 0, 0, 0, 0, 0, 0, 682, 131, 1607
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Event.ts", "TypeScript", 1456, 0, 0, 0, 0, 0, 0, 0, 0, 0, 655, 136, 2247
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Issue.ts", "TypeScript", 1015, 0, 0, 0, 0, 0, 0, 0, 0, 0, 677, 128, 1820
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Organization.ts", "TypeScript", 656, 0, 0, 0, 0, 0, 0, 0, 0, 0, 673, 114, 1443
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Project.ts", "TypeScript", 1107, 0, 0, 0, 0, 0, 0, 0, 0, 0, 712, 154, 1973
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Session.ts", "TypeScript", 705, 0, 0, 0, 0, 0, 0, 0, 0, 0, 643, 103, 1451
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/User.ts", "TypeScript", 874, 0, 0, 0, 0, 0, 0, 0, 0, 0, 694, 126, 1694
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Verification.ts", "TypeScript", 486, 0, 0, 0, 0, 0, 0, 0, 0, 0, 607, 85, 1178
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/api-key.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 18
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/auth-client.ts", "TypeScript", 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 3
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/auth.ts", "TypeScript", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 14
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/evidence.ts", "TypeScript", 92, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 114
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/run.ts", "TypeScript", 23, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 29
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/organization.ts", "TypeScript", 42, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 51
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/prisma.ts", "TypeScript", 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 5, 22
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/session.ts", "TypeScript", 7, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 8
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/slug.ts", "TypeScript", 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/utils.ts", "TypeScript", 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 6
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/schemas/auth.ts", "TypeScript", 29, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 37
+"/Users/nssanjeev/Development/Halo/apps/dashboard/tsconfig.json", "JSON with Comments", 0, 0, 0, 34, 0, 0, 0, 0, 0, 0, 0, 1, 35
+"/Users/nssanjeev/Development/Halo/package.json", "JSON", 0, 0, 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 17
+"/Users/nssanjeev/Development/Halo/packages/config/package.json", "JSON", 0, 0, 0, 0, 0, 5, 0, 0, 0, 0, 0, 2, 7
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/package.json", "JSON", 0, 0, 0, 0, 0, 18, 0, 0, 0, 0, 0, 0, 18
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/engine.ts", "TypeScript", 105, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 32, 137
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/hypotheses/deployment-regression.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 10
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/index.ts", "TypeScript", 8, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 9
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/anomalies.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/build-context.ts", "TypeScript", 90, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 19, 109
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/changes.ts", "TypeScript", 47, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 52
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/correlate.ts", "TypeScript", 171, 0, 0, 0, 0, 0, 0, 0, 0, 0, 31, 16, 218
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/evaluate.ts", "TypeScript", 325, 0, 0, 0, 0, 0, 0, 0, 0, 0, 9, 64, 398
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/hypotheses.ts", "TypeScript", 553, 0, 0, 0, 0, 0, 0, 0, 0, 0, 29, 117, 699
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/impact.ts", "TypeScript", 78, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 91
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/normalize.ts", "TypeScript", 51, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 54
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/rank.ts", "TypeScript", 114, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 20, 134
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/recommend.ts", "TypeScript", 174, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 204
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/report.ts", "TypeScript", 99, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 15, 114
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/root-cause.ts", "TypeScript", 46, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 56
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/timeline.ts", "TypeScript", 41, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 47
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/validate.ts", "TypeScript", 209, 0, 0, 0, 0, 0, 0, 0, 0, 0, 25, 27, 261
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/commit-attribution.ts", "TypeScript", 68, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 89
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/cross-service.ts", "TypeScript", 51, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 16, 67
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/deployment-before-error.ts", "TypeScript", 49, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 56
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/different-service.ts", "TypeScript", 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 53
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/distributed-trace.ts", "TypeScript", 72, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 83
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/evidence-signals.ts", "TypeScript", 339, 0, 0, 0, 0, 0, 0, 0, 0, 0, 34, 111, 484
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/index.ts", "TypeScript", 33, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 37
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/infrastructure-failure.ts", "TypeScript", 122, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 26, 148
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/multiple-errors.ts", "TypeScript", 135, 0, 0, 0, 0, 0, 0, 0, 0, 0, 13, 53, 201
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/pre-existing-error.ts", "TypeScript", 70, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 22, 92
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/recovery.ts", "TypeScript", 126, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 30, 156
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/same-service.ts", "TypeScript", 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 8, 53
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/scoring/deploymment.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/scoring/release.ts", "TypeScript", 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 13
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/scoring/service.ts", "TypeScript", 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/service.ts", "TypeScript", 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 12
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/shared-dependency.ts", "TypeScript", 151, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 179
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/time-window.ts", "TypeScript", 66, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 11, 77
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/change.ts", "TypeScript", 16, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 22
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/context.ts", "TypeScript", 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 21, 48
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/evidence-score.ts", "TypeScript", 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/evidence.ts", "TypeScript", 34, 0, 0, 0, 0, 0, 0, 0, 0, 0, 104, 21, 159
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/finding.ts", "TypeScript", 28, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 10, 38
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/graph.ts", "TypeScript", 31, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 35
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/hypothesis.ts", "TypeScript", 27, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 14, 41
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/impact.ts", "TypeScript", 6, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 9
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/investigation.ts", "TypeScript", 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 62
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/reason.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 20
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/recommendation.ts", "TypeScript", 13, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 20
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/rule-result.ts", "TypeScript", 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 7
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/timeline.ts", "TypeScript", 17, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 7, 24
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/test/engine.test.ts", "TypeScript", 3273, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 397, 3670
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/test/investigation.ts", "TypeScript", 53, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 28, 81
+"/Users/nssanjeev/Development/Halo/packages/investigation-engine/tsconfig.json", "JSON with Comments", 0, 0, 0, 17, 0, 0, 0, 0, 0, 0, 0, 7, 24
+"/Users/nssanjeev/Development/Halo/packages/sdk/package.json", "JSON", 0, 0, 0, 0, 0, 11, 0, 0, 0, 0, 0, 0, 11
+"/Users/nssanjeev/Development/Halo/packages/sdk/src/capture.ts", "TypeScript", 50, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 4, 56
+"/Users/nssanjeev/Development/Halo/packages/sdk/src/client.ts", "TypeScript", 25, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 3, 28
+"/Users/nssanjeev/Development/Halo/packages/sdk/src/halo.ts", "TypeScript", 137, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 47, 184
+"/Users/nssanjeev/Development/Halo/packages/sdk/src/index.ts", "TypeScript", 9, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 10
+"/Users/nssanjeev/Development/Halo/packages/sdk/src/queue.ts", "TypeScript", 45, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 13, 62
+"/Users/nssanjeev/Development/Halo/packages/sdk/src/types.ts", "TypeScript", 44, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 62
+"/Users/nssanjeev/Development/Halo/packages/sdk/tsconfig.json", "JSON with Comments", 0, 0, 0, 14, 0, 0, 0, 0, 0, 0, 0, 0, 14
+"/Users/nssanjeev/Development/Halo/pnpm-lock.yaml", "YAML", 0, 5690, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1450, 7140
+"/Users/nssanjeev/Development/Halo/pnpm-workspace.yaml", "YAML", 0, 10, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 12
+"/Users/nssanjeev/Development/Halo/prisma.config.ts", "TypeScript", 11, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 15
+"/Users/nssanjeev/Development/Halo/prisma/migrations/20260803080531_initial/migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 113, 28, 37, 178
+"/Users/nssanjeev/Development/Halo/prisma/migrations/20260803085017_add_project_description/migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 3
+"/Users/nssanjeev/Development/Halo/prisma/migrations/20260804094716_add_api_key_prefix/migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 7, 1, 9
+"/Users/nssanjeev/Development/Halo/prisma/migrations/20260804154403_improve_event_model/migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 6, 8, 2, 16
+"/Users/nssanjeev/Development/Halo/prisma/migrations/20260805074545_add_issue_model/migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 18, 6, 7, 31
+"/Users/nssanjeev/Development/Halo/prisma/migrations/20260805115639_improve_issue_model/migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 8, 2, 14
+"/Users/nssanjeev/Development/Halo/prisma/migrations/20260807105620_add_event_context/migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 2, 2, 9
+"/Users/nssanjeev/Development/Halo/prisma/migrations/20260808081855_add_event_user/migration.sql", "MS SQL", 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 1, 1, 3
+"/Users/nssanjeev/Development/Halo/turbo.json", "JSON", 0, 0, 0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 4
+"Total", "-", 18997, 5700, 3744, 65, 20, 126, 26, 5, 171, 149, 7690, 5678, 42371

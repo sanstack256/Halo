@@ -1,0 +1,243 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client"
+  output = "../apps/dashboard/src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+enum EventType {
+  ERROR
+  LOG
+  MESSAGE
+}
+
+enum EventSeverity {
+  INFO
+  WARNING
+  ERROR
+  FATAL
+}
+
+enum IssueStatus {
+  OPEN
+  RESOLVED
+  IGNORED
+}
+
+model Organization {
+  id   String @id @default(cuid())
+  name String
+  slug String @unique
+
+  owner User?
+
+  projects Project[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model Project {
+  id   String @id @default(cuid())
+  name String
+  slug String
+
+  description   String?
+
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id])
+
+  environments Environment[]
+  apiKeys      ApiKey[]
+  events       Event[]
+  issues       Issue[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([organizationId, slug])
+}
+
+model Environment {
+  id   String @id @default(cuid())
+  name String
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  apiKeys ApiKey[]
+  events  Event[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, name])
+}
+
+model ApiKey {
+  id        String   @id @default(cuid())
+  name      String
+
+  prefix    String
+  keyHash   String
+
+  projectId String
+  project   Project @relation(fields: [projectId], references: [id])
+
+  environmentId String
+  environment   Environment @relation(fields: [environmentId], references: [id])
+
+  lastUsedAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+
+model Event {
+  id String @id @default(cuid())
+
+  type EventType
+
+  severity EventSeverity @default(INFO)
+
+  title String
+
+  message String?
+
+  stack String?
+
+  fingerprint String?
+
+  metadata Json?
+
+  tags Json?
+
+  breadcrumbs Json?
+
+  user Json?
+
+  timestamp DateTime
+
+  sdkName String?
+  sdkVersion String?
+
+  release String?
+
+  projectId String
+  project Project @relation(fields: [projectId], references: [id])
+
+  environmentId String
+  environment Environment @relation(fields: [environmentId], references: [id])
+
+  issueId String?
+  issue Issue? @relation(fields: [issueId], references: [id])
+
+  createdAt DateTime @default(now())
+}
+
+
+model Issue {
+  id String @id @default(cuid())
+
+  fingerprint String
+
+  title String
+
+  status IssueStatus @default(OPEN)
+
+  severity EventSeverity @default(INFO)
+
+  firstSeen DateTime @default(now())
+  lastSeen DateTime @default(now())
+
+  eventCount Int @default(1)
+
+  lastEventId String?
+
+  projectId String
+  project Project @relation(fields: [projectId], references: [id])
+
+  events Event[]
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@unique([projectId, fingerprint])
+}
+
+
+model User {
+  id            String    @id
+  name          String
+  email         String
+  emailVerified Boolean   @default(false)
+  image         String?
+  createdAt     DateTime  @default(now())
+  updatedAt     DateTime  @updatedAt
+
+  organizationId String?        @unique
+  organization   Organization?  @relation(fields: [organizationId], references: [id])
+
+  sessions Session[]
+  accounts Account[]
+
+  @@unique([email])
+  @@map("user")
+}
+
+model Session {
+  id        String   @id
+  expiresAt DateTime
+  token     String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  ipAddress String?
+  userAgent String?
+  userId    String
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([token])
+  @@index([userId])
+  @@map("session")
+}
+
+model Account {
+  id                    String    @id
+  accountId             String
+  providerId            String
+  userId                String
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  accessToken           String?
+  refreshToken          String?
+  idToken               String?
+  accessTokenExpiresAt  DateTime?
+  refreshTokenExpiresAt DateTime?
+  scope                 String?
+  password              String?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+
+  @@index([userId])
+  @@map("account")
+}
+
+model Verification {
+  id         String   @id
+  identifier String
+  value      String
+  expiresAt  DateTime
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  @@index([identifier])
+  @@map("verification")
+}
+

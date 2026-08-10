@@ -1,0 +1,104 @@
+Date : 2026-08-09 20:59:55
+Directory : /Users/nssanjeev/Development/Halo
+Total : 50 files,  7312 codes, 290 comments, 1121 blanks, all 8723 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| TypeScript         |         44 |      6,455 |        245 |        997 |      7,697 |
+| TypeScript JSX     |          2 |        853 |         45 |        124 |      1,022 |
+| YAML               |          1 |          3 |          0 |          0 |          3 |
+| JSON               |          1 |          1 |          0 |          0 |          1 |
+| JSON with Comments |          2 |          0 |          0 |          0 |          0 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                           | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                              |         50 |      7,312 |        290 |      1,121 |      8,723 |
+| . (Files)                                                                                                      |          1 |          3 |          0 |          0 |          3 |
+| apps                                                                                                           |          6 |        968 |         45 |        152 |      1,165 |
+| apps/dashboard                                                                                                 |          6 |        968 |         45 |        152 |      1,165 |
+| apps/dashboard (Files)                                                                                         |          2 |          0 |          0 |          0 |          0 |
+| apps/dashboard/src                                                                                             |          4 |        968 |         45 |        152 |      1,165 |
+| apps/dashboard/src/app                                                                                         |          2 |        853 |         45 |        124 |      1,022 |
+| apps/dashboard/src/app/(dashboard)                                                                             |          2 |        853 |         45 |        124 |      1,022 |
+| apps/dashboard/src/app/(dashboard)/projects                                                                    |          2 |        853 |         45 |        124 |      1,022 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]                                                               |          2 |        853 |         45 |        124 |      1,022 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/investigations                                                |          1 |        833 |         45 |        121 |        999 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/investigations/new                                            |          1 |        833 |         45 |        121 |        999 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/issues                                                        |          1 |         20 |          0 |          3 |         23 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/issues/[issueId]                                              |          1 |         20 |          0 |          3 |         23 |
+| apps/dashboard/src/lib                                                                                         |          2 |        115 |          0 |         28 |        143 |
+| apps/dashboard/src/lib/investigation                                                                           |          2 |        115 |          0 |         28 |        143 |
+| packages                                                                                                       |         43 |      6,341 |        245 |        969 |      7,555 |
+| packages/investigation-engine                                                                                  |         40 |      6,333 |        245 |        963 |      7,541 |
+| packages/investigation-engine/src                                                                              |         39 |      3,148 |        245 |        609 |      4,002 |
+| packages/investigation-engine/src (Files)                                                                      |          1 |         69 |          0 |         16 |         85 |
+| packages/investigation-engine/src/pipeline                                                                     |         15 |      1,793 |         94 |        253 |      2,140 |
+| packages/investigation-engine/src/rules                                                                        |         14 |      1,154 |         47 |        285 |      1,486 |
+| packages/investigation-engine/src/types                                                                        |          9 |        132 |        104 |         55 |        291 |
+| packages/investigation-engine/test                                                                             |          1 |      3,185 |          0 |        354 |      3,539 |
+| packages/sdk                                                                                                   |          3 |          8 |          0 |          6 |         14 |
+| packages/sdk (Files)                                                                                           |          1 |          1 |          0 |          0 |          1 |
+| packages/sdk/src                                                                                               |          2 |          7 |          0 |          6 |         13 |
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                                       | language           | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| /Users/nssanjeev/Development/Halo/apps/dashboard/package.json                                                  | JSON               |          1 |          0 |          0 |          1 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/investigations/new/page.tsx | TypeScript JSX     |        833 |         45 |        121 |        999 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/issues/[issueId]/page.tsx   | TypeScript JSX     |         20 |          0 |          3 |         23 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/evidence.ts                             | TypeScript         |         92 |          0 |         22 |        114 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/run.ts                                  | TypeScript         |         23 |          0 |          6 |         29 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/tsconfig.json                                                 | JSON with Comments |         -1 |          0 |          0 |         -1 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/engine.ts                                  | TypeScript         |         69 |          0 |         16 |         85 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/aggregate.ts                      | TypeScript         |        -58 |          0 |        -29 |        -87 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/build-context.ts                  | TypeScript         |         90 |          0 |         19 |        109 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/change-detector.ts                | TypeScript         |        -32 |          0 |         -8 |        -40 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/changes.ts                        | TypeScript         |         27 |          0 |        -10 |         17 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/correlate.ts                      | TypeScript         |        131 |         31 |         -1 |        161 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/evaluate.ts                       | TypeScript         |        325 |          9 |         64 |        398 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/hypotheses.ts                     | TypeScript         |        539 |         29 |        113 |        681 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/impact.ts                         | TypeScript         |         72 |          0 |         10 |         82 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/normalize.ts                      | TypeScript         |         41 |          0 |          1 |         42 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/rank.ts                           | TypeScript         |        114 |          0 |         19 |        133 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/recommend.ts                      | TypeScript         |        174 |          0 |         29 |        203 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/report.ts                         | TypeScript         |         99 |          0 |         14 |        113 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/root-cause.ts                     | TypeScript         |         46 |          0 |         10 |         56 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/timeline.ts                       | TypeScript         |         16 |          0 |         -4 |         12 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/validate.ts                       | TypeScript         |        209 |         25 |         26 |        260 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/commit-attribution.ts                | TypeScript         |         68 |          0 |         21 |         89 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/cross-service.ts                     | TypeScript         |         51 |          0 |         16 |         67 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/deployment-before-error.ts           | TypeScript         |          6 |          0 |        -13 |         -7 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/different-service.ts                 | TypeScript         |          6 |          0 |         -4 |          2 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/distributed-trace.ts                 | TypeScript         |         72 |          0 |         11 |         83 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/evidence-signals.ts                  | TypeScript         |        339 |         34 |        111 |        484 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/index.ts                             | TypeScript         |         16 |          0 |          1 |         17 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/infrastructure-failure.ts            | TypeScript         |        122 |          0 |         26 |        148 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/multiple-errors.ts                   | TypeScript         |         98 |         13 |         42 |        153 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/pre-existing-error.ts                | TypeScript         |         70 |          0 |         22 |         92 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/recovery.ts                          | TypeScript         |        126 |          0 |         30 |        156 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/same-service.ts                      | TypeScript         |          8 |          0 |         -2 |          6 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/shared-dependency.ts                 | TypeScript         |        151 |          0 |         28 |        179 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/time-window.ts                       | TypeScript         |         21 |          0 |         -4 |         17 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/context.ts                           | TypeScript         |         27 |          0 |         21 |         48 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/evidence-score.ts                    | TypeScript         |          0 |          0 |         -4 |         -4 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/evidence.ts                          | TypeScript         |         13 |        104 |         13 |        130 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/finding.ts                           | TypeScript         |         28 |          0 |         10 |         38 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/graph.ts                             | TypeScript         |          7 |          0 |         -5 |          2 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/hypothesis.ts                        | TypeScript         |         15 |          0 |          4 |         19 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/investigation.ts                     | TypeScript         |         27 |          0 |          9 |         36 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/reason.ts                            | TypeScript         |          7 |          0 |          2 |          9 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/recommendation.ts                    | TypeScript         |          8 |          0 |          5 |         13 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/test/engine.test.ts                            | TypeScript         |      3,185 |          0 |        354 |      3,539 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/halo.ts                                                     | TypeScript         |          2 |          0 |          4 |          6 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/types.ts                                                    | TypeScript         |          5 |          0 |          2 |          7 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/tsconfig.json                                                   | JSON with Comments |          1 |          0 |          0 |          1 |
+| /Users/nssanjeev/Development/Halo/pnpm-lock.yaml                                                               | YAML               |          3 |          0 |          0 |          3 |
+| Total                                                                                                          |                    |      7,312 |        290 |      1,121 |      8,723 |
++----------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
