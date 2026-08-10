@@ -3,6 +3,8 @@ import { investigateIssue } from "@/lib/investigation/run";
 import type {
     Investigation,
     Hypothesis,
+    Reason,
+    Recommendation,
 } from "@halo/investigation-engine";
 
 type Props = {
@@ -26,20 +28,19 @@ export default async function InvestigationPage({
 
     if (!issueId) {
         return (
-            <div className="py-20 text-center">
-                <h1 className="text-xl font-semibold">
+            <div className="halo-empty-state">
+                <h1 className="halo-empty-state-title">
                     No issue selected
                 </h1>
 
-                <p className="mt-2 text-secondary">
+                <p className="halo-empty-state-description">
                     Select an issue to investigate.
                 </p>
             </div>
         );
     }
 
-    const investigation =
-        await investigateIssue(issueId);
+    const investigation = await investigateIssue(issueId);
 
     return (
         <InvestigationView
@@ -70,56 +71,56 @@ function InvestigationView({
         recommendations,
     } = investigation;
 
-    const hasRootCause =
-        rootCause !== null;
-
+    const hasRootCause = rootCause !== null;
 
     return (
-        <div className="space-y-12 pb-20">
-            {/* ---------------------------------------------------------------- */}
-            {/* Header                                                           */}
-            {/* ---------------------------------------------------------------- */}
+        <div className="halo-investigation">
+            {/* Header */}
 
-            <header className="space-y-3">
-                <div className="flex items-center gap-3">
-                    <p className="text-sm text-muted">
+            <header className="halo-investigation-header">
+                <div className="halo-eyebrow-row">
+                    <span className="halo-eyebrow">
                         Investigation
-                    </p>
+                    </span>
 
                     <StatusBadge status={status} />
                 </div>
 
-                <h1 className="text-4xl font-semibold tracking-tight">
+                <h1 className="halo-investigation-title">
                     Why did this fail?
                 </h1>
 
-                <p className="max-w-2xl text-secondary">
+                <p className="halo-investigation-description">
                     Halo reconstructed the available evidence
                     and evaluated possible causes.
                 </p>
             </header>
 
-            {/* ---------------------------------------------------------------- */}
-            {/* Verdict                                                          */}
-            {/* ---------------------------------------------------------------- */}
+            {/* Verdict */}
 
-            <section className="overflow-hidden rounded-2xl border border-border bg-surface">
-                <div className="border-b border-border px-6 py-4">
-                    <p className="text-xs font-medium uppercase tracking-wider text-muted">
+            <section className="halo-verdict">
+                <div className="halo-verdict-header">
+                    <span className="halo-section-label">
                         Investigation result
-                    </p>
+                    </span>
                 </div>
 
-                <div className="px-6 py-7">
-                    <div className="flex flex-col gap-6 lg:flex-row lg:items-start lg:justify-between">
-                        <div className="max-w-3xl space-y-3">
-                            <h2 className="text-2xl font-semibold">
+                <div className="halo-verdict-body">
+                    <div className="halo-verdict-content">
+                        <div className="halo-verdict-main">
+                            <span className="halo-result-label">
+                                {hasRootCause
+                                    ? "Likely root cause"
+                                    : "No validated root cause"}
+                            </span>
+
+                            <h2 className="halo-verdict-title">
                                 {hasRootCause
                                     ? report.rootCause?.title
                                     : "No root cause established"}
                             </h2>
 
-                            <p className="leading-7 text-secondary">
+                            <p className="halo-verdict-summary">
                                 {report.summary}
                             </p>
                         </div>
@@ -131,18 +132,31 @@ function InvestigationView({
                                         report.rootCause
                                             .confidence
                                     }
+                                    supportingCount={
+                                        rootCause
+                                            ?.supportingReasons
+                                            .length ?? 0
+                                    }
+                                    contradictingCount={
+                                        rootCause
+                                            ?.contradictingReasons
+                                            .length ?? 0
+                                    }
+                                    missingCount={
+                                        rootCause
+                                            ?.missingReasons
+                                            .length ?? 0
+                                    }
                                 />
                             )}
                     </div>
                 </div>
             </section>
 
-            {/* ---------------------------------------------------------------- */}
-            {/* Root cause                                                       */}
-            {/* ---------------------------------------------------------------- */}
+            {/* Root cause */}
 
             {rootCause && (
-                <section className="space-y-5">
+                <section className="halo-section">
                     <SectionHeading
                         title="Root cause"
                         description="The strongest explanation supported by the available evidence."
@@ -154,44 +168,47 @@ function InvestigationView({
                 </section>
             )}
 
-            {/* ---------------------------------------------------------------- */}
-            {/* Timeline                                                          */}
-            {/* ---------------------------------------------------------------- */}
+            {/* Timeline */}
 
             {timeline.events.length > 0 && (
-                <section className="space-y-5">
+                <section className="halo-section">
                     <SectionHeading
                         title="Timeline"
                         description="The sequence of events Halo reconstructed around the failure."
                     />
 
-                    <div className="rounded-2xl border border-border bg-surface">
-                        <div className="divide-y divide-border">
-                            {timeline.events.map(
-                                (event) => (
-                                    <TimelineItem
-                                        key={event.id}
-                                        event={event}
-                                    />
-                                )
-                            )}
-                        </div>
+                    <div className="halo-card halo-timeline">
+                        {timeline.events.map(
+                            (event, index) => (
+                                <TimelineItem
+                                    key={event.id}
+                                    event={event}
+                                    isLast={
+                                        index ===
+                                        timeline.events
+                                            .length -
+                                        1
+                                    }
+                                />
+                            )
+                        )}
                     </div>
                 </section>
             )}
 
-            {/* ---------------------------------------------------------------- */}
-            {/* Evidence                                                          */}
-            {/* ---------------------------------------------------------------- */}
+            {/* Evidence */}
 
             {evidence.length > 0 && (
-                <section className="space-y-5">
+                <section className="halo-section">
                     <SectionHeading
                         title="Evidence"
-                        description={`${evidence.length} ${evidence.length === 1 ? "piece" : "pieces"} of evidence considered.`}
+                        description={`${evidence.length} ${evidence.length === 1
+                                ? "piece"
+                                : "pieces"
+                            } of evidence considered.`}
                     />
 
-                    <div className="space-y-3">
+                    <div className="halo-stack">
                         {evidence.map((item) => (
                             <EvidenceCard
                                 key={item.id}
@@ -202,44 +219,42 @@ function InvestigationView({
                 </section>
             )}
 
-            {/* ---------------------------------------------------------------- */}
-            {/* Findings                                                          */}
-            {/* ---------------------------------------------------------------- */}
+            {/* Findings */}
 
             {findings.length > 0 && (
-                <section className="space-y-5">
+                <section className="halo-section">
                     <SectionHeading
                         title="Findings"
                         description="Observations derived from the evidence."
                     />
 
-                    <div className="grid gap-3 lg:grid-cols-2">
+                    <div className="halo-grid-2">
                         {findings.map((finding) => (
                             <div
                                 key={finding.id}
-                                className="rounded-2xl border border-border bg-surface p-5"
+                                className="halo-card halo-finding"
                             >
-                                <div className="flex items-start justify-between gap-4">
+                                <div className="halo-card-top">
                                     <div>
-                                        <p className="text-xs font-medium uppercase tracking-wider text-muted">
+                                        <span className="halo-meta-label">
                                             {formatLabel(
                                                 finding.causalRole
                                             )}
-                                        </p>
+                                        </span>
 
-                                        <h3 className="mt-2 font-medium">
+                                        <h3 className="halo-card-title">
                                             {finding.title}
                                         </h3>
                                     </div>
 
-                                    <Score
+                                    <Strength
                                         value={
                                             finding.strength
                                         }
                                     />
                                 </div>
 
-                                <p className="mt-3 text-sm leading-6 text-secondary">
+                                <p className="halo-card-description">
                                     {finding.description}
                                 </p>
                             </div>
@@ -248,77 +263,71 @@ function InvestigationView({
                 </section>
             )}
 
-            {/* ---------------------------------------------------------------- */}
-            {/* Alternatives                                                     */}
-            {/* ---------------------------------------------------------------- */}
+            {/* Alternatives */}
 
             {report.alternatives.length > 0 && (
-                <section className="space-y-5">
+                <section className="halo-section">
                     <SectionHeading
                         title="Other possible causes"
                         description="Alternative explanations considered during the investigation."
                     />
 
-                    <div className="rounded-2xl border border-border bg-surface">
-                        <div className="divide-y divide-border">
-                            {report.alternatives.map(
-                                (alternative, index) => (
-                                    <div
-                                        key={`${alternative.title}-${index}`}
-                                        className="flex items-center justify-between gap-6 px-5 py-4"
-                                    >
-                                        <div className="min-w-0">
-                                            <p className="font-medium">
-                                                {
-                                                    alternative.title
-                                                }
-                                            </p>
-                                        </div>
-
-                                        <Confidence
-                                            value={
-                                                alternative.confidence
+                    <div className="halo-card">
+                        {report.alternatives.map(
+                            (alternative, index) => (
+                                <div
+                                    key={`${alternative.title}-${index}`}
+                                    className="halo-list-row"
+                                >
+                                    <div className="halo-list-content">
+                                        <p className="halo-list-title">
+                                            {
+                                                alternative.title
                                             }
-                                        />
+                                        </p>
                                     </div>
-                                )
-                            )}
-                        </div>
+
+                                    <Confidence
+                                        value={
+                                            alternative.confidence
+                                        }
+                                    />
+                                </div>
+                            )
+                        )}
                     </div>
                 </section>
             )}
 
-            {/* ---------------------------------------------------------------- */}
-            {/* Changes                                                           */}
-            {/* ---------------------------------------------------------------- */}
+            {/* Changes */}
 
             {changes.length > 0 && (
-                <section className="space-y-5">
+                <section className="halo-section">
                     <SectionHeading
                         title="Changes"
                         description="Changes detected around the incident."
                     />
 
-                    <div className="space-y-3">
+                    <div className="halo-stack">
                         {changes.map((change) => (
                             <div
                                 key={change.id}
-                                className="rounded-2xl border border-border bg-surface p-5"
+                                className="halo-card"
                             >
-                                <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
-                                    <div className="flex items-center gap-3">
-                                        <span className="rounded-md border border-border px-2 py-1 text-[11px] font-medium uppercase tracking-wide text-muted">
+                                <div className="halo-change-header">
+                                    <div className="halo-change-title">
+                                        <span className="halo-type-badge">
                                             {formatLabel(
                                                 change.type
                                             )}
                                         </span>
 
-                                        <h3 className="font-medium">
+                                        <h3 className="halo-card-title">
                                             {change.title}
                                         </h3>
                                     </div>
 
-                                    <time className="text-xs text-muted">
+                                    <time className="halo-time">
                                         {formatDate(
                                             change.timestamp
                                         )}
@@ -326,7 +335,7 @@ function InvestigationView({
                                 </div>
 
                                 {change.description && (
-                                    <p className="mt-3 text-sm leading-6 text-secondary">
+                                    <p className="halo-card-description">
                                         {
                                             change.description
                                         }
@@ -338,18 +347,16 @@ function InvestigationView({
                 </section>
             )}
 
-            {/* ---------------------------------------------------------------- */}
-            {/* Impact                                                            */}
-            {/* ---------------------------------------------------------------- */}
+            {/* Impact */}
 
             {impact && (
-                <section className="space-y-5">
+                <section className="halo-section">
                     <SectionHeading
                         title="Impact"
                         description="The observed scope of the incident."
                     />
 
-                    <div className="grid gap-3 sm:grid-cols-3">
+                    <div className="halo-grid-3">
                         <ImpactCard
                             label="Severity"
                             value={formatLabel(
@@ -372,7 +379,7 @@ function InvestigationView({
                         0 ||
                         impact.affectedRegions.length >
                         0) && (
-                            <div className="grid gap-3 lg:grid-cols-2">
+                            <div className="halo-grid-2">
                                 {impact.affectedServices.length >
                                     0 && (
                                         <ListCard
@@ -397,103 +404,27 @@ function InvestigationView({
                 </section>
             )}
 
-            {/* ---------------------------------------------------------------- */}
-            {/* Uncertainties                                                    */}
-            {/* ---------------------------------------------------------------- */}
+            {/* Uncertainties */}
 
             {report.uncertainties.length > 0 && (
-                <section className="space-y-5">
+                <section className="halo-section">
                     <SectionHeading
                         title="What is still unknown"
                         description="Evidence gaps that prevent a stronger conclusion."
                     />
 
-                    <div className="rounded-2xl border border-border bg-surface">
-                        <div className="divide-y divide-border">
-                            {report.uncertainties.map(
-                                (uncertainty, index) => (
-                                    <div
-                                        key={`${uncertainty}-${index}`}
-                                        className="flex gap-3 px-5 py-4"
-                                    >
-                                        <span className="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-amber-400" />
-
-                                        <p className="text-sm leading-6 text-secondary">
-                                            {
-                                                uncertainty
-                                            }
-                                        </p>
-                                    </div>
-                                )
-                            )}
-                        </div>
-                    </div>
-                </section>
-            )}
-
-            {/* ---------------------------------------------------------------- */}
-            {/* Next steps                                                       */}
-            {/* ---------------------------------------------------------------- */}
-
-            {recommendations.length > 0 && (
-                <section className="space-y-5">
-                    <SectionHeading
-                        title="Recommended next steps"
-                        description="Actions that can reduce uncertainty or validate the investigation."
-                    />
-
-                    <div className="space-y-3">
-                        {recommendations.map(
-                            (recommendation) => (
+                    <div className="halo-card">
+                        {report.uncertainties.map(
+                            (uncertainty, index) => (
                                 <div
-                                    key={
-                                        recommendation.id
-                                    }
-                                    className="rounded-2xl border border-border bg-surface p-5"
+                                    key={`${uncertainty}-${index}`}
+                                    className="halo-list-row halo-uncertainty"
                                 >
-                                    <div className="flex items-start justify-between gap-5">
-                                        <div>
-                                            <div className="flex flex-wrap items-center gap-2">
-                                                <h3 className="font-medium">
-                                                    {
-                                                        recommendation.title
-                                                    }
-                                                </h3>
+                                    <span className="halo-uncertainty-marker" />
 
-                                                <PriorityBadge
-                                                    priority={
-                                                        recommendation.priority
-                                                    }
-                                                />
-                                            </div>
-
-                                            <p className="mt-2 text-sm leading-6 text-secondary">
-                                                {
-                                                    recommendation.description
-                                                }
-                                            </p>
-                                        </div>
-
-                                        <Confidence
-                                            value={
-                                                recommendation.confidence
-                                            }
-                                        />
-                                    </div>
-
-                                    {recommendation.question && (
-                                        <div className="mt-4 rounded-xl border border-border bg-background px-4 py-3">
-                                            <p className="text-xs font-medium uppercase tracking-wider text-muted">
-                                                Question to answer
-                                            </p>
-
-                                            <p className="mt-1 text-sm text-secondary">
-                                                {
-                                                    recommendation.question
-                                                }
-                                            </p>
-                                        </div>
-                                    )}
+                                    <p className="halo-list-description">
+                                        {uncertainty}
+                                    </p>
                                 </div>
                             )
                         )}
@@ -501,18 +432,42 @@ function InvestigationView({
                 </section>
             )}
 
-            {/* ---------------------------------------------------------------- */}
-            {/* Hypotheses                                                       */}
-            {/* ---------------------------------------------------------------- */}
+            {/* Next steps */}
+
+            {recommendations.length > 0 && (
+                <section className="halo-section">
+                    <SectionHeading
+                        title="Recommended next steps"
+                        description="Actions that can reduce uncertainty or validate the investigation."
+                    />
+
+                    <div className="halo-stack">
+                        {recommendations.map(
+                            (recommendation) => (
+                                <RecommendationCard
+                                    key={
+                                        recommendation.id
+                                    }
+                                    recommendation={
+                                        recommendation
+                                    }
+                                />
+                            )
+                        )}
+                    </div>
+                </section>
+            )}
+
+            {/* Hypotheses */}
 
             {hypotheses.length > 0 && (
-                <section className="space-y-5">
+                <section className="halo-section">
                     <SectionHeading
                         title="Investigation hypotheses"
                         description="How Halo evaluated the possible explanations."
                     />
 
-                    <div className="space-y-3">
+                    <div className="halo-stack">
                         {hypotheses.map((hypothesis) => (
                             <HypothesisCard
                                 key={hypothesis.id}
@@ -527,7 +482,7 @@ function InvestigationView({
 }
 
 /* -------------------------------------------------------------------------- */
-/* Components                                                                  */
+/* Sections                                                                    */
 /* -------------------------------------------------------------------------- */
 
 function SectionHeading({
@@ -538,38 +493,102 @@ function SectionHeading({
     description: string;
 }) {
     return (
-        <div>
-            <h2 className="text-lg font-semibold">
+        <div className="halo-section-heading">
+            <h2 className="halo-section-title">
                 {title}
             </h2>
 
-            <p className="mt-1 text-sm text-muted">
+            <p className="halo-section-description">
                 {description}
             </p>
         </div>
     );
 }
 
+/* -------------------------------------------------------------------------- */
+/* Status                                                                      */
+/* -------------------------------------------------------------------------- */
+
 function StatusBadge({
     status,
 }: {
     status: Investigation["status"];
 }) {
-    const styles =
-        status === "CONCLUDED"
-            ? "border-emerald-500/20 bg-emerald-500/10 text-emerald-400"
-            : status === "INVESTIGATING"
-                ? "border-blue-500/20 bg-blue-500/10 text-blue-400"
-                : "border-amber-500/20 bg-amber-500/10 text-amber-400";
-
     return (
         <span
-            className={`rounded-full border px-2.5 py-1 text-[10px] font-semibold tracking-wide ${styles}`}
+            className={`halo-status halo-status-${status.toLowerCase()}`}
         >
-            {status}
+            {formatLabel(status)}
         </span>
     );
 }
+
+/* -------------------------------------------------------------------------- */
+/* Confidence                                                                  */
+/* -------------------------------------------------------------------------- */
+
+function Confidence({
+    value,
+    supportingCount,
+    contradictingCount,
+    missingCount,
+}: {
+    value: number;
+    supportingCount?: number;
+    contradictingCount?: number;
+    missingCount?: number;
+}) {
+    const level = getConfidenceLevel(value);
+
+    return (
+        <div
+            className={`halo-confidence halo-confidence-${level.toLowerCase().replace(" ", "-")}`}
+            title={`${value}% internal confidence`}
+        >
+            <span className="halo-confidence-dot" />
+
+            <div>
+                <p className="halo-confidence-level">
+                    {level} confidence
+                </p>
+
+                {(supportingCount !== undefined ||
+                    contradictingCount !== undefined ||
+                    missingCount !== undefined) && (
+                        <p className="halo-confidence-detail">
+                            {supportingCount ?? 0} supporting
+                            {" · "}
+                            {contradictingCount ?? 0} contradicting
+                            {" · "}
+                            {missingCount ?? 0} missing
+                        </p>
+                    )}
+            </div>
+        </div>
+    );
+}
+
+function getConfidenceLevel(
+    value: number
+): "Low" | "Medium" | "High" | "Very High" {
+    if (value >= 85) {
+        return "Very High";
+    }
+
+    if (value >= 65) {
+        return "High";
+    }
+
+    if (value >= 40) {
+        return "Medium";
+    }
+
+    return "Low";
+}
+
+/* -------------------------------------------------------------------------- */
+/* Root cause                                                                  */
+/* -------------------------------------------------------------------------- */
 
 function RootCauseCard({
     hypothesis,
@@ -577,32 +596,40 @@ function RootCauseCard({
     hypothesis: Hypothesis;
 }) {
     return (
-        <div className="rounded-2xl border border-emerald-500/20 bg-surface">
-            <div className="border-b border-border px-6 py-5">
-                <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                    <div>
-                        <p className="text-xs font-medium uppercase tracking-wider text-emerald-400">
-                            Most likely cause
-                        </p>
+        <div className="halo-card halo-root-cause">
+            <div className="halo-root-cause-header">
+                <div>
+                    <span className="halo-result-label">
+                        Most likely cause
+                    </span>
 
-                        <h3 className="mt-2 text-xl font-semibold">
-                            {hypothesis.title}
-                        </h3>
+                    <h3 className="halo-root-cause-title">
+                        {hypothesis.title}
+                    </h3>
 
-                        <p className="mt-2 max-w-3xl text-sm leading-6 text-secondary">
-                            {hypothesis.description}
-                        </p>
-                    </div>
-
-                    <Confidence
-                        value={hypothesis.confidence}
-                    />
+                    <p className="halo-card-description">
+                        {hypothesis.description}
+                    </p>
                 </div>
+
+                <Confidence
+                    value={hypothesis.confidence}
+                    supportingCount={
+                        hypothesis.supportingReasons.length
+                    }
+                    contradictingCount={
+                        hypothesis.contradictingReasons
+                            .length
+                    }
+                    missingCount={
+                        hypothesis.missingReasons.length
+                    }
+                />
             </div>
 
-            <div className="grid gap-6 p-6 lg:grid-cols-2">
+            <div className="halo-reason-grid">
                 <ReasonGroup
-                    title="Supporting evidence"
+                    title="Why Halo believes this"
                     reasons={
                         hypothesis.supportingReasons
                     }
@@ -610,7 +637,7 @@ function RootCauseCard({
                 />
 
                 <ReasonGroup
-                    title="Contradicting evidence"
+                    title="What argues against it"
                     reasons={
                         hypothesis.contradictingReasons
                     }
@@ -619,9 +646,9 @@ function RootCauseCard({
             </div>
 
             {hypothesis.missingReasons.length > 0 && (
-                <div className="border-t border-border px-6 py-5">
+                <div className="halo-reason-missing">
                     <ReasonGroup
-                        title="Evidence still missing"
+                        title="Evidence still needed"
                         reasons={
                             hypothesis.missingReasons
                         }
@@ -639,7 +666,7 @@ function ReasonGroup({
     type,
 }: {
     title: string;
-    reasons: Hypothesis["supportingReasons"];
+    reasons: Reason[];
     type:
     | "supporting"
     | "contradicting"
@@ -648,88 +675,89 @@ function ReasonGroup({
     if (reasons.length === 0) {
         return (
             <div>
-                <p className="text-sm font-medium">
+                <p className="halo-reason-title">
                     {title}
                 </p>
 
-                <p className="mt-2 text-sm text-muted">
+                <p className="halo-empty-text">
                     None identified.
                 </p>
             </div>
         );
     }
 
-    const marker =
-        type === "supporting"
-            ? "bg-emerald-400"
-            : type === "contradicting"
-                ? "bg-red-400"
-                : "bg-amber-400";
-
     return (
         <div>
-            <p className="text-sm font-medium">
+            <p className="halo-reason-title">
                 {title}
             </p>
 
-            <div className="mt-3 space-y-3">
-                {reasons
-                    .slice(0, 5)
-                    .map((reason, index) => (
+            <div className="halo-reason-list">
+                {reasons.slice(0, 5).map(
+                    (reason, index) => (
                         <div
                             key={`${reason.title}-${index}`}
-                            className="flex gap-3"
+                            className={`halo-reason halo-reason-${type}`}
                         >
-                            <span
-                                className={`mt-2 h-1.5 w-1.5 shrink-0 rounded-full ${marker}`}
-                            />
+                            <span className="halo-reason-marker" />
 
-                            <div className="min-w-0">
-                                <p className="text-sm font-medium">
+                            <div>
+                                <p className="halo-reason-name">
                                     {reason.title}
                                 </p>
 
-                                <p className="mt-1 text-sm leading-6 text-secondary">
+                                <p className="halo-reason-description">
                                     {
                                         reason.description
                                     }
                                 </p>
                             </div>
                         </div>
-                    ))}
+                    )
+                )}
             </div>
         </div>
     );
 }
 
+/* -------------------------------------------------------------------------- */
+/* Timeline                                                                    */
+/* -------------------------------------------------------------------------- */
+
 function TimelineItem({
     event,
+    isLast,
 }: {
     event: Investigation["timeline"]["events"][number];
+    isLast: boolean;
 }) {
     return (
-        <div className="grid grid-cols-[110px_20px_1fr] gap-4 px-5 py-5">
-            <time className="text-right text-xs leading-5 text-muted">
+        <div className="halo-timeline-item">
+            <time className="halo-timeline-time">
                 {formatDate(event.timestamp)}
             </time>
 
-            <div className="relative flex justify-center">
-                <span className="mt-1.5 h-2 w-2 rounded-full bg-blue-400 ring-4 ring-blue-400/10" />
+            <div className="halo-timeline-track">
+                <span className="halo-timeline-dot" />
+
+                {!isLast && (
+                    <span className="halo-timeline-line" />
+                )}
             </div>
 
-            <div>
-                <div className="flex flex-wrap items-center gap-2">
-                    <h3 className="font-medium">
+            <div className="halo-timeline-content">
+                <div className="halo-timeline-title-row">
+                    <h3 className="halo-card-title">
                         {event.title}
                     </h3>
 
-                    <span className="text-[10px] font-medium uppercase tracking-wider text-muted">
+                    <span className="halo-meta-label">
                         {formatLabel(event.type)}
                     </span>
                 </div>
 
                 {event.description && (
-                    <p className="mt-1 text-sm leading-6 text-secondary">
+                    <p className="halo-card-description">
                         {event.description}
                     </p>
                 )}
@@ -738,25 +766,29 @@ function TimelineItem({
     );
 }
 
+/* -------------------------------------------------------------------------- */
+/* Evidence                                                                    */
+/* -------------------------------------------------------------------------- */
+
 function EvidenceCard({
     evidence,
 }: {
     evidence: Investigation["evidence"][number];
 }) {
     return (
-        <div className="rounded-2xl border border-border bg-surface p-5">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
-                <div className="flex min-w-0 gap-3">
-                    <span className="rounded-md border border-border px-2 py-1 text-[10px] font-medium uppercase tracking-wider text-muted">
+        <div className="halo-card halo-evidence">
+            <div className="halo-evidence-header">
+                <div className="halo-evidence-main">
+                    <span className="halo-type-badge">
                         {formatLabel(evidence.type)}
                     </span>
 
-                    <div className="min-w-0">
-                        <h3 className="font-medium">
+                    <div>
+                        <h3 className="halo-card-title">
                             {evidence.title}
                         </h3>
 
-                        <p className="mt-1 text-xs text-muted">
+                        <p className="halo-evidence-source">
                             {evidence.source}
                             {" · "}
                             {evidence.service}
@@ -764,18 +796,18 @@ function EvidenceCard({
                     </div>
                 </div>
 
-                <time className="shrink-0 text-xs text-muted">
+                <time className="halo-time">
                     {formatDate(evidence.timestamp)}
                 </time>
             </div>
 
             {evidence.description && (
-                <p className="mt-4 text-sm leading-6 text-secondary">
+                <p className="halo-card-description">
                     {evidence.description}
                 </p>
             )}
 
-            <div className="mt-4 flex flex-wrap gap-2">
+            <div className="halo-metadata">
                 {evidence.environment && (
                     <MetadataChip
                         label="environment"
@@ -797,27 +829,134 @@ function EvidenceCard({
                     />
                 )}
 
-                {evidence.status !==
-                    undefined && (
-                        <MetadataChip
-                            label="status"
-                            value={String(
-                                evidence.status
-                            )}
-                        />
-                    )}
+                {evidence.resource && (
+                    <MetadataChip
+                        label="resource"
+                        value={evidence.resource}
+                    />
+                )}
 
-                {evidence.durationMs !==
-                    undefined && (
-                        <MetadataChip
-                            label="duration"
-                            value={`${evidence.durationMs}ms`}
-                        />
-                    )}
+                {evidence.status !== undefined && (
+                    <MetadataChip
+                        label="status"
+                        value={String(
+                            evidence.status
+                        )}
+                    />
+                )}
+
+                {evidence.durationMs !== undefined && (
+                    <MetadataChip
+                        label="duration"
+                        value={`${evidence.durationMs}ms`}
+                    />
+                )}
             </div>
         </div>
     );
 }
+
+/* -------------------------------------------------------------------------- */
+/* Findings                                                                    */
+/* -------------------------------------------------------------------------- */
+
+function Strength({
+    value,
+}: {
+    value: number;
+}) {
+    return (
+        <span className="halo-strength">
+            {getStrengthLevel(value)}
+        </span>
+    );
+}
+
+function getStrengthLevel(
+    value: number
+): "Weak" | "Moderate" | "Strong" | "Very Strong" {
+    if (value >= 0.85) {
+        return "Very Strong";
+    }
+
+    if (value >= 0.65) {
+        return "Strong";
+    }
+
+    if (value >= 0.4) {
+        return "Moderate";
+    }
+
+    return "Weak";
+}
+
+/* -------------------------------------------------------------------------- */
+/* Recommendations                                                             */
+/* -------------------------------------------------------------------------- */
+
+function RecommendationCard({
+    recommendation,
+}: {
+    recommendation: Recommendation;
+}) {
+    return (
+        <div className="halo-card">
+            <div className="halo-card-top">
+                <div>
+                    <div className="halo-recommendation-title">
+                        <h3 className="halo-card-title">
+                            {recommendation.title}
+                        </h3>
+
+                        <PriorityBadge
+                            priority={
+                                recommendation.priority
+                            }
+                        />
+                    </div>
+
+                    <p className="halo-card-description">
+                        {recommendation.description}
+                    </p>
+                </div>
+
+                <Confidence
+                    value={recommendation.confidence}
+                />
+            </div>
+
+            {recommendation.question && (
+                <div className="halo-question">
+                    <span className="halo-meta-label">
+                        Question to answer
+                    </span>
+
+                    <p className="halo-question-text">
+                        {recommendation.question}
+                    </p>
+                </div>
+            )}
+        </div>
+    );
+}
+
+function PriorityBadge({
+    priority,
+}: {
+    priority: Recommendation["priority"];
+}) {
+    return (
+        <span
+            className={`halo-priority halo-priority-${priority.toLowerCase()}`}
+        >
+            {priority}
+        </span>
+    );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Hypotheses                                                                  */
+/* -------------------------------------------------------------------------- */
 
 function HypothesisCard({
     hypothesis,
@@ -825,22 +964,22 @@ function HypothesisCard({
     hypothesis: Hypothesis;
 }) {
     return (
-        <div className="rounded-2xl border border-border bg-surface p-5">
-            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+        <div className="halo-card">
+            <div className="halo-card-top">
                 <div>
-                    <div className="flex flex-wrap items-center gap-2">
-                        <h3 className="font-medium">
+                    <div className="halo-hypothesis-title">
+                        <h3 className="halo-card-title">
                             {hypothesis.title}
                         </h3>
 
-                        <span className="rounded-md border border-border px-2 py-1 text-[10px] uppercase tracking-wider text-muted">
+                        <span className="halo-type-badge">
                             {formatLabel(
                                 hypothesis.status
                             )}
                         </span>
                     </div>
 
-                    <p className="mt-2 text-sm leading-6 text-secondary">
+                    <p className="halo-card-description">
                         {hypothesis.description}
                     </p>
                 </div>
@@ -853,59 +992,9 @@ function HypothesisCard({
     );
 }
 
-function Confidence({
-    value,
-}: {
-    value: number;
-}) {
-    return (
-        <div className="shrink-0 text-right">
-            <p className="text-2xl font-semibold tracking-tight">
-                {value}%
-            </p>
-
-            <p className="text-[10px] uppercase tracking-wider text-muted">
-                confidence
-            </p>
-        </div>
-    );
-}
-
-function Score({
-    value,
-}: {
-    value: number;
-}) {
-    return (
-        <span className="text-xs font-medium text-muted">
-            {value} strength
-        </span>
-    );
-}
-
-function PriorityBadge({
-    priority,
-}: {
-    priority:
-    | "LOW"
-    | "MEDIUM"
-    | "HIGH";
-}) {
-    const styles =
-        priority === "HIGH"
-            ? "border-red-500/20 bg-red-500/10 text-red-400"
-            : priority === "MEDIUM"
-                ? "border-amber-500/20 bg-amber-500/10 text-amber-400"
-                : "border-border bg-background text-muted";
-
-    return (
-        <span
-            className={`rounded-full border px-2 py-0.5 text-[10px] font-medium uppercase tracking-wider ${styles}`}
-        >
-            {priority}
-        </span>
-    );
-}
+/* -------------------------------------------------------------------------- */
+/* Impact                                                                      */
+/* -------------------------------------------------------------------------- */
 
 function ImpactCard({
     label,
@@ -915,12 +1004,12 @@ function ImpactCard({
     value: string;
 }) {
     return (
-        <div className="rounded-2xl border border-border bg-surface p-5">
-            <p className="text-xs uppercase tracking-wider text-muted">
+        <div className="halo-card halo-impact-card">
+            <span className="halo-meta-label">
                 {label}
-            </p>
+            </span>
 
-            <p className="mt-2 text-xl font-semibold">
+            <p className="halo-impact-value">
                 {value}
             </p>
         </div>
@@ -935,16 +1024,16 @@ function ListCard({
     items: string[];
 }) {
     return (
-        <div className="rounded-2xl border border-border bg-surface p-5">
-            <p className="text-xs font-medium uppercase tracking-wider text-muted">
+        <div className="halo-card">
+            <span className="halo-meta-label">
                 {title}
-            </p>
+            </span>
 
-            <div className="mt-3 flex flex-wrap gap-2">
+            <div className="halo-list-chips">
                 {items.map((item, index) => (
                     <span
                         key={`${item}-${index}`}
-                        className="rounded-lg border border-border bg-background px-3 py-1.5 text-sm text-secondary"
+                        className="halo-list-chip"
                     >
                         {item}
                     </span>
@@ -954,6 +1043,10 @@ function ListCard({
     );
 }
 
+/* -------------------------------------------------------------------------- */
+/* Metadata                                                                    */
+/* -------------------------------------------------------------------------- */
+
 function MetadataChip({
     label,
     value,
@@ -962,11 +1055,11 @@ function MetadataChip({
     value: string;
 }) {
     return (
-        <span className="rounded-md border border-border bg-background px-2.5 py-1 text-xs text-secondary">
-            <span className="text-muted">
+        <span className="halo-metadata-chip">
+            <span className="halo-metadata-label">
                 {label}
-                {" "}
             </span>
+
             {value}
         </span>
     );

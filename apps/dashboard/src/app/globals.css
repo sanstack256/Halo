@@ -391,3 +391,618 @@ a:hover {
     background: var(--accent-soft);
     box-shadow: var(--shadow-glow);
 }
+
+/* =====================================================
+HALO INVESTIGATION
+===================================================== */
+
+.halo-investigation {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding-bottom: 80px;
+}
+
+.halo-investigation-header {
+    margin-bottom: 40px;
+}
+
+.halo-eyebrow-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 14px;
+}
+
+.halo-eyebrow,
+.halo-section-label,
+.halo-meta-label {
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .08em;
+    text-transform: uppercase;
+}
+
+.halo-investigation-title {
+    margin: 0;
+    font-size: 38px;
+    line-height: 1.1;
+    font-weight: 600;
+    letter-spacing: -.03em;
+}
+
+.halo-investigation-description {
+    max-width: 680px;
+    margin-top: 12px;
+    font-size: 15px;
+    line-height: 1.7;
+    color: var(--text-secondary);
+}
+
+.halo-status {
+    display: inline-flex;
+    align-items: center;
+    min-height: 24px;
+    padding: 4px 9px;
+    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-pill);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.halo-status-concluded {
+    color: var(--success);
+    background: rgba(34,197,94,.08);
+    border-color: rgba(34,197,94,.16);
+}
+
+.halo-status-investigating {
+    color: var(--info);
+    background: var(--accent-soft);
+    border-color: rgba(91,184,255,.16);
+}
+
+.halo-status-uncertain {
+    color: var(--warning);
+    background: rgba(245,158,11,.08);
+    border-color: rgba(245,158,11,.16);
+}
+
+.halo-verdict,
+.halo-card {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+    box-shadow: var(--shadow-card);
+}
+
+.halo-verdict {
+    margin-bottom: 48px;
+}
+
+.halo-verdict-header {
+    padding: 17px 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.halo-verdict-body {
+    padding: 28px 24px;
+}
+
+.halo-verdict-content,
+.halo-card-top,
+.halo-root-cause-header,
+.halo-evidence-header,
+.halo-change-header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 24px;
+}
+
+.halo-verdict-main {
+    max-width: 760px;
+}
+
+.halo-result-label {
+    display: block;
+    margin-bottom: 8px;
+    color: var(--text-muted);
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+}
+
+.halo-verdict-title {
+    margin: 0;
+    font-size: 25px;
+    font-weight: 600;
+    letter-spacing: -.02em;
+}
+
+.halo-verdict-summary {
+    margin-top: 10px;
+    color: var(--text-secondary);
+    font-size: 15px;
+    line-height: 1.7;
+}
+
+.halo-confidence {
+    display: flex;
+    align-items: flex-start;
+    gap: 9px;
+    flex-shrink: 0;
+    min-width: 145px;
+    padding: 10px 12px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-input);
+    background: var(--surface-elevated);
+}
+
+.halo-confidence-dot {
+    width: 7px;
+    height: 7px;
+    margin-top: 5px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--text-muted);
+}
+
+.halo-confidence-very-high .halo-confidence-dot,
+.halo-confidence-high .halo-confidence-dot {
+    background: var(--success);
+}
+
+.halo-confidence-medium .halo-confidence-dot {
+    background: var(--warning);
+}
+
+.halo-confidence-low .halo-confidence-dot {
+    background: var(--error);
+}
+
+.halo-confidence-level {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.halo-confidence-detail {
+    margin-top: 3px;
+    color: var(--text-muted);
+    font-size: 10px;
+    line-height: 1.5;
+}
+
+.halo-section {
+    margin-bottom: 48px;
+}
+
+.halo-section-heading {
+    margin-bottom: 18px;
+}
+
+.halo-section-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+    letter-spacing: -.015em;
+}
+
+.halo-section-description {
+    margin-top: 5px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.halo-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.halo-grid-2 {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.halo-grid-3 {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 10px;
+    margin-bottom: 10px;
+}
+
+.halo-card {
+    padding: 20px;
+}
+
+.halo-card-title {
+    margin: 6px 0 0;
+    color: var(--text);
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.halo-card-description {
+    margin-top: 10px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.65;
+}
+
+.halo-root-cause {
+    overflow: hidden;
+    padding: 0;
+}
+
+.halo-root-cause-header {
+    padding: 24px;
+    border-bottom: 1px solid var(--border);
+}
+
+.halo-root-cause-title {
+    margin: 7px 0 0;
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.halo-reason-grid {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    gap: 28px;
+    padding: 24px;
+}
+
+.halo-reason-missing {
+    padding: 20px 24px 24px;
+    border-top: 1px solid var(--border);
+}
+
+.halo-reason-title {
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.halo-reason-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    margin-top: 13px;
+}
+
+.halo-reason {
+    display: flex;
+    gap: 10px;
+}
+
+.halo-reason-marker {
+    width: 6px;
+    height: 6px;
+    margin-top: 6px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--text-muted);
+}
+
+.halo-reason-supporting .halo-reason-marker {
+    background: var(--success);
+}
+
+.halo-reason-contradicting .halo-reason-marker {
+    background: var(--error);
+}
+
+.halo-reason-missing .halo-reason-marker {
+    background: var(--warning);
+}
+
+.halo-reason-name {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.halo-reason-description,
+.halo-list-description {
+    margin-top: 3px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.halo-empty-text {
+    margin-top: 8px;
+    color: var(--text-muted);
+    font-size: 13px;
+}
+
+.halo-timeline {
+    padding: 0;
+    overflow: hidden;
+}
+
+.halo-timeline-item {
+    display: grid;
+    grid-template-columns: 135px 20px minmax(0, 1fr);
+    gap: 14px;
+    min-height: 82px;
+    padding: 20px 24px;
+}
+
+.halo-timeline-time {
+    padding-top: 1px;
+    color: var(--text-muted);
+    font-size: 11px;
+    line-height: 1.5;
+    text-align: right;
+}
+
+.halo-timeline-track {
+    position: relative;
+    display: flex;
+    justify-content: center;
+}
+
+.halo-timeline-dot {
+    position: relative;
+    z-index: 1;
+    width: 7px;
+    height: 7px;
+    margin-top: 5px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 4px var(--accent-soft);
+}
+
+.halo-timeline-line {
+    position: absolute;
+    top: 13px;
+    bottom: -20px;
+    width: 1px;
+    background: var(--border-strong);
+}
+
+.halo-timeline-title-row {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 9px;
+}
+
+.halo-type-badge,
+.halo-priority,
+.halo-meta-label,
+.halo-strength {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .06em;
+    text-transform: uppercase;
+}
+
+.halo-type-badge {
+    display: inline-flex;
+    align-items: center;
+    padding: 4px 7px;
+    border: 1px solid var(--border-strong);
+    border-radius: 6px;
+    color: var(--text-muted);
+    background: var(--surface-elevated);
+}
+
+.halo-evidence-header {
+    margin-bottom: 2px;
+}
+
+.halo-evidence-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    min-width: 0;
+}
+
+.halo-evidence-source {
+    margin-top: 4px;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.halo-time {
+    flex-shrink: 0;
+    color: var(--text-muted);
+    font-size: 11px;
+}
+
+.halo-metadata {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 14px;
+}
+
+.halo-metadata-chip,
+.halo-list-chip {
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    background: var(--surface-elevated);
+    color: var(--text-secondary);
+    font-size: 11px;
+}
+
+.halo-metadata-chip {
+    padding: 5px 8px;
+}
+
+.halo-metadata-label {
+    margin-right: 4px;
+    color: var(--text-muted);
+}
+
+.halo-strength {
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+.halo-list-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 20px;
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--border);
+}
+
+.halo-list-row:last-child {
+    border-bottom: 0;
+}
+
+.halo-list-title {
+    color: var(--text);
+    font-size: 13px;
+    font-weight: 500;
+}
+
+.halo-uncertainty {
+    justify-content: flex-start;
+}
+
+.halo-uncertainty-marker {
+    width: 6px;
+    height: 6px;
+    flex-shrink: 0;
+    border-radius: 50%;
+    background: var(--warning);
+}
+
+.halo-change-title,
+.halo-recommendation-title,
+.halo-hypothesis-title {
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.halo-priority {
+    display: inline-flex;
+    padding: 4px 7px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-pill);
+}
+
+.halo-priority-high {
+    color: var(--error);
+    background: rgba(239,68,68,.08);
+    border-color: rgba(239,68,68,.15);
+}
+
+.halo-priority-medium {
+    color: var(--warning);
+    background: rgba(245,158,11,.08);
+    border-color: rgba(245,158,11,.15);
+}
+
+.halo-priority-low {
+    color: var(--text-muted);
+}
+
+.halo-question {
+    margin-top: 18px;
+    padding: 13px 15px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-input);
+    background: var(--surface-elevated);
+}
+
+.halo-question-text {
+    margin-top: 5px;
+    color: var(--text-secondary);
+    font-size: 13px;
+    line-height: 1.6;
+}
+
+.halo-impact-card {
+    min-height: 92px;
+}
+
+.halo-impact-value {
+    margin-top: 8px;
+    color: var(--text);
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.halo-list-chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-top: 12px;
+}
+
+.halo-list-chip {
+    padding: 6px 9px;
+}
+
+.halo-empty-state {
+    padding: 80px 20px;
+    text-align: center;
+}
+
+.halo-empty-state-title {
+    font-size: 20px;
+    font-weight: 600;
+}
+
+.halo-empty-state-description {
+    margin-top: 8px;
+    color: var(--text-secondary);
+    font-size: 14px;
+}
+
+@media (max-width: 900px) {
+    .halo-grid-2,
+    .halo-grid-3,
+    .halo-reason-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .halo-verdict-content,
+    .halo-root-cause-header,
+    .halo-evidence-header,
+    .halo-change-header,
+    .halo-card-top {
+        flex-direction: column;
+    }
+
+    .halo-confidence {
+        align-self: flex-start;
+    }
+}
+
+@media (max-width: 640px) {
+    .halo-investigation-title {
+        font-size: 30px;
+    }
+
+    .halo-timeline-item {
+        grid-template-columns: 20px minmax(0, 1fr);
+    }
+
+    .halo-timeline-time {
+        display: none;
+    }
+
+    .halo-timeline-track {
+        grid-column: 1;
+        grid-row: 1;
+    }
+
+    .halo-timeline-content {
+        grid-column: 2;
+    }
+}
