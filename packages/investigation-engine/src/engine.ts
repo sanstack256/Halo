@@ -13,6 +13,7 @@ import { rules } from "./rules";
 import { selectRootCause } from "./pipeline/root-cause";
 
 import { analyzeImpact } from "./pipeline/impact";
+
 import type { Evidence } from "./types/evidence";
 import type { Investigation } from "./types/investigation";
 
@@ -68,6 +69,113 @@ export function investigate(
             context
         );
 
+    /*
+     * TEMPORARY DEBUGGING
+     *
+     * Remove this after we identify the
+     * exact stage causing the problem.
+     */
+    console.log(
+        "\n========== HALO INVESTIGATION DEBUG =========="
+    );
+
+    console.log(
+        "\nEVIDENCE:",
+        normalized.map(item => ({
+            id: item.id,
+            type: item.type,
+            title: item.title,
+            service: item.service,
+            resource: item.resource,
+            operation: item.operation,
+            timestamp: item.timestamp,
+        }))
+    );
+
+    console.log(
+        "\nFINDINGS:",
+        findings.map(finding => ({
+            id: finding.id,
+            type: finding.type,
+            title: finding.title,
+            strength: finding.strength,
+            evidenceIds:
+                finding.evidenceIds,
+        }))
+    );
+
+    console.log(
+        "\nCANDIDATES:",
+        candidates.map(hypothesis => ({
+            id: hypothesis.id,
+            title: hypothesis.title,
+            confidence:
+                hypothesis.confidence,
+            status:
+                hypothesis.status,
+            findingIds:
+                hypothesis.findingIds,
+            evidenceIds:
+                hypothesis.evidenceIds,
+        }))
+    );
+
+    console.log(
+        "\nEVALUATED:",
+        evaluatedHypotheses.map(hypothesis => ({
+            id: hypothesis.id,
+            title: hypothesis.title,
+            confidence:
+                hypothesis.confidence,
+            score:
+                hypothesis.score,
+            supporting:
+                hypothesis.supportingReasons.length,
+            contradicting:
+                hypothesis.contradictingReasons.length,
+            missing:
+                hypothesis.missingReasons.length,
+        }))
+    );
+
+    console.log(
+        "\nRANKED:",
+        rankedHypotheses.map(hypothesis => ({
+            id: hypothesis.id,
+            title: hypothesis.title,
+            confidence:
+                hypothesis.confidence,
+            status:
+                hypothesis.status,
+        }))
+    );
+
+    console.log(
+        "\nVALIDATED:",
+        hypotheses.map(hypothesis => ({
+            id: hypothesis.id,
+            title: hypothesis.title,
+            confidence:
+                hypothesis.confidence,
+            status:
+                hypothesis.status,
+            validation:
+                hypothesis.validation,
+            score:
+                hypothesis.score,
+            missing:
+                hypothesis.missingReasons,
+            contradicting:
+                hypothesis.contradictingReasons,
+        }))
+    );
+
+    const impact =
+        analyzeImpact(normalized);
+
+    const rootCause =
+        selectRootCause(hypotheses);
+
     const recommendations =
         generateRecommendations(
             hypotheses,
@@ -80,12 +188,6 @@ export function investigate(
             recommendations
         );
 
-    const impact =
-        analyzeImpact(normalized);
-
-    const rootCause =
-    selectRootCause(hypotheses);
-
     const nextRecommendation =
         recommendations.find(
             recommendation =>
@@ -95,16 +197,34 @@ export function investigate(
     const nextInvestigation =
         nextRecommendation?.question
             ? {
-                question:
-                    nextRecommendation.question,
+                  question:
+                      nextRecommendation.question,
 
-                reason:
-                    nextRecommendation.description,
+                  reason:
+                      nextRecommendation.description,
 
-                evidenceIds:
-                    nextRecommendation.evidenceIds,
-            }
+                  evidenceIds:
+                      nextRecommendation.evidenceIds,
+              }
             : undefined;
+
+    console.log(
+        "\nROOT CAUSE:",
+        rootCause
+            ? {
+                  id: rootCause.id,
+                  title: rootCause.title,
+                  confidence:
+                      rootCause.confidence,
+                  status:
+                      rootCause.status,
+              }
+            : null
+    );
+
+    console.log(
+        "\n========== END HALO DEBUG ==========\n"
+    );
 
     return {
         status:
@@ -112,7 +232,8 @@ export function investigate(
                 ? "CONCLUDED"
                 : "UNCERTAIN",
 
-        evidence: normalized,
+        evidence:
+            normalized,
 
         graph,
 
