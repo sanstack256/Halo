@@ -1,4 +1,8 @@
-import type { Evidence } from "../types/evidence";
+import type {
+    Evidence,
+    EvidenceBreadcrumb,
+    EvidenceUser,
+} from "../types/evidence";
 
 export function normalizeEvidence(
     evidence: Evidence[]
@@ -7,41 +11,114 @@ export function normalizeEvidence(
 
     return evidence
         .filter(item => {
+            if (
+                !item ||
+                typeof item.id !== "string" ||
+                item.id.trim().length === 0
+            ) {
+                return false;
+            }
+
             if (seen.has(item.id)) {
                 return false;
             }
 
             seen.add(item.id);
+
             return true;
         })
         .map(item => ({
             ...item,
-            source: item.source.trim(),
-            service: item.service.trim(),
-            title: item.title.trim(),
+
+            id: item.id.trim(),
+
+            source: normalizeString(
+                item.source,
+                "unknown"
+            ),
+
+            service: normalizeString(
+                item.service,
+                "unknown"
+            ),
+
+            title: normalizeString(
+                item.title,
+                "Untitled evidence"
+            ),
+
             description:
-                item.description?.trim(),
+                normalizeOptionalString(
+                    item.description
+                ),
+
             release:
-                item.release?.trim(),
+                normalizeOptionalString(
+                    item.release
+                ),
+
             commit:
-                item.commit?.trim(),
+                normalizeOptionalString(
+                    item.commit
+                ),
+
             environment:
-                item.environment?.trim(),
+                normalizeOptionalString(
+                    item.environment
+                ),
+
             traceId:
-                item.traceId?.trim(),
+                normalizeOptionalString(
+                    item.traceId
+                ),
+
             spanId:
-                item.spanId?.trim(),
+                normalizeOptionalString(
+                    item.spanId
+                ),
+
             parentSpanId:
-                item.parentSpanId?.trim(),
+                normalizeOptionalString(
+                    item.parentSpanId
+                ),
+
             requestId:
-                item.requestId?.trim(),
+                normalizeOptionalString(
+                    item.requestId
+                ),
+
+            sessionId:
+                normalizeOptionalString(
+                    item.sessionId
+                ),
+
             operation:
-                item.operation?.trim(),
+                normalizeOptionalString(
+                    item.operation
+                ),
+
             resource:
-                item.resource?.trim(),
-            tags: item.tags
-                ? { ...item.tags }
-                : undefined,
+                normalizeOptionalString(
+                    item.resource
+                ),
+
+            fingerprint:
+                normalizeOptionalString(
+                    item.fingerprint
+                ),
+
+            tags: normalizeTags(
+                item.tags
+            ),
+
+            breadcrumbs:
+                normalizeBreadcrumbs(
+                    item.breadcrumbs
+                ),
+
+            user:
+                normalizeUser(item.user),
+
             metadata: {
                 ...item.metadata,
             },
@@ -51,4 +128,119 @@ export function normalizeEvidence(
                 a.timestamp.getTime() -
                 b.timestamp.getTime()
         );
+}
+
+function normalizeString(
+    value: string,
+    fallback: string
+): string {
+    const normalized = value.trim();
+
+    return normalized.length > 0
+        ? normalized
+        : fallback;
+}
+
+function normalizeOptionalString(
+    value: string | undefined
+): string | undefined {
+    if (!value) {
+        return undefined;
+    }
+
+    const normalized = value.trim();
+
+    return normalized.length > 0
+        ? normalized
+        : undefined;
+}
+
+function normalizeTags(
+    tags: Record<string, string> | undefined
+): Record<string, string> | undefined {
+    if (!tags) {
+        return undefined;
+    }
+
+    const normalized: Record<
+        string,
+        string
+    > = {};
+
+    for (const [key, value] of Object.entries(
+        tags
+    )) {
+        const normalizedKey = key.trim();
+
+        if (!normalizedKey) {
+            continue;
+        }
+
+        normalized[normalizedKey] =
+            value.trim();
+    }
+
+    return Object.keys(normalized).length > 0
+        ? normalized
+        : undefined;
+}
+
+function normalizeBreadcrumbs(
+    breadcrumbs:
+        | EvidenceBreadcrumb[]
+        | undefined
+): EvidenceBreadcrumb[] | undefined {
+    if (!breadcrumbs?.length) {
+        return undefined;
+    }
+
+    return breadcrumbs.map(
+        breadcrumb => ({
+            ...breadcrumb,
+
+            timestamp:
+                breadcrumb.timestamp,
+
+            category:
+                breadcrumb.category.trim(),
+
+            message:
+                breadcrumb.message.trim(),
+
+            data: breadcrumb.data
+                ? {
+                      ...breadcrumb.data,
+                  }
+                : undefined,
+        })
+    );
+}
+
+function normalizeUser(
+    user: EvidenceUser | undefined
+): EvidenceUser | undefined {
+    if (!user) {
+        return undefined;
+    }
+
+    const normalized: EvidenceUser = {
+        id: normalizeOptionalString(
+            user.id
+        ),
+
+        email: normalizeOptionalString(
+            user.email
+        ),
+
+        username:
+            normalizeOptionalString(
+                user.username
+            ),
+    };
+
+    return Object.values(normalized).some(
+        value => value !== undefined
+    )
+        ? normalized
+        : undefined;
 }

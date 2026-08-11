@@ -1,41 +1,149 @@
 import type { Hypothesis } from "../types/hypothesis";
 
+const MIN_ROOT_CAUSE_CONFIDENCE = 70;
+
 export function selectRootCause(
-    hypotheses: Hypothesis[]
+    hypotheses: Hypothesis[],
 ): Hypothesis | null {
-    const validated =
+    const eligible =
         hypotheses.filter(
             hypothesis =>
-                hypothesis.status ===
-                "VALIDATED"
+                isEligibleRootCause(
+                    hypothesis,
+                ),
         );
 
-    if (validated.length === 0) {
+    if (
+        eligible.length === 0
+    ) {
         return null;
     }
 
-    return [...validated].sort(
-        (a, b) => {
-            const confidenceDifference =
-                b.confidence -
-                a.confidence;
+    return (
+        [...eligible].sort(
+            compareRootCauses,
+        )[0] ?? null
+    );
+}
 
-            if (
-                confidenceDifference !== 0
-            ) {
-                return confidenceDifference;
-            }
+function isEligibleRootCause(
+    hypothesis: Hypothesis,
+): boolean {
+    if (
+        hypothesis.status !==
+        "VALIDATED"
+    ) {
+        return false;
+    }
 
-            return (
-                causalPriority(b) -
-                causalPriority(a)
-            );
-        }
-    )[0] ?? null;
+    if (
+        hypothesis.validation
+            ?.validated !== true
+    ) {
+        return false;
+    }
+
+    if (
+        hypothesis.confidence <
+        MIN_ROOT_CAUSE_CONFIDENCE
+    ) {
+        return false;
+    }
+
+    if (
+        hypothesis.title ===
+        "Cross-Service Failure"
+    ) {
+        return false;
+    }
+
+    const support =
+        totalStrength(
+            hypothesis.supportingReasons,
+        );
+
+    const contradiction =
+        totalStrength(
+            hypothesis.contradictingReasons,
+        );
+
+    if (
+        contradiction >=
+        support
+    ) {
+        return false;
+    }
+
+    if (
+        hypothesis.evidenceIds
+            .length === 0
+    ) {
+        return false;
+    }
+
+    return true;
+}
+
+function compareRootCauses(
+    a: Hypothesis,
+    b: Hypothesis,
+): number {
+    const confidenceDifference =
+        b.confidence -
+        a.confidence;
+
+    if (
+        confidenceDifference !== 0
+    ) {
+        return confidenceDifference;
+    }
+
+    const causalPriorityDifference =
+        causalPriority(b) -
+        causalPriority(a);
+
+    if (
+        causalPriorityDifference !==
+        0
+    ) {
+        return causalPriorityDifference;
+    }
+
+    const supportDifference =
+        totalStrength(
+            b.supportingReasons,
+        ) -
+        totalStrength(
+            a.supportingReasons,
+        );
+
+    if (
+        supportDifference !== 0
+    ) {
+        return supportDifference;
+    }
+
+    const contradictionDifference =
+        totalStrength(
+            a.contradictingReasons,
+        ) -
+        totalStrength(
+            b.contradictingReasons,
+        );
+
+    if (
+        contradictionDifference !== 0
+    ) {
+        return contradictionDifference;
+    }
+
+    return a.id.localeCompare(
+        b.id,
+    );
 }
 
 function causalPriority(
-    hypothesis: Hypothesis
+    hypothesis: Hypothesis,
 ): number {
     switch (hypothesis.title) {
         case "Shared Dependency Failure":
@@ -53,4 +161,37 @@ function causalPriority(
         default:
             return 0;
     }
+}
+
+function totalStrength(
+    reasons: Hypothesis["supportingReasons"],
+): number {
+    return reasons.reduce(
+        (total, reason) =>
+            total +
+            clampStrength(
+                reason.strength,
+            ),
+        0,
+    );
+}
+
+function clampStrength(
+    strength: number,
+): number {
+    if (
+        !Number.isFinite(
+            strength,
+        )
+    ) {
+        return 0;
+    }
+
+    return Math.max(
+        0,
+        Math.min(
+            1,
+            strength,
+        ),
+    );
 }

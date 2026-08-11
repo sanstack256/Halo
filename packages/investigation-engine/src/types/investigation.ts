@@ -60,9 +60,11 @@ export interface Investigation {
 
     report: InvestigationReport;
 
-    nextInvestigation?: {
-        question: string;
-        reason: string;
-        evidenceIds: string[];
-    };
+    nextInvestigation:
+        | {
+              question: string;
+              reason: string;
+              evidenceIds: string[];
+          }
+        | null;
 }

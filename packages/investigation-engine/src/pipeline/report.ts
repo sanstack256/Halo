@@ -4,146 +4,390 @@ import type { Recommendation } from "../types/recommendation";
 
 import { getConfidenceLevel } from "../types/confidence";
 
+const MAX_ALTERNATIVES = 3;
+const MAX_UNCERTAINTIES = 5;
+const MAX_NEXT_STEPS = 5;
+const MAX_REASONS = 5;
+
 export function buildReport(
     hypotheses: Hypothesis[],
-    recommendations: Recommendation[]
+    recommendations: Recommendation[],
 ): InvestigationReport {
     const rootCause =
-        hypotheses.find(
-            hypothesis =>
-                hypothesis.status === "VALIDATED"
-        ) ?? null;
+        selectRootCause(hypotheses);
 
-    const alternatives = hypotheses
-        .filter(
-            hypothesis =>
-                hypothesis.id !== rootCause?.id
-        )
-        .slice(0, 3)
-        .map(hypothesis => ({
-            title: hypothesis.title,
-            confidence: hypothesis.confidence,
-            confidenceLevel:
-                getConfidenceLevel(
-                    hypothesis.confidence
-                ),
-        }));
+    const alternatives =
+        buildAlternatives(
+            hypotheses,
+            rootCause,
+        );
 
-    const uncertainties = rootCause
-        ? rootCause.missingReasons.map(
-              reason => reason.description
-          )
-        : hypotheses
-              .filter(
-                  hypothesis =>
-                      hypothesis.status ===
-                      "UNCERTAIN"
-              )
-              .flatMap(
-                  hypothesis =>
-                      hypothesis.missingReasons.map(
-                          reason =>
-                              reason.description
-                      )
-              );
+    const uncertainties =
+        buildUncertainties(
+            hypotheses,
+            rootCause,
+        );
 
-    const nextSteps = recommendations
-        .slice(0, 5)
-        .map(
-            recommendation =>
-                recommendation.title
+    const nextSteps =
+        buildNextSteps(
+            recommendations,
         );
 
     return {
-        summary: buildSummary(
-            rootCause,
-            hypotheses
-        ),
+        summary:
+            buildSummary(
+                rootCause,
+                hypotheses,
+            ),
 
         rootCause: rootCause
-            ? {
-                  title: rootCause.title,
-
-                  confidence:
-                      rootCause.confidence,
-
-                  confidenceLevel:
-                      getConfidenceLevel(
-                          rootCause.confidence
-                      ),
-
-                  explanation:
-                      buildExplanation(
-                          rootCause
-                      ),
-
-                  supportingReasons:
-                      rootCause.supportingReasons
-                          .slice(0, 5)
-                          .map(
-                              reason =>
-                                  reason.description
-                          ),
-
-                  contradictingReasons:
-                      rootCause.contradictingReasons
-                          .slice(0, 5)
-                          .map(
-                              reason =>
-                                  reason.description
-                          ),
-
-                  missingReasons:
-                      rootCause.missingReasons
-                          .slice(0, 5)
-                          .map(
-                              reason =>
-                                  reason.description
-                          ),
-              }
+            ? buildRootCauseReport(
+                  rootCause,
+              )
             : null,
 
         alternatives,
 
-        uncertainties: [
-            ...new Set(uncertainties),
-        ],
+        uncertainties,
 
-        nextSteps: [
-            ...new Set(nextSteps),
-        ],
+        nextSteps,
     };
+}
+
+function selectRootCause(
+    hypotheses: Hypothesis[],
+): Hypothesis | null {
+    const validated =
+        hypotheses.filter(
+            hypothesis =>
+                hypothesis.status ===
+                "VALIDATED" &&
+                hypothesis.validation
+                    ?.validated === true,
+        );
+
+    if (
+        validated.length === 0
+    ) {
+        return null;
+    }
+
+    return (
+        [...validated].sort(
+            (a, b) =>
+                b.confidence -
+                a.confidence,
+        )[0] ?? null
+    );
+}
+
+function buildRootCauseReport(
+    hypothesis: Hypothesis,
+): NonNullable<
+    InvestigationReport["rootCause"]
+> {
+    return {
+        title:
+            hypothesis.title,
+
+        confidence:
+            hypothesis.confidence,
+
+        confidenceLevel:
+            getConfidenceLevel(
+                hypothesis.confidence,
+            ),
+
+        explanation:
+            buildExplanation(
+                hypothesis,
+            ),
+
+        supportingReasons:
+            uniqueStrings(
+                hypothesis.supportingReasons
+                    .slice(
+                        0,
+                        MAX_REASONS,
+                    )
+                    .map(
+                        reason =>
+                            reason.description,
+                    ),
+            ),
+
+        contradictingReasons:
+            uniqueStrings(
+                hypothesis.contradictingReasons
+                    .slice(
+                        0,
+                        MAX_REASONS,
+                    )
+                    .map(
+                        reason =>
+                            reason.description,
+                    ),
+            ),
+
+        missingReasons:
+            uniqueStrings(
+                hypothesis.missingReasons
+                    .slice(
+                        0,
+                        MAX_REASONS,
+                    )
+                    .map(
+                        reason =>
+                            reason.description,
+                    ),
+            ),
+    };
+}
+
+function buildAlternatives(
+    hypotheses: Hypothesis[],
+    rootCause: Hypothesis | null,
+): InvestigationReport["alternatives"] {
+    return hypotheses
+        .filter(
+            hypothesis =>
+                hypothesis.id !==
+                    rootCause?.id &&
+                hypothesis.status !==
+                    "REJECTED",
+        )
+        .sort(
+            (a, b) =>
+                b.confidence -
+                a.confidence,
+        )
+        .slice(
+            0,
+            MAX_ALTERNATIVES,
+        )
+        .map(
+            hypothesis => ({
+                title:
+                    hypothesis.title,
+
+                confidence:
+                    hypothesis.confidence,
+
+                confidenceLevel:
+                    getConfidenceLevel(
+                        hypothesis.confidence,
+                    ),
+            }),
+        );
+}
+
+function buildUncertainties(
+    hypotheses: Hypothesis[],
+    rootCause: Hypothesis | null,
+): string[] {
+    const sources = rootCause
+        ? [
+              ...rootCause.missingReasons,
+              ...rootCause.contradictingReasons,
+          ]
+        : hypotheses
+              .filter(
+                  hypothesis =>
+                      hypothesis.status ===
+                          "UNCERTAIN" ||
+                      hypothesis.status ===
+                          "CANDIDATE" ||
+                      hypothesis.status ===
+                          "LEADING",
+              )
+              .flatMap(
+                  hypothesis => [
+                      ...hypothesis.missingReasons,
+                      ...hypothesis.contradictingReasons,
+                  ],
+              );
+
+    return uniqueStrings(
+        sources
+            .filter(
+                reason =>
+                    reason.description
+                        .trim()
+                        .length > 0,
+            )
+            .sort(
+                (a, b) =>
+                    b.strength -
+                    a.strength,
+            )
+            .slice(
+                0,
+                MAX_UNCERTAINTIES,
+            )
+            .map(
+                reason =>
+                    reason.description,
+            ),
+    );
+}
+
+function buildNextSteps(
+    recommendations: Recommendation[],
+): string[] {
+    return uniqueStrings(
+        [...recommendations]
+            .sort(
+                (a, b) => {
+                    const priorityDifference =
+                        priorityWeight(
+                            b.priority,
+                        ) -
+                        priorityWeight(
+                            a.priority,
+                        );
+
+                    if (
+                        priorityDifference !==
+                        0
+                    ) {
+                        return priorityDifference;
+                    }
+
+                    return (
+                        b.confidence -
+                        a.confidence
+                    );
+                },
+            )
+            .slice(
+                0,
+                MAX_NEXT_STEPS,
+            )
+            .map(
+                recommendation =>
+                    recommendation.title,
+            ),
+    );
 }
 
 function buildSummary(
     rootCause: Hypothesis | null,
-    hypotheses: Hypothesis[]
+    hypotheses: Hypothesis[],
 ): string {
     if (!rootCause) {
-        if (hypotheses.length === 0) {
+        if (
+            hypotheses.length === 0
+        ) {
             return "The investigation does not have enough evidence to identify a likely cause.";
         }
 
         return "The investigation has identified candidate explanations, but the available evidence is not strong enough to validate a root cause.";
     }
 
-    return `The investigation indicates ${rootCause.title} as the most likely explanation.`;
+    const confidenceLevel =
+        getConfidenceLevel(
+            rootCause.confidence,
+        );
+
+    return `The investigation identifies ${rootCause.title} as the most likely explanation with ${formatConfidenceLevel(
+        confidenceLevel,
+    )} confidence.`;
 }
 
 function buildExplanation(
-    hypothesis: Hypothesis
+    hypothesis: Hypothesis,
 ): string {
     const supporting =
-        hypothesis.supportingReasons
-            .slice(0, 3)
-            .map(
-                reason =>
-                    reason.description
-            );
+        uniqueStrings(
+            hypothesis.supportingReasons
+                .filter(
+                    reason =>
+                        reason.description
+                            .trim()
+                            .length > 0,
+                )
+                .sort(
+                    (a, b) =>
+                        b.strength -
+                        a.strength,
+                )
+                .slice(
+                    0,
+                    3,
+                )
+                .map(
+                    reason =>
+                        reason.description,
+                ),
+        );
 
-    if (supporting.length === 0) {
-        return hypothesis.description;
+    if (
+        supporting.length === 0
+    ) {
+        return (
+            hypothesis.description ||
+            "The available evidence supports this hypothesis, but there is not enough detail to provide a more specific explanation."
+        );
     }
 
     return supporting.join(" ");
+}
+
+function priorityWeight(
+    priority: Recommendation["priority"],
+): number {
+    switch (priority) {
+        case "HIGH":
+            return 3;
+
+        case "MEDIUM":
+            return 2;
+
+        case "LOW":
+            return 1;
+
+        default:
+            return 0;
+    }
+}
+
+function formatConfidenceLevel(
+    level: ReturnType<
+        typeof getConfidenceLevel
+    >,
+): string {
+    switch (level) {
+        case "VERY_HIGH":
+            return "very high";
+
+        case "HIGH":
+            return "high";
+
+        case "MEDIUM":
+            return "medium";
+
+        case "LOW":
+            return "low";
+
+        default:
+            return "low";
+    }
+}
+
+function uniqueStrings(
+    values: string[],
+): string[] {
+    return [
+        ...new Set(
+            values
+                .map(
+                    value =>
+                        value.trim(),
+                )
+                .filter(
+                    value =>
+                        value.length > 0,
+                ),
+        ),
+    ];
 }

@@ -1431,7 +1431,9 @@ export const EventScalarFieldEnum = {
   resource: 'resource',
   service: 'service',
   sessionId: 'sessionId',
-  status: 'status'
+  status: 'status',
+  requestId: 'requestId',
+  traceId: 'traceId'
 } as const
 
 export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]

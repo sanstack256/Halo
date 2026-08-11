@@ -192,7 +192,7 @@ export default async function ProjectSdkPage({
                     </p>
 
                     <CodeBlock>
-                        pnpm add @halo/sdk
+                        pnpm add @halo-trace/sdk
                     </CodeBlock>
 
                     <p className="mt-4 text-xs leading-5 text-muted">
@@ -306,7 +306,7 @@ export default async function ProjectSdkPage({
                 <div className="p-6">
 
                     <CodeBlock>
-{`import { Halo } from "@halo/sdk";
+{`import { Halo } from "@halo-trace/sdk";
 
 const halo = new Halo({
     apiKey: process.env.HALO_API_KEY!,

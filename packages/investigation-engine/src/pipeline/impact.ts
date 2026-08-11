@@ -2,37 +2,52 @@ import type { Evidence } from "../types/evidence";
 import type { Impact } from "../types/impact";
 
 export function analyzeImpact(
-    evidence: Evidence[]
+    evidence: Evidence[],
 ): Impact {
-    const affectedServices = [
-        ...new Set(
-            evidence
-                .filter(e => e.type === "ERROR")
-                .map(e => e.service)
-                .filter(Boolean)
-        ),
-    ];
+    const failureEvidence =
+        evidence.filter(isFailureEvidence);
 
-    const affectedRegions = [
-        ...new Set(
-            evidence
-                .map(e => e.tags?.region)
-                .filter(
-                    (region): region is string =>
-                        Boolean(region)
+    const affectedServices =
+        uniqueStrings(
+            failureEvidence
+                .map(
+                    item =>
+                        item.service,
                 )
-        ),
-    ];
+                .filter(
+                    (
+                        service,
+                    ): service is string =>
+                        Boolean(service),
+                ),
+        );
 
-    const affectedUsers = countAffectedUsers(
-        evidence
-    );
+    const affectedRegions =
+        uniqueStrings(
+            failureEvidence
+                .map(
+                    item =>
+                        item.tags?.region,
+                )
+                .filter(
+                    (
+                        region,
+                    ): region is string =>
+                        Boolean(region),
+                ),
+        );
 
-    const severity = determineSeverity(
-        affectedServices.length,
-        affectedUsers,
-        affectedRegions.length
-    );
+    const affectedUsers =
+        countAffectedUsers(
+            failureEvidence,
+        );
+
+    const severity =
+        determineSeverity(
+            affectedServices.length,
+            affectedUsers,
+            affectedRegions.length,
+        );
 
     return {
         affectedServices,
@@ -42,16 +57,60 @@ export function analyzeImpact(
     };
 }
 
+function isFailureEvidence(
+    evidence: Evidence,
+): boolean {
+    if (
+        evidence.type === "ERROR"
+    ) {
+        return true;
+    }
+
+    if (
+        typeof evidence.status ===
+        "number"
+    ) {
+        return evidence.status >= 400;
+    }
+
+    if (
+        typeof evidence.status ===
+        "string"
+    ) {
+        const status =
+            evidence.status
+                .trim()
+                .toLowerCase();
+
+        return (
+            status === "error" ||
+            status === "failed" ||
+            status === "failure" ||
+            status === "timeout" ||
+            status === "unavailable"
+        );
+    }
+
+    return false;
+}
+
 function countAffectedUsers(
-    evidence: Evidence[]
+    evidence: Evidence[],
 ): number {
-    const users = new Set<string>();
+    const users =
+        new Set<string>();
 
     for (const item of evidence) {
-        const userId = item.tags?.userId;
+        const userId =
+            item.tags?.userId;
 
-        if (userId) {
-            users.add(userId);
+        if (
+            userId &&
+            userId.trim()
+        ) {
+            users.add(
+                userId.trim(),
+            );
         }
     }
 
@@ -61,11 +120,11 @@ function countAffectedUsers(
 function determineSeverity(
     serviceCount: number,
     userCount: number,
-    regionCount: number
+    regionCount: number,
 ): Impact["severity"] {
     if (
         serviceCount >= 4 ||
-        userCount >= 10000 ||
+        userCount >= 10_000 ||
         regionCount >= 3
     ) {
         return "CRITICAL";
@@ -73,7 +132,7 @@ function determineSeverity(
 
     if (
         serviceCount >= 2 ||
-        userCount >= 1000 ||
+        userCount >= 1_000 ||
         regionCount >= 2
     ) {
         return "HIGH";
@@ -88,4 +147,22 @@ function determineSeverity(
     }
 
     return "LOW";
+}
+
+function uniqueStrings(
+    values: string[],
+): string[] {
+    return [
+        ...new Set(
+            values
+                .map(
+                    value =>
+                        value.trim(),
+                )
+                .filter(
+                    value =>
+                        value.length > 0,
+                ),
+        ),
+    ];
 }

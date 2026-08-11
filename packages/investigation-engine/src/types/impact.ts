@@ -1,3 +1,9 @@
+export type ImpactSeverity =
+    | "LOW"
+    | "MEDIUM"
+    | "HIGH"
+    | "CRITICAL";
+
 export interface Impact {
     affectedServices: string[];
 
@@ -5,5 +11,5 @@ export interface Impact {
 
     affectedRegions: string[];
 
-    severity: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
+    severity: ImpactSeverity;
 }

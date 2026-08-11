@@ -35,7 +35,9 @@ export interface Hypothesis {
 
     validation?: {
         validated: boolean;
+
         confidence: number;
+
         evidenceIds: string[];
     };
 }

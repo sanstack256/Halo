@@ -1,4 +1,4 @@
-import { Halo } from "@halo/sdk";
+import { Halo } from "@halo-trace/sdk";
 
 export default async function SdkPage() {
   const halo = new Halo({

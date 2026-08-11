@@ -57,6 +57,8 @@ export type EventMinAggregateOutputType = {
   service: string | null
   sessionId: string | null
   status: string | null
+  requestId: string | null
+  traceId: string | null
 }
 
 export type EventMaxAggregateOutputType = {
@@ -82,6 +84,8 @@ export type EventMaxAggregateOutputType = {
   service: string | null
   sessionId: string | null
   status: string | null
+  requestId: string | null
+  traceId: string | null
 }
 
 export type EventCountAggregateOutputType = {
@@ -111,6 +115,8 @@ export type EventCountAggregateOutputType = {
   service: number
   sessionId: number
   status: number
+  requestId: number
+  traceId: number
   _all: number
 }
 
@@ -146,6 +152,8 @@ export type EventMinAggregateInputType = {
   service?: true
   sessionId?: true
   status?: true
+  requestId?: true
+  traceId?: true
 }
 
 export type EventMaxAggregateInputType = {
@@ -171,6 +179,8 @@ export type EventMaxAggregateInputType = {
   service?: true
   sessionId?: true
   status?: true
+  requestId?: true
+  traceId?: true
 }
 
 export type EventCountAggregateInputType = {
@@ -200,6 +210,8 @@ export type EventCountAggregateInputType = {
   service?: true
   sessionId?: true
   status?: true
+  requestId?: true
+  traceId?: true
   _all?: true
 }
 
@@ -316,6 +328,8 @@ export type EventGroupByOutputType = {
   service: string | null
   sessionId: string | null
   status: string | null
+  requestId: string | null
+  traceId: string | null
   _count: EventCountAggregateOutputType | null
   _avg: EventAvgAggregateOutputType | null
   _sum: EventSumAggregateOutputType | null
@@ -368,6 +382,8 @@ export type EventWhereInput = {
   service?: Prisma.StringNullableFilter<"Event"> | string | null
   sessionId?: Prisma.StringNullableFilter<"Event"> | string | null
   status?: Prisma.StringNullableFilter<"Event"> | string | null
+  requestId?: Prisma.StringNullableFilter<"Event"> | string | null
+  traceId?: Prisma.StringNullableFilter<"Event"> | string | null
   releaseRef?: Prisma.XOR<Prisma.ReleaseNullableScalarRelationFilter, Prisma.ReleaseWhereInput> | null
   environment?: Prisma.XOR<Prisma.EnvironmentScalarRelationFilter, Prisma.EnvironmentWhereInput>
   issue?: Prisma.XOR<Prisma.IssueNullableScalarRelationFilter, Prisma.IssueWhereInput> | null
@@ -402,6 +418,8 @@ export type EventOrderByWithRelationInput = {
   service?: Prisma.SortOrderInput | Prisma.SortOrder
   sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestId?: Prisma.SortOrderInput | Prisma.SortOrder
+  traceId?: Prisma.SortOrderInput | Prisma.SortOrder
   releaseRef?: Prisma.ReleaseOrderByWithRelationInput
   environment?: Prisma.EnvironmentOrderByWithRelationInput
   issue?: Prisma.IssueOrderByWithRelationInput
@@ -439,6 +457,8 @@ export type EventWhereUniqueInput = Prisma.AtLeast<{
   service?: Prisma.StringNullableFilter<"Event"> | string | null
   sessionId?: Prisma.StringNullableFilter<"Event"> | string | null
   status?: Prisma.StringNullableFilter<"Event"> | string | null
+  requestId?: Prisma.StringNullableFilter<"Event"> | string | null
+  traceId?: Prisma.StringNullableFilter<"Event"> | string | null
   releaseRef?: Prisma.XOR<Prisma.ReleaseNullableScalarRelationFilter, Prisma.ReleaseWhereInput> | null
   environment?: Prisma.XOR<Prisma.EnvironmentScalarRelationFilter, Prisma.EnvironmentWhereInput>
   issue?: Prisma.XOR<Prisma.IssueNullableScalarRelationFilter, Prisma.IssueWhereInput> | null
@@ -473,6 +493,8 @@ export type EventOrderByWithAggregationInput = {
   service?: Prisma.SortOrderInput | Prisma.SortOrder
   sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrderInput | Prisma.SortOrder
+  requestId?: Prisma.SortOrderInput | Prisma.SortOrder
+  traceId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.EventCountOrderByAggregateInput
   _avg?: Prisma.EventAvgOrderByAggregateInput
   _max?: Prisma.EventMaxOrderByAggregateInput
@@ -510,6 +532,8 @@ export type EventScalarWhereWithAggregatesInput = {
   service?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
   sessionId?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
   status?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  requestId?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  traceId?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
 }
 
 export type EventCreateInput = {
@@ -534,6 +558,8 @@ export type EventCreateInput = {
   resource?: string | null
   service?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
   releaseRef?: Prisma.ReleaseCreateNestedOneWithoutEventsInput
   environment: Prisma.EnvironmentCreateNestedOneWithoutEventsInput
   issue?: Prisma.IssueCreateNestedOneWithoutEventsInput
@@ -568,6 +594,8 @@ export type EventUncheckedCreateInput = {
   service?: string | null
   sessionId?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
 }
 
 export type EventUpdateInput = {
@@ -592,6 +620,8 @@ export type EventUpdateInput = {
   resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseRef?: Prisma.ReleaseUpdateOneWithoutEventsNestedInput
   environment?: Prisma.EnvironmentUpdateOneRequiredWithoutEventsNestedInput
   issue?: Prisma.IssueUpdateOneWithoutEventsNestedInput
@@ -626,6 +656,8 @@ export type EventUncheckedUpdateInput = {
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventCreateManyInput = {
@@ -655,6 +687,8 @@ export type EventCreateManyInput = {
   service?: string | null
   sessionId?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
 }
 
 export type EventUpdateManyMutationInput = {
@@ -679,6 +713,8 @@ export type EventUpdateManyMutationInput = {
   resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventUncheckedUpdateManyInput = {
@@ -708,6 +744,8 @@ export type EventUncheckedUpdateManyInput = {
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventListRelationFilter = {
@@ -747,6 +785,8 @@ export type EventCountOrderByAggregateInput = {
   service?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  requestId?: Prisma.SortOrder
+  traceId?: Prisma.SortOrder
 }
 
 export type EventAvgOrderByAggregateInput = {
@@ -776,6 +816,8 @@ export type EventMaxOrderByAggregateInput = {
   service?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  requestId?: Prisma.SortOrder
+  traceId?: Prisma.SortOrder
 }
 
 export type EventMinOrderByAggregateInput = {
@@ -801,6 +843,8 @@ export type EventMinOrderByAggregateInput = {
   service?: Prisma.SortOrder
   sessionId?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  requestId?: Prisma.SortOrder
+  traceId?: Prisma.SortOrder
 }
 
 export type EventSumOrderByAggregateInput = {
@@ -1055,6 +1099,8 @@ export type EventCreateWithoutProjectInput = {
   resource?: string | null
   service?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
   releaseRef?: Prisma.ReleaseCreateNestedOneWithoutEventsInput
   environment: Prisma.EnvironmentCreateNestedOneWithoutEventsInput
   issue?: Prisma.IssueCreateNestedOneWithoutEventsInput
@@ -1087,6 +1133,8 @@ export type EventUncheckedCreateWithoutProjectInput = {
   service?: string | null
   sessionId?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
 }
 
 export type EventCreateOrConnectWithoutProjectInput = {
@@ -1145,6 +1193,8 @@ export type EventScalarWhereInput = {
   service?: Prisma.StringNullableFilter<"Event"> | string | null
   sessionId?: Prisma.StringNullableFilter<"Event"> | string | null
   status?: Prisma.StringNullableFilter<"Event"> | string | null
+  requestId?: Prisma.StringNullableFilter<"Event"> | string | null
+  traceId?: Prisma.StringNullableFilter<"Event"> | string | null
 }
 
 export type EventCreateWithoutEnvironmentInput = {
@@ -1169,6 +1219,8 @@ export type EventCreateWithoutEnvironmentInput = {
   resource?: string | null
   service?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
   releaseRef?: Prisma.ReleaseCreateNestedOneWithoutEventsInput
   issue?: Prisma.IssueCreateNestedOneWithoutEventsInput
   project: Prisma.ProjectCreateNestedOneWithoutEventsInput
@@ -1201,6 +1253,8 @@ export type EventUncheckedCreateWithoutEnvironmentInput = {
   service?: string | null
   sessionId?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
 }
 
 export type EventCreateOrConnectWithoutEnvironmentInput = {
@@ -1251,6 +1305,8 @@ export type EventCreateWithoutSessionInput = {
   resource?: string | null
   service?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
   releaseRef?: Prisma.ReleaseCreateNestedOneWithoutEventsInput
   environment: Prisma.EnvironmentCreateNestedOneWithoutEventsInput
   issue?: Prisma.IssueCreateNestedOneWithoutEventsInput
@@ -1283,6 +1339,8 @@ export type EventUncheckedCreateWithoutSessionInput = {
   resource?: string | null
   service?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
 }
 
 export type EventCreateOrConnectWithoutSessionInput = {
@@ -1333,6 +1391,8 @@ export type EventCreateWithoutReleaseRefInput = {
   resource?: string | null
   service?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
   environment: Prisma.EnvironmentCreateNestedOneWithoutEventsInput
   issue?: Prisma.IssueCreateNestedOneWithoutEventsInput
   project: Prisma.ProjectCreateNestedOneWithoutEventsInput
@@ -1365,6 +1425,8 @@ export type EventUncheckedCreateWithoutReleaseRefInput = {
   service?: string | null
   sessionId?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
 }
 
 export type EventCreateOrConnectWithoutReleaseRefInput = {
@@ -1415,6 +1477,8 @@ export type EventCreateWithoutIssueInput = {
   resource?: string | null
   service?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
   releaseRef?: Prisma.ReleaseCreateNestedOneWithoutEventsInput
   environment: Prisma.EnvironmentCreateNestedOneWithoutEventsInput
   project: Prisma.ProjectCreateNestedOneWithoutEventsInput
@@ -1447,6 +1511,8 @@ export type EventUncheckedCreateWithoutIssueInput = {
   service?: string | null
   sessionId?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
 }
 
 export type EventCreateOrConnectWithoutIssueInput = {
@@ -1501,6 +1567,8 @@ export type EventCreateManyProjectInput = {
   service?: string | null
   sessionId?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
 }
 
 export type EventUpdateWithoutProjectInput = {
@@ -1525,6 +1593,8 @@ export type EventUpdateWithoutProjectInput = {
   resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseRef?: Prisma.ReleaseUpdateOneWithoutEventsNestedInput
   environment?: Prisma.EnvironmentUpdateOneRequiredWithoutEventsNestedInput
   issue?: Prisma.IssueUpdateOneWithoutEventsNestedInput
@@ -1557,6 +1627,8 @@ export type EventUncheckedUpdateWithoutProjectInput = {
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventUncheckedUpdateManyWithoutProjectInput = {
@@ -1585,6 +1657,8 @@ export type EventUncheckedUpdateManyWithoutProjectInput = {
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventCreateManyEnvironmentInput = {
@@ -1613,6 +1687,8 @@ export type EventCreateManyEnvironmentInput = {
   service?: string | null
   sessionId?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
 }
 
 export type EventUpdateWithoutEnvironmentInput = {
@@ -1637,6 +1713,8 @@ export type EventUpdateWithoutEnvironmentInput = {
   resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseRef?: Prisma.ReleaseUpdateOneWithoutEventsNestedInput
   issue?: Prisma.IssueUpdateOneWithoutEventsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
@@ -1669,6 +1747,8 @@ export type EventUncheckedUpdateWithoutEnvironmentInput = {
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventUncheckedUpdateManyWithoutEnvironmentInput = {
@@ -1697,6 +1777,8 @@ export type EventUncheckedUpdateManyWithoutEnvironmentInput = {
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventCreateManySessionInput = {
@@ -1725,6 +1807,8 @@ export type EventCreateManySessionInput = {
   resource?: string | null
   service?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
 }
 
 export type EventUpdateWithoutSessionInput = {
@@ -1749,6 +1833,8 @@ export type EventUpdateWithoutSessionInput = {
   resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseRef?: Prisma.ReleaseUpdateOneWithoutEventsNestedInput
   environment?: Prisma.EnvironmentUpdateOneRequiredWithoutEventsNestedInput
   issue?: Prisma.IssueUpdateOneWithoutEventsNestedInput
@@ -1781,6 +1867,8 @@ export type EventUncheckedUpdateWithoutSessionInput = {
   resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventUncheckedUpdateManyWithoutSessionInput = {
@@ -1809,6 +1897,8 @@ export type EventUncheckedUpdateManyWithoutSessionInput = {
   resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventCreateManyReleaseRefInput = {
@@ -1837,6 +1927,8 @@ export type EventCreateManyReleaseRefInput = {
   service?: string | null
   sessionId?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
 }
 
 export type EventUpdateWithoutReleaseRefInput = {
@@ -1861,6 +1953,8 @@ export type EventUpdateWithoutReleaseRefInput = {
   resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   environment?: Prisma.EnvironmentUpdateOneRequiredWithoutEventsNestedInput
   issue?: Prisma.IssueUpdateOneWithoutEventsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
@@ -1893,6 +1987,8 @@ export type EventUncheckedUpdateWithoutReleaseRefInput = {
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventUncheckedUpdateManyWithoutReleaseRefInput = {
@@ -1921,6 +2017,8 @@ export type EventUncheckedUpdateManyWithoutReleaseRefInput = {
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventCreateManyIssueInput = {
@@ -1949,6 +2047,8 @@ export type EventCreateManyIssueInput = {
   service?: string | null
   sessionId?: string | null
   status?: string | null
+  requestId?: string | null
+  traceId?: string | null
 }
 
 export type EventUpdateWithoutIssueInput = {
@@ -1973,6 +2073,8 @@ export type EventUpdateWithoutIssueInput = {
   resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   releaseRef?: Prisma.ReleaseUpdateOneWithoutEventsNestedInput
   environment?: Prisma.EnvironmentUpdateOneRequiredWithoutEventsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
@@ -2005,6 +2107,8 @@ export type EventUncheckedUpdateWithoutIssueInput = {
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventUncheckedUpdateManyWithoutIssueInput = {
@@ -2033,6 +2137,8 @@ export type EventUncheckedUpdateManyWithoutIssueInput = {
   service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  requestId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  traceId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -2064,6 +2170,8 @@ export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   service?: boolean
   sessionId?: boolean
   status?: boolean
+  requestId?: boolean
+  traceId?: boolean
   releaseRef?: boolean | Prisma.Event$releaseRefArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.Event$issueArgs<ExtArgs>
@@ -2098,6 +2206,8 @@ export type EventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   service?: boolean
   sessionId?: boolean
   status?: boolean
+  requestId?: boolean
+  traceId?: boolean
   releaseRef?: boolean | Prisma.Event$releaseRefArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.Event$issueArgs<ExtArgs>
@@ -2132,6 +2242,8 @@ export type EventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   service?: boolean
   sessionId?: boolean
   status?: boolean
+  requestId?: boolean
+  traceId?: boolean
   releaseRef?: boolean | Prisma.Event$releaseRefArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.Event$issueArgs<ExtArgs>
@@ -2166,9 +2278,11 @@ export type EventSelectScalar = {
   service?: boolean
   sessionId?: boolean
   status?: boolean
+  requestId?: boolean
+  traceId?: boolean
 }
 
-export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "title" | "message" | "timestamp" | "projectId" | "environmentId" | "createdAt" | "metadata" | "release" | "releaseId" | "sdkName" | "sdkVersion" | "severity" | "issueId" | "breadcrumbs" | "fingerprint" | "stack" | "tags" | "user" | "durationMs" | "operation" | "resource" | "service" | "sessionId" | "status", ExtArgs["result"]["event"]>
+export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "title" | "message" | "timestamp" | "projectId" | "environmentId" | "createdAt" | "metadata" | "release" | "releaseId" | "sdkName" | "sdkVersion" | "severity" | "issueId" | "breadcrumbs" | "fingerprint" | "stack" | "tags" | "user" | "durationMs" | "operation" | "resource" | "service" | "sessionId" | "status" | "requestId" | "traceId", ExtArgs["result"]["event"]>
 export type EventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   releaseRef?: boolean | Prisma.Event$releaseRefArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
@@ -2227,6 +2341,8 @@ export type $EventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     service: string | null
     sessionId: string | null
     status: string | null
+    requestId: string | null
+    traceId: string | null
   }, ExtArgs["result"]["event"]>
   composites: {}
 }
@@ -2681,6 +2797,8 @@ export interface EventFieldRefs {
   readonly service: Prisma.FieldRef<"Event", 'String'>
   readonly sessionId: Prisma.FieldRef<"Event", 'String'>
   readonly status: Prisma.FieldRef<"Event", 'String'>
+  readonly requestId: Prisma.FieldRef<"Event", 'String'>
+  readonly traceId: Prisma.FieldRef<"Event", 'String'>
 }
     
 

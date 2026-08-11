@@ -1,6 +1,16 @@
 import { HaloClient } from "./client";
-import { registerGlobalHandlers } from "./capture";
+import {
+    registerGlobalHandlers,
+} from "./capture";
 import { EventQueue } from "./queue";
+
+import {
+    getRequestContext,
+} from "./request-context";
+
+import {
+    registerHttpInstrumentation,
+} from "./http";
 
 import type {
     HaloBreadcrumb,
@@ -10,8 +20,11 @@ import type {
     HaloUser,
 } from "./types";
 
-const SDK_NAME = "@halo/sdk";
-const SDK_VERSION = "0.1.0";
+const SDK_NAME =
+    "@halo/sdk";
+
+const SDK_VERSION =
+    "0.1.0";
 
 function createSessionId() {
     return `hs_${Date.now()}_${Math.random()
@@ -32,37 +45,60 @@ export class Halo {
 
     private queue: EventQueue;
 
-    private tags: Record<string, HaloTagValue> = {};
+    private tags: Record<
+        string,
+        HaloTagValue
+    > = {};
 
-    private breadcrumbs: HaloBreadcrumb[] = [];
+    private breadcrumbs:
+        HaloBreadcrumb[] = [];
 
     private sessionId?: string;
 
     private sessionStartedAt?: string;
 
-    constructor(options: HaloOptions) {
-        this.client = new HaloClient(
-            options.endpoint ??
-                "http://localhost:3000/api",
-            options.apiKey,
-        );
+    private maxBreadcrumbs: number;
 
-        this.queue = new EventQueue(
-            async (event: unknown) => {
-                await this.client.post(
-                    "/ingest/events",
-                    event,
-                );
-            },
-        );
+    constructor(
+        options: HaloOptions,
+    ) {
+        const endpoint =
+            options.endpoint ??
+            "http://localhost:3000/api";
+
+        this.client =
+            new HaloClient(
+                endpoint,
+                options.apiKey,
+            );
+
+        this.queue =
+            new EventQueue(
+                async (
+                    event: unknown,
+                ) => {
+                    await this.client.post(
+                        "/ingest/events",
+                        event,
+                    );
+                },
+            );
 
         this.enabled =
             options.enabled ?? true;
 
-        this.release = options.release;
+        this.release =
+            options.release;
 
         this.environment =
             options.environment;
+
+        this.maxBreadcrumbs =
+            Math.max(
+                1,
+                options.maxBreadcrumbs ??
+                    100,
+            );
 
         this.sessionId =
             options.sessionId;
@@ -72,8 +108,35 @@ export class Halo {
                 new Date().toISOString();
         }
 
-        if (options.autoCapture) {
-            registerGlobalHandlers(this);
+        /*
+         * Level 2 automatic
+         * instrumentation.
+         */
+        if (
+            options.autoCapture !==
+            false
+        ) {
+            registerGlobalHandlers(
+                this,
+            );
+
+            if (
+                options.captureHttp !==
+                false
+            ) {
+                registerHttpInstrumentation(
+                    this,
+                    {
+                        endpoint,
+
+                        captureHeaders:
+                            options.captureHttpHeaders,
+
+                        ignoreUrls:
+                            options.ignoreUrls,
+                    },
+                );
+            }
         }
     }
 
@@ -89,12 +152,10 @@ export class Halo {
 
     endSession() {
         /*
-         * The ingestion layer derives the
-         * session's lastSeenAt from the final
-         * event received.
+         * lastSeenAt is derived from
+         * the final received event.
          *
-         * We intentionally don't send a
-         * synthetic event here.
+         * No synthetic event is sent.
          */
     }
 
@@ -102,7 +163,9 @@ export class Halo {
         return this.sessionId;
     }
 
-    setUser(user: HaloUser) {
+    setUser(
+        user: HaloUser,
+    ) {
         this.user = user;
     }
 
@@ -117,7 +180,9 @@ export class Halo {
         this.tags[key] = value;
     }
 
-    removeTag(key: string) {
+    removeTag(
+        key: string,
+    ) {
         delete this.tags[key];
     }
 
@@ -132,7 +197,10 @@ export class Halo {
                 new Date().toISOString(),
         });
 
-        if (this.breadcrumbs.length > 100) {
+        while (
+            this.breadcrumbs.length >
+            this.maxBreadcrumbs
+        ) {
             this.breadcrumbs.shift();
         }
     }
@@ -169,38 +237,61 @@ export class Halo {
                       String(error),
                   );
 
+        const context =
+            getRequestContext();
+
         return this.capture({
             type: "ERROR",
 
-            title: exception.name,
+            title:
+                exception.message ||
+                exception.name,
 
             message:
                 exception.message,
 
             severity: "ERROR",
 
-            stack: exception.stack,
+            stack:
+                exception.stack,
+
+            requestId:
+                context?.requestId,
+
+            traceId:
+                context?.traceId,
         });
     }
 
     async capturePerformance(
         options: {
             title: string;
+
             durationMs: number;
+
             operation?: string;
+
             resource?: string;
+
             status?: string | number;
+
             service?: string;
+
             metadata?: Record<
                 string,
                 unknown
             >;
+
+            requestId?: string;
+
+            traceId?: string;
         },
     ) {
         return this.capture({
             type: "TRACE",
 
-            title: options.title,
+            title:
+                options.title,
 
             severity: "INFO",
 
@@ -221,6 +312,12 @@ export class Halo {
 
             metadata:
                 options.metadata,
+
+            requestId:
+                options.requestId,
+
+            traceId:
+                options.traceId,
         });
     }
 
@@ -231,12 +328,18 @@ export class Halo {
             return;
         }
 
+        const context =
+            getRequestContext();
+
         return this.queue.enqueue({
-            type: event.type,
+            type:
+                event.type,
 
-            title: event.title,
+            title:
+                event.title,
 
-            message: event.message,
+            message:
+                event.message,
 
             severity:
                 event.severity ??
@@ -245,7 +348,8 @@ export class Halo {
             timestamp:
                 new Date().toISOString(),
 
-            stack: event.stack,
+            stack:
+                event.stack,
 
             fingerprint:
                 event.fingerprint,
@@ -255,11 +359,14 @@ export class Halo {
 
             tags: {
                 ...this.tags,
-                ...(event.tags ?? {}),
+
+                ...(event.tags ??
+                    {}),
             },
 
             breadcrumbs: [
                 ...this.breadcrumbs,
+
                 ...(event.breadcrumbs ??
                     []),
             ],
@@ -272,7 +379,8 @@ export class Halo {
                 event.sessionId ??
                 this.sessionId,
 
-            sdkName: SDK_NAME,
+            sdkName:
+                SDK_NAME,
 
             sdkVersion:
                 SDK_VERSION,
@@ -285,6 +393,21 @@ export class Halo {
 
             sessionStartedAt:
                 this.sessionStartedAt,
+
+            /*
+             * Explicit event context
+             * takes priority.
+             *
+             * Otherwise inherit the
+             * active HTTP context.
+             */
+            requestId:
+                event.requestId ??
+                context?.requestId,
+
+            traceId:
+                event.traceId ??
+                context?.traceId,
 
             service:
                 event.service,

@@ -1,16 +1,52 @@
 export interface HaloOptions {
     apiKey: string;
+
     endpoint?: string;
+
+    /**
+     * Automatically install runtime
+     * instrumentation.
+     *
+     * Defaults to true.
+     */
     autoCapture?: boolean;
 
+    /**
+     * Automatically instrument fetch().
+     *
+     * Defaults to true.
+     */
+    captureHttp?: boolean;
+
     environment?: string;
+
     release?: string;
 
     sessionId?: string;
 
     enabled?: boolean;
-}
 
+    /**
+     * Maximum number of breadcrumbs
+     * kept in memory.
+     */
+    maxBreadcrumbs?: number;
+
+    /**
+     * URL fragments that should not
+     * be instrumented.
+     */
+    ignoreUrls?: string[];
+
+    /**
+     * Capture a small allowlist of
+     * safe HTTP headers.
+     *
+     * Sensitive headers are never
+     * captured.
+     */
+    captureHttpHeaders?: boolean;
+}
 
 export type HaloEventType =
     | "ERROR"
@@ -37,8 +73,11 @@ export type HaloTagValue =
 
 export interface HaloBreadcrumb {
     timestamp?: string;
+
     category: string;
+
     message: string;
+
     data?: Record<string, unknown>;
 }
 
@@ -60,7 +99,10 @@ export interface HaloCaptureOptions {
 
     metadata?: Record<string, unknown>;
 
-    tags?: Record<string, HaloTagValue>;
+    tags?: Record<
+        string,
+        HaloTagValue
+    >;
 
     breadcrumbs?: HaloBreadcrumb[];
 
@@ -69,6 +111,14 @@ export interface HaloCaptureOptions {
     sessionId?: string;
 
     sessionStartedAt?: string;
+
+    /**
+     * HTTP / distributed tracing
+     * correlation.
+     */
+    requestId?: string;
+
+    traceId?: string;
 
     service?: string;
 

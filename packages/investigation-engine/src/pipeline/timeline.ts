@@ -8,40 +8,71 @@ import type {
 } from "../types/timeline";
 
 export function buildTimeline(
-    graph: EvidenceGraph
+    graph: EvidenceGraph,
 ): Timeline {
-    const events = graph.nodes.map(node => {
-        const evidence = node.evidence;
+    const events = graph.nodes
+        .map(node => {
+            const evidence =
+                node.evidence;
 
-        let type: TimelineEventType = "OBSERVATION";
+            return {
+                id: node.id,
 
-        if (evidence.type === "DEPLOYMENT") {
-            type = "CHANGE";
-        } else if (evidence.type === "ERROR") {
-            type = "ERROR";
-        } else if (
-            evidence.type === "CONFIG" ||
-            evidence.type === "FEATURE_FLAG" ||
-            evidence.type === "INFRASTRUCTURE"
-        ) {
-            type = "CHANGE";
-        }
+                timestamp:
+                    evidence.timestamp,
 
-        return {
-            id: node.id,
-            timestamp: evidence.timestamp,
-            type,
-            title: evidence.title,
-            description: evidence.description,
-            evidenceIds: [node.id],
-        };
-    });
+                type:
+                    getTimelineEventType(
+                        evidence.type,
+                    ),
 
-    return {
-        events: events.sort(
+                title:
+                    evidence.title,
+
+                description:
+                    evidence.description,
+
+                evidenceIds: [
+                    evidence.id,
+                ],
+            };
+        })
+        .sort(
             (a, b) =>
                 a.timestamp.getTime() -
-                b.timestamp.getTime()
-        ),
+                b.timestamp.getTime() ||
+                a.id.localeCompare(
+                    b.id,
+                ),
+        );
+
+    return {
+        events,
     };
+}
+
+function getTimelineEventType(
+    type: string,
+): TimelineEventType {
+    switch (type) {
+        case "DEPLOYMENT":
+        case "CONFIG":
+        case "FEATURE_FLAG":
+        case "INFRASTRUCTURE":
+        case "TRAFFIC":
+            return "CHANGE";
+
+        case "ERROR":
+            return "ERROR";
+
+        case "METRIC":
+            return "ANOMALY";
+
+        case "LOG":
+        case "TRACE":
+        case "COMMIT":
+        case "THIRD_PARTY":
+        default:
+            return "OBSERVATION";
+    }
 }

@@ -36,6 +36,8 @@ type CreateEventInput = {
     resource?: string;
     operation?: string;
     status?: string | number;
+    requestId?: string;
+    traceId?: string;
     durationMs?: number;
 
     sessionId?: string;
@@ -318,6 +320,12 @@ export async function createEvent(
                             data.status,
                         )
                         : undefined,
+
+                requestId:
+                    data.requestId,
+
+                traceId:
+                    data.traceId,
 
                 durationMs:
                     data.durationMs,

@@ -73,25 +73,36 @@ model Event {
   projectId     String
   environmentId String
   createdAt     DateTime          @default(now())
+
   metadata      Json?
+
   release       String?
   releaseId     String?
   releaseRef    Release?          @relation(fields: [releaseId], references: [id])
+
   sdkName       String?
   sdkVersion    String?
+
   severity      EventSeverity     @default(INFO)
+
   issueId       String?
+
   breadcrumbs   Json?
   fingerprint   String?
   stack         String?
   tags          Json?
   user          Json?
+
   durationMs    Int?
   operation     String?
   resource      String?
   service       String?
   sessionId     String?
   status        String?
+
+  requestId     String?
+  traceId       String?
+
   environment   Environment       @relation(fields: [environmentId], references: [id])
   issue         Issue?            @relation(fields: [issueId], references: [id])
   project       Project           @relation(fields: [projectId], references: [id])
@@ -101,6 +112,8 @@ model Event {
   @@index([projectId, type, timestamp])
   @@index([projectId, release])
   @@index([projectId, releaseId])
+  @@index([projectId, requestId])
+  @@index([projectId, traceId])
   @@index([sessionId])
 }
 

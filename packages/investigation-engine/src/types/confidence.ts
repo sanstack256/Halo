@@ -7,6 +7,10 @@ export type ConfidenceLevel =
 export function getConfidenceLevel(
     confidence: number
 ): ConfidenceLevel {
+    if (!Number.isFinite(confidence)) {
+        return "LOW";
+    }
+
     if (confidence >= 85) {
         return "VERY_HIGH";
     }

@@ -6,78 +6,97 @@ import type { EvidenceGraph } from "../types/graph";
 export function buildContext(
     evidence: Evidence[],
     changes: Change[],
-    graph: EvidenceGraph
+    graph: EvidenceGraph,
 ): InvestigationContext {
-    const deployments = evidence.filter(
-        e => e.type === "DEPLOYMENT"
-    );
+    const orderedEvidence =
+        [...evidence].sort(
+            compareByTimestamp,
+        );
 
-    const errors = evidence.filter(
-        e => e.type === "ERROR"
-    );
+    const orderedChanges =
+        [...changes].sort(
+            compareByTimestamp,
+        );
 
-    const logs = evidence.filter(
-        e => e.type === "LOG"
-    );
+    const deployments =
+        filterByType(
+            orderedEvidence,
+            "DEPLOYMENT",
+        );
 
-    const traces = evidence.filter(
-        e => e.type === "TRACE"
-    );
+    const errors =
+        filterByType(
+            orderedEvidence,
+            "ERROR",
+        );
 
-    const metrics = evidence.filter(
-        e => e.type === "METRIC"
-    );
+    const logs =
+        filterByType(
+            orderedEvidence,
+            "LOG",
+        );
 
-    const configs = evidence.filter(
-        e => e.type === "CONFIG"
-    );
+    const traces =
+        filterByType(
+            orderedEvidence,
+            "TRACE",
+        );
 
-    const featureFlags = evidence.filter(
-        e => e.type === "FEATURE_FLAG"
-    );
+    const metrics =
+        filterByType(
+            orderedEvidence,
+            "METRIC",
+        );
 
-    const infrastructure = evidence.filter(
-        e => e.type === "INFRASTRUCTURE"
-    );
+    const configs =
+        filterByType(
+            orderedEvidence,
+            "CONFIG",
+        );
 
-    const thirdParty = evidence.filter(
-        e => e.type === "THIRD_PARTY"
-    );
+    const featureFlags =
+        filterByType(
+            orderedEvidence,
+            "FEATURE_FLAG",
+        );
 
-    const services = [
-        ...new Set(
-            evidence
-                .map(e => e.service)
-                .filter(Boolean)
-        ),
-    ];
+    const infrastructure =
+        filterByType(
+            orderedEvidence,
+            "INFRASTRUCTURE",
+        );
 
-    const releases = [
-        ...new Set(
-            evidence
-                .map(e => e.release)
-                .filter(
-                    (release): release is string =>
-                        Boolean(release)
-                )
-        ),
-    ];
+    const thirdParty =
+        filterByType(
+            orderedEvidence,
+            "THIRD_PARTY",
+        );
 
-    const environments = [
-        ...new Set(
-            evidence
-                .map(e => e.environment)
-                .filter(
-                    (environment): environment is string =>
-                        Boolean(environment)
-                )
-        ),
-    ];
+    const services =
+        uniqueNonEmpty(
+            orderedEvidence.map(
+                item => item.service,
+            ),
+        );
+
+    const releases =
+        uniqueNonEmpty(
+            orderedEvidence.map(
+                item => item.release,
+            ),
+        );
+
+    const environments =
+        uniqueNonEmpty(
+            orderedEvidence.map(
+                item => item.environment,
+            ),
+        );
 
     return {
-        evidence,
+        evidence: orderedEvidence,
         graph,
-        changes,
+        changes: orderedChanges,
         findings: [],
 
         deployments,
@@ -94,16 +113,73 @@ export function buildContext(
         releases,
         environments,
 
-        firstError: errors[0],
-        latestError: errors.at(-1),
+        firstError:
+            errors[0],
+
+        latestError:
+            errors.at(-1),
 
         latestDeployment:
             deployments.at(-1),
 
         earliestChange:
-            changes[0],
+            orderedChanges[0],
 
         latestChange:
-            changes.at(-1),
+            orderedChanges.at(-1),
     };
+}
+
+function filterByType<
+    T extends Evidence["type"],
+>(
+    evidence: Evidence[],
+    type: T,
+): Evidence[] {
+    return evidence.filter(
+        item => item.type === type,
+    );
+}
+
+function compareByTimestamp(
+    a: {
+        timestamp: Date;
+    },
+    b: {
+        timestamp: Date;
+    },
+): number {
+    const difference =
+        a.timestamp.getTime() -
+        b.timestamp.getTime();
+
+    if (difference !== 0) {
+        return difference;
+    }
+
+    return 0;
+}
+
+function uniqueNonEmpty(
+    values: Array<string | undefined>,
+): string[] {
+    const seen =
+        new Set<string>();
+
+    const result: string[] = [];
+
+    for (const value of values) {
+        if (
+            typeof value !== "string" ||
+            value.length === 0 ||
+            seen.has(value)
+        ) {
+            continue;
+        }
+
+        seen.add(value);
+        result.push(value);
+    }
+
+    return result;
 }
