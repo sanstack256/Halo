@@ -1683,3 +1683,22 @@ HALO INVESTIGATION
         padding: 15px 16px;
     }
 }
+
+/* =====================================================
+   AUTH CARD — MOVING BORDER LIGHT
+===================================================== */
+
+@keyframes halo-border-spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
+}
+
+.animate-border-spin {
+    animation: halo-border-spin 8s linear infinite;
+    transform-origin: center;
+}
