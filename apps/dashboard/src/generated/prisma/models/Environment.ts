@@ -182,9 +182,10 @@ export type EnvironmentWhereInput = {
   projectId?: Prisma.StringFilter<"Environment"> | string
   createdAt?: Prisma.DateTimeFilter<"Environment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Environment"> | Date | string
-  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   apiKeys?: Prisma.ApiKeyListRelationFilter
+  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   events?: Prisma.EventListRelationFilter
+  telemetrySessions?: Prisma.TelemetrySessionListRelationFilter
 }
 
 export type EnvironmentOrderByWithRelationInput = {
@@ -193,9 +194,10 @@ export type EnvironmentOrderByWithRelationInput = {
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  project?: Prisma.ProjectOrderByWithRelationInput
   apiKeys?: Prisma.ApiKeyOrderByRelationAggregateInput
+  project?: Prisma.ProjectOrderByWithRelationInput
   events?: Prisma.EventOrderByRelationAggregateInput
+  telemetrySessions?: Prisma.TelemetrySessionOrderByRelationAggregateInput
 }
 
 export type EnvironmentWhereUniqueInput = Prisma.AtLeast<{
@@ -208,9 +210,10 @@ export type EnvironmentWhereUniqueInput = Prisma.AtLeast<{
   projectId?: Prisma.StringFilter<"Environment"> | string
   createdAt?: Prisma.DateTimeFilter<"Environment"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Environment"> | Date | string
-  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   apiKeys?: Prisma.ApiKeyListRelationFilter
+  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   events?: Prisma.EventListRelationFilter
+  telemetrySessions?: Prisma.TelemetrySessionListRelationFilter
 }, "id" | "projectId_name">
 
 export type EnvironmentOrderByWithAggregationInput = {
@@ -240,9 +243,10 @@ export type EnvironmentCreateInput = {
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  project: Prisma.ProjectCreateNestedOneWithoutEnvironmentsInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutEnvironmentInput
+  project: Prisma.ProjectCreateNestedOneWithoutEnvironmentsInput
   events?: Prisma.EventCreateNestedManyWithoutEnvironmentInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutEnvironmentInput
 }
 
 export type EnvironmentUncheckedCreateInput = {
@@ -253,6 +257,7 @@ export type EnvironmentUncheckedCreateInput = {
   updatedAt?: Date | string
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutEnvironmentInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutEnvironmentInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutEnvironmentInput
 }
 
 export type EnvironmentUpdateInput = {
@@ -260,9 +265,10 @@ export type EnvironmentUpdateInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProjectUpdateOneRequiredWithoutEnvironmentsNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutEnvironmentNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutEnvironmentsNestedInput
   events?: Prisma.EventUpdateManyWithoutEnvironmentNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutEnvironmentNestedInput
 }
 
 export type EnvironmentUncheckedUpdateInput = {
@@ -273,6 +279,7 @@ export type EnvironmentUncheckedUpdateInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutEnvironmentNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutEnvironmentNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutEnvironmentNestedInput
 }
 
 export type EnvironmentCreateManyInput = {
@@ -412,6 +419,20 @@ export type EnvironmentUpdateOneRequiredWithoutEventsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.EnvironmentUpdateToOneWithWhereWithoutEventsInput, Prisma.EnvironmentUpdateWithoutEventsInput>, Prisma.EnvironmentUncheckedUpdateWithoutEventsInput>
 }
 
+export type EnvironmentCreateNestedOneWithoutTelemetrySessionsInput = {
+  create?: Prisma.XOR<Prisma.EnvironmentCreateWithoutTelemetrySessionsInput, Prisma.EnvironmentUncheckedCreateWithoutTelemetrySessionsInput>
+  connectOrCreate?: Prisma.EnvironmentCreateOrConnectWithoutTelemetrySessionsInput
+  connect?: Prisma.EnvironmentWhereUniqueInput
+}
+
+export type EnvironmentUpdateOneRequiredWithoutTelemetrySessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.EnvironmentCreateWithoutTelemetrySessionsInput, Prisma.EnvironmentUncheckedCreateWithoutTelemetrySessionsInput>
+  connectOrCreate?: Prisma.EnvironmentCreateOrConnectWithoutTelemetrySessionsInput
+  upsert?: Prisma.EnvironmentUpsertWithoutTelemetrySessionsInput
+  connect?: Prisma.EnvironmentWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.EnvironmentUpdateToOneWithWhereWithoutTelemetrySessionsInput, Prisma.EnvironmentUpdateWithoutTelemetrySessionsInput>, Prisma.EnvironmentUncheckedUpdateWithoutTelemetrySessionsInput>
+}
+
 export type EnvironmentCreateWithoutProjectInput = {
   id?: string
   name: string
@@ -419,6 +440,7 @@ export type EnvironmentCreateWithoutProjectInput = {
   updatedAt?: Date | string
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutEnvironmentInput
   events?: Prisma.EventCreateNestedManyWithoutEnvironmentInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutEnvironmentInput
 }
 
 export type EnvironmentUncheckedCreateWithoutProjectInput = {
@@ -428,6 +450,7 @@ export type EnvironmentUncheckedCreateWithoutProjectInput = {
   updatedAt?: Date | string
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutEnvironmentInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutEnvironmentInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutEnvironmentInput
 }
 
 export type EnvironmentCreateOrConnectWithoutProjectInput = {
@@ -474,6 +497,7 @@ export type EnvironmentCreateWithoutApiKeysInput = {
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutEnvironmentsInput
   events?: Prisma.EventCreateNestedManyWithoutEnvironmentInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutEnvironmentInput
 }
 
 export type EnvironmentUncheckedCreateWithoutApiKeysInput = {
@@ -483,6 +507,7 @@ export type EnvironmentUncheckedCreateWithoutApiKeysInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   events?: Prisma.EventUncheckedCreateNestedManyWithoutEnvironmentInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutEnvironmentInput
 }
 
 export type EnvironmentCreateOrConnectWithoutApiKeysInput = {
@@ -508,6 +533,7 @@ export type EnvironmentUpdateWithoutApiKeysInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutEnvironmentsNestedInput
   events?: Prisma.EventUpdateManyWithoutEnvironmentNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutEnvironmentNestedInput
 }
 
 export type EnvironmentUncheckedUpdateWithoutApiKeysInput = {
@@ -517,6 +543,7 @@ export type EnvironmentUncheckedUpdateWithoutApiKeysInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   events?: Prisma.EventUncheckedUpdateManyWithoutEnvironmentNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutEnvironmentNestedInput
 }
 
 export type EnvironmentCreateWithoutEventsInput = {
@@ -524,8 +551,9 @@ export type EnvironmentCreateWithoutEventsInput = {
   name: string
   createdAt?: Date | string
   updatedAt?: Date | string
-  project: Prisma.ProjectCreateNestedOneWithoutEnvironmentsInput
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutEnvironmentInput
+  project: Prisma.ProjectCreateNestedOneWithoutEnvironmentsInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutEnvironmentInput
 }
 
 export type EnvironmentUncheckedCreateWithoutEventsInput = {
@@ -535,6 +563,7 @@ export type EnvironmentUncheckedCreateWithoutEventsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutEnvironmentInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutEnvironmentInput
 }
 
 export type EnvironmentCreateOrConnectWithoutEventsInput = {
@@ -558,8 +587,9 @@ export type EnvironmentUpdateWithoutEventsInput = {
   name?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProjectUpdateOneRequiredWithoutEnvironmentsNestedInput
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutEnvironmentNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutEnvironmentsNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutEnvironmentNestedInput
 }
 
 export type EnvironmentUncheckedUpdateWithoutEventsInput = {
@@ -569,6 +599,63 @@ export type EnvironmentUncheckedUpdateWithoutEventsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutEnvironmentNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutEnvironmentNestedInput
+}
+
+export type EnvironmentCreateWithoutTelemetrySessionsInput = {
+  id?: string
+  name: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutEnvironmentInput
+  project: Prisma.ProjectCreateNestedOneWithoutEnvironmentsInput
+  events?: Prisma.EventCreateNestedManyWithoutEnvironmentInput
+}
+
+export type EnvironmentUncheckedCreateWithoutTelemetrySessionsInput = {
+  id?: string
+  name: string
+  projectId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutEnvironmentInput
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutEnvironmentInput
+}
+
+export type EnvironmentCreateOrConnectWithoutTelemetrySessionsInput = {
+  where: Prisma.EnvironmentWhereUniqueInput
+  create: Prisma.XOR<Prisma.EnvironmentCreateWithoutTelemetrySessionsInput, Prisma.EnvironmentUncheckedCreateWithoutTelemetrySessionsInput>
+}
+
+export type EnvironmentUpsertWithoutTelemetrySessionsInput = {
+  update: Prisma.XOR<Prisma.EnvironmentUpdateWithoutTelemetrySessionsInput, Prisma.EnvironmentUncheckedUpdateWithoutTelemetrySessionsInput>
+  create: Prisma.XOR<Prisma.EnvironmentCreateWithoutTelemetrySessionsInput, Prisma.EnvironmentUncheckedCreateWithoutTelemetrySessionsInput>
+  where?: Prisma.EnvironmentWhereInput
+}
+
+export type EnvironmentUpdateToOneWithWhereWithoutTelemetrySessionsInput = {
+  where?: Prisma.EnvironmentWhereInput
+  data: Prisma.XOR<Prisma.EnvironmentUpdateWithoutTelemetrySessionsInput, Prisma.EnvironmentUncheckedUpdateWithoutTelemetrySessionsInput>
+}
+
+export type EnvironmentUpdateWithoutTelemetrySessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutEnvironmentNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutEnvironmentsNestedInput
+  events?: Prisma.EventUpdateManyWithoutEnvironmentNestedInput
+}
+
+export type EnvironmentUncheckedUpdateWithoutTelemetrySessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutEnvironmentNestedInput
+  events?: Prisma.EventUncheckedUpdateManyWithoutEnvironmentNestedInput
 }
 
 export type EnvironmentCreateManyProjectInput = {
@@ -585,6 +672,7 @@ export type EnvironmentUpdateWithoutProjectInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutEnvironmentNestedInput
   events?: Prisma.EventUpdateManyWithoutEnvironmentNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutEnvironmentNestedInput
 }
 
 export type EnvironmentUncheckedUpdateWithoutProjectInput = {
@@ -594,6 +682,7 @@ export type EnvironmentUncheckedUpdateWithoutProjectInput = {
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutEnvironmentNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutEnvironmentNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutEnvironmentNestedInput
 }
 
 export type EnvironmentUncheckedUpdateManyWithoutProjectInput = {
@@ -611,11 +700,13 @@ export type EnvironmentUncheckedUpdateManyWithoutProjectInput = {
 export type EnvironmentCountOutputType = {
   apiKeys: number
   events: number
+  telemetrySessions: number
 }
 
 export type EnvironmentCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   apiKeys?: boolean | EnvironmentCountOutputTypeCountApiKeysArgs
   events?: boolean | EnvironmentCountOutputTypeCountEventsArgs
+  telemetrySessions?: boolean | EnvironmentCountOutputTypeCountTelemetrySessionsArgs
 }
 
 /**
@@ -642,6 +733,13 @@ export type EnvironmentCountOutputTypeCountEventsArgs<ExtArgs extends runtime.Ty
   where?: Prisma.EventWhereInput
 }
 
+/**
+ * EnvironmentCountOutputType without action
+ */
+export type EnvironmentCountOutputTypeCountTelemetrySessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TelemetrySessionWhereInput
+}
+
 
 export type EnvironmentSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -649,9 +747,10 @@ export type EnvironmentSelect<ExtArgs extends runtime.Types.Extensions.InternalA
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   apiKeys?: boolean | Prisma.Environment$apiKeysArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   events?: boolean | Prisma.Environment$eventsArgs<ExtArgs>
+  telemetrySessions?: boolean | Prisma.Environment$telemetrySessionsArgs<ExtArgs>
   _count?: boolean | Prisma.EnvironmentCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["environment"]>
 
@@ -683,9 +782,10 @@ export type EnvironmentSelectScalar = {
 
 export type EnvironmentOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "projectId" | "createdAt" | "updatedAt", ExtArgs["result"]["environment"]>
 export type EnvironmentInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   apiKeys?: boolean | Prisma.Environment$apiKeysArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   events?: boolean | Prisma.Environment$eventsArgs<ExtArgs>
+  telemetrySessions?: boolean | Prisma.Environment$telemetrySessionsArgs<ExtArgs>
   _count?: boolean | Prisma.EnvironmentCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type EnvironmentIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -698,9 +798,10 @@ export type EnvironmentIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.
 export type $EnvironmentPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Environment"
   objects: {
-    project: Prisma.$ProjectPayload<ExtArgs>
     apiKeys: Prisma.$ApiKeyPayload<ExtArgs>[]
+    project: Prisma.$ProjectPayload<ExtArgs>
     events: Prisma.$EventPayload<ExtArgs>[]
+    telemetrySessions: Prisma.$TelemetrySessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1102,9 +1203,10 @@ readonly fields: EnvironmentFieldRefs;
  */
 export interface Prisma__EnvironmentClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   apiKeys<T extends Prisma.Environment$apiKeysArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Environment$apiKeysArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ApiKeyPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   events<T extends Prisma.Environment$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Environment$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  telemetrySessions<T extends Prisma.Environment$telemetrySessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Environment$telemetrySessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TelemetrySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1585,6 +1687,30 @@ export type Environment$eventsArgs<ExtArgs extends runtime.Types.Extensions.Inte
   take?: number
   skip?: number
   distinct?: Prisma.EventScalarFieldEnum | Prisma.EventScalarFieldEnum[]
+}
+
+/**
+ * Environment.telemetrySessions
+ */
+export type Environment$telemetrySessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TelemetrySession
+   */
+  select?: Prisma.TelemetrySessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TelemetrySession
+   */
+  omit?: Prisma.TelemetrySessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TelemetrySessionInclude<ExtArgs> | null
+  where?: Prisma.TelemetrySessionWhereInput
+  orderBy?: Prisma.TelemetrySessionOrderByWithRelationInput | Prisma.TelemetrySessionOrderByWithRelationInput[]
+  cursor?: Prisma.TelemetrySessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TelemetrySessionScalarFieldEnum | Prisma.TelemetrySessionScalarFieldEnum[]
 }
 
 /**

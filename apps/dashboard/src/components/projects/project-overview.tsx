@@ -1,12 +1,17 @@
 import Link from "next/link";
+
 import {
     Activity,
     AlertTriangle,
     ArrowRight,
     CheckCircle2,
     Clock3,
+    Gauge,
+    Package,
     Radio,
+    Zap,
 } from "lucide-react";
+import type { ProjectMetrics } from "@/actions/project-metrics";
 
 type RecentEvent = {
     id: string;
@@ -17,13 +22,22 @@ type RecentEvent = {
     message: string | null;
 };
 
+
 type Props = {
     projectId: string;
+
     eventCount: number;
     issueCount: number;
+
     lastEvent: Date | null;
+
     hasApiKey: boolean;
+
     recentEvents: RecentEvent[];
+
+    metrics: ProjectMetrics;
+
+    releaseCount: number;
 };
 
 function getProjectStatus(
@@ -60,6 +74,52 @@ function formatEventTime(date: Date) {
     return date.toLocaleString();
 }
 
+function formatLatency(
+    value: number | null,
+) {
+    if (value === null) {
+        return "—";
+    }
+
+    if (value >= 1000) {
+        return `${(value / 1000).toFixed(2)}s`;
+    }
+
+    return `${Math.round(value)}ms`;
+}
+
+function formatApdex(
+    score: number | null,
+) {
+    if (score === null) {
+        return "—";
+    }
+
+    return score.toFixed(2);
+}
+
+function getApdexLabel(
+    score: number | null,
+) {
+    if (score === null) {
+        return "No trace data";
+    }
+
+    if (score >= 0.85) {
+        return "Excellent";
+    }
+
+    if (score >= 0.70) {
+        return "Good";
+    }
+
+    if (score >= 0.50) {
+        return "Fair";
+    }
+
+    return "Poor";
+}
+
 export default function ProjectOverview({
     projectId,
     eventCount,
@@ -67,6 +127,8 @@ export default function ProjectOverview({
     lastEvent,
     hasApiKey,
     recentEvents,
+    metrics,
+    releaseCount,
 }: Props) {
     const status = getProjectStatus(
         hasApiKey,
@@ -168,23 +230,301 @@ export default function ProjectOverview({
                 </div>
             </section>
 
-            {/* Stats */}
+            {/* Project Health */}
 
-            <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+            <section>
 
-                <Link
-                    href={`/projects/${projectId}/events`}
+                <div className="mb-4 flex items-end justify-between">
+
+                    <div>
+                        <h2 className="text-lg font-semibold text-primary">
+                            Project Health
+                        </h2>
+
+                        <p className="mt-1 text-sm text-secondary">
+                            Current application reliability and performance.
+                        </p>
+                    </div>
+
+                </div>
+
+                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+
+                    {/* Crash Free */}
+
+                    <div
+                        className="
+                            rounded-2xl
+                            border
+                            border-border
+                            bg-surface
+                            p-6
+                        "
+                    >
+                        <div className="flex items-center gap-2 text-secondary">
+
+                            <CheckCircle2 className="h-4 w-4" />
+
+                            <span className="text-sm">
+                                Crash-Free Sessions
+                            </span>
+
+                        </div>
+
+                        <p className="mt-5 text-3xl font-semibold tracking-tight text-primary">
+                            {metrics.crashFreeSessions.total > 0
+                                ? `${metrics.crashFreeSessions.percentage.toFixed(1)}%`
+                                : "—"}
+                        </p>
+
+                        <p className="mt-2 text-xs text-muted">
+                            {metrics.crashFreeSessions.total > 0
+                                ? `${metrics.crashFreeSessions.crashed} of ${metrics.crashFreeSessions.total} sessions crashed`
+                                : "Waiting for session data"}
+                        </p>
+                    </div>
+
+                    {/* Apdex */}
+
+                    <div
+                        className="
+                            rounded-2xl
+                            border
+                            border-border
+                            bg-surface
+                            p-6
+                        "
+                    >
+                        <div className="flex items-center justify-between">
+
+                            <div className="flex items-center gap-2 text-secondary">
+
+                                <Gauge className="h-4 w-4" />
+
+                                <span className="text-sm">
+                                    Apdex
+                                </span>
+
+                            </div>
+
+                            <span className="text-xs text-muted">
+                                {getApdexLabel(
+                                    metrics.apdex.score,
+                                )}
+                            </span>
+
+                        </div>
+
+                        <p className="mt-5 text-3xl font-semibold tracking-tight text-primary">
+                            {formatApdex(
+                                metrics.apdex.score,
+                            )}
+                        </p>
+
+                        <p className="mt-2 text-xs text-muted">
+                            {metrics.apdex.total > 0
+                                ? `${metrics.apdex.satisfied} satisfied · ${metrics.apdex.tolerating} tolerating`
+                                : "Waiting for trace data"}
+                        </p>
+                    </div>
+
+                    {/* P95 */}
+
+                    <div
+                        className="
+                            rounded-2xl
+                            border
+                            border-border
+                            bg-surface
+                            p-6
+                        "
+                    >
+                        <div className="flex items-center gap-2 text-secondary">
+
+                            <Zap className="h-4 w-4" />
+
+                            <span className="text-sm">
+                                P95 Latency
+                            </span>
+
+                        </div>
+
+                        <p className="mt-5 text-3xl font-semibold tracking-tight text-primary">
+                            {formatLatency(
+                                metrics.performance.p95,
+                            )}
+                        </p>
+
+                        <p className="mt-2 text-xs text-muted">
+                            {metrics.performance.traceCount > 0
+                                ? `${metrics.performance.traceCount} traces measured`
+                                : "Waiting for trace data"}
+                        </p>
+                    </div>
+
+                </div>
+
+            </section>
+
+            {/* Performance Details */}
+
+            <section className="grid grid-cols-1 gap-4 md:grid-cols-2">
+
+                <div
                     className="
-                        group
                         rounded-2xl
                         border
                         border-border
                         bg-surface
                         p-6
-                        transition-colors
-                        hover:border-accent/20
-                        hover:bg-surface-elevated
                     "
+                >
+                    <div className="flex items-center justify-between">
+
+                        <div className="flex items-center gap-2 text-secondary">
+
+                            <Activity className="h-4 w-4" />
+
+                            <span className="text-sm">
+                                Performance
+                            </span>
+
+                        </div>
+
+                        <span className="text-xs text-muted">
+                            {metrics.performance.traceCount} traces
+                        </span>
+
+                    </div>
+
+                    <div className="mt-6 grid grid-cols-3 gap-4">
+
+                        <div>
+                            <p className="text-xs text-muted">
+                                P50
+                            </p>
+
+                            <p className="mt-1 text-lg font-semibold">
+                                {formatLatency(
+                                    metrics.performance.p50,
+                                )}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p className="text-xs text-muted">
+                                P95
+                            </p>
+
+                            <p className="mt-1 text-lg font-semibold">
+                                {formatLatency(
+                                    metrics.performance.p95,
+                                )}
+                            </p>
+                        </div>
+
+                        <div>
+                            <p className="text-xs text-muted">
+                                P99
+                            </p>
+
+                            <p className="mt-1 text-lg font-semibold">
+                                {formatLatency(
+                                    metrics.performance.p99,
+                                )}
+                            </p>
+                        </div>
+
+                    </div>
+                </div>
+
+                <div
+                    className="
+                        rounded-2xl
+                        border
+                        border-border
+                        bg-surface
+                        p-6
+                    "
+                >
+                    <div className="flex items-center justify-between">
+
+                        <div className="flex items-center gap-2 text-secondary">
+
+                            <AlertTriangle className="h-4 w-4" />
+
+                            <span className="text-sm">
+                                Error Rate
+                            </span>
+
+                        </div>
+
+                        <Link
+                            href={`/projects/${projectId}/events`}
+                            className="
+                                text-xs
+                                text-muted
+                                transition-colors
+                                hover:text-accent
+                            "
+                        >
+                            View events
+                        </Link>
+
+                    </div>
+
+                    <div className="mt-6 flex items-end justify-between">
+
+                        <div>
+
+                            <p className="text-3xl font-semibold tracking-tight text-primary">
+                                {metrics.performance.traceCount > 0
+                                    ? `${metrics.performance.traceFailureRate.toFixed(1)}%`
+                                    : "—"}
+                            </p>
+
+                            <p className="mt-2 text-xs text-muted">
+                                Failed traces
+                            </p>
+
+                        </div>
+
+                        <div className="text-right">
+
+                            <p className="text-lg font-semibold text-primary">
+                                {metrics.performance.errorCount}
+                            </p>
+
+                            <p className="mt-1 text-xs text-muted">
+                                Errors
+                            </p>
+
+                        </div>
+
+                    </div>
+                </div>
+
+            </section>
+
+            {/* Project counters */}
+
+            <section className="grid grid-cols-1 gap-4 md:grid-cols-3">
+
+                {/* Events */}
+
+                <Link
+                    href={`/projects/${projectId}/events`}
+                    className="
+            group
+            rounded-2xl
+            border
+            border-border
+            bg-surface
+            p-6
+            transition-colors
+            hover:border-accent/20
+            hover:bg-surface-elevated
+        "
                 >
                     <div className="flex items-center justify-between">
 
@@ -200,15 +540,15 @@ export default function ProjectOverview({
 
                         <ArrowRight
                             className="
-                                h-4
-                                w-4
-                                text-muted
-                                opacity-0
-                                transition-all
-                                group-hover:translate-x-0.5
-                                group-hover:text-accent
-                                group-hover:opacity-100
-                            "
+                    h-4
+                    w-4
+                    text-muted
+                    opacity-0
+                    transition-all
+                    group-hover:translate-x-0.5
+                    group-hover:text-accent
+                    group-hover:opacity-100
+                "
                         />
 
                     </div>
@@ -223,19 +563,74 @@ export default function ProjectOverview({
 
                 </Link>
 
+                {/* Releases */}
+
+                <Link
+                    href={`/projects/${projectId}/releases`}
+                    className="
+            group
+            rounded-2xl
+            border
+            border-border
+            bg-surface
+            p-6
+            transition-colors
+            hover:border-accent/20
+            hover:bg-surface-elevated
+        "
+                >
+                    <div className="flex items-center justify-between">
+
+                        <div className="flex items-center gap-2 text-secondary">
+
+                            <Package className="h-4 w-4" />
+
+                            <span className="text-sm">
+                                Releases
+                            </span>
+
+                        </div>
+
+                        <ArrowRight
+                            className="
+                    h-4
+                    w-4
+                    text-muted
+                    opacity-0
+                    transition-all
+                    group-hover:translate-x-0.5
+                    group-hover:text-accent
+                    group-hover:opacity-100
+                "
+                        />
+
+                    </div>
+
+                    <p className="mt-4 text-3xl font-semibold tracking-tight text-primary">
+                        {releaseCount}
+                    </p>
+
+                    <p className="mt-1 text-xs text-muted">
+                        Releases detected
+                    </p>
+
+                </Link>
+
+                {/* Issues */}
+
                 <Link
                     href={`/projects/${projectId}/issues`}
                     className="
-                        group
-                        rounded-2xl
-                        border
-                        border-border
-                        bg-surface
-                        p-6
-                        transition-colors
-                        hover:border-accent/20
-                        hover:bg-surface-elevated
-                    "
+            group
+            rounded-2xl
+            border
+            border-border
+            bg-surface
+            p-6
+            transition-colors
+            hover:border-accent/20
+            hover:bg-surface-elevated
+        "
                 >
                     <div className="flex items-center justify-between">
 
@@ -251,15 +646,15 @@ export default function ProjectOverview({
 
                         <ArrowRight
                             className="
-                                h-4
-                                w-4
-                                text-muted
-                                opacity-0
-                                transition-all
-                                group-hover:translate-x-0.5
-                                group-hover:text-accent
-                                group-hover:opacity-100
-                            "
+                    h-4
+                    w-4
+                    text-muted
+                    opacity-0
+                    transition-all
+                    group-hover:translate-x-0.5
+                    group-hover:text-accent
+                    group-hover:opacity-100
+                "
                         />
 
                     </div>
@@ -273,37 +668,6 @@ export default function ProjectOverview({
                     </p>
 
                 </Link>
-
-                <div
-                    className="
-                        rounded-2xl
-                        border
-                        border-border
-                        bg-surface
-                        p-6
-                    "
-                >
-                    <div className="flex items-center gap-2 text-secondary">
-
-                        <Clock3 className="h-4 w-4" />
-
-                        <span className="text-sm">
-                            Last Event
-                        </span>
-
-                    </div>
-
-                    <p className="mt-4 text-lg font-semibold tracking-tight text-primary">
-                        {lastEvent
-                            ? lastEvent.toLocaleString()
-                            : "Never"}
-                    </p>
-
-                    <p className="mt-1 text-xs text-muted">
-                        Most recent telemetry
-                    </p>
-
-                </div>
 
             </section>
 
@@ -414,11 +778,10 @@ export default function ProjectOverview({
                                     py-5
                                     transition-colors
                                     hover:bg-white/[0.02]
-                                    ${
-                                        index !==
+                                    ${index !==
                                         recentEvents.length - 1
-                                            ? "border-b border-border"
-                                            : ""
+                                        ? "border-b border-border"
+                                        : ""
                                     }
                                 `}
                             >

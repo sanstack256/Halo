@@ -402,6 +402,8 @@ export const ModelName = {
   Environment: 'Environment',
   ApiKey: 'ApiKey',
   Event: 'Event',
+  TelemetrySession: 'TelemetrySession',
+  Release: 'Release',
   Issue: 'Issue',
   User: 'User',
   Session: 'Session',
@@ -422,7 +424,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "issue" | "user" | "session" | "account" | "verification"
+    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -793,6 +795,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         count: {
           args: Prisma.EventCountArgs<ExtArgs>
           result: runtime.Types.Utils.Optional<Prisma.EventCountAggregateOutputType> | number
+        }
+      }
+    }
+    TelemetrySession: {
+      payload: Prisma.$TelemetrySessionPayload<ExtArgs>
+      fields: Prisma.TelemetrySessionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.TelemetrySessionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TelemetrySessionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.TelemetrySessionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TelemetrySessionPayload>
+        }
+        findFirst: {
+          args: Prisma.TelemetrySessionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TelemetrySessionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.TelemetrySessionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TelemetrySessionPayload>
+        }
+        findMany: {
+          args: Prisma.TelemetrySessionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TelemetrySessionPayload>[]
+        }
+        create: {
+          args: Prisma.TelemetrySessionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TelemetrySessionPayload>
+        }
+        createMany: {
+          args: Prisma.TelemetrySessionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.TelemetrySessionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TelemetrySessionPayload>[]
+        }
+        delete: {
+          args: Prisma.TelemetrySessionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TelemetrySessionPayload>
+        }
+        update: {
+          args: Prisma.TelemetrySessionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TelemetrySessionPayload>
+        }
+        deleteMany: {
+          args: Prisma.TelemetrySessionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.TelemetrySessionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.TelemetrySessionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TelemetrySessionPayload>[]
+        }
+        upsert: {
+          args: Prisma.TelemetrySessionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$TelemetrySessionPayload>
+        }
+        aggregate: {
+          args: Prisma.TelemetrySessionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateTelemetrySession>
+        }
+        groupBy: {
+          args: Prisma.TelemetrySessionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TelemetrySessionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.TelemetrySessionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.TelemetrySessionCountAggregateOutputType> | number
+        }
+      }
+    }
+    Release: {
+      payload: Prisma.$ReleasePayload<ExtArgs>
+      fields: Prisma.ReleaseFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ReleaseFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReleasePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ReleaseFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReleasePayload>
+        }
+        findFirst: {
+          args: Prisma.ReleaseFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReleasePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ReleaseFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReleasePayload>
+        }
+        findMany: {
+          args: Prisma.ReleaseFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReleasePayload>[]
+        }
+        create: {
+          args: Prisma.ReleaseCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReleasePayload>
+        }
+        createMany: {
+          args: Prisma.ReleaseCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ReleaseCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReleasePayload>[]
+        }
+        delete: {
+          args: Prisma.ReleaseDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReleasePayload>
+        }
+        update: {
+          args: Prisma.ReleaseUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReleasePayload>
+        }
+        deleteMany: {
+          args: Prisma.ReleaseDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ReleaseUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ReleaseUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReleasePayload>[]
+        }
+        upsert: {
+          args: Prisma.ReleaseUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ReleasePayload>
+        }
+        aggregate: {
+          args: Prisma.ReleaseAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRelease>
+        }
+        groupBy: {
+          args: Prisma.ReleaseGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReleaseGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ReleaseCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ReleaseCountAggregateOutputType> | number
         }
       }
     }
@@ -1220,10 +1370,10 @@ export const ProjectScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  description: 'description',
   organizationId: 'organizationId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  description: 'description'
 } as const
 
 export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -1243,13 +1393,13 @@ export type EnvironmentScalarFieldEnum = (typeof EnvironmentScalarFieldEnum)[key
 export const ApiKeyScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  prefix: 'prefix',
   keyHash: 'keyHash',
   projectId: 'projectId',
   environmentId: 'environmentId',
   lastUsedAt: 'lastUsedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  prefix: 'prefix'
 } as const
 
 export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
@@ -1258,26 +1408,65 @@ export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof 
 export const EventScalarFieldEnum = {
   id: 'id',
   type: 'type',
-  severity: 'severity',
   title: 'title',
   message: 'message',
-  stack: 'stack',
-  fingerprint: 'fingerprint',
-  metadata: 'metadata',
-  tags: 'tags',
-  breadcrumbs: 'breadcrumbs',
-  user: 'user',
   timestamp: 'timestamp',
-  sdkName: 'sdkName',
-  sdkVersion: 'sdkVersion',
-  release: 'release',
   projectId: 'projectId',
   environmentId: 'environmentId',
+  createdAt: 'createdAt',
+  metadata: 'metadata',
+  release: 'release',
+  releaseId: 'releaseId',
+  sdkName: 'sdkName',
+  sdkVersion: 'sdkVersion',
+  severity: 'severity',
   issueId: 'issueId',
-  createdAt: 'createdAt'
+  breadcrumbs: 'breadcrumbs',
+  fingerprint: 'fingerprint',
+  stack: 'stack',
+  tags: 'tags',
+  user: 'user',
+  durationMs: 'durationMs',
+  operation: 'operation',
+  resource: 'resource',
+  service: 'service',
+  sessionId: 'sessionId',
+  status: 'status'
 } as const
 
 export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
+
+
+export const TelemetrySessionScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  environmentId: 'environmentId',
+  userKey: 'userKey',
+  release: 'release',
+  startedAt: 'startedAt',
+  lastSeenAt: 'lastSeenAt',
+  crashedAt: 'crashedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TelemetrySessionScalarFieldEnum = (typeof TelemetrySessionScalarFieldEnum)[keyof typeof TelemetrySessionScalarFieldEnum]
+
+
+export const ReleaseScalarFieldEnum = {
+  id: 'id',
+  version: 'version',
+  projectId: 'projectId',
+  firstSeen: 'firstSeen',
+  lastSeen: 'lastSeen',
+  eventCount: 'eventCount',
+  errorCount: 'errorCount',
+  traceCount: 'traceCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReleaseScalarFieldEnum = (typeof ReleaseScalarFieldEnum)[keyof typeof ReleaseScalarFieldEnum]
 
 
 export const IssueScalarFieldEnum = {
@@ -1285,14 +1474,14 @@ export const IssueScalarFieldEnum = {
   fingerprint: 'fingerprint',
   title: 'title',
   status: 'status',
-  severity: 'severity',
   firstSeen: 'firstSeen',
   lastSeen: 'lastSeen',
-  eventCount: 'eventCount',
-  lastEventId: 'lastEventId',
   projectId: 'projectId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  eventCount: 'eventCount',
+  severity: 'severity',
+  lastEventId: 'lastEventId'
 } as const
 
 export type IssueScalarFieldEnum = (typeof IssueScalarFieldEnum)[keyof typeof IssueScalarFieldEnum]
@@ -1447,20 +1636,6 @@ export type ListEnumEventTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$Pr
 
 
 /**
- * Reference to a field of type 'EventSeverity'
- */
-export type EnumEventSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EventSeverity'>
-    
-
-
-/**
- * Reference to a field of type 'EventSeverity[]'
- */
-export type ListEnumEventSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EventSeverity[]'>
-    
-
-
-/**
  * Reference to a field of type 'Json'
  */
 export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Json'>
@@ -1475,16 +1650,16 @@ export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$Prisma
 
 
 /**
- * Reference to a field of type 'IssueStatus'
+ * Reference to a field of type 'EventSeverity'
  */
-export type EnumIssueStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IssueStatus'>
+export type EnumEventSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EventSeverity'>
     
 
 
 /**
- * Reference to a field of type 'IssueStatus[]'
+ * Reference to a field of type 'EventSeverity[]'
  */
-export type ListEnumIssueStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IssueStatus[]'>
+export type ListEnumEventSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'EventSeverity[]'>
     
 
 
@@ -1499,6 +1674,20 @@ export type IntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'In
  * Reference to a field of type 'Int[]'
  */
 export type ListIntFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Int[]'>
+    
+
+
+/**
+ * Reference to a field of type 'IssueStatus'
+ */
+export type EnumIssueStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IssueStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'IssueStatus[]'
+ */
+export type ListEnumIssueStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'IssueStatus[]'>
     
 
 
@@ -1678,6 +1867,8 @@ export type GlobalOmitConfig = {
   environment?: Prisma.EnvironmentOmit
   apiKey?: Prisma.ApiKeyOmit
   event?: Prisma.EventOmit
+  telemetrySession?: Prisma.TelemetrySessionOmit
+  release?: Prisma.ReleaseOmit
   issue?: Prisma.IssueOmit
   user?: Prisma.UserOmit
   session?: Prisma.SessionOmit

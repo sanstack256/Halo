@@ -43,6 +43,16 @@ export type ApiKey = Prisma.ApiKeyModel
  */
 export type Event = Prisma.EventModel
 /**
+ * Model TelemetrySession
+ * 
+ */
+export type TelemetrySession = Prisma.TelemetrySessionModel
+/**
+ * Model Release
+ * 
+ */
+export type Release = Prisma.ReleaseModel
+/**
  * Model Issue
  * 
  */

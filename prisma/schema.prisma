@@ -1,202 +1,195 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Get a free hosted Postgres database in seconds: `npx create-db`
-
 generator client {
   provider = "prisma-client"
-  output = "../apps/dashboard/src/generated/prisma"
+  output   = "../apps/dashboard/src/generated/prisma"
 }
 
 datasource db {
   provider = "postgresql"
 }
 
-enum EventType {
-  ERROR
-  LOG
-  MESSAGE
-}
-
-enum EventSeverity {
-  INFO
-  WARNING
-  ERROR
-  FATAL
-}
-
-enum IssueStatus {
-  OPEN
-  RESOLVED
-  IGNORED
-}
-
 model Organization {
-  id   String @id @default(cuid())
-  name String
-  slug String @unique
-
-  owner User?
-
-  projects Project[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id        String    @id @default(cuid())
+  name      String
+  slug      String    @unique
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  projects  Project[]
+  owner     User?
 }
 
 model Project {
-  id   String @id @default(cuid())
-  name String
-  slug String
-
-  description   String?
-
-  organizationId String
-  organization   Organization @relation(fields: [organizationId], references: [id])
-
-  environments Environment[]
-  apiKeys      ApiKey[]
-  events       Event[]
-  issues       Issue[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String             @id @default(cuid())
+  name              String
+  slug              String
+  organizationId    String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  description       String?
+  apiKeys           ApiKey[]
+  environments      Environment[]
+  events            Event[]
+  issues            Issue[]
+  organization      Organization       @relation(fields: [organizationId], references: [id])
+  telemetrySessions TelemetrySession[]
+  releases          Release[]
 
   @@unique([organizationId, slug])
 }
 
 model Environment {
-  id   String @id @default(cuid())
-  name String
-
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id])
-
-  apiKeys ApiKey[]
-  events  Event[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id                String             @id @default(cuid())
+  name              String
+  projectId         String
+  createdAt         DateTime           @default(now())
+  updatedAt         DateTime           @updatedAt
+  apiKeys           ApiKey[]
+  project           Project            @relation(fields: [projectId], references: [id])
+  events            Event[]
+  telemetrySessions TelemetrySession[]
 
   @@unique([projectId, name])
 }
 
 model ApiKey {
-  id        String   @id @default(cuid())
-  name      String
-
-  prefix    String
-  keyHash   String
-
-  projectId String
-  project   Project @relation(fields: [projectId], references: [id])
-
+  id            String      @id @default(cuid())
+  name          String
+  keyHash       String
+  projectId     String
   environmentId String
+  lastUsedAt    DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  prefix        String
   environment   Environment @relation(fields: [environmentId], references: [id])
-
-  lastUsedAt DateTime?
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  project       Project     @relation(fields: [projectId], references: [id])
 }
-
 
 model Event {
-  id String @id @default(cuid())
-
-  type EventType
-
-  severity EventSeverity @default(INFO)
-
-  title String
-
-  message String?
-
-  stack String?
-
-  fingerprint String?
-
-  metadata Json?
-
-  tags Json?
-
-  breadcrumbs Json?
-
-  user Json?
-
-  timestamp DateTime
-
-  sdkName String?
-  sdkVersion String?
-
-  release String?
-
-  projectId String
-  project Project @relation(fields: [projectId], references: [id])
-
+  id            String            @id @default(cuid())
+  type          EventType
+  title         String
+  message       String?
+  timestamp     DateTime
+  projectId     String
   environmentId String
-  environment Environment @relation(fields: [environmentId], references: [id])
+  createdAt     DateTime          @default(now())
+  metadata      Json?
+  release       String?
+  releaseId     String?
+  releaseRef    Release?          @relation(fields: [releaseId], references: [id])
+  sdkName       String?
+  sdkVersion    String?
+  severity      EventSeverity     @default(INFO)
+  issueId       String?
+  breadcrumbs   Json?
+  fingerprint   String?
+  stack         String?
+  tags          Json?
+  user          Json?
+  durationMs    Int?
+  operation     String?
+  resource      String?
+  service       String?
+  sessionId     String?
+  status        String?
+  environment   Environment       @relation(fields: [environmentId], references: [id])
+  issue         Issue?            @relation(fields: [issueId], references: [id])
+  project       Project           @relation(fields: [projectId], references: [id])
+  session       TelemetrySession? @relation(fields: [sessionId], references: [id])
 
-  issueId String?
-  issue Issue? @relation(fields: [issueId], references: [id])
-
-  createdAt DateTime @default(now())
+  @@index([projectId, timestamp])
+  @@index([projectId, type, timestamp])
+  @@index([projectId, release])
+  @@index([projectId, releaseId])
+  @@index([sessionId])
 }
 
+model TelemetrySession {
+  id            String      @id
+  projectId     String
+  environmentId String
+  userKey       String?
+  release       String?
+  startedAt     DateTime
+  lastSeenAt    DateTime
+  crashedAt     DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  events        Event[]
+  environment   Environment @relation(fields: [environmentId], references: [id])
+  project       Project     @relation(fields: [projectId], references: [id])
+
+  @@index([projectId, startedAt])
+  @@index([projectId, lastSeenAt])
+  @@index([projectId, release])
+  @@index([projectId, userKey])
+  @@index([projectId, crashedAt])
+}
+
+model Release {
+  id          String   @id @default(cuid())
+
+  version     String
+
+  projectId   String
+  project     Project  @relation(fields: [projectId], references: [id])
+
+  firstSeen   DateTime @default(now())
+  lastSeen    DateTime @default(now())
+
+  eventCount  Int      @default(0)
+  errorCount  Int      @default(0)
+  traceCount  Int      @default(0)
+
+  events      Event[]
+
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+
+  @@unique([projectId, version])
+  @@index([projectId, lastSeen])
+  @@index([projectId, version])
+}
 
 model Issue {
-  id String @id @default(cuid())
-
+  id          String        @id @default(cuid())
   fingerprint String
-
-  title String
-
-  status IssueStatus @default(OPEN)
-
-  severity EventSeverity @default(INFO)
-
-  firstSeen DateTime @default(now())
-  lastSeen DateTime @default(now())
-
-  eventCount Int @default(1)
-
+  title       String
+  status      IssueStatus   @default(OPEN)
+  firstSeen   DateTime      @default(now())
+  lastSeen    DateTime      @default(now())
+  projectId   String
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  eventCount  Int           @default(1)
+  severity    EventSeverity @default(INFO)
   lastEventId String?
-
-  projectId String
-  project Project @relation(fields: [projectId], references: [id])
-
-  events Event[]
-
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  events      Event[]
+  project     Project       @relation(fields: [projectId], references: [id])
 
   @@unique([projectId, fingerprint])
 }
 
-
 model User {
-  id            String    @id
-  name          String
-  email         String
-  emailVerified Boolean   @default(false)
-  image         String?
-  createdAt     DateTime  @default(now())
-  updatedAt     DateTime  @updatedAt
+  id             String        @id
+  name           String
+  email          String        @unique
+  emailVerified  Boolean       @default(false)
+  image          String?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  organizationId String?       @unique
+  accounts       Account[]
+  sessions       Session[]
+  organization   Organization? @relation(fields: [organizationId], references: [id])
 
-  organizationId String?        @unique
-  organization   Organization?  @relation(fields: [organizationId], references: [id])
-
-  sessions Session[]
-  accounts Account[]
-
-  @@unique([email])
   @@map("user")
 }
 
 model Session {
   id        String   @id
   expiresAt DateTime
-  token     String
+  token     String   @unique
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   ipAddress String?
@@ -204,7 +197,6 @@ model Session {
   userId    String
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
-  @@unique([token])
   @@index([userId])
   @@map("session")
 }
@@ -214,7 +206,6 @@ model Account {
   accountId             String
   providerId            String
   userId                String
-  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
   accessToken           String?
   refreshToken          String?
   idToken               String?
@@ -224,6 +215,7 @@ model Account {
   password              String?
   createdAt             DateTime  @default(now())
   updatedAt             DateTime  @updatedAt
+  user                  User      @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   @@index([userId])
   @@map("account")
@@ -241,3 +233,22 @@ model Verification {
   @@map("verification")
 }
 
+enum EventType {
+  ERROR
+  LOG
+  MESSAGE
+  TRACE
+}
+
+enum EventSeverity {
+  INFO
+  WARNING
+  ERROR
+  FATAL
+}
+
+enum IssueStatus {
+  OPEN
+  RESOLVED
+  IGNORED
+}

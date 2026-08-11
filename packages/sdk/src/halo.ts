@@ -13,6 +13,12 @@ import type {
 const SDK_NAME = "@halo/sdk";
 const SDK_VERSION = "0.1.0";
 
+function createSessionId() {
+    return `hs_${Date.now()}_${Math.random()
+        .toString(36)
+        .slice(2, 12)}`;
+}
+
 export class Halo {
     private client: HaloClient;
 
@@ -30,29 +36,70 @@ export class Halo {
 
     private breadcrumbs: HaloBreadcrumb[] = [];
 
+    private sessionId?: string;
+
+    private sessionStartedAt?: string;
+
     constructor(options: HaloOptions) {
         this.client = new HaloClient(
             options.endpoint ??
-            "http://localhost:3000/api",
-            options.apiKey
+                "http://localhost:3000/api",
+            options.apiKey,
         );
 
-        this.queue = new EventQueue(async (event: unknown) => {
-            await this.client.post(
-                "/ingest/events",
-                event
-            );
-        });
+        this.queue = new EventQueue(
+            async (event: unknown) => {
+                await this.client.post(
+                    "/ingest/events",
+                    event,
+                );
+            },
+        );
 
-        this.enabled = options.enabled ?? true;
+        this.enabled =
+            options.enabled ?? true;
 
         this.release = options.release;
 
-        this.environment = options.environment;
+        this.environment =
+            options.environment;
+
+        this.sessionId =
+            options.sessionId;
+
+        if (this.sessionId) {
+            this.sessionStartedAt =
+                new Date().toISOString();
+        }
 
         if (options.autoCapture) {
             registerGlobalHandlers(this);
         }
+    }
+
+    startSession() {
+        this.sessionId =
+            createSessionId();
+
+        this.sessionStartedAt =
+            new Date().toISOString();
+
+        return this.sessionId;
+    }
+
+    endSession() {
+        /*
+         * The ingestion layer derives the
+         * session's lastSeenAt from the final
+         * event received.
+         *
+         * We intentionally don't send a
+         * synthetic event here.
+         */
+    }
+
+    getSessionId() {
+        return this.sessionId;
     }
 
     setUser(user: HaloUser) {
@@ -65,7 +112,7 @@ export class Halo {
 
     setTag(
         key: string,
-        value: HaloTagValue
+        value: HaloTagValue,
     ) {
         this.tags[key] = value;
     }
@@ -75,10 +122,11 @@ export class Halo {
     }
 
     addBreadcrumb(
-        breadcrumb: HaloBreadcrumb
+        breadcrumb: HaloBreadcrumb,
     ) {
         this.breadcrumbs.push({
             ...breadcrumb,
+
             timestamp:
                 breadcrumb.timestamp ??
                 new Date().toISOString(),
@@ -98,7 +146,7 @@ export class Halo {
     }
 
     async captureMessage(
-        message: string
+        message: string,
     ) {
         return this.capture({
             type: "MESSAGE",
@@ -112,25 +160,72 @@ export class Halo {
     }
 
     async captureException(
-        error: unknown
+        error: unknown,
     ) {
         const exception =
             error instanceof Error
                 ? error
-                : new Error(String(error));
+                : new Error(
+                      String(error),
+                  );
 
         return this.capture({
             type: "ERROR",
 
             title: exception.name,
-            message: exception.message,
+
+            message:
+                exception.message,
+
             severity: "ERROR",
+
             stack: exception.stack,
         });
     }
 
+    async capturePerformance(
+        options: {
+            title: string;
+            durationMs: number;
+            operation?: string;
+            resource?: string;
+            status?: string | number;
+            service?: string;
+            metadata?: Record<
+                string,
+                unknown
+            >;
+        },
+    ) {
+        return this.capture({
+            type: "TRACE",
+
+            title: options.title,
+
+            severity: "INFO",
+
+            durationMs:
+                options.durationMs,
+
+            operation:
+                options.operation,
+
+            resource:
+                options.resource,
+
+            status:
+                options.status,
+
+            service:
+                options.service,
+
+            metadata:
+                options.metadata,
+        });
+    }
+
     async capture(
-        event: HaloCaptureOptions
+        event: HaloCaptureOptions,
     ) {
         if (!this.enabled) {
             return;
@@ -165,26 +260,46 @@ export class Halo {
 
             breadcrumbs: [
                 ...this.breadcrumbs,
-                ...(event.breadcrumbs ?? []),
+                ...(event.breadcrumbs ??
+                    []),
             ],
 
             user:
                 event.user ??
                 this.user,
 
+            sessionId:
+                event.sessionId ??
+                this.sessionId,
+
             sdkName: SDK_NAME,
 
-            sdkVersion: SDK_VERSION,
+            sdkVersion:
+                SDK_VERSION,
 
-            release: this.release,
+            release:
+                this.release,
 
-            environment: this.environment,
+            environment:
+                this.environment,
 
-            service: event.service,
-            resource: event.resource,
-            operation: event.operation,
-            status: event.status,
-            durationMs: event.durationMs,
+            sessionStartedAt:
+                this.sessionStartedAt,
+
+            service:
+                event.service,
+
+            resource:
+                event.resource,
+
+            operation:
+                event.operation,
+
+            status:
+                event.status,
+
+            durationMs:
+                event.durationMs,
         });
     }
 }

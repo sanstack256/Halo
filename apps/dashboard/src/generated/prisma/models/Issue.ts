@@ -39,14 +39,14 @@ export type IssueMinAggregateOutputType = {
   fingerprint: string | null
   title: string | null
   status: $Enums.IssueStatus | null
-  severity: $Enums.EventSeverity | null
   firstSeen: Date | null
   lastSeen: Date | null
-  eventCount: number | null
-  lastEventId: string | null
   projectId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  eventCount: number | null
+  severity: $Enums.EventSeverity | null
+  lastEventId: string | null
 }
 
 export type IssueMaxAggregateOutputType = {
@@ -54,14 +54,14 @@ export type IssueMaxAggregateOutputType = {
   fingerprint: string | null
   title: string | null
   status: $Enums.IssueStatus | null
-  severity: $Enums.EventSeverity | null
   firstSeen: Date | null
   lastSeen: Date | null
-  eventCount: number | null
-  lastEventId: string | null
   projectId: string | null
   createdAt: Date | null
   updatedAt: Date | null
+  eventCount: number | null
+  severity: $Enums.EventSeverity | null
+  lastEventId: string | null
 }
 
 export type IssueCountAggregateOutputType = {
@@ -69,14 +69,14 @@ export type IssueCountAggregateOutputType = {
   fingerprint: number
   title: number
   status: number
-  severity: number
   firstSeen: number
   lastSeen: number
-  eventCount: number
-  lastEventId: number
   projectId: number
   createdAt: number
   updatedAt: number
+  eventCount: number
+  severity: number
+  lastEventId: number
   _all: number
 }
 
@@ -94,14 +94,14 @@ export type IssueMinAggregateInputType = {
   fingerprint?: true
   title?: true
   status?: true
-  severity?: true
   firstSeen?: true
   lastSeen?: true
-  eventCount?: true
-  lastEventId?: true
   projectId?: true
   createdAt?: true
   updatedAt?: true
+  eventCount?: true
+  severity?: true
+  lastEventId?: true
 }
 
 export type IssueMaxAggregateInputType = {
@@ -109,14 +109,14 @@ export type IssueMaxAggregateInputType = {
   fingerprint?: true
   title?: true
   status?: true
-  severity?: true
   firstSeen?: true
   lastSeen?: true
-  eventCount?: true
-  lastEventId?: true
   projectId?: true
   createdAt?: true
   updatedAt?: true
+  eventCount?: true
+  severity?: true
+  lastEventId?: true
 }
 
 export type IssueCountAggregateInputType = {
@@ -124,14 +124,14 @@ export type IssueCountAggregateInputType = {
   fingerprint?: true
   title?: true
   status?: true
-  severity?: true
   firstSeen?: true
   lastSeen?: true
-  eventCount?: true
-  lastEventId?: true
   projectId?: true
   createdAt?: true
   updatedAt?: true
+  eventCount?: true
+  severity?: true
+  lastEventId?: true
   _all?: true
 }
 
@@ -226,14 +226,14 @@ export type IssueGroupByOutputType = {
   fingerprint: string
   title: string
   status: $Enums.IssueStatus
-  severity: $Enums.EventSeverity
   firstSeen: Date
   lastSeen: Date
-  eventCount: number
-  lastEventId: string | null
   projectId: string
   createdAt: Date
   updatedAt: Date
+  eventCount: number
+  severity: $Enums.EventSeverity
+  lastEventId: string | null
   _count: IssueCountAggregateOutputType | null
   _avg: IssueAvgAggregateOutputType | null
   _sum: IssueSumAggregateOutputType | null
@@ -264,16 +264,16 @@ export type IssueWhereInput = {
   fingerprint?: Prisma.StringFilter<"Issue"> | string
   title?: Prisma.StringFilter<"Issue"> | string
   status?: Prisma.EnumIssueStatusFilter<"Issue"> | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityFilter<"Issue"> | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeFilter<"Issue"> | Date | string
   lastSeen?: Prisma.DateTimeFilter<"Issue"> | Date | string
-  eventCount?: Prisma.IntFilter<"Issue"> | number
-  lastEventId?: Prisma.StringNullableFilter<"Issue"> | string | null
   projectId?: Prisma.StringFilter<"Issue"> | string
   createdAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
-  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
+  eventCount?: Prisma.IntFilter<"Issue"> | number
+  severity?: Prisma.EnumEventSeverityFilter<"Issue"> | $Enums.EventSeverity
+  lastEventId?: Prisma.StringNullableFilter<"Issue"> | string | null
   events?: Prisma.EventListRelationFilter
+  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
 }
 
 export type IssueOrderByWithRelationInput = {
@@ -281,16 +281,16 @@ export type IssueOrderByWithRelationInput = {
   fingerprint?: Prisma.SortOrder
   title?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   firstSeen?: Prisma.SortOrder
   lastSeen?: Prisma.SortOrder
-  eventCount?: Prisma.SortOrder
-  lastEventId?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  project?: Prisma.ProjectOrderByWithRelationInput
+  eventCount?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  lastEventId?: Prisma.SortOrderInput | Prisma.SortOrder
   events?: Prisma.EventOrderByRelationAggregateInput
+  project?: Prisma.ProjectOrderByWithRelationInput
 }
 
 export type IssueWhereUniqueInput = Prisma.AtLeast<{
@@ -302,16 +302,16 @@ export type IssueWhereUniqueInput = Prisma.AtLeast<{
   fingerprint?: Prisma.StringFilter<"Issue"> | string
   title?: Prisma.StringFilter<"Issue"> | string
   status?: Prisma.EnumIssueStatusFilter<"Issue"> | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityFilter<"Issue"> | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeFilter<"Issue"> | Date | string
   lastSeen?: Prisma.DateTimeFilter<"Issue"> | Date | string
-  eventCount?: Prisma.IntFilter<"Issue"> | number
-  lastEventId?: Prisma.StringNullableFilter<"Issue"> | string | null
   projectId?: Prisma.StringFilter<"Issue"> | string
   createdAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
-  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
+  eventCount?: Prisma.IntFilter<"Issue"> | number
+  severity?: Prisma.EnumEventSeverityFilter<"Issue"> | $Enums.EventSeverity
+  lastEventId?: Prisma.StringNullableFilter<"Issue"> | string | null
   events?: Prisma.EventListRelationFilter
+  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
 }, "id" | "projectId_fingerprint">
 
 export type IssueOrderByWithAggregationInput = {
@@ -319,14 +319,14 @@ export type IssueOrderByWithAggregationInput = {
   fingerprint?: Prisma.SortOrder
   title?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   firstSeen?: Prisma.SortOrder
   lastSeen?: Prisma.SortOrder
-  eventCount?: Prisma.SortOrder
-  lastEventId?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  eventCount?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  lastEventId?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.IssueCountOrderByAggregateInput
   _avg?: Prisma.IssueAvgOrderByAggregateInput
   _max?: Prisma.IssueMaxOrderByAggregateInput
@@ -342,14 +342,14 @@ export type IssueScalarWhereWithAggregatesInput = {
   fingerprint?: Prisma.StringWithAggregatesFilter<"Issue"> | string
   title?: Prisma.StringWithAggregatesFilter<"Issue"> | string
   status?: Prisma.EnumIssueStatusWithAggregatesFilter<"Issue"> | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityWithAggregatesFilter<"Issue"> | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeWithAggregatesFilter<"Issue"> | Date | string
   lastSeen?: Prisma.DateTimeWithAggregatesFilter<"Issue"> | Date | string
-  eventCount?: Prisma.IntWithAggregatesFilter<"Issue"> | number
-  lastEventId?: Prisma.StringNullableWithAggregatesFilter<"Issue"> | string | null
   projectId?: Prisma.StringWithAggregatesFilter<"Issue"> | string
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Issue"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Issue"> | Date | string
+  eventCount?: Prisma.IntWithAggregatesFilter<"Issue"> | number
+  severity?: Prisma.EnumEventSeverityWithAggregatesFilter<"Issue"> | $Enums.EventSeverity
+  lastEventId?: Prisma.StringNullableWithAggregatesFilter<"Issue"> | string | null
 }
 
 export type IssueCreateInput = {
@@ -357,15 +357,15 @@ export type IssueCreateInput = {
   fingerprint: string
   title: string
   status?: $Enums.IssueStatus
-  severity?: $Enums.EventSeverity
   firstSeen?: Date | string
   lastSeen?: Date | string
-  eventCount?: number
-  lastEventId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
+  eventCount?: number
+  severity?: $Enums.EventSeverity
+  lastEventId?: string | null
   events?: Prisma.EventCreateNestedManyWithoutIssueInput
+  project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
 }
 
 export type IssueUncheckedCreateInput = {
@@ -373,14 +373,14 @@ export type IssueUncheckedCreateInput = {
   fingerprint: string
   title: string
   status?: $Enums.IssueStatus
-  severity?: $Enums.EventSeverity
   firstSeen?: Date | string
   lastSeen?: Date | string
-  eventCount?: number
-  lastEventId?: string | null
   projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventCount?: number
+  severity?: $Enums.EventSeverity
+  lastEventId?: string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutIssueInput
 }
 
@@ -389,15 +389,15 @@ export type IssueUpdateInput = {
   fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
-  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   events?: Prisma.EventUpdateManyWithoutIssueNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
 }
 
 export type IssueUncheckedUpdateInput = {
@@ -405,14 +405,14 @@ export type IssueUncheckedUpdateInput = {
   fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
-  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutIssueNestedInput
 }
 
@@ -421,14 +421,14 @@ export type IssueCreateManyInput = {
   fingerprint: string
   title: string
   status?: $Enums.IssueStatus
-  severity?: $Enums.EventSeverity
   firstSeen?: Date | string
   lastSeen?: Date | string
-  eventCount?: number
-  lastEventId?: string | null
   projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventCount?: number
+  severity?: $Enums.EventSeverity
+  lastEventId?: string | null
 }
 
 export type IssueUpdateManyMutationInput = {
@@ -436,13 +436,13 @@ export type IssueUpdateManyMutationInput = {
   fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
-  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type IssueUncheckedUpdateManyInput = {
@@ -450,14 +450,14 @@ export type IssueUncheckedUpdateManyInput = {
   fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
-  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type IssueListRelationFilter = {
@@ -485,14 +485,14 @@ export type IssueCountOrderByAggregateInput = {
   fingerprint?: Prisma.SortOrder
   title?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   firstSeen?: Prisma.SortOrder
   lastSeen?: Prisma.SortOrder
-  eventCount?: Prisma.SortOrder
-  lastEventId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  eventCount?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  lastEventId?: Prisma.SortOrder
 }
 
 export type IssueAvgOrderByAggregateInput = {
@@ -504,14 +504,14 @@ export type IssueMaxOrderByAggregateInput = {
   fingerprint?: Prisma.SortOrder
   title?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   firstSeen?: Prisma.SortOrder
   lastSeen?: Prisma.SortOrder
-  eventCount?: Prisma.SortOrder
-  lastEventId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  eventCount?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  lastEventId?: Prisma.SortOrder
 }
 
 export type IssueMinOrderByAggregateInput = {
@@ -519,14 +519,14 @@ export type IssueMinOrderByAggregateInput = {
   fingerprint?: Prisma.SortOrder
   title?: Prisma.SortOrder
   status?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   firstSeen?: Prisma.SortOrder
   lastSeen?: Prisma.SortOrder
-  eventCount?: Prisma.SortOrder
-  lastEventId?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  eventCount?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  lastEventId?: Prisma.SortOrder
 }
 
 export type IssueSumOrderByAggregateInput = {
@@ -595,26 +595,18 @@ export type EnumIssueStatusFieldUpdateOperationsInput = {
   set?: $Enums.IssueStatus
 }
 
-export type IntFieldUpdateOperationsInput = {
-  set?: number
-  increment?: number
-  decrement?: number
-  multiply?: number
-  divide?: number
-}
-
 export type IssueCreateWithoutProjectInput = {
   id?: string
   fingerprint: string
   title: string
   status?: $Enums.IssueStatus
-  severity?: $Enums.EventSeverity
   firstSeen?: Date | string
   lastSeen?: Date | string
-  eventCount?: number
-  lastEventId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventCount?: number
+  severity?: $Enums.EventSeverity
+  lastEventId?: string | null
   events?: Prisma.EventCreateNestedManyWithoutIssueInput
 }
 
@@ -623,13 +615,13 @@ export type IssueUncheckedCreateWithoutProjectInput = {
   fingerprint: string
   title: string
   status?: $Enums.IssueStatus
-  severity?: $Enums.EventSeverity
   firstSeen?: Date | string
   lastSeen?: Date | string
-  eventCount?: number
-  lastEventId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventCount?: number
+  severity?: $Enums.EventSeverity
+  lastEventId?: string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutIssueInput
 }
 
@@ -667,14 +659,14 @@ export type IssueScalarWhereInput = {
   fingerprint?: Prisma.StringFilter<"Issue"> | string
   title?: Prisma.StringFilter<"Issue"> | string
   status?: Prisma.EnumIssueStatusFilter<"Issue"> | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityFilter<"Issue"> | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeFilter<"Issue"> | Date | string
   lastSeen?: Prisma.DateTimeFilter<"Issue"> | Date | string
-  eventCount?: Prisma.IntFilter<"Issue"> | number
-  lastEventId?: Prisma.StringNullableFilter<"Issue"> | string | null
   projectId?: Prisma.StringFilter<"Issue"> | string
   createdAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Issue"> | Date | string
+  eventCount?: Prisma.IntFilter<"Issue"> | number
+  severity?: Prisma.EnumEventSeverityFilter<"Issue"> | $Enums.EventSeverity
+  lastEventId?: Prisma.StringNullableFilter<"Issue"> | string | null
 }
 
 export type IssueCreateWithoutEventsInput = {
@@ -682,13 +674,13 @@ export type IssueCreateWithoutEventsInput = {
   fingerprint: string
   title: string
   status?: $Enums.IssueStatus
-  severity?: $Enums.EventSeverity
   firstSeen?: Date | string
   lastSeen?: Date | string
-  eventCount?: number
-  lastEventId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventCount?: number
+  severity?: $Enums.EventSeverity
+  lastEventId?: string | null
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
 }
 
@@ -697,14 +689,14 @@ export type IssueUncheckedCreateWithoutEventsInput = {
   fingerprint: string
   title: string
   status?: $Enums.IssueStatus
-  severity?: $Enums.EventSeverity
   firstSeen?: Date | string
   lastSeen?: Date | string
-  eventCount?: number
-  lastEventId?: string | null
   projectId: string
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventCount?: number
+  severity?: $Enums.EventSeverity
+  lastEventId?: string | null
 }
 
 export type IssueCreateOrConnectWithoutEventsInput = {
@@ -728,13 +720,13 @@ export type IssueUpdateWithoutEventsInput = {
   fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
-  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
 }
 
@@ -743,14 +735,14 @@ export type IssueUncheckedUpdateWithoutEventsInput = {
   fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
-  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type IssueCreateManyProjectInput = {
@@ -758,13 +750,13 @@ export type IssueCreateManyProjectInput = {
   fingerprint: string
   title: string
   status?: $Enums.IssueStatus
-  severity?: $Enums.EventSeverity
   firstSeen?: Date | string
   lastSeen?: Date | string
-  eventCount?: number
-  lastEventId?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
+  eventCount?: number
+  severity?: $Enums.EventSeverity
+  lastEventId?: string | null
 }
 
 export type IssueUpdateWithoutProjectInput = {
@@ -772,13 +764,13 @@ export type IssueUpdateWithoutProjectInput = {
   fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
-  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   events?: Prisma.EventUpdateManyWithoutIssueNestedInput
 }
 
@@ -787,13 +779,13 @@ export type IssueUncheckedUpdateWithoutProjectInput = {
   fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
-  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutIssueNestedInput
 }
 
@@ -802,13 +794,13 @@ export type IssueUncheckedUpdateManyWithoutProjectInput = {
   fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
   title?: Prisma.StringFieldUpdateOperationsInput | string
   status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
-  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -847,16 +839,16 @@ export type IssueSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   fingerprint?: boolean
   title?: boolean
   status?: boolean
-  severity?: boolean
   firstSeen?: boolean
   lastSeen?: boolean
-  eventCount?: boolean
-  lastEventId?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  eventCount?: boolean
+  severity?: boolean
+  lastEventId?: boolean
   events?: boolean | Prisma.Issue$eventsArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.IssueCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["issue"]>
 
@@ -865,14 +857,14 @@ export type IssueSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   fingerprint?: boolean
   title?: boolean
   status?: boolean
-  severity?: boolean
   firstSeen?: boolean
   lastSeen?: boolean
-  eventCount?: boolean
-  lastEventId?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  eventCount?: boolean
+  severity?: boolean
+  lastEventId?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["issue"]>
 
@@ -881,14 +873,14 @@ export type IssueSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensi
   fingerprint?: boolean
   title?: boolean
   status?: boolean
-  severity?: boolean
   firstSeen?: boolean
   lastSeen?: boolean
-  eventCount?: boolean
-  lastEventId?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  eventCount?: boolean
+  severity?: boolean
+  lastEventId?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["issue"]>
 
@@ -897,20 +889,20 @@ export type IssueSelectScalar = {
   fingerprint?: boolean
   title?: boolean
   status?: boolean
-  severity?: boolean
   firstSeen?: boolean
   lastSeen?: boolean
-  eventCount?: boolean
-  lastEventId?: boolean
   projectId?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  eventCount?: boolean
+  severity?: boolean
+  lastEventId?: boolean
 }
 
-export type IssueOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fingerprint" | "title" | "status" | "severity" | "firstSeen" | "lastSeen" | "eventCount" | "lastEventId" | "projectId" | "createdAt" | "updatedAt", ExtArgs["result"]["issue"]>
+export type IssueOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "fingerprint" | "title" | "status" | "firstSeen" | "lastSeen" | "projectId" | "createdAt" | "updatedAt" | "eventCount" | "severity" | "lastEventId", ExtArgs["result"]["issue"]>
 export type IssueInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   events?: boolean | Prisma.Issue$eventsArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.IssueCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type IssueIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -923,22 +915,22 @@ export type IssueIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extens
 export type $IssuePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Issue"
   objects: {
-    project: Prisma.$ProjectPayload<ExtArgs>
     events: Prisma.$EventPayload<ExtArgs>[]
+    project: Prisma.$ProjectPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     fingerprint: string
     title: string
     status: $Enums.IssueStatus
-    severity: $Enums.EventSeverity
     firstSeen: Date
     lastSeen: Date
-    eventCount: number
-    lastEventId: string | null
     projectId: string
     createdAt: Date
     updatedAt: Date
+    eventCount: number
+    severity: $Enums.EventSeverity
+    lastEventId: string | null
   }, ExtArgs["result"]["issue"]>
   composites: {}
 }
@@ -1333,8 +1325,8 @@ readonly fields: IssueFieldRefs;
  */
 export interface Prisma__IssueClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   events<T extends Prisma.Issue$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1368,14 +1360,14 @@ export interface IssueFieldRefs {
   readonly fingerprint: Prisma.FieldRef<"Issue", 'String'>
   readonly title: Prisma.FieldRef<"Issue", 'String'>
   readonly status: Prisma.FieldRef<"Issue", 'IssueStatus'>
-  readonly severity: Prisma.FieldRef<"Issue", 'EventSeverity'>
   readonly firstSeen: Prisma.FieldRef<"Issue", 'DateTime'>
   readonly lastSeen: Prisma.FieldRef<"Issue", 'DateTime'>
-  readonly eventCount: Prisma.FieldRef<"Issue", 'Int'>
-  readonly lastEventId: Prisma.FieldRef<"Issue", 'String'>
   readonly projectId: Prisma.FieldRef<"Issue", 'String'>
   readonly createdAt: Prisma.FieldRef<"Issue", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Issue", 'DateTime'>
+  readonly eventCount: Prisma.FieldRef<"Issue", 'Int'>
+  readonly severity: Prisma.FieldRef<"Issue", 'EventSeverity'>
+  readonly lastEventId: Prisma.FieldRef<"Issue", 'String'>
 }
     
 

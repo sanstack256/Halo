@@ -55,8 +55,21 @@ export async function POST(request: NextRequest) {
         sdkVersion: body.sdkVersion,
         release: body.release,
 
-        projectId: verified.project.id,
-        environmentId: verified.environment.id,
+        service: body.service,
+        resource: body.resource,
+        operation: body.operation,
+        status: body.status,
+        durationMs: body.durationMs,
+
+        sessionId: body.sessionId,
+        sessionStartedAt:
+            body.sessionStartedAt,
+
+        projectId:
+            verified.project.id,
+
+        environmentId:
+            verified.environment.id,
     });
 
     return NextResponse.json({

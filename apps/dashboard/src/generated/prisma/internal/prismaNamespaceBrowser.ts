@@ -56,6 +56,8 @@ export const ModelName = {
   Environment: 'Environment',
   ApiKey: 'ApiKey',
   Event: 'Event',
+  TelemetrySession: 'TelemetrySession',
+  Release: 'Release',
   Issue: 'Issue',
   User: 'User',
   Session: 'Session',
@@ -94,10 +96,10 @@ export const ProjectScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  description: 'description',
   organizationId: 'organizationId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  description: 'description'
 } as const
 
 export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -117,13 +119,13 @@ export type EnvironmentScalarFieldEnum = (typeof EnvironmentScalarFieldEnum)[key
 export const ApiKeyScalarFieldEnum = {
   id: 'id',
   name: 'name',
-  prefix: 'prefix',
   keyHash: 'keyHash',
   projectId: 'projectId',
   environmentId: 'environmentId',
   lastUsedAt: 'lastUsedAt',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  prefix: 'prefix'
 } as const
 
 export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof ApiKeyScalarFieldEnum]
@@ -132,26 +134,65 @@ export type ApiKeyScalarFieldEnum = (typeof ApiKeyScalarFieldEnum)[keyof typeof 
 export const EventScalarFieldEnum = {
   id: 'id',
   type: 'type',
-  severity: 'severity',
   title: 'title',
   message: 'message',
-  stack: 'stack',
-  fingerprint: 'fingerprint',
-  metadata: 'metadata',
-  tags: 'tags',
-  breadcrumbs: 'breadcrumbs',
-  user: 'user',
   timestamp: 'timestamp',
-  sdkName: 'sdkName',
-  sdkVersion: 'sdkVersion',
-  release: 'release',
   projectId: 'projectId',
   environmentId: 'environmentId',
+  createdAt: 'createdAt',
+  metadata: 'metadata',
+  release: 'release',
+  releaseId: 'releaseId',
+  sdkName: 'sdkName',
+  sdkVersion: 'sdkVersion',
+  severity: 'severity',
   issueId: 'issueId',
-  createdAt: 'createdAt'
+  breadcrumbs: 'breadcrumbs',
+  fingerprint: 'fingerprint',
+  stack: 'stack',
+  tags: 'tags',
+  user: 'user',
+  durationMs: 'durationMs',
+  operation: 'operation',
+  resource: 'resource',
+  service: 'service',
+  sessionId: 'sessionId',
+  status: 'status'
 } as const
 
 export type EventScalarFieldEnum = (typeof EventScalarFieldEnum)[keyof typeof EventScalarFieldEnum]
+
+
+export const TelemetrySessionScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  environmentId: 'environmentId',
+  userKey: 'userKey',
+  release: 'release',
+  startedAt: 'startedAt',
+  lastSeenAt: 'lastSeenAt',
+  crashedAt: 'crashedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type TelemetrySessionScalarFieldEnum = (typeof TelemetrySessionScalarFieldEnum)[keyof typeof TelemetrySessionScalarFieldEnum]
+
+
+export const ReleaseScalarFieldEnum = {
+  id: 'id',
+  version: 'version',
+  projectId: 'projectId',
+  firstSeen: 'firstSeen',
+  lastSeen: 'lastSeen',
+  eventCount: 'eventCount',
+  errorCount: 'errorCount',
+  traceCount: 'traceCount',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReleaseScalarFieldEnum = (typeof ReleaseScalarFieldEnum)[keyof typeof ReleaseScalarFieldEnum]
 
 
 export const IssueScalarFieldEnum = {
@@ -159,14 +200,14 @@ export const IssueScalarFieldEnum = {
   fingerprint: 'fingerprint',
   title: 'title',
   status: 'status',
-  severity: 'severity',
   firstSeen: 'firstSeen',
   lastSeen: 'lastSeen',
-  eventCount: 'eventCount',
-  lastEventId: 'lastEventId',
   projectId: 'projectId',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  eventCount: 'eventCount',
+  severity: 'severity',
+  lastEventId: 'lastEventId'
 } as const
 
 export type IssueScalarFieldEnum = (typeof IssueScalarFieldEnum)[keyof typeof IssueScalarFieldEnum]

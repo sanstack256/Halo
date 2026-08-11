@@ -12,7 +12,8 @@
 export const EventType = {
   ERROR: 'ERROR',
   LOG: 'LOG',
-  MESSAGE: 'MESSAGE'
+  MESSAGE: 'MESSAGE',
+  TRACE: 'TRACE'
 } as const
 
 export type EventType = (typeof EventType)[keyof typeof EventType]

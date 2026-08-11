@@ -1,4 +1,5 @@
 import Link from "next/link";
+
 import {
     ArrowRight,
     CheckCircle2,
@@ -32,10 +33,9 @@ export default function ProjectQuickStart({
         },
         {
             title: "Generate API Key",
-            description:
-                hasApiKey
-                    ? "An ingestion key is ready for your application."
-                    : "Create an ingestion key for your application.",
+            description: hasApiKey
+                ? "An ingestion key is ready."
+                : "Create an ingestion key.",
             completed: hasApiKey,
             href: `/projects/${projectId}/api-keys`,
         },
@@ -48,97 +48,137 @@ export default function ProjectQuickStart({
         },
         {
             title: "Send First Event",
-            description:
-                hasEvents
-                    ? "Halo has received telemetry from your application."
-                    : "Send an event to verify Halo is receiving telemetry.",
+            description: hasEvents
+                ? "Telemetry is being received."
+                : "Send an event to verify the connection.",
             completed: hasEvents,
             href: `/projects/${projectId}/sdk`,
         },
     ];
 
     return (
-        <section className="overflow-hidden rounded-2xl border border-border bg-surface">
+        <section
+            className="
+                overflow-hidden
+                rounded-2xl
+                border
+                border-border
+                bg-surface
+            "
+        >
 
-            <div className="border-b border-border px-8 py-6">
+            {/* Header */}
 
-                <h2 className="text-xl font-semibold text-primary">
+            <div className="border-b border-border px-5 py-5">
+
+                <h2 className="text-base font-semibold text-primary">
                     Quick Start
                 </h2>
 
-                <p className="mt-1 text-sm text-secondary">
-                    Connect your application to Halo in a few steps.
+                <p className="mt-1 text-xs leading-5 text-secondary">
+                    Connect your application to Halo.
                 </p>
 
             </div>
 
-            <div>
+            {/* Steps */}
 
-                {steps.map((step, index) => {
+            <div className="divide-y divide-border">
+
+                {steps.map((step) => {
 
                     const content = (
-                        <>
+                        <div className="flex gap-3 px-5 py-4">
+
+                            {/* Status */}
+
                             <div className="mt-0.5 shrink-0">
 
                                 {step.completed ? (
                                     <CheckCircle2
-                                        className="h-5 w-5 text-accent"
+                                        className="
+                                            h-4
+                                            w-4
+                                            text-accent
+                                        "
                                         strokeWidth={1.8}
                                     />
                                 ) : (
                                     <Circle
-                                        className="h-5 w-5 text-muted"
+                                        className="
+                                            h-4
+                                            w-4
+                                            text-muted
+                                        "
                                         strokeWidth={1.8}
                                     />
                                 )}
 
                             </div>
 
+                            {/* Content */}
+
                             <div className="min-w-0 flex-1">
 
-                                <div className="flex items-center justify-between gap-4">
+                                <div className="flex items-start justify-between gap-2">
 
-                                    <h3 className="font-medium text-primary">
+                                    <h3
+                                        className="
+                                            text-sm
+                                            font-medium
+                                            text-primary
+                                        "
+                                    >
                                         {step.title}
                                     </h3>
 
-                                    {step.href && !step.completed && (
-                                        <span className="inline-flex items-center gap-1.5 text-sm text-accent opacity-0 transition-opacity group-hover:opacity-100">
-                                            Continue
-                                            <ArrowRight className="h-4 w-4" />
-                                        </span>
-                                    )}
+                                    {step.href &&
+                                        !step.completed && (
+                                            <ArrowRight
+                                                className="
+                                                    mt-0.5
+                                                    h-3.5
+                                                    w-3.5
+                                                    shrink-0
+                                                    text-muted
+                                                    transition-colors
+                                                    group-hover:text-accent
+                                                "
+                                            />
+                                        )}
 
                                 </div>
 
-                                <p className="mt-1 text-sm leading-6 text-secondary">
+                                <p
+                                    className="
+                                        mt-1
+                                        text-xs
+                                        leading-5
+                                        text-secondary
+                                    "
+                                >
                                     {step.description}
                                 </p>
 
                             </div>
-                        </>
+
+                        </div>
                     );
 
-                    if (step.href && !step.completed) {
+                    if (
+                        step.href &&
+                        !step.completed
+                    ) {
                         return (
                             <Link
                                 key={step.title}
                                 href={step.href}
-                                className={`
+                                className="
                                     group
-                                    flex
-                                    items-start
-                                    gap-5
-                                    px-8
-                                    py-6
+                                    block
                                     transition-colors
                                     hover:bg-white/[0.02]
-                                    ${
-                                        index !== steps.length - 1
-                                            ? "border-b border-border"
-                                            : ""
-                                    }
-                                `}
+                                "
                             >
                                 {content}
                             </Link>
@@ -146,21 +186,7 @@ export default function ProjectQuickStart({
                     }
 
                     return (
-                        <div
-                            key={step.title}
-                            className={`
-                                flex
-                                items-start
-                                gap-5
-                                px-8
-                                py-6
-                                ${
-                                    index !== steps.length - 1
-                                        ? "border-b border-border"
-                                        : ""
-                                }
-                            `}
-                        >
+                        <div key={step.title}>
                             {content}
                         </div>
                     );

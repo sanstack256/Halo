@@ -6,13 +6,17 @@ export interface HaloOptions {
     environment?: string;
     release?: string;
 
+    sessionId?: string;
+
     enabled?: boolean;
 }
+
 
 export type HaloEventType =
     | "ERROR"
     | "LOG"
-    | "MESSAGE";
+    | "MESSAGE"
+    | "TRACE";
 
 export type HaloSeverity =
     | "INFO"
@@ -35,12 +39,14 @@ export interface HaloBreadcrumb {
     timestamp?: string;
     category: string;
     message: string;
-
     data?: Record<string, unknown>;
 }
 
 export interface HaloCaptureOptions {
-    type: "ERROR" | "MESSAGE";
+    type:
+        | "ERROR"
+        | "MESSAGE"
+        | "TRACE";
 
     title: string;
 
@@ -60,9 +66,17 @@ export interface HaloCaptureOptions {
 
     user?: HaloUser;
 
+    sessionId?: string;
+
+    sessionStartedAt?: string;
+
     service?: string;
+
     resource?: string;
+
     operation?: string;
-    status?: number;
+
+    status?: string | number;
+
     durationMs?: number;
 }

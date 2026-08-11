@@ -20,126 +20,186 @@ export type EventModel = runtime.Types.Result.DefaultSelection<Prisma.$EventPayl
 
 export type AggregateEvent = {
   _count: EventCountAggregateOutputType | null
+  _avg: EventAvgAggregateOutputType | null
+  _sum: EventSumAggregateOutputType | null
   _min: EventMinAggregateOutputType | null
   _max: EventMaxAggregateOutputType | null
+}
+
+export type EventAvgAggregateOutputType = {
+  durationMs: number | null
+}
+
+export type EventSumAggregateOutputType = {
+  durationMs: number | null
 }
 
 export type EventMinAggregateOutputType = {
   id: string | null
   type: $Enums.EventType | null
-  severity: $Enums.EventSeverity | null
   title: string | null
   message: string | null
-  stack: string | null
-  fingerprint: string | null
   timestamp: Date | null
-  sdkName: string | null
-  sdkVersion: string | null
-  release: string | null
   projectId: string | null
   environmentId: string | null
-  issueId: string | null
   createdAt: Date | null
+  release: string | null
+  releaseId: string | null
+  sdkName: string | null
+  sdkVersion: string | null
+  severity: $Enums.EventSeverity | null
+  issueId: string | null
+  fingerprint: string | null
+  stack: string | null
+  durationMs: number | null
+  operation: string | null
+  resource: string | null
+  service: string | null
+  sessionId: string | null
+  status: string | null
 }
 
 export type EventMaxAggregateOutputType = {
   id: string | null
   type: $Enums.EventType | null
-  severity: $Enums.EventSeverity | null
   title: string | null
   message: string | null
-  stack: string | null
-  fingerprint: string | null
   timestamp: Date | null
-  sdkName: string | null
-  sdkVersion: string | null
-  release: string | null
   projectId: string | null
   environmentId: string | null
-  issueId: string | null
   createdAt: Date | null
+  release: string | null
+  releaseId: string | null
+  sdkName: string | null
+  sdkVersion: string | null
+  severity: $Enums.EventSeverity | null
+  issueId: string | null
+  fingerprint: string | null
+  stack: string | null
+  durationMs: number | null
+  operation: string | null
+  resource: string | null
+  service: string | null
+  sessionId: string | null
+  status: string | null
 }
 
 export type EventCountAggregateOutputType = {
   id: number
   type: number
-  severity: number
   title: number
   message: number
-  stack: number
-  fingerprint: number
-  metadata: number
-  tags: number
-  breadcrumbs: number
-  user: number
   timestamp: number
-  sdkName: number
-  sdkVersion: number
-  release: number
   projectId: number
   environmentId: number
-  issueId: number
   createdAt: number
+  metadata: number
+  release: number
+  releaseId: number
+  sdkName: number
+  sdkVersion: number
+  severity: number
+  issueId: number
+  breadcrumbs: number
+  fingerprint: number
+  stack: number
+  tags: number
+  user: number
+  durationMs: number
+  operation: number
+  resource: number
+  service: number
+  sessionId: number
+  status: number
   _all: number
 }
 
 
+export type EventAvgAggregateInputType = {
+  durationMs?: true
+}
+
+export type EventSumAggregateInputType = {
+  durationMs?: true
+}
+
 export type EventMinAggregateInputType = {
   id?: true
   type?: true
-  severity?: true
   title?: true
   message?: true
-  stack?: true
-  fingerprint?: true
   timestamp?: true
-  sdkName?: true
-  sdkVersion?: true
-  release?: true
   projectId?: true
   environmentId?: true
-  issueId?: true
   createdAt?: true
+  release?: true
+  releaseId?: true
+  sdkName?: true
+  sdkVersion?: true
+  severity?: true
+  issueId?: true
+  fingerprint?: true
+  stack?: true
+  durationMs?: true
+  operation?: true
+  resource?: true
+  service?: true
+  sessionId?: true
+  status?: true
 }
 
 export type EventMaxAggregateInputType = {
   id?: true
   type?: true
-  severity?: true
   title?: true
   message?: true
-  stack?: true
-  fingerprint?: true
   timestamp?: true
-  sdkName?: true
-  sdkVersion?: true
-  release?: true
   projectId?: true
   environmentId?: true
-  issueId?: true
   createdAt?: true
+  release?: true
+  releaseId?: true
+  sdkName?: true
+  sdkVersion?: true
+  severity?: true
+  issueId?: true
+  fingerprint?: true
+  stack?: true
+  durationMs?: true
+  operation?: true
+  resource?: true
+  service?: true
+  sessionId?: true
+  status?: true
 }
 
 export type EventCountAggregateInputType = {
   id?: true
   type?: true
-  severity?: true
   title?: true
   message?: true
-  stack?: true
-  fingerprint?: true
-  metadata?: true
-  tags?: true
-  breadcrumbs?: true
-  user?: true
   timestamp?: true
-  sdkName?: true
-  sdkVersion?: true
-  release?: true
   projectId?: true
   environmentId?: true
-  issueId?: true
   createdAt?: true
+  metadata?: true
+  release?: true
+  releaseId?: true
+  sdkName?: true
+  sdkVersion?: true
+  severity?: true
+  issueId?: true
+  breadcrumbs?: true
+  fingerprint?: true
+  stack?: true
+  tags?: true
+  user?: true
+  durationMs?: true
+  operation?: true
+  resource?: true
+  service?: true
+  sessionId?: true
+  status?: true
   _all?: true
 }
 
@@ -181,6 +241,18 @@ export type EventAggregateArgs<ExtArgs extends runtime.Types.Extensions.Internal
   /**
    * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
    * 
+   * Select which fields to average
+  **/
+  _avg?: EventAvgAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
+   * Select which fields to sum
+  **/
+  _sum?: EventSumAggregateInputType
+  /**
+   * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+   * 
    * Select which fields to find the minimum value
   **/
   _min?: EventMinAggregateInputType
@@ -211,6 +283,8 @@ export type EventGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
   take?: number
   skip?: number
   _count?: EventCountAggregateInputType | true
+  _avg?: EventAvgAggregateInputType
+  _sum?: EventSumAggregateInputType
   _min?: EventMinAggregateInputType
   _max?: EventMaxAggregateInputType
 }
@@ -218,24 +292,33 @@ export type EventGroupByArgs<ExtArgs extends runtime.Types.Extensions.InternalAr
 export type EventGroupByOutputType = {
   id: string
   type: $Enums.EventType
-  severity: $Enums.EventSeverity
   title: string
   message: string | null
-  stack: string | null
-  fingerprint: string | null
-  metadata: runtime.JsonValue | null
-  tags: runtime.JsonValue | null
-  breadcrumbs: runtime.JsonValue | null
-  user: runtime.JsonValue | null
   timestamp: Date
-  sdkName: string | null
-  sdkVersion: string | null
-  release: string | null
   projectId: string
   environmentId: string
-  issueId: string | null
   createdAt: Date
+  metadata: runtime.JsonValue | null
+  release: string | null
+  releaseId: string | null
+  sdkName: string | null
+  sdkVersion: string | null
+  severity: $Enums.EventSeverity
+  issueId: string | null
+  breadcrumbs: runtime.JsonValue | null
+  fingerprint: string | null
+  stack: string | null
+  tags: runtime.JsonValue | null
+  user: runtime.JsonValue | null
+  durationMs: number | null
+  operation: string | null
+  resource: string | null
+  service: string | null
+  sessionId: string | null
+  status: string | null
   _count: EventCountAggregateOutputType | null
+  _avg: EventAvgAggregateOutputType | null
+  _sum: EventSumAggregateOutputType | null
   _min: EventMinAggregateOutputType | null
   _max: EventMaxAggregateOutputType | null
 }
@@ -261,51 +344,69 @@ export type EventWhereInput = {
   NOT?: Prisma.EventWhereInput | Prisma.EventWhereInput[]
   id?: Prisma.StringFilter<"Event"> | string
   type?: Prisma.EnumEventTypeFilter<"Event"> | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFilter<"Event"> | $Enums.EventSeverity
   title?: Prisma.StringFilter<"Event"> | string
   message?: Prisma.StringNullableFilter<"Event"> | string | null
-  stack?: Prisma.StringNullableFilter<"Event"> | string | null
-  fingerprint?: Prisma.StringNullableFilter<"Event"> | string | null
-  metadata?: Prisma.JsonNullableFilter<"Event">
-  tags?: Prisma.JsonNullableFilter<"Event">
-  breadcrumbs?: Prisma.JsonNullableFilter<"Event">
-  user?: Prisma.JsonNullableFilter<"Event">
   timestamp?: Prisma.DateTimeFilter<"Event"> | Date | string
-  sdkName?: Prisma.StringNullableFilter<"Event"> | string | null
-  sdkVersion?: Prisma.StringNullableFilter<"Event"> | string | null
-  release?: Prisma.StringNullableFilter<"Event"> | string | null
   projectId?: Prisma.StringFilter<"Event"> | string
   environmentId?: Prisma.StringFilter<"Event"> | string
-  issueId?: Prisma.StringNullableFilter<"Event"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
-  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
+  metadata?: Prisma.JsonNullableFilter<"Event">
+  release?: Prisma.StringNullableFilter<"Event"> | string | null
+  releaseId?: Prisma.StringNullableFilter<"Event"> | string | null
+  sdkName?: Prisma.StringNullableFilter<"Event"> | string | null
+  sdkVersion?: Prisma.StringNullableFilter<"Event"> | string | null
+  severity?: Prisma.EnumEventSeverityFilter<"Event"> | $Enums.EventSeverity
+  issueId?: Prisma.StringNullableFilter<"Event"> | string | null
+  breadcrumbs?: Prisma.JsonNullableFilter<"Event">
+  fingerprint?: Prisma.StringNullableFilter<"Event"> | string | null
+  stack?: Prisma.StringNullableFilter<"Event"> | string | null
+  tags?: Prisma.JsonNullableFilter<"Event">
+  user?: Prisma.JsonNullableFilter<"Event">
+  durationMs?: Prisma.IntNullableFilter<"Event"> | number | null
+  operation?: Prisma.StringNullableFilter<"Event"> | string | null
+  resource?: Prisma.StringNullableFilter<"Event"> | string | null
+  service?: Prisma.StringNullableFilter<"Event"> | string | null
+  sessionId?: Prisma.StringNullableFilter<"Event"> | string | null
+  status?: Prisma.StringNullableFilter<"Event"> | string | null
+  releaseRef?: Prisma.XOR<Prisma.ReleaseNullableScalarRelationFilter, Prisma.ReleaseWhereInput> | null
   environment?: Prisma.XOR<Prisma.EnvironmentScalarRelationFilter, Prisma.EnvironmentWhereInput>
   issue?: Prisma.XOR<Prisma.IssueNullableScalarRelationFilter, Prisma.IssueWhereInput> | null
+  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
+  session?: Prisma.XOR<Prisma.TelemetrySessionNullableScalarRelationFilter, Prisma.TelemetrySessionWhereInput> | null
 }
 
 export type EventOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrderInput | Prisma.SortOrder
-  stack?: Prisma.SortOrderInput | Prisma.SortOrder
-  fingerprint?: Prisma.SortOrderInput | Prisma.SortOrder
-  metadata?: Prisma.SortOrderInput | Prisma.SortOrder
-  tags?: Prisma.SortOrderInput | Prisma.SortOrder
-  breadcrumbs?: Prisma.SortOrderInput | Prisma.SortOrder
-  user?: Prisma.SortOrderInput | Prisma.SortOrder
   timestamp?: Prisma.SortOrder
-  sdkName?: Prisma.SortOrderInput | Prisma.SortOrder
-  sdkVersion?: Prisma.SortOrderInput | Prisma.SortOrder
-  release?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
-  issueId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
-  project?: Prisma.ProjectOrderByWithRelationInput
+  metadata?: Prisma.SortOrderInput | Prisma.SortOrder
+  release?: Prisma.SortOrderInput | Prisma.SortOrder
+  releaseId?: Prisma.SortOrderInput | Prisma.SortOrder
+  sdkName?: Prisma.SortOrderInput | Prisma.SortOrder
+  sdkVersion?: Prisma.SortOrderInput | Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  issueId?: Prisma.SortOrderInput | Prisma.SortOrder
+  breadcrumbs?: Prisma.SortOrderInput | Prisma.SortOrder
+  fingerprint?: Prisma.SortOrderInput | Prisma.SortOrder
+  stack?: Prisma.SortOrderInput | Prisma.SortOrder
+  tags?: Prisma.SortOrderInput | Prisma.SortOrder
+  user?: Prisma.SortOrderInput | Prisma.SortOrder
+  durationMs?: Prisma.SortOrderInput | Prisma.SortOrder
+  operation?: Prisma.SortOrderInput | Prisma.SortOrder
+  resource?: Prisma.SortOrderInput | Prisma.SortOrder
+  service?: Prisma.SortOrderInput | Prisma.SortOrder
+  sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrderInput | Prisma.SortOrder
+  releaseRef?: Prisma.ReleaseOrderByWithRelationInput
   environment?: Prisma.EnvironmentOrderByWithRelationInput
   issue?: Prisma.IssueOrderByWithRelationInput
+  project?: Prisma.ProjectOrderByWithRelationInput
+  session?: Prisma.TelemetrySessionOrderByWithRelationInput
 }
 
 export type EventWhereUniqueInput = Prisma.AtLeast<{
@@ -314,51 +415,69 @@ export type EventWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.EventWhereInput[]
   NOT?: Prisma.EventWhereInput | Prisma.EventWhereInput[]
   type?: Prisma.EnumEventTypeFilter<"Event"> | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFilter<"Event"> | $Enums.EventSeverity
   title?: Prisma.StringFilter<"Event"> | string
   message?: Prisma.StringNullableFilter<"Event"> | string | null
-  stack?: Prisma.StringNullableFilter<"Event"> | string | null
-  fingerprint?: Prisma.StringNullableFilter<"Event"> | string | null
-  metadata?: Prisma.JsonNullableFilter<"Event">
-  tags?: Prisma.JsonNullableFilter<"Event">
-  breadcrumbs?: Prisma.JsonNullableFilter<"Event">
-  user?: Prisma.JsonNullableFilter<"Event">
   timestamp?: Prisma.DateTimeFilter<"Event"> | Date | string
-  sdkName?: Prisma.StringNullableFilter<"Event"> | string | null
-  sdkVersion?: Prisma.StringNullableFilter<"Event"> | string | null
-  release?: Prisma.StringNullableFilter<"Event"> | string | null
   projectId?: Prisma.StringFilter<"Event"> | string
   environmentId?: Prisma.StringFilter<"Event"> | string
-  issueId?: Prisma.StringNullableFilter<"Event"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
-  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
+  metadata?: Prisma.JsonNullableFilter<"Event">
+  release?: Prisma.StringNullableFilter<"Event"> | string | null
+  releaseId?: Prisma.StringNullableFilter<"Event"> | string | null
+  sdkName?: Prisma.StringNullableFilter<"Event"> | string | null
+  sdkVersion?: Prisma.StringNullableFilter<"Event"> | string | null
+  severity?: Prisma.EnumEventSeverityFilter<"Event"> | $Enums.EventSeverity
+  issueId?: Prisma.StringNullableFilter<"Event"> | string | null
+  breadcrumbs?: Prisma.JsonNullableFilter<"Event">
+  fingerprint?: Prisma.StringNullableFilter<"Event"> | string | null
+  stack?: Prisma.StringNullableFilter<"Event"> | string | null
+  tags?: Prisma.JsonNullableFilter<"Event">
+  user?: Prisma.JsonNullableFilter<"Event">
+  durationMs?: Prisma.IntNullableFilter<"Event"> | number | null
+  operation?: Prisma.StringNullableFilter<"Event"> | string | null
+  resource?: Prisma.StringNullableFilter<"Event"> | string | null
+  service?: Prisma.StringNullableFilter<"Event"> | string | null
+  sessionId?: Prisma.StringNullableFilter<"Event"> | string | null
+  status?: Prisma.StringNullableFilter<"Event"> | string | null
+  releaseRef?: Prisma.XOR<Prisma.ReleaseNullableScalarRelationFilter, Prisma.ReleaseWhereInput> | null
   environment?: Prisma.XOR<Prisma.EnvironmentScalarRelationFilter, Prisma.EnvironmentWhereInput>
   issue?: Prisma.XOR<Prisma.IssueNullableScalarRelationFilter, Prisma.IssueWhereInput> | null
+  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
+  session?: Prisma.XOR<Prisma.TelemetrySessionNullableScalarRelationFilter, Prisma.TelemetrySessionWhereInput> | null
 }, "id">
 
 export type EventOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrderInput | Prisma.SortOrder
-  stack?: Prisma.SortOrderInput | Prisma.SortOrder
-  fingerprint?: Prisma.SortOrderInput | Prisma.SortOrder
-  metadata?: Prisma.SortOrderInput | Prisma.SortOrder
-  tags?: Prisma.SortOrderInput | Prisma.SortOrder
-  breadcrumbs?: Prisma.SortOrderInput | Prisma.SortOrder
-  user?: Prisma.SortOrderInput | Prisma.SortOrder
   timestamp?: Prisma.SortOrder
-  sdkName?: Prisma.SortOrderInput | Prisma.SortOrder
-  sdkVersion?: Prisma.SortOrderInput | Prisma.SortOrder
-  release?: Prisma.SortOrderInput | Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
-  issueId?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  metadata?: Prisma.SortOrderInput | Prisma.SortOrder
+  release?: Prisma.SortOrderInput | Prisma.SortOrder
+  releaseId?: Prisma.SortOrderInput | Prisma.SortOrder
+  sdkName?: Prisma.SortOrderInput | Prisma.SortOrder
+  sdkVersion?: Prisma.SortOrderInput | Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  issueId?: Prisma.SortOrderInput | Prisma.SortOrder
+  breadcrumbs?: Prisma.SortOrderInput | Prisma.SortOrder
+  fingerprint?: Prisma.SortOrderInput | Prisma.SortOrder
+  stack?: Prisma.SortOrderInput | Prisma.SortOrder
+  tags?: Prisma.SortOrderInput | Prisma.SortOrder
+  user?: Prisma.SortOrderInput | Prisma.SortOrder
+  durationMs?: Prisma.SortOrderInput | Prisma.SortOrder
+  operation?: Prisma.SortOrderInput | Prisma.SortOrder
+  resource?: Prisma.SortOrderInput | Prisma.SortOrder
+  service?: Prisma.SortOrderInput | Prisma.SortOrder
+  sessionId?: Prisma.SortOrderInput | Prisma.SortOrder
+  status?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.EventCountOrderByAggregateInput
+  _avg?: Prisma.EventAvgOrderByAggregateInput
   _max?: Prisma.EventMaxOrderByAggregateInput
   _min?: Prisma.EventMinOrderByAggregateInput
+  _sum?: Prisma.EventSumOrderByAggregateInput
 }
 
 export type EventScalarWhereWithAggregatesInput = {
@@ -367,174 +486,228 @@ export type EventScalarWhereWithAggregatesInput = {
   NOT?: Prisma.EventScalarWhereWithAggregatesInput | Prisma.EventScalarWhereWithAggregatesInput[]
   id?: Prisma.StringWithAggregatesFilter<"Event"> | string
   type?: Prisma.EnumEventTypeWithAggregatesFilter<"Event"> | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityWithAggregatesFilter<"Event"> | $Enums.EventSeverity
   title?: Prisma.StringWithAggregatesFilter<"Event"> | string
   message?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
-  stack?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
-  fingerprint?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
-  metadata?: Prisma.JsonNullableWithAggregatesFilter<"Event">
-  tags?: Prisma.JsonNullableWithAggregatesFilter<"Event">
-  breadcrumbs?: Prisma.JsonNullableWithAggregatesFilter<"Event">
-  user?: Prisma.JsonNullableWithAggregatesFilter<"Event">
   timestamp?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
-  sdkName?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
-  sdkVersion?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
-  release?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
   projectId?: Prisma.StringWithAggregatesFilter<"Event"> | string
   environmentId?: Prisma.StringWithAggregatesFilter<"Event"> | string
-  issueId?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Event"> | Date | string
+  metadata?: Prisma.JsonNullableWithAggregatesFilter<"Event">
+  release?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  releaseId?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  sdkName?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  sdkVersion?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  severity?: Prisma.EnumEventSeverityWithAggregatesFilter<"Event"> | $Enums.EventSeverity
+  issueId?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  breadcrumbs?: Prisma.JsonNullableWithAggregatesFilter<"Event">
+  fingerprint?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  stack?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  tags?: Prisma.JsonNullableWithAggregatesFilter<"Event">
+  user?: Prisma.JsonNullableWithAggregatesFilter<"Event">
+  durationMs?: Prisma.IntNullableWithAggregatesFilter<"Event"> | number | null
+  operation?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  resource?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  service?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  sessionId?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
+  status?: Prisma.StringNullableWithAggregatesFilter<"Event"> | string | null
 }
 
 export type EventCreateInput = {
   id?: string
   type: $Enums.EventType
-  severity?: $Enums.EventSeverity
   title: string
   message?: string | null
-  stack?: string | null
-  fingerprint?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
   sdkName?: string | null
   sdkVersion?: string | null
-  release?: string | null
-  createdAt?: Date | string
-  project: Prisma.ProjectCreateNestedOneWithoutEventsInput
+  severity?: $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  status?: string | null
+  releaseRef?: Prisma.ReleaseCreateNestedOneWithoutEventsInput
   environment: Prisma.EnvironmentCreateNestedOneWithoutEventsInput
   issue?: Prisma.IssueCreateNestedOneWithoutEventsInput
+  project: Prisma.ProjectCreateNestedOneWithoutEventsInput
+  session?: Prisma.TelemetrySessionCreateNestedOneWithoutEventsInput
 }
 
 export type EventUncheckedCreateInput = {
   id?: string
   type: $Enums.EventType
-  severity?: $Enums.EventSeverity
   title: string
   message?: string | null
-  stack?: string | null
-  fingerprint?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
-  sdkName?: string | null
-  sdkVersion?: string | null
-  release?: string | null
   projectId: string
   environmentId: string
-  issueId?: string | null
   createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  releaseId?: string | null
+  sdkName?: string | null
+  sdkVersion?: string | null
+  severity?: $Enums.EventSeverity
+  issueId?: string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  sessionId?: string | null
+  status?: string | null
 }
 
 export type EventUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseRef?: Prisma.ReleaseUpdateOneWithoutEventsNestedInput
   environment?: Prisma.EnvironmentUpdateOneRequiredWithoutEventsNestedInput
   issue?: Prisma.IssueUpdateOneWithoutEventsNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
+  session?: Prisma.TelemetrySessionUpdateOneWithoutEventsNestedInput
 }
 
 export type EventUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   environmentId?: Prisma.StringFieldUpdateOperationsInput | string
-  issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventCreateManyInput = {
   id?: string
   type: $Enums.EventType
-  severity?: $Enums.EventSeverity
   title: string
   message?: string | null
-  stack?: string | null
-  fingerprint?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
-  sdkName?: string | null
-  sdkVersion?: string | null
-  release?: string | null
   projectId: string
   environmentId: string
-  issueId?: string | null
   createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  releaseId?: string | null
+  sdkName?: string | null
+  sdkVersion?: string | null
+  severity?: $Enums.EventSeverity
+  issueId?: string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  sessionId?: string | null
+  status?: string | null
 }
 
 export type EventUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   environmentId?: Prisma.StringFieldUpdateOperationsInput | string
-  issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventListRelationFilter = {
@@ -550,59 +723,88 @@ export type EventOrderByRelationAggregateInput = {
 export type EventCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrder
-  stack?: Prisma.SortOrder
-  fingerprint?: Prisma.SortOrder
-  metadata?: Prisma.SortOrder
-  tags?: Prisma.SortOrder
-  breadcrumbs?: Prisma.SortOrder
-  user?: Prisma.SortOrder
   timestamp?: Prisma.SortOrder
-  sdkName?: Prisma.SortOrder
-  sdkVersion?: Prisma.SortOrder
-  release?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
-  issueId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  metadata?: Prisma.SortOrder
+  release?: Prisma.SortOrder
+  releaseId?: Prisma.SortOrder
+  sdkName?: Prisma.SortOrder
+  sdkVersion?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  issueId?: Prisma.SortOrder
+  breadcrumbs?: Prisma.SortOrder
+  fingerprint?: Prisma.SortOrder
+  stack?: Prisma.SortOrder
+  tags?: Prisma.SortOrder
+  user?: Prisma.SortOrder
+  durationMs?: Prisma.SortOrder
+  operation?: Prisma.SortOrder
+  resource?: Prisma.SortOrder
+  service?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+}
+
+export type EventAvgOrderByAggregateInput = {
+  durationMs?: Prisma.SortOrder
 }
 
 export type EventMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrder
-  stack?: Prisma.SortOrder
-  fingerprint?: Prisma.SortOrder
   timestamp?: Prisma.SortOrder
-  sdkName?: Prisma.SortOrder
-  sdkVersion?: Prisma.SortOrder
-  release?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
-  issueId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  release?: Prisma.SortOrder
+  releaseId?: Prisma.SortOrder
+  sdkName?: Prisma.SortOrder
+  sdkVersion?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  issueId?: Prisma.SortOrder
+  fingerprint?: Prisma.SortOrder
+  stack?: Prisma.SortOrder
+  durationMs?: Prisma.SortOrder
+  operation?: Prisma.SortOrder
+  resource?: Prisma.SortOrder
+  service?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
 }
 
 export type EventMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   type?: Prisma.SortOrder
-  severity?: Prisma.SortOrder
   title?: Prisma.SortOrder
   message?: Prisma.SortOrder
-  stack?: Prisma.SortOrder
-  fingerprint?: Prisma.SortOrder
   timestamp?: Prisma.SortOrder
-  sdkName?: Prisma.SortOrder
-  sdkVersion?: Prisma.SortOrder
-  release?: Prisma.SortOrder
   projectId?: Prisma.SortOrder
   environmentId?: Prisma.SortOrder
-  issueId?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
+  release?: Prisma.SortOrder
+  releaseId?: Prisma.SortOrder
+  sdkName?: Prisma.SortOrder
+  sdkVersion?: Prisma.SortOrder
+  severity?: Prisma.SortOrder
+  issueId?: Prisma.SortOrder
+  fingerprint?: Prisma.SortOrder
+  stack?: Prisma.SortOrder
+  durationMs?: Prisma.SortOrder
+  operation?: Prisma.SortOrder
+  resource?: Prisma.SortOrder
+  service?: Prisma.SortOrder
+  sessionId?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+}
+
+export type EventSumOrderByAggregateInput = {
+  durationMs?: Prisma.SortOrder
 }
 
 export type EventCreateNestedManyWithoutProjectInput = {
@@ -697,6 +899,98 @@ export type EnumEventSeverityFieldUpdateOperationsInput = {
   set?: $Enums.EventSeverity
 }
 
+export type NullableIntFieldUpdateOperationsInput = {
+  set?: number | null
+  increment?: number
+  decrement?: number
+  multiply?: number
+  divide?: number
+}
+
+export type EventCreateNestedManyWithoutSessionInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutSessionInput, Prisma.EventUncheckedCreateWithoutSessionInput> | Prisma.EventCreateWithoutSessionInput[] | Prisma.EventUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutSessionInput | Prisma.EventCreateOrConnectWithoutSessionInput[]
+  createMany?: Prisma.EventCreateManySessionInputEnvelope
+  connect?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+}
+
+export type EventUncheckedCreateNestedManyWithoutSessionInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutSessionInput, Prisma.EventUncheckedCreateWithoutSessionInput> | Prisma.EventCreateWithoutSessionInput[] | Prisma.EventUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutSessionInput | Prisma.EventCreateOrConnectWithoutSessionInput[]
+  createMany?: Prisma.EventCreateManySessionInputEnvelope
+  connect?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+}
+
+export type EventUpdateManyWithoutSessionNestedInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutSessionInput, Prisma.EventUncheckedCreateWithoutSessionInput> | Prisma.EventCreateWithoutSessionInput[] | Prisma.EventUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutSessionInput | Prisma.EventCreateOrConnectWithoutSessionInput[]
+  upsert?: Prisma.EventUpsertWithWhereUniqueWithoutSessionInput | Prisma.EventUpsertWithWhereUniqueWithoutSessionInput[]
+  createMany?: Prisma.EventCreateManySessionInputEnvelope
+  set?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  disconnect?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  delete?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  connect?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  update?: Prisma.EventUpdateWithWhereUniqueWithoutSessionInput | Prisma.EventUpdateWithWhereUniqueWithoutSessionInput[]
+  updateMany?: Prisma.EventUpdateManyWithWhereWithoutSessionInput | Prisma.EventUpdateManyWithWhereWithoutSessionInput[]
+  deleteMany?: Prisma.EventScalarWhereInput | Prisma.EventScalarWhereInput[]
+}
+
+export type EventUncheckedUpdateManyWithoutSessionNestedInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutSessionInput, Prisma.EventUncheckedCreateWithoutSessionInput> | Prisma.EventCreateWithoutSessionInput[] | Prisma.EventUncheckedCreateWithoutSessionInput[]
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutSessionInput | Prisma.EventCreateOrConnectWithoutSessionInput[]
+  upsert?: Prisma.EventUpsertWithWhereUniqueWithoutSessionInput | Prisma.EventUpsertWithWhereUniqueWithoutSessionInput[]
+  createMany?: Prisma.EventCreateManySessionInputEnvelope
+  set?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  disconnect?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  delete?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  connect?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  update?: Prisma.EventUpdateWithWhereUniqueWithoutSessionInput | Prisma.EventUpdateWithWhereUniqueWithoutSessionInput[]
+  updateMany?: Prisma.EventUpdateManyWithWhereWithoutSessionInput | Prisma.EventUpdateManyWithWhereWithoutSessionInput[]
+  deleteMany?: Prisma.EventScalarWhereInput | Prisma.EventScalarWhereInput[]
+}
+
+export type EventCreateNestedManyWithoutReleaseRefInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutReleaseRefInput, Prisma.EventUncheckedCreateWithoutReleaseRefInput> | Prisma.EventCreateWithoutReleaseRefInput[] | Prisma.EventUncheckedCreateWithoutReleaseRefInput[]
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutReleaseRefInput | Prisma.EventCreateOrConnectWithoutReleaseRefInput[]
+  createMany?: Prisma.EventCreateManyReleaseRefInputEnvelope
+  connect?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+}
+
+export type EventUncheckedCreateNestedManyWithoutReleaseRefInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutReleaseRefInput, Prisma.EventUncheckedCreateWithoutReleaseRefInput> | Prisma.EventCreateWithoutReleaseRefInput[] | Prisma.EventUncheckedCreateWithoutReleaseRefInput[]
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutReleaseRefInput | Prisma.EventCreateOrConnectWithoutReleaseRefInput[]
+  createMany?: Prisma.EventCreateManyReleaseRefInputEnvelope
+  connect?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+}
+
+export type EventUpdateManyWithoutReleaseRefNestedInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutReleaseRefInput, Prisma.EventUncheckedCreateWithoutReleaseRefInput> | Prisma.EventCreateWithoutReleaseRefInput[] | Prisma.EventUncheckedCreateWithoutReleaseRefInput[]
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutReleaseRefInput | Prisma.EventCreateOrConnectWithoutReleaseRefInput[]
+  upsert?: Prisma.EventUpsertWithWhereUniqueWithoutReleaseRefInput | Prisma.EventUpsertWithWhereUniqueWithoutReleaseRefInput[]
+  createMany?: Prisma.EventCreateManyReleaseRefInputEnvelope
+  set?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  disconnect?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  delete?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  connect?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  update?: Prisma.EventUpdateWithWhereUniqueWithoutReleaseRefInput | Prisma.EventUpdateWithWhereUniqueWithoutReleaseRefInput[]
+  updateMany?: Prisma.EventUpdateManyWithWhereWithoutReleaseRefInput | Prisma.EventUpdateManyWithWhereWithoutReleaseRefInput[]
+  deleteMany?: Prisma.EventScalarWhereInput | Prisma.EventScalarWhereInput[]
+}
+
+export type EventUncheckedUpdateManyWithoutReleaseRefNestedInput = {
+  create?: Prisma.XOR<Prisma.EventCreateWithoutReleaseRefInput, Prisma.EventUncheckedCreateWithoutReleaseRefInput> | Prisma.EventCreateWithoutReleaseRefInput[] | Prisma.EventUncheckedCreateWithoutReleaseRefInput[]
+  connectOrCreate?: Prisma.EventCreateOrConnectWithoutReleaseRefInput | Prisma.EventCreateOrConnectWithoutReleaseRefInput[]
+  upsert?: Prisma.EventUpsertWithWhereUniqueWithoutReleaseRefInput | Prisma.EventUpsertWithWhereUniqueWithoutReleaseRefInput[]
+  createMany?: Prisma.EventCreateManyReleaseRefInputEnvelope
+  set?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  disconnect?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  delete?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  connect?: Prisma.EventWhereUniqueInput | Prisma.EventWhereUniqueInput[]
+  update?: Prisma.EventUpdateWithWhereUniqueWithoutReleaseRefInput | Prisma.EventUpdateWithWhereUniqueWithoutReleaseRefInput[]
+  updateMany?: Prisma.EventUpdateManyWithWhereWithoutReleaseRefInput | Prisma.EventUpdateManyWithWhereWithoutReleaseRefInput[]
+  deleteMany?: Prisma.EventScalarWhereInput | Prisma.EventScalarWhereInput[]
+}
+
 export type EventCreateNestedManyWithoutIssueInput = {
   create?: Prisma.XOR<Prisma.EventCreateWithoutIssueInput, Prisma.EventUncheckedCreateWithoutIssueInput> | Prisma.EventCreateWithoutIssueInput[] | Prisma.EventUncheckedCreateWithoutIssueInput[]
   connectOrCreate?: Prisma.EventCreateOrConnectWithoutIssueInput | Prisma.EventCreateOrConnectWithoutIssueInput[]
@@ -742,43 +1036,57 @@ export type EventUncheckedUpdateManyWithoutIssueNestedInput = {
 export type EventCreateWithoutProjectInput = {
   id?: string
   type: $Enums.EventType
-  severity?: $Enums.EventSeverity
   title: string
   message?: string | null
-  stack?: string | null
-  fingerprint?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
   sdkName?: string | null
   sdkVersion?: string | null
-  release?: string | null
-  createdAt?: Date | string
+  severity?: $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  status?: string | null
+  releaseRef?: Prisma.ReleaseCreateNestedOneWithoutEventsInput
   environment: Prisma.EnvironmentCreateNestedOneWithoutEventsInput
   issue?: Prisma.IssueCreateNestedOneWithoutEventsInput
+  session?: Prisma.TelemetrySessionCreateNestedOneWithoutEventsInput
 }
 
 export type EventUncheckedCreateWithoutProjectInput = {
   id?: string
   type: $Enums.EventType
-  severity?: $Enums.EventSeverity
   title: string
   message?: string | null
-  stack?: string | null
-  fingerprint?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  environmentId: string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  releaseId?: string | null
   sdkName?: string | null
   sdkVersion?: string | null
-  release?: string | null
-  environmentId: string
+  severity?: $Enums.EventSeverity
   issueId?: string | null
-  createdAt?: Date | string
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  sessionId?: string | null
+  status?: string | null
 }
 
 export type EventCreateOrConnectWithoutProjectInput = {
@@ -813,65 +1121,86 @@ export type EventScalarWhereInput = {
   NOT?: Prisma.EventScalarWhereInput | Prisma.EventScalarWhereInput[]
   id?: Prisma.StringFilter<"Event"> | string
   type?: Prisma.EnumEventTypeFilter<"Event"> | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFilter<"Event"> | $Enums.EventSeverity
   title?: Prisma.StringFilter<"Event"> | string
   message?: Prisma.StringNullableFilter<"Event"> | string | null
-  stack?: Prisma.StringNullableFilter<"Event"> | string | null
-  fingerprint?: Prisma.StringNullableFilter<"Event"> | string | null
-  metadata?: Prisma.JsonNullableFilter<"Event">
-  tags?: Prisma.JsonNullableFilter<"Event">
-  breadcrumbs?: Prisma.JsonNullableFilter<"Event">
-  user?: Prisma.JsonNullableFilter<"Event">
   timestamp?: Prisma.DateTimeFilter<"Event"> | Date | string
-  sdkName?: Prisma.StringNullableFilter<"Event"> | string | null
-  sdkVersion?: Prisma.StringNullableFilter<"Event"> | string | null
-  release?: Prisma.StringNullableFilter<"Event"> | string | null
   projectId?: Prisma.StringFilter<"Event"> | string
   environmentId?: Prisma.StringFilter<"Event"> | string
-  issueId?: Prisma.StringNullableFilter<"Event"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Event"> | Date | string
+  metadata?: Prisma.JsonNullableFilter<"Event">
+  release?: Prisma.StringNullableFilter<"Event"> | string | null
+  releaseId?: Prisma.StringNullableFilter<"Event"> | string | null
+  sdkName?: Prisma.StringNullableFilter<"Event"> | string | null
+  sdkVersion?: Prisma.StringNullableFilter<"Event"> | string | null
+  severity?: Prisma.EnumEventSeverityFilter<"Event"> | $Enums.EventSeverity
+  issueId?: Prisma.StringNullableFilter<"Event"> | string | null
+  breadcrumbs?: Prisma.JsonNullableFilter<"Event">
+  fingerprint?: Prisma.StringNullableFilter<"Event"> | string | null
+  stack?: Prisma.StringNullableFilter<"Event"> | string | null
+  tags?: Prisma.JsonNullableFilter<"Event">
+  user?: Prisma.JsonNullableFilter<"Event">
+  durationMs?: Prisma.IntNullableFilter<"Event"> | number | null
+  operation?: Prisma.StringNullableFilter<"Event"> | string | null
+  resource?: Prisma.StringNullableFilter<"Event"> | string | null
+  service?: Prisma.StringNullableFilter<"Event"> | string | null
+  sessionId?: Prisma.StringNullableFilter<"Event"> | string | null
+  status?: Prisma.StringNullableFilter<"Event"> | string | null
 }
 
 export type EventCreateWithoutEnvironmentInput = {
   id?: string
   type: $Enums.EventType
-  severity?: $Enums.EventSeverity
   title: string
   message?: string | null
-  stack?: string | null
-  fingerprint?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
   sdkName?: string | null
   sdkVersion?: string | null
-  release?: string | null
-  createdAt?: Date | string
-  project: Prisma.ProjectCreateNestedOneWithoutEventsInput
+  severity?: $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  status?: string | null
+  releaseRef?: Prisma.ReleaseCreateNestedOneWithoutEventsInput
   issue?: Prisma.IssueCreateNestedOneWithoutEventsInput
+  project: Prisma.ProjectCreateNestedOneWithoutEventsInput
+  session?: Prisma.TelemetrySessionCreateNestedOneWithoutEventsInput
 }
 
 export type EventUncheckedCreateWithoutEnvironmentInput = {
   id?: string
   type: $Enums.EventType
-  severity?: $Enums.EventSeverity
   title: string
   message?: string | null
-  stack?: string | null
-  fingerprint?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  projectId: string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  releaseId?: string | null
   sdkName?: string | null
   sdkVersion?: string | null
-  release?: string | null
-  projectId: string
+  severity?: $Enums.EventSeverity
   issueId?: string | null
-  createdAt?: Date | string
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  sessionId?: string | null
+  status?: string | null
 }
 
 export type EventCreateOrConnectWithoutEnvironmentInput = {
@@ -900,46 +1229,224 @@ export type EventUpdateManyWithWhereWithoutEnvironmentInput = {
   data: Prisma.XOR<Prisma.EventUpdateManyMutationInput, Prisma.EventUncheckedUpdateManyWithoutEnvironmentInput>
 }
 
+export type EventCreateWithoutSessionInput = {
+  id?: string
+  type: $Enums.EventType
+  title: string
+  message?: string | null
+  timestamp: Date | string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  sdkName?: string | null
+  sdkVersion?: string | null
+  severity?: $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  status?: string | null
+  releaseRef?: Prisma.ReleaseCreateNestedOneWithoutEventsInput
+  environment: Prisma.EnvironmentCreateNestedOneWithoutEventsInput
+  issue?: Prisma.IssueCreateNestedOneWithoutEventsInput
+  project: Prisma.ProjectCreateNestedOneWithoutEventsInput
+}
+
+export type EventUncheckedCreateWithoutSessionInput = {
+  id?: string
+  type: $Enums.EventType
+  title: string
+  message?: string | null
+  timestamp: Date | string
+  projectId: string
+  environmentId: string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  releaseId?: string | null
+  sdkName?: string | null
+  sdkVersion?: string | null
+  severity?: $Enums.EventSeverity
+  issueId?: string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  status?: string | null
+}
+
+export type EventCreateOrConnectWithoutSessionInput = {
+  where: Prisma.EventWhereUniqueInput
+  create: Prisma.XOR<Prisma.EventCreateWithoutSessionInput, Prisma.EventUncheckedCreateWithoutSessionInput>
+}
+
+export type EventCreateManySessionInputEnvelope = {
+  data: Prisma.EventCreateManySessionInput | Prisma.EventCreateManySessionInput[]
+  skipDuplicates?: boolean
+}
+
+export type EventUpsertWithWhereUniqueWithoutSessionInput = {
+  where: Prisma.EventWhereUniqueInput
+  update: Prisma.XOR<Prisma.EventUpdateWithoutSessionInput, Prisma.EventUncheckedUpdateWithoutSessionInput>
+  create: Prisma.XOR<Prisma.EventCreateWithoutSessionInput, Prisma.EventUncheckedCreateWithoutSessionInput>
+}
+
+export type EventUpdateWithWhereUniqueWithoutSessionInput = {
+  where: Prisma.EventWhereUniqueInput
+  data: Prisma.XOR<Prisma.EventUpdateWithoutSessionInput, Prisma.EventUncheckedUpdateWithoutSessionInput>
+}
+
+export type EventUpdateManyWithWhereWithoutSessionInput = {
+  where: Prisma.EventScalarWhereInput
+  data: Prisma.XOR<Prisma.EventUpdateManyMutationInput, Prisma.EventUncheckedUpdateManyWithoutSessionInput>
+}
+
+export type EventCreateWithoutReleaseRefInput = {
+  id?: string
+  type: $Enums.EventType
+  title: string
+  message?: string | null
+  timestamp: Date | string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  sdkName?: string | null
+  sdkVersion?: string | null
+  severity?: $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  status?: string | null
+  environment: Prisma.EnvironmentCreateNestedOneWithoutEventsInput
+  issue?: Prisma.IssueCreateNestedOneWithoutEventsInput
+  project: Prisma.ProjectCreateNestedOneWithoutEventsInput
+  session?: Prisma.TelemetrySessionCreateNestedOneWithoutEventsInput
+}
+
+export type EventUncheckedCreateWithoutReleaseRefInput = {
+  id?: string
+  type: $Enums.EventType
+  title: string
+  message?: string | null
+  timestamp: Date | string
+  projectId: string
+  environmentId: string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  sdkName?: string | null
+  sdkVersion?: string | null
+  severity?: $Enums.EventSeverity
+  issueId?: string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  sessionId?: string | null
+  status?: string | null
+}
+
+export type EventCreateOrConnectWithoutReleaseRefInput = {
+  where: Prisma.EventWhereUniqueInput
+  create: Prisma.XOR<Prisma.EventCreateWithoutReleaseRefInput, Prisma.EventUncheckedCreateWithoutReleaseRefInput>
+}
+
+export type EventCreateManyReleaseRefInputEnvelope = {
+  data: Prisma.EventCreateManyReleaseRefInput | Prisma.EventCreateManyReleaseRefInput[]
+  skipDuplicates?: boolean
+}
+
+export type EventUpsertWithWhereUniqueWithoutReleaseRefInput = {
+  where: Prisma.EventWhereUniqueInput
+  update: Prisma.XOR<Prisma.EventUpdateWithoutReleaseRefInput, Prisma.EventUncheckedUpdateWithoutReleaseRefInput>
+  create: Prisma.XOR<Prisma.EventCreateWithoutReleaseRefInput, Prisma.EventUncheckedCreateWithoutReleaseRefInput>
+}
+
+export type EventUpdateWithWhereUniqueWithoutReleaseRefInput = {
+  where: Prisma.EventWhereUniqueInput
+  data: Prisma.XOR<Prisma.EventUpdateWithoutReleaseRefInput, Prisma.EventUncheckedUpdateWithoutReleaseRefInput>
+}
+
+export type EventUpdateManyWithWhereWithoutReleaseRefInput = {
+  where: Prisma.EventScalarWhereInput
+  data: Prisma.XOR<Prisma.EventUpdateManyMutationInput, Prisma.EventUncheckedUpdateManyWithoutReleaseRefInput>
+}
+
 export type EventCreateWithoutIssueInput = {
   id?: string
   type: $Enums.EventType
-  severity?: $Enums.EventSeverity
   title: string
   message?: string | null
-  stack?: string | null
-  fingerprint?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
   sdkName?: string | null
   sdkVersion?: string | null
-  release?: string | null
-  createdAt?: Date | string
-  project: Prisma.ProjectCreateNestedOneWithoutEventsInput
+  severity?: $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  status?: string | null
+  releaseRef?: Prisma.ReleaseCreateNestedOneWithoutEventsInput
   environment: Prisma.EnvironmentCreateNestedOneWithoutEventsInput
+  project: Prisma.ProjectCreateNestedOneWithoutEventsInput
+  session?: Prisma.TelemetrySessionCreateNestedOneWithoutEventsInput
 }
 
 export type EventUncheckedCreateWithoutIssueInput = {
   id?: string
   type: $Enums.EventType
-  severity?: $Enums.EventSeverity
   title: string
   message?: string | null
-  stack?: string | null
-  fingerprint?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
-  sdkName?: string | null
-  sdkVersion?: string | null
-  release?: string | null
   projectId: string
   environmentId: string
   createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  releaseId?: string | null
+  sdkName?: string | null
+  sdkVersion?: string | null
+  severity?: $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  sessionId?: string | null
+  status?: string | null
 }
 
 export type EventCreateOrConnectWithoutIssueInput = {
@@ -971,253 +1478,561 @@ export type EventUpdateManyWithWhereWithoutIssueInput = {
 export type EventCreateManyProjectInput = {
   id?: string
   type: $Enums.EventType
-  severity?: $Enums.EventSeverity
   title: string
   message?: string | null
-  stack?: string | null
-  fingerprint?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  environmentId: string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  releaseId?: string | null
   sdkName?: string | null
   sdkVersion?: string | null
-  release?: string | null
-  environmentId: string
+  severity?: $Enums.EventSeverity
   issueId?: string | null
-  createdAt?: Date | string
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  sessionId?: string | null
+  status?: string | null
 }
 
 export type EventUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseRef?: Prisma.ReleaseUpdateOneWithoutEventsNestedInput
   environment?: Prisma.EnvironmentUpdateOneRequiredWithoutEventsNestedInput
   issue?: Prisma.IssueUpdateOneWithoutEventsNestedInput
+  session?: Prisma.TelemetrySessionUpdateOneWithoutEventsNestedInput
 }
 
 export type EventUncheckedUpdateWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  environmentId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  environmentId?: Prisma.StringFieldUpdateOperationsInput | string
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventUncheckedUpdateManyWithoutProjectInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  environmentId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  environmentId?: Prisma.StringFieldUpdateOperationsInput | string
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventCreateManyEnvironmentInput = {
   id?: string
   type: $Enums.EventType
-  severity?: $Enums.EventSeverity
   title: string
   message?: string | null
-  stack?: string | null
-  fingerprint?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
+  projectId: string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  releaseId?: string | null
   sdkName?: string | null
   sdkVersion?: string | null
-  release?: string | null
-  projectId: string
+  severity?: $Enums.EventSeverity
   issueId?: string | null
-  createdAt?: Date | string
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  sessionId?: string | null
+  status?: string | null
 }
 
 export type EventUpdateWithoutEnvironmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseRef?: Prisma.ReleaseUpdateOneWithoutEventsNestedInput
   issue?: Prisma.IssueUpdateOneWithoutEventsNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
+  session?: Prisma.TelemetrySessionUpdateOneWithoutEventsNestedInput
 }
 
 export type EventUncheckedUpdateWithoutEnvironmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventUncheckedUpdateManyWithoutEnvironmentInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type EventCreateManySessionInput = {
+  id?: string
+  type: $Enums.EventType
+  title: string
+  message?: string | null
+  timestamp: Date | string
+  projectId: string
+  environmentId: string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  releaseId?: string | null
+  sdkName?: string | null
+  sdkVersion?: string | null
+  severity?: $Enums.EventSeverity
+  issueId?: string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  status?: string | null
+}
+
+export type EventUpdateWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseRef?: Prisma.ReleaseUpdateOneWithoutEventsNestedInput
+  environment?: Prisma.EnvironmentUpdateOneRequiredWithoutEventsNestedInput
+  issue?: Prisma.IssueUpdateOneWithoutEventsNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
+}
+
+export type EventUncheckedUpdateWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  environmentId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type EventUncheckedUpdateManyWithoutSessionInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  environmentId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type EventCreateManyReleaseRefInput = {
+  id?: string
+  type: $Enums.EventType
+  title: string
+  message?: string | null
+  timestamp: Date | string
+  projectId: string
+  environmentId: string
+  createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  sdkName?: string | null
+  sdkVersion?: string | null
+  severity?: $Enums.EventSeverity
+  issueId?: string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  sessionId?: string | null
+  status?: string | null
+}
+
+export type EventUpdateWithoutReleaseRefInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  environment?: Prisma.EnvironmentUpdateOneRequiredWithoutEventsNestedInput
+  issue?: Prisma.IssueUpdateOneWithoutEventsNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
+  session?: Prisma.TelemetrySessionUpdateOneWithoutEventsNestedInput
+}
+
+export type EventUncheckedUpdateWithoutReleaseRefInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  environmentId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+}
+
+export type EventUncheckedUpdateManyWithoutReleaseRefInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  environmentId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventCreateManyIssueInput = {
   id?: string
   type: $Enums.EventType
-  severity?: $Enums.EventSeverity
   title: string
   message?: string | null
-  stack?: string | null
-  fingerprint?: string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp: Date | string
-  sdkName?: string | null
-  sdkVersion?: string | null
-  release?: string | null
   projectId: string
   environmentId: string
   createdAt?: Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: string | null
+  releaseId?: string | null
+  sdkName?: string | null
+  sdkVersion?: string | null
+  severity?: $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: string | null
+  stack?: string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: number | null
+  operation?: string | null
+  resource?: string | null
+  service?: string | null
+  sessionId?: string | null
+  status?: string | null
 }
 
 export type EventUpdateWithoutIssueInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseRef?: Prisma.ReleaseUpdateOneWithoutEventsNestedInput
   environment?: Prisma.EnvironmentUpdateOneRequiredWithoutEventsNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutEventsNestedInput
+  session?: Prisma.TelemetrySessionUpdateOneWithoutEventsNestedInput
 }
 
 export type EventUncheckedUpdateWithoutIssueInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   environmentId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 export type EventUncheckedUpdateManyWithoutIssueInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   type?: Prisma.EnumEventTypeFieldUpdateOperationsInput | $Enums.EventType
-  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   title?: Prisma.StringFieldUpdateOperationsInput | string
   message?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
-  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   timestamp?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
-  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   projectId?: Prisma.StringFieldUpdateOperationsInput | string
   environmentId?: Prisma.StringFieldUpdateOperationsInput | string
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  release?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  releaseId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sdkVersion?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  breadcrumbs?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  fingerprint?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  stack?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  tags?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  user?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  durationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
+  operation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  resource?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  service?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  sessionId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
 }
 
 
@@ -1225,144 +2040,193 @@ export type EventUncheckedUpdateManyWithoutIssueInput = {
 export type EventSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   type?: boolean
-  severity?: boolean
   title?: boolean
   message?: boolean
-  stack?: boolean
-  fingerprint?: boolean
-  metadata?: boolean
-  tags?: boolean
-  breadcrumbs?: boolean
-  user?: boolean
   timestamp?: boolean
-  sdkName?: boolean
-  sdkVersion?: boolean
-  release?: boolean
   projectId?: boolean
   environmentId?: boolean
-  issueId?: boolean
   createdAt?: boolean
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  metadata?: boolean
+  release?: boolean
+  releaseId?: boolean
+  sdkName?: boolean
+  sdkVersion?: boolean
+  severity?: boolean
+  issueId?: boolean
+  breadcrumbs?: boolean
+  fingerprint?: boolean
+  stack?: boolean
+  tags?: boolean
+  user?: boolean
+  durationMs?: boolean
+  operation?: boolean
+  resource?: boolean
+  service?: boolean
+  sessionId?: boolean
+  status?: boolean
+  releaseRef?: boolean | Prisma.Event$releaseRefArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.Event$issueArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Event$sessionArgs<ExtArgs>
 }, ExtArgs["result"]["event"]>
 
 export type EventSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   type?: boolean
-  severity?: boolean
   title?: boolean
   message?: boolean
-  stack?: boolean
-  fingerprint?: boolean
-  metadata?: boolean
-  tags?: boolean
-  breadcrumbs?: boolean
-  user?: boolean
   timestamp?: boolean
-  sdkName?: boolean
-  sdkVersion?: boolean
-  release?: boolean
   projectId?: boolean
   environmentId?: boolean
-  issueId?: boolean
   createdAt?: boolean
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  metadata?: boolean
+  release?: boolean
+  releaseId?: boolean
+  sdkName?: boolean
+  sdkVersion?: boolean
+  severity?: boolean
+  issueId?: boolean
+  breadcrumbs?: boolean
+  fingerprint?: boolean
+  stack?: boolean
+  tags?: boolean
+  user?: boolean
+  durationMs?: boolean
+  operation?: boolean
+  resource?: boolean
+  service?: boolean
+  sessionId?: boolean
+  status?: boolean
+  releaseRef?: boolean | Prisma.Event$releaseRefArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.Event$issueArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Event$sessionArgs<ExtArgs>
 }, ExtArgs["result"]["event"]>
 
 export type EventSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   type?: boolean
-  severity?: boolean
   title?: boolean
   message?: boolean
-  stack?: boolean
-  fingerprint?: boolean
-  metadata?: boolean
-  tags?: boolean
-  breadcrumbs?: boolean
-  user?: boolean
   timestamp?: boolean
-  sdkName?: boolean
-  sdkVersion?: boolean
-  release?: boolean
   projectId?: boolean
   environmentId?: boolean
-  issueId?: boolean
   createdAt?: boolean
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  metadata?: boolean
+  release?: boolean
+  releaseId?: boolean
+  sdkName?: boolean
+  sdkVersion?: boolean
+  severity?: boolean
+  issueId?: boolean
+  breadcrumbs?: boolean
+  fingerprint?: boolean
+  stack?: boolean
+  tags?: boolean
+  user?: boolean
+  durationMs?: boolean
+  operation?: boolean
+  resource?: boolean
+  service?: boolean
+  sessionId?: boolean
+  status?: boolean
+  releaseRef?: boolean | Prisma.Event$releaseRefArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.Event$issueArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Event$sessionArgs<ExtArgs>
 }, ExtArgs["result"]["event"]>
 
 export type EventSelectScalar = {
   id?: boolean
   type?: boolean
-  severity?: boolean
   title?: boolean
   message?: boolean
-  stack?: boolean
-  fingerprint?: boolean
-  metadata?: boolean
-  tags?: boolean
-  breadcrumbs?: boolean
-  user?: boolean
   timestamp?: boolean
-  sdkName?: boolean
-  sdkVersion?: boolean
-  release?: boolean
   projectId?: boolean
   environmentId?: boolean
-  issueId?: boolean
   createdAt?: boolean
+  metadata?: boolean
+  release?: boolean
+  releaseId?: boolean
+  sdkName?: boolean
+  sdkVersion?: boolean
+  severity?: boolean
+  issueId?: boolean
+  breadcrumbs?: boolean
+  fingerprint?: boolean
+  stack?: boolean
+  tags?: boolean
+  user?: boolean
+  durationMs?: boolean
+  operation?: boolean
+  resource?: boolean
+  service?: boolean
+  sessionId?: boolean
+  status?: boolean
 }
 
-export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "severity" | "title" | "message" | "stack" | "fingerprint" | "metadata" | "tags" | "breadcrumbs" | "user" | "timestamp" | "sdkName" | "sdkVersion" | "release" | "projectId" | "environmentId" | "issueId" | "createdAt", ExtArgs["result"]["event"]>
+export type EventOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "type" | "title" | "message" | "timestamp" | "projectId" | "environmentId" | "createdAt" | "metadata" | "release" | "releaseId" | "sdkName" | "sdkVersion" | "severity" | "issueId" | "breadcrumbs" | "fingerprint" | "stack" | "tags" | "user" | "durationMs" | "operation" | "resource" | "service" | "sessionId" | "status", ExtArgs["result"]["event"]>
 export type EventInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  releaseRef?: boolean | Prisma.Event$releaseRefArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.Event$issueArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Event$sessionArgs<ExtArgs>
 }
 export type EventIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  releaseRef?: boolean | Prisma.Event$releaseRefArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.Event$issueArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Event$sessionArgs<ExtArgs>
 }
 export type EventIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  releaseRef?: boolean | Prisma.Event$releaseRefArgs<ExtArgs>
   environment?: boolean | Prisma.EnvironmentDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.Event$issueArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
+  session?: boolean | Prisma.Event$sessionArgs<ExtArgs>
 }
 
 export type $EventPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Event"
   objects: {
-    project: Prisma.$ProjectPayload<ExtArgs>
+    releaseRef: Prisma.$ReleasePayload<ExtArgs> | null
     environment: Prisma.$EnvironmentPayload<ExtArgs>
     issue: Prisma.$IssuePayload<ExtArgs> | null
+    project: Prisma.$ProjectPayload<ExtArgs>
+    session: Prisma.$TelemetrySessionPayload<ExtArgs> | null
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
     type: $Enums.EventType
-    severity: $Enums.EventSeverity
     title: string
     message: string | null
-    stack: string | null
-    fingerprint: string | null
-    metadata: runtime.JsonValue | null
-    tags: runtime.JsonValue | null
-    breadcrumbs: runtime.JsonValue | null
-    user: runtime.JsonValue | null
     timestamp: Date
-    sdkName: string | null
-    sdkVersion: string | null
-    release: string | null
     projectId: string
     environmentId: string
-    issueId: string | null
     createdAt: Date
+    metadata: runtime.JsonValue | null
+    release: string | null
+    releaseId: string | null
+    sdkName: string | null
+    sdkVersion: string | null
+    severity: $Enums.EventSeverity
+    issueId: string | null
+    breadcrumbs: runtime.JsonValue | null
+    fingerprint: string | null
+    stack: string | null
+    tags: runtime.JsonValue | null
+    user: runtime.JsonValue | null
+    durationMs: number | null
+    operation: string | null
+    resource: string | null
+    service: string | null
+    sessionId: string | null
+    status: string | null
   }, ExtArgs["result"]["event"]>
   composites: {}
 }
@@ -1757,9 +2621,11 @@ readonly fields: EventFieldRefs;
  */
 export interface Prisma__EventClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  releaseRef<T extends Prisma.Event$releaseRefArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$releaseRefArgs<ExtArgs>>): Prisma.Prisma__ReleaseClient<runtime.Types.Result.GetResult<Prisma.$ReleasePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   environment<T extends Prisma.EnvironmentDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.EnvironmentDefaultArgs<ExtArgs>>): Prisma.Prisma__EnvironmentClient<runtime.Types.Result.GetResult<Prisma.$EnvironmentPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   issue<T extends Prisma.Event$issueArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$issueArgs<ExtArgs>>): Prisma.Prisma__IssueClient<runtime.Types.Result.GetResult<Prisma.$IssuePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
+  session<T extends Prisma.Event$sessionArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Event$sessionArgs<ExtArgs>>): Prisma.Prisma__TelemetrySessionClient<runtime.Types.Result.GetResult<Prisma.$TelemetrySessionPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1791,23 +2657,30 @@ export interface Prisma__EventClient<T, Null = never, ExtArgs extends runtime.Ty
 export interface EventFieldRefs {
   readonly id: Prisma.FieldRef<"Event", 'String'>
   readonly type: Prisma.FieldRef<"Event", 'EventType'>
-  readonly severity: Prisma.FieldRef<"Event", 'EventSeverity'>
   readonly title: Prisma.FieldRef<"Event", 'String'>
   readonly message: Prisma.FieldRef<"Event", 'String'>
-  readonly stack: Prisma.FieldRef<"Event", 'String'>
-  readonly fingerprint: Prisma.FieldRef<"Event", 'String'>
-  readonly metadata: Prisma.FieldRef<"Event", 'Json'>
-  readonly tags: Prisma.FieldRef<"Event", 'Json'>
-  readonly breadcrumbs: Prisma.FieldRef<"Event", 'Json'>
-  readonly user: Prisma.FieldRef<"Event", 'Json'>
   readonly timestamp: Prisma.FieldRef<"Event", 'DateTime'>
-  readonly sdkName: Prisma.FieldRef<"Event", 'String'>
-  readonly sdkVersion: Prisma.FieldRef<"Event", 'String'>
-  readonly release: Prisma.FieldRef<"Event", 'String'>
   readonly projectId: Prisma.FieldRef<"Event", 'String'>
   readonly environmentId: Prisma.FieldRef<"Event", 'String'>
-  readonly issueId: Prisma.FieldRef<"Event", 'String'>
   readonly createdAt: Prisma.FieldRef<"Event", 'DateTime'>
+  readonly metadata: Prisma.FieldRef<"Event", 'Json'>
+  readonly release: Prisma.FieldRef<"Event", 'String'>
+  readonly releaseId: Prisma.FieldRef<"Event", 'String'>
+  readonly sdkName: Prisma.FieldRef<"Event", 'String'>
+  readonly sdkVersion: Prisma.FieldRef<"Event", 'String'>
+  readonly severity: Prisma.FieldRef<"Event", 'EventSeverity'>
+  readonly issueId: Prisma.FieldRef<"Event", 'String'>
+  readonly breadcrumbs: Prisma.FieldRef<"Event", 'Json'>
+  readonly fingerprint: Prisma.FieldRef<"Event", 'String'>
+  readonly stack: Prisma.FieldRef<"Event", 'String'>
+  readonly tags: Prisma.FieldRef<"Event", 'Json'>
+  readonly user: Prisma.FieldRef<"Event", 'Json'>
+  readonly durationMs: Prisma.FieldRef<"Event", 'Int'>
+  readonly operation: Prisma.FieldRef<"Event", 'String'>
+  readonly resource: Prisma.FieldRef<"Event", 'String'>
+  readonly service: Prisma.FieldRef<"Event", 'String'>
+  readonly sessionId: Prisma.FieldRef<"Event", 'String'>
+  readonly status: Prisma.FieldRef<"Event", 'String'>
 }
     
 
@@ -2209,6 +3082,25 @@ export type EventDeleteManyArgs<ExtArgs extends runtime.Types.Extensions.Interna
 }
 
 /**
+ * Event.releaseRef
+ */
+export type Event$releaseRefArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Release
+   */
+  select?: Prisma.ReleaseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Release
+   */
+  omit?: Prisma.ReleaseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReleaseInclude<ExtArgs> | null
+  where?: Prisma.ReleaseWhereInput
+}
+
+/**
  * Event.issue
  */
 export type Event$issueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2225,6 +3117,25 @@ export type Event$issueArgs<ExtArgs extends runtime.Types.Extensions.InternalArg
    */
   include?: Prisma.IssueInclude<ExtArgs> | null
   where?: Prisma.IssueWhereInput
+}
+
+/**
+ * Event.session
+ */
+export type Event$sessionArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TelemetrySession
+   */
+  select?: Prisma.TelemetrySessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TelemetrySession
+   */
+  omit?: Prisma.TelemetrySessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TelemetrySessionInclude<ExtArgs> | null
+  where?: Prisma.TelemetrySessionWhereInput
 }
 
 /**
