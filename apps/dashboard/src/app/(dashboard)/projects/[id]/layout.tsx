@@ -25,30 +25,49 @@ export default async function ProjectLayout({
     }
 
     return (
-        <div className="mx-auto w-full max-w-[1600px] px-10 py-8">
+        <div className="w-full pb-16">
+
+            {/* Back */}
 
             <Link
                 href="/projects"
-                className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-primary"
+                className="
+                    inline-flex
+                    items-center
+                    gap-2
+                    text-sm
+                    text-muted
+                    transition-colors
+                    hover:text-primary
+                "
             >
-                <ArrowLeft className="h-4 w-4" />
+                <ArrowLeft
+                    className="h-4 w-4"
+                    strokeWidth={1.8}
+                />
+
                 Projects
             </Link>
 
-            <header className="mt-8">
+            {/* Project identity */}
 
-                <div className="flex items-center gap-5">
+            <header className="mt-6">
+
+                <div className="flex items-center gap-4">
 
                     <div
                         className="
                             flex
-                            h-12
-                            w-12
+                            h-11
+                            w-11
+                            shrink-0
                             items-center
                             justify-center
                             rounded-xl
+                            border
+                            border-accent/15
                             bg-accent/10
-                            text-lg
+                            text-base
                             font-semibold
                             text-accent
                         "
@@ -56,14 +75,22 @@ export default async function ProjectLayout({
                         {project.name.charAt(0).toUpperCase()}
                     </div>
 
-                    <div>
+                    <div className="min-w-0">
 
-                        <h1 className="text-5xl font-semibold tracking-[-0.05em]">
+                        <h1
+                            className="
+                                truncate
+                                text-2xl
+                                font-semibold
+                                tracking-tight
+                                text-primary
+                            "
+                        >
                             {project.name}
                         </h1>
 
                         {project.description && (
-                            <p className="mt-1 text-secondary">
+                            <p className="mt-1 truncate text-sm text-secondary">
                                 {project.description}
                             </p>
                         )}
@@ -74,11 +101,15 @@ export default async function ProjectLayout({
 
             </header>
 
-            <div className="mt-10">
+            {/* Project navigation */}
+
+            <div className="mt-7">
                 <ProjectNavigation projectId={id} />
             </div>
 
-            <main className="mt-10">
+            {/* Page content */}
+
+            <main className="mt-8">
                 {children}
             </main>
 

@@ -35,7 +35,7 @@ type CreateEventInput = {
 };
 
 export async function createEvent(
-    data: CreateEventInput
+    data: CreateEventInput,
 ) {
     const fingerprint =
         data.fingerprint ??
@@ -45,10 +45,10 @@ export async function createEvent(
         data.projectId,
         data.title,
         fingerprint,
-        data.severity
+        data.severity,
     );
 
-    return prisma.event.create({
+    const event = await prisma.event.create({
         data: {
             type: data.type,
             severity: data.severity,
@@ -76,10 +76,24 @@ export async function createEvent(
             issueId: issue.id,
         },
     });
+
+    await prisma.issue.update({
+        where: {
+            id: issue.id,
+        },
+        data: {
+            eventCount: {
+                increment: 1,
+            },
+            lastSeen: event.timestamp,
+        },
+    });
+
+    return event;
 }
 
 export async function getEvents(
-    projectId: string
+    projectId: string,
 ) {
     return prisma.event.findMany({
         where: {
@@ -92,7 +106,7 @@ export async function getEvents(
 }
 
 export async function getEvent(
-    eventId: string
+    eventId: string,
 ) {
     return prisma.event.findUnique({
         where: {

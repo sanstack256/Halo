@@ -179,6 +179,12 @@ export class Halo {
             release: this.release,
 
             environment: this.environment,
+
+            service: event.service,
+            resource: event.resource,
+            operation: event.operation,
+            status: event.status,
+            durationMs: event.durationMs,
         });
     }
 }

@@ -1,4 +1,9 @@
+import Link from "next/link";
 import { notFound } from "next/navigation";
+import {
+    ArrowLeft,
+    ExternalLink,
+} from "lucide-react";
 
 import { getEvent } from "@/actions/event";
 
@@ -21,7 +26,7 @@ type Props = {
 export default async function EventPage({
     params,
 }: Props) {
-    const { eventId } = await params;
+    const { id, eventId } = await params;
 
     const event = await getEvent(eventId);
 
@@ -30,13 +35,35 @@ export default async function EventPage({
     }
 
     return (
-        <div className="space-y-10">
+        <div className="space-y-8 pb-16">
+
+            {/* Back */}
+
+            <Link
+                href={`/projects/${id}/events`}
+                className="
+                    inline-flex
+                    items-center
+                    gap-2
+                    text-sm
+                    text-muted
+                    transition-colors
+                    hover:text-primary
+                "
+            >
+                <ArrowLeft
+                    className="h-4 w-4"
+                    strokeWidth={1.8}
+                />
+
+                Events
+            </Link>
 
             {/* Header */}
 
             <header className="space-y-5">
 
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
 
                     <Badge>
                         {event.type}
@@ -46,64 +73,118 @@ export default async function EventPage({
                         severity={event.severity}
                     />
 
+
                 </div>
 
-                <h1 className="text-5xl font-semibold tracking-tight">
-                    {event.title}
-                </h1>
+                <div>
 
-                <div className="flex flex-wrap items-center gap-4 text-sm text-secondary">
+                    <h1
+                        className="
+                            max-w-4xl
+                            text-3xl
+                            font-semibold
+                            tracking-[-0.035em]
+                            text-primary
+                        "
+                    >
+                        {event.title}
+                    </h1>
 
-                    <RelativeTime
-                        date={event.timestamp}
-                    />
+                    <div className="mt-3 flex flex-wrap items-center gap-3 text-sm text-secondary">
 
-                    <span>•</span>
+                        <RelativeTime
+                            date={event.timestamp}
+                        />
 
-                    <span>
-                        {event.sdkName ?? "-"}{" "}
-                        {event.sdkVersion ?? ""}
-                    </span>
+                        <span className="text-muted">
+                            •
+                        </span>
 
-                    <span>•</span>
+                        <span>
+                            {event.timestamp.toLocaleString()}
+                        </span>
 
-                    <span>
-                        {event.release ?? "No release"}
-                    </span>
+                        <span className="text-muted">
+                            •
+                        </span>
+
+                        <span>
+                            {event.sdkName ?? "Unknown SDK"}
+                            {event.sdkVersion
+                                ? ` v${event.sdkVersion}`
+                                : ""}
+                        </span>
+
+                        {event.release && (
+                            <>
+                                <span className="text-muted">
+                                    •
+                                </span>
+
+                                <span>
+                                    {event.release}
+                                </span>
+                            </>
+                        )}
+
+                    </div>
 
                 </div>
 
             </header>
 
-            <div className="grid grid-cols-[1fr_320px] gap-14">
+            {/* Content */}
 
-                {/* Left */}
+            <div className="grid grid-cols-[minmax(0,1fr)_300px] gap-10">
 
-                <div className="space-y-10">
+                {/* Main evidence */}
+
+                <div className="min-w-0 space-y-8">
+
+                    {/* Message */}
 
                     <section>
 
-                        <h2 className="mb-5 text-lg font-semibold">
+                        <SectionTitle>
                             Message
-                        </h2>
+                        </SectionTitle>
 
-                        <div className="rounded-xl bg-surface p-6">
-
-                            <pre className="whitespace-pre-wrap break-words font-mono text-sm leading-7 text-secondary">
-
-                                {event.message ?? "No message"}
-
+                        <div
+                            className="
+                                overflow-hidden
+                                rounded-xl
+                                border
+                                border-border
+                                bg-surface
+                            "
+                        >
+                            <pre
+                                className="
+                                    overflow-x-auto
+                                    whitespace-pre-wrap
+                                    break-words
+                                    p-6
+                                    font-mono
+                                    text-sm
+                                    leading-7
+                                    text-secondary
+                                "
+                            >
+                                {event.message ?? "No message recorded."}
                             </pre>
-
                         </div>
 
                     </section>
+
+                    {/* Stack */}
 
                     {event.stack && (
                         <StackTrace
                             stack={event.stack}
                         />
                     )}
+
+                    {/* Breadcrumbs */}
 
                     {Array.isArray(event.breadcrumbs) &&
                         event.breadcrumbs.length > 0 && (
@@ -118,6 +199,8 @@ export default async function EventPage({
                             />
                         )}
 
+                    {/* User */}
+
                     {event.user &&
                         typeof event.user === "object" && (
                             <User
@@ -130,6 +213,8 @@ export default async function EventPage({
                                 }
                             />
                         )}
+
+                    {/* Tags */}
 
                     {event.tags &&
                         typeof event.tags === "object" &&
@@ -146,90 +231,163 @@ export default async function EventPage({
                             />
                         )}
 
-                    <section>
+                    {/* Metadata */}
 
-                        <h2 className="mb-5 text-lg font-semibold">
-                            Metadata
-                        </h2>
+                    {event.metadata &&
+                        typeof event.metadata === "object" && (
+                            <section>
 
-                        <div className="overflow-hidden rounded-xl bg-surface">
+                                <SectionTitle>
+                                    Metadata
+                                </SectionTitle>
 
-                            <pre className="overflow-x-auto p-6 font-mono text-sm leading-7 text-secondary">
+                                <div
+                                    className="
+                                        overflow-hidden
+                                        rounded-xl
+                                        border
+                                        border-border
+                                        bg-surface
+                                    "
+                                >
+                                    <pre
+                                        className="
+                                            max-h-[520px]
+                                            overflow-auto
+                                            p-6
+                                            font-mono
+                                            text-sm
+                                            leading-7
+                                            text-secondary
+                                        "
+                                    >
+                                        {JSON.stringify(
+                                            event.metadata,
+                                            null,
+                                            2
+                                        )}
+                                    </pre>
+                                </div>
 
-                                {JSON.stringify(
-                                    event.metadata,
-                                    null,
-                                    2
-                                )}
-
-                            </pre>
-
-                        </div>
-
-                    </section>
+                            </section>
+                        )}
 
                 </div>
 
-                {/* Right */}
+                {/* Evidence sidebar */}
 
-                <aside className="sticky top-8 h-fit">
+                <aside className="min-w-0">
 
-                    <div className="rounded-xl border border-border bg-surface p-6">
+                    <div
+                        className="
+                            sticky
+                            top-6
+                            overflow-hidden
+                            rounded-xl
+                            border
+                            border-border
+                            bg-surface
+                        "
+                    >
 
-                        <h2 className="mb-6 text-sm font-semibold uppercase tracking-wide text-muted">
-                            Evidence
-                        </h2>
+                        <div className="border-b border-border px-5 py-4">
 
-                        <div className="space-y-6">
+                            <h2 className="text-sm font-semibold text-primary">
+                                Event details
+                            </h2>
 
-                            <div>
+                        </div>
 
-                                <p className="text-xs text-muted">
-                                    Timestamp
+                        <div className="divide-y divide-border">
+
+                            <DetailRow
+                                label="Timestamp"
+                                value={event.timestamp.toLocaleString()}
+                            />
+
+                            <DetailRow
+                                label="Event type"
+                                value={event.type}
+                            />
+
+                            <DetailRow
+                                label="Severity"
+                                value={event.severity}
+                            />
+
+                            <DetailRow
+                                label="SDK"
+                                value={
+                                    event.sdkName
+                                        ? `${event.sdkName}${
+                                              event.sdkVersion
+                                                  ? ` v${event.sdkVersion}`
+                                                  : ""
+                                          }`
+                                        : "-"
+                                }
+                            />
+
+                            <DetailRow
+                                label="Release"
+                                value={event.release ?? "-"}
+                            />
+
+                            <DetailRow
+                                label="Event ID"
+                                value={event.id}
+                                mono
+                            />
+
+                        </div>
+
+                        {/* Issue */}
+
+                        <div className="border-t border-border p-5">
+
+                            <p className="text-xs font-medium uppercase tracking-wide text-muted">
+                                Issue
+                            </p>
+
+                            {event.issue ? (
+                                <Link
+                                    href={`/projects/${id}/issues/${event.issue.id}`}
+                                    className="
+                                        mt-3
+                                        flex
+                                        items-start
+                                        justify-between
+                                        gap-3
+                                        rounded-lg
+                                        border
+                                        border-border
+                                        bg-background
+                                        p-3
+                                        transition-colors
+                                        hover:border-accent/30
+                                        hover:text-accent
+                                    "
+                                >
+                                    <span className="min-w-0 text-sm font-medium">
+                                        {event.issue.title}
+                                    </span>
+
+                                    <ExternalLink
+                                        className="
+                                            mt-0.5
+                                            h-4
+                                            w-4
+                                            shrink-0
+                                            text-muted
+                                        "
+                                        strokeWidth={1.8}
+                                    />
+                                </Link>
+                            ) : (
+                                <p className="mt-3 text-sm text-muted">
+                                    No associated issue.
                                 </p>
-
-                                <p className="mt-1">
-                                    {event.timestamp.toLocaleString()}
-                                </p>
-
-                            </div>
-
-                            <div>
-
-                                <p className="text-xs text-muted">
-                                    Issue
-                                </p>
-
-                                <p className="mt-1">
-                                    {event.issue?.title ?? "-"}
-                                </p>
-
-                            </div>
-
-                            <div>
-
-                                <p className="text-xs text-muted">
-                                    SDK
-                                </p>
-
-                                <p className="mt-1">
-                                    {event.sdkName ?? "-"}{" "}
-                                    {event.sdkVersion ?? ""}
-                                </p>
-
-                            </div>
-
-                            <div>
-
-                                <p className="text-xs text-muted">
-                                    Release
-                                </p>
-
-                                <p className="mt-1">
-                                    {event.release ?? "-"}
-                                </p>
-
-                            </div>
+                            )}
 
                         </div>
 
@@ -238,6 +396,50 @@ export default async function EventPage({
                 </aside>
 
             </div>
+
+        </div>
+    );
+}
+
+function SectionTitle({
+    children,
+}: {
+    children: React.ReactNode;
+}) {
+    return (
+        <h2 className="mb-4 text-lg font-semibold text-primary">
+            {children}
+        </h2>
+    );
+}
+
+function DetailRow({
+    label,
+    value,
+    mono = false,
+}: {
+    label: string;
+    value: string;
+    mono?: boolean;
+}) {
+    return (
+        <div className="px-5 py-4">
+
+            <p className="text-xs text-muted">
+                {label}
+            </p>
+
+            <p
+                className={`
+                    mt-1
+                    break-words
+                    text-sm
+                    text-secondary
+                    ${mono ? "font-mono text-xs" : ""}
+                `}
+            >
+                {value}
+            </p>
 
         </div>
     );

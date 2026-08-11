@@ -3,7 +3,6 @@ import { investigateIssue } from "@/lib/investigation/run";
 import type {
     Investigation,
     Hypothesis,
-    Reason,
     Recommendation,
 } from "@halo/investigation-engine";
 
@@ -24,8 +23,6 @@ export default async function InvestigationPage({
     const { id } = await params;
     const { issueId } = await searchParams;
 
-    void id;
-
     if (!issueId) {
         return (
             <div className="halo-empty-state">
@@ -40,7 +37,11 @@ export default async function InvestigationPage({
         );
     }
 
-    const investigation = await investigateIssue(issueId);
+    const investigation =
+        await investigateIssue(
+            issueId,
+            id
+        );
 
     return (
         <InvestigationView
@@ -203,8 +204,8 @@ function InvestigationView({
                     <SectionHeading
                         title="Evidence"
                         description={`${evidence.length} ${evidence.length === 1
-                                ? "piece"
-                                : "pieces"
+                            ? "piece"
+                            : "pieces"
                             } of evidence considered.`}
                     />
 
@@ -666,7 +667,7 @@ function ReasonGroup({
     type,
 }: {
     title: string;
-    reasons: Reason[];
+    reasons: Hypothesis["supportingReasons"];
     type:
     | "supporting"
     | "contradicting"

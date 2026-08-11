@@ -1,5 +1,7 @@
-import CreateApiKeyDialog from "./create-api-key-dialog";
 import { formatDistanceToNow } from "date-fns";
+
+import CreateApiKeyDialog from "./create-api-key-dialog";
+
 import { Badge } from "@/components/ui/badge";
 
 type ApiKey = {
@@ -20,69 +22,146 @@ export default function ApiKeysSection({
     apiKeys,
 }: Props) {
     return (
-        <section className="mt-10 rounded-2xl border border-zinc-800 bg-zinc-950">
-            <div className="flex items-center justify-between border-b border-zinc-800 p-6">
+        <section
+            className="
+                overflow-hidden
+                rounded-2xl
+                border
+                border-border
+                bg-surface
+            "
+        >
+
+            {/* Header */}
+
+            <div
+                className="
+                    flex
+                    items-center
+                    justify-between
+                    border-b
+                    border-border
+                    px-7
+                    py-6
+                "
+            >
+
                 <div>
-                    <h2 className="text-xl font-semibold text-white">
+
+                    <h2 className="text-lg font-semibold text-primary">
                         API Keys
                     </h2>
 
-                    <p className="mt-1 text-sm text-zinc-500">
+                    <p className="mt-1 text-sm text-secondary">
                         Manage the keys used by your applications.
                     </p>
+
                 </div>
 
-                <CreateApiKeyDialog projectId={projectId} />
+                <CreateApiKeyDialog
+                    projectId={projectId}
+                />
+
             </div>
 
+            {/* Keys */}
+
             {apiKeys.length === 0 ? (
-                <div className="p-8 text-center text-zinc-500">
-                    No API keys yet.
+
+                <div className="px-7 py-16 text-center">
+
+                    <p className="text-sm text-secondary">
+                        No API keys yet.
+                    </p>
+
+                    <p className="mt-1 text-xs text-muted">
+                        Create an API key to start sending events.
+                    </p>
+
                 </div>
+
             ) : (
-                <div className="divide-y divide-zinc-800">
-                    {apiKeys.map((key) => (
+
+                <div>
+
+                    {apiKeys.map((key, index) => (
+
                         <div
                             key={key.id}
-                            className="flex items-center justify-between p-6"
+                            className={`
+                                flex
+                                items-center
+                                justify-between
+                                gap-8
+                                px-7
+                                py-5
+                                ${
+                                    index !== apiKeys.length - 1
+                                        ? "border-b border-border"
+                                        : ""
+                                }
+                            `}
                         >
-                            <div>
+
+                            {/* Key identity */}
+
+                            <div className="min-w-0">
+
                                 <div className="flex items-center gap-3">
-                                    <h3 className="font-medium text-white">
+
+                                    <h3 className="truncate text-sm font-medium text-primary">
                                         {key.name}
                                     </h3>
 
-                                    <Badge className="border-emerald-800 bg-emerald-950 text-emerald-300">
+                                    <Badge>
                                         Production
                                     </Badge>
+
                                 </div>
 
-                                <p className="mt-1 font-mono text-sm text-zinc-500">
-                                    {key.prefix}••••••••••••
+                                <p className="mt-1 font-mono text-xs text-muted">
+                                    {key.prefix}
+                                    {"•".repeat(12)}
                                 </p>
+
                             </div>
 
-                            <div className="text-right text-sm text-zinc-500">
-                                <div>
+                            {/* Usage */}
+
+                            <div className="shrink-0 text-right text-xs text-muted">
+
+                                <p>
                                     Created{" "}
-                                    {formatDistanceToNow(key.createdAt, {
-                                        addSuffix: true,
-                                    })}
-                                </div>
-
-                                <div>
-                                    Last Used{" "}
-                                    {key.lastUsedAt
-                                        ? formatDistanceToNow(key.lastUsedAt, {
+                                    {formatDistanceToNow(
+                                        key.createdAt,
+                                        {
                                             addSuffix: true,
-                                        })
-                                        : "Never"}
-                                </div>
+                                        },
+                                    )}
+                                </p>
+
+                                <p className="mt-1">
+                                    Last used{" "}
+                                    {key.lastUsedAt
+                                        ? formatDistanceToNow(
+                                              key.lastUsedAt,
+                                              {
+                                                  addSuffix: true,
+                                              },
+                                          )
+                                        : "never"}
+                                </p>
+
                             </div>
+
                         </div>
+
                     ))}
+
                 </div>
+
             )}
+
         </section>
     );
 }

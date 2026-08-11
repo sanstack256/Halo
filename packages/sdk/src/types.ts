@@ -59,4 +59,10 @@ export interface HaloCaptureOptions {
     breadcrumbs?: HaloBreadcrumb[];
 
     user?: HaloUser;
+
+    service?: string;
+    resource?: string;
+    operation?: string;
+    status?: number;
+    durationMs?: number;
 }

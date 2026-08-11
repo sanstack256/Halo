@@ -9,10 +9,13 @@ import {
 } from "./evidence";
 
 export async function investigateIssue(
-    issueId: string
+    issueId: string,
+    projectId: string
 ) {
-    const issue =
-        await getIssue(issueId);
+    const issue = await getIssue(
+        issueId,
+        projectId
+    );
 
     if (!issue) {
         throw new Error(

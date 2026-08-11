@@ -7,7 +7,7 @@ export async function findOrCreateIssue(
     projectId: string,
     title: string,
     fingerprint: string,
-    severity: EventSeverity
+    severity: EventSeverity,
 ) {
     const existing = await prisma.issue.findFirst({
         where: {
@@ -22,27 +22,25 @@ export async function findOrCreateIssue(
                 id: existing.id,
             },
             data: {
-                eventCount: {
-                    increment: 1,
-                },
                 lastSeen: new Date(),
+                severity,
+                title,
             },
         });
     }
 
     return prisma.issue.create({
         data: {
+            projectId,
             title,
             fingerprint,
             severity,
-            projectId,
+            eventCount: 0,
         },
     });
 }
 
-export async function getIssues(
-    projectId: string
-) {
+export async function getIssues(projectId: string) {
     return prisma.issue.findMany({
         where: {
             projectId,
@@ -54,11 +52,17 @@ export async function getIssues(
 }
 
 export async function getIssue(
-    issueId: string
+    issueId: string,
+    projectId?: string
 ) {
-    return prisma.issue.findUnique({
+    return prisma.issue.findFirst({
         where: {
             id: issueId,
+            ...(projectId
+                ? {
+                      projectId,
+                  }
+                : {}),
         },
         include: {
             events: {

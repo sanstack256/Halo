@@ -1,14 +1,14 @@
 "use client";
 
 import { usePathname, useRouter } from "next/navigation";
-import { Search, LogOut } from "lucide-react";
+import { LogOut, Search } from "lucide-react";
 
 import { authClient } from "@/lib/auth-client";
 
 const titles: Record<string, string> = {
     "/overview": "Overview",
     "/projects": "Projects",
-    "/incidents": "Incidents",
+    "/incidents": "Issues",
     "/sdk": "SDK",
     "/settings": "Settings",
 };
@@ -17,7 +17,10 @@ export default function Topbar() {
     const pathname = usePathname();
     const router = useRouter();
 
-    const title = titles[pathname] ?? "Halo";
+    const title =
+        Object.entries(titles).find(([path]) =>
+            pathname === path || pathname.startsWith(`${path}/`),
+        )?.[1] ?? "Halo";
 
     async function handleLogout() {
         const { error } = await authClient.signOut();
@@ -32,59 +35,29 @@ export default function Topbar() {
     }
 
     return (
-        <header className="sticky top-0 z-40 flex h-16 items-center justify-between bg-background/80 px-8 backdrop-blur-xl">
-
-            <div>
-
-                <h1 className="text-lg font-semibold text-white">
-                    Halo
-                </h1>
-
+        <header className="halo-topbar">
+            <div className="halo-topbar-title">
+                {title}
             </div>
 
-            <div className="flex items-center gap-2">
-
+            <div className="halo-topbar-actions">
                 <button
-                    className="
-                        flex
-                        items-center
-                        gap-2
-                        rounded-xl
-                        px-3
-                        py-2
-                        text-sm
-                        text-secondary
-                        transition-all
-                        hover:bg-white/[0.03]
-                        hover:text-primary
-                    "
+                    type="button"
+                    className="halo-topbar-button"
+                    aria-label="Search"
                 >
                     <Search size={16} />
-                    Search
                 </button>
 
                 <button
+                    type="button"
                     onClick={handleLogout}
-                    className="
-                        flex
-                        items-center
-                        gap-2
-                        rounded-xl
-                        px-3
-                        py-2
-                        text-sm
-                        text-secondary
-                        transition-all
-                        hover:bg-red-500/10
-                        hover:text-red-400
-                    "
+                    className="halo-topbar-button"
+                    aria-label="Log out"
                 >
                     <LogOut size={16} />
-                    Logout
                 </button>
-
             </div>
-
         </header>
     );
 }

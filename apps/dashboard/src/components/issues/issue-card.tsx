@@ -27,78 +27,75 @@ export default function IssueCard({
                 ${!isLast ? "border-b border-border" : ""}
             `}
         >
-            <div className="grid grid-cols-[minmax(0,1fr)_120px_170px_170px] items-center gap-8 px-6 py-5">
-
+            <div
+                className="
+                    grid
+                    grid-cols-[minmax(0,1fr)_120px_170px_170px]
+                    items-center
+                    gap-8
+                    px-6
+                    py-5
+                "
+            >
                 {/* Issue */}
 
                 <div className="min-w-0">
-
                     <div className="mb-2 flex items-center gap-2">
-
-                        <Badge>
-                            {issue.status}
-                        </Badge>
+                        <Badge>{issue.status}</Badge>
 
                         <SeverityBadge
                             severity={issue.severity}
                         />
-
                     </div>
 
-                    <h3 className="truncate text-[15px] font-medium transition-colors group-hover:text-accent">
-
+                    <h3 className="truncate text-[15px] font-medium text-primary transition-colors group-hover:text-accent">
                         {issue.title}
-
                     </h3>
 
+                    <p className="mt-1 truncate text-xs text-muted">
+                        {issue.fingerprint}
+                    </p>
                 </div>
 
                 {/* Events */}
 
                 <div>
-
                     <p className="text-xs text-muted">
                         Events
                     </p>
 
-                    <p className="mt-1 font-medium">
+                    <p className="mt-1 font-medium text-primary">
                         {issue.eventCount}
                     </p>
-
                 </div>
 
                 {/* First Seen */}
 
                 <div>
-
                     <p className="text-xs text-muted">
                         First Seen
                     </p>
 
-                    <p className="mt-1 text-secondary">
+                    <p className="mt-1 text-sm text-secondary">
                         <RelativeTime
                             date={issue.firstSeen}
                         />
                     </p>
-
                 </div>
 
                 {/* Last Seen */}
 
                 <div>
-
                     <p className="text-xs text-muted">
                         Last Seen
                     </p>
 
-                    <p className="mt-1 text-secondary">
+                    <p className="mt-1 text-sm text-secondary">
                         <RelativeTime
                             date={issue.lastSeen}
                         />
                     </p>
-
                 </div>
-
             </div>
         </Link>
     );

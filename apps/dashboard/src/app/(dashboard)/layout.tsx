@@ -18,26 +18,22 @@ export default async function DashboardLayout({
     await ensureOrganization(session.user.id);
 
     return (
-        <div className="flex h-screen bg-background">
+        <div className="flex h-screen overflow-hidden bg-background">
+            {/* Global navigation */}
 
             <Sidebar />
 
-            <div className="flex min-w-0 flex-1 flex-col">
+            {/* Application */}
 
+            <div className="flex min-w-0 flex-1 flex-col">
                 <Topbar />
 
-                <main className="flex-1 overflow-y-auto">
-
+                <main className="min-h-0 flex-1 overflow-y-auto">
                     <div className="mx-auto w-full max-w-[1680px] px-8 py-8">
-
                         {children}
-
                     </div>
-
                 </main>
-
             </div>
-
         </div>
     );
 }
