@@ -2,11 +2,25 @@ import type { Change } from "../types/change";
 import type { InvestigationContext } from "../types/context";
 import type { Evidence } from "../types/evidence";
 import type { EvidenceGraph } from "../types/graph";
+import type { AnomalySignal, StatisticalBaseline } from "../types/anomaly";
+import type { StructuralTemplate } from "../types/template";
+import { computeBaselines } from "../detection/statistical/baselines";
+import { detectNovelPatterns } from "../novelty/novelty-detector";
+import { detectKnownFailurePatterns } from "../detection/deterministic/patterns";
+import { detectSecurityAnomalies } from "../detection/deterministic/security";
+import { detectRateBursts } from "../detection/statistical/rate-burst";
+import { detectLatencyAnomalies } from "../detection/statistical/latency";
+import { detectDistributionShifts } from "../detection/statistical/distribution";
+import { detectCascadingFailures } from "../detection/temporal/cascade";
+import { detectDegradationSequences } from "../detection/temporal/sequences";
 
 export function buildContext(
     evidence: Evidence[],
     changes: Change[],
     graph: EvidenceGraph,
+    providedAnomalies?: AnomalySignal[],
+    providedTemplates?: StructuralTemplate[],
+    providedBaselines?: Map<string, StatisticalBaseline>
 ): InvestigationContext {
     const orderedEvidence =
         [...evidence].sort(
@@ -93,6 +107,21 @@ export function buildContext(
             ),
         );
 
+    // Compute baselines, templates, and multi-layer anomaly signals
+    const baselines = providedBaselines || computeBaselines(orderedEvidence);
+    const { anomalies: novelAnomalies, templates } = detectNovelPatterns(orderedEvidence);
+
+    const allAnomalies: AnomalySignal[] = providedAnomalies || [
+        ...detectKnownFailurePatterns(orderedEvidence),
+        ...detectSecurityAnomalies(orderedEvidence),
+        ...detectRateBursts(orderedEvidence, baselines),
+        ...detectLatencyAnomalies(orderedEvidence, baselines),
+        ...detectDistributionShifts(orderedEvidence, baselines),
+        ...detectCascadingFailures(orderedEvidence),
+        ...detectDegradationSequences(orderedEvidence),
+        ...novelAnomalies,
+    ];
+
     return {
         evidence: orderedEvidence,
         graph,
@@ -127,6 +156,10 @@ export function buildContext(
 
         latestChange:
             orderedChanges.at(-1),
+
+        anomalies: allAnomalies,
+        templates: providedTemplates || templates,
+        baselines,
     };
 }
 

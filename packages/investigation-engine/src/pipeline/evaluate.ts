@@ -158,6 +158,13 @@ function evaluateHypothesis(
         contradictingReasons,
 
         missingReasons,
+
+        evidenceIds: Array.from(
+            new Set([
+                ...hypothesis.evidenceIds,
+                ...supportingReasons.flatMap((r) => r.evidenceIds),
+            ])
+        ),
     };
 }
 

@@ -1,8 +1,8 @@
 import type { InvestigationReport } from "../types/investigation";
 import type { Hypothesis } from "../types/hypothesis";
 import type { Recommendation } from "../types/recommendation";
-
 import { getConfidenceLevel } from "../types/confidence";
+import { selectRootCause } from "./root-cause";
 
 const MAX_ALTERNATIVES = 3;
 const MAX_UNCERTAINTIES = 5;
@@ -52,33 +52,6 @@ export function buildReport(
 
         nextSteps,
     };
-}
-
-function selectRootCause(
-    hypotheses: Hypothesis[],
-): Hypothesis | null {
-    const validated =
-        hypotheses.filter(
-            hypothesis =>
-                hypothesis.status ===
-                "VALIDATED" &&
-                hypothesis.validation
-                    ?.validated === true,
-        );
-
-    if (
-        validated.length === 0
-    ) {
-        return null;
-    }
-
-    return (
-        [...validated].sort(
-            (a, b) =>
-                b.confidence -
-                a.confidence,
-        )[0] ?? null
-    );
 }
 
 function buildRootCauseReport(
@@ -141,6 +114,11 @@ function buildRootCauseReport(
                             reason.description,
                     ),
             ),
+
+        propagationPath: hypothesis.supportingReasons
+            .filter((r) => r.causalRole === "CAUSE" || r.causalRole === "TRIGGER" || r.causalRole === "MECHANISM")
+            .map((r) => `${r.title}: ${r.description}`)
+            .slice(0, 5),
     };
 }
 
@@ -275,13 +253,7 @@ function buildSummary(
     hypotheses: Hypothesis[],
 ): string {
     if (!rootCause) {
-        if (
-            hypotheses.length === 0
-        ) {
-            return "The investigation does not have enough evidence to identify a likely cause.";
-        }
-
-        return "The investigation has identified candidate explanations, but the available evidence is not strong enough to validate a root cause.";
+        return "The investigation does not have enough evidence to validate a root cause.";
     }
 
     const confidenceLevel =

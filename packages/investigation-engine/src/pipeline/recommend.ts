@@ -31,38 +31,60 @@ export function generateRecommendations(
         leading,
     );
 
-    switch (leading.title) {
-        case "Deployment Regression":
-            addDeploymentRecommendations(
-                recommendations,
-                leading,
-                context,
-            );
-            break;
+    if (leading.id.startsWith("resource-saturation:")) {
+        recommendations.push({
+            id: `investigate:resource:${normalizeId(leading.id)}`,
+            title: `Investigate ${leading.title}`,
+            description: `Inspect database connection pool metrics, memory allocation, and system resource limits during the incident window.`,
+            priority: "HIGH",
+            confidence: 0.9,
+            evidenceIds: leading.evidenceIds,
+            question: `What caused ${leading.title} during this incident window?`,
+        });
+    } else if (leading.id.startsWith("security-incident:")) {
+        recommendations.push({
+            id: `investigate:security:${normalizeId(leading.id)}`,
+            title: `Investigate ${leading.title}`,
+            description: `Review authentication logs, IP origins, and user session activity associated with the observed security anomaly.`,
+            priority: "HIGH",
+            confidence: 0.9,
+            evidenceIds: leading.evidenceIds,
+            question: `Which client or origin initiated the security anomaly?`,
+        });
+    } else {
+        switch (leading.title) {
+            case "Deployment Regression":
+                addDeploymentRecommendations(
+                    recommendations,
+                    leading,
+                    context,
+                );
+                break;
 
-        case "Shared Dependency Failure":
-            addSharedDependencyRecommendations(
-                recommendations,
-                leading,
-                context,
-            );
-            break;
+            case "Shared Dependency Failure":
+                addSharedDependencyRecommendations(
+                    recommendations,
+                    leading,
+                    context,
+                );
+                break;
 
-        case "Infrastructure Failure":
-            addInfrastructureRecommendations(
-                recommendations,
-                leading,
-                context,
-            );
-            break;
+            case "Infrastructure Failure":
+                addInfrastructureRecommendations(
+                    recommendations,
+                    leading,
+                    context,
+                );
+                break;
 
-        case "Cross-Service Failure":
-            addCrossServiceRecommendations(
-                recommendations,
-                leading,
-                context,
-            );
-            break;
+            case "Cross-Service Failure":
+                addCrossServiceRecommendations(
+                    recommendations,
+                    leading,
+                    context,
+                );
+                break;
+        }
     }
 
     return rankAndLimitRecommendations(
@@ -116,15 +138,9 @@ function addMissingEvidenceRecommendations(
             description:
                 reason.description,
 
-            priority:
-                reason.strength >= 0.75
-                    ? "HIGH"
-                    : "MEDIUM",
+            priority: "HIGH",
 
-            confidence:
-                clamp01(
-                    reason.strength,
-                ),
+            confidence: 0.95,
 
             evidenceIds:
                 hypothesis.evidenceIds,
@@ -563,7 +579,7 @@ function buildMissingEvidenceQuestion(
             "recovery",
         )
     ) {
-        return "Did the system recover after the suspected change was reverted?";
+        return "Did the service recover after the suspected deployment was rolled back?";
     }
 
     if (

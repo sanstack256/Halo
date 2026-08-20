@@ -2,6 +2,8 @@ import type { Change } from "./change";
 import type { Evidence } from "./evidence";
 import type { Finding } from "./finding";
 import type { EvidenceGraph } from "./graph";
+import type { AnomalySignal, StatisticalBaseline } from "./anomaly";
+import type { StructuralTemplate } from "./template";
 
 export interface InvestigationContext {
     evidence: Evidence[];
@@ -45,4 +47,10 @@ export interface InvestigationContext {
     earliestChange?: Change;
 
     latestChange?: Change;
+
+    anomalies?: AnomalySignal[];
+
+    templates?: StructuralTemplate[];
+
+    baselines?: Map<string, StatisticalBaseline>;
 }

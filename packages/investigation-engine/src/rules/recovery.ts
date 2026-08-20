@@ -139,6 +139,21 @@ export function recovery(
                     causalRole: "MECHANISM",
 
                     title:
+                        "Service recovered after rollback",
+
+                    description:
+                        "The failure appeared after the deployment and recovery followed its rollback, forming a strong change-reversal signal.",
+
+                    evidenceIds,
+
+                    strength: 0.95,
+                },
+                {
+                    type: "SUPPORTING",
+
+                    causalRole: "MECHANISM",
+
+                    title:
                         "Rollback was followed by recovery",
 
                     description:

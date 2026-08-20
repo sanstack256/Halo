@@ -37,8 +37,8 @@ function isEligibleRootCause(
     }
 
     if (
-        hypothesis.validation
-            ?.validated !== true
+        hypothesis.validation !== undefined &&
+        hypothesis.validation.validated === false
     ) {
         return false;
     }
@@ -68,6 +68,7 @@ function isEligibleRootCause(
         );
 
     if (
+        contradiction > 0 &&
         contradiction >=
         support
     ) {
@@ -145,6 +146,13 @@ function compareRootCauses(
 function causalPriority(
     hypothesis: Hypothesis,
 ): number {
+    if (
+        hypothesis.id.startsWith("resource-saturation:") ||
+        hypothesis.id.startsWith("security-incident:")
+    ) {
+        return 4;
+    }
+
     switch (hypothesis.title) {
         case "Shared Dependency Failure":
             return 3;
@@ -159,7 +167,7 @@ function causalPriority(
             return 1;
 
         default:
-            return 0;
+            return 2;
     }
 }
 

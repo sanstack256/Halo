@@ -209,6 +209,13 @@ function netEvidence(
 function causalPriority(
     hypothesis: Hypothesis,
 ): number {
+    if (
+        hypothesis.id.startsWith("resource-saturation:") ||
+        hypothesis.id.startsWith("security-incident:")
+    ) {
+        return 5;
+    }
+
     switch (
         hypothesis.title
     ) {
@@ -225,7 +232,7 @@ function causalPriority(
             return 1;
 
         default:
-            return 0;
+            return 2;
     }
 }
 
@@ -283,8 +290,7 @@ function calculateConfidence(
         positive /
         Math.max(
             positive +
-                negative +
-                unknown,
+                negative,
             1,
         );
 

@@ -3,6 +3,8 @@ import type {
     EvidenceBreadcrumb,
     EvidenceUser,
 } from "../types/evidence";
+import { sanitizeUntrustedLog } from "../normalization/scrubber";
+import { parseHeterogeneousLog } from "../normalization/parser";
 
 export function normalizeEvidence(
     evidence: Evidence[]
@@ -27,80 +29,89 @@ export function normalizeEvidence(
 
             return true;
         })
-        .map(item => ({
-            ...item,
+        .map(item => {
+            // Auto-parse description if resource/operation/traceId are missing
+            const parsed = (item.description || item.title)
+                ? parseHeterogeneousLog(item.description || item.title, item.service)
+                : undefined;
 
-            id: item.id.trim(),
+            return {
+                ...item,
 
-            source: normalizeString(
-                item.source,
-                "unknown"
-            ),
+                id: item.id.trim(),
 
-            service: normalizeString(
-                item.service,
-                "unknown"
-            ),
-
-            title: normalizeString(
-                item.title,
-                "Untitled evidence"
-            ),
-
-            description:
-                normalizeOptionalString(
-                    item.description
+                source: normalizeString(
+                    item.source,
+                    "unknown"
                 ),
 
-            release:
-                normalizeOptionalString(
-                    item.release
+                service: normalizeString(
+                    item.service || parsed?.service || "unknown",
+                    "unknown"
                 ),
 
-            commit:
-                normalizeOptionalString(
-                    item.commit
+                title: sanitizeUntrustedLog(
+                    normalizeString(
+                        item.title,
+                        parsed?.title || "Untitled evidence"
+                    )
                 ),
 
-            environment:
-                normalizeOptionalString(
-                    item.environment
-                ),
+                description: item.description
+                    ? sanitizeUntrustedLog(item.description)
+                    : undefined,
 
-            traceId:
-                normalizeOptionalString(
-                    item.traceId
-                ),
+                release:
+                    normalizeOptionalString(
+                        item.release
+                    ),
 
-            spanId:
-                normalizeOptionalString(
-                    item.spanId
-                ),
+                commit:
+                    normalizeOptionalString(
+                        item.commit
+                    ),
 
-            parentSpanId:
-                normalizeOptionalString(
-                    item.parentSpanId
-                ),
+                environment:
+                    normalizeOptionalString(
+                        item.environment
+                    ),
 
-            requestId:
-                normalizeOptionalString(
-                    item.requestId
-                ),
+                traceId:
+                    normalizeOptionalString(
+                        item.traceId || parsed?.traceId
+                    ),
 
-            sessionId:
-                normalizeOptionalString(
-                    item.sessionId
-                ),
+                spanId:
+                    normalizeOptionalString(
+                        item.spanId || parsed?.spanId
+                    ),
 
-            operation:
-                normalizeOptionalString(
-                    item.operation
-                ),
+                parentSpanId:
+                    normalizeOptionalString(
+                        item.parentSpanId
+                    ),
 
-            resource:
-                normalizeOptionalString(
-                    item.resource
-                ),
+                requestId:
+                    normalizeOptionalString(
+                        item.requestId || parsed?.requestId
+                    ),
+
+                sessionId:
+                    normalizeOptionalString(
+                        item.sessionId
+                    ),
+
+                operation:
+                    normalizeOptionalString(
+                        item.operation || parsed?.operation
+                    ),
+
+                resource:
+                    normalizeOptionalString(
+                        item.resource || parsed?.resource
+                    ),
+
+                status: item.status !== undefined ? item.status : parsed?.status,
 
             fingerprint:
                 normalizeOptionalString(
@@ -122,7 +133,8 @@ export function normalizeEvidence(
             metadata: {
                 ...item.metadata,
             },
-        }))
+        };
+    })
         .sort(
             (a, b) =>
                 a.timestamp.getTime() -

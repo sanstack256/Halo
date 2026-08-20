@@ -224,19 +224,6 @@ function validateHypothesis(
             ),
         );
     }
-    if (
-        independentEvidenceCount <
-        MIN_INDEPENDENT_EVIDENCE &&
-        !allowsSingleEvidenceValidation
-    ) {
-        return invalidate(
-            hypothesis,
-            Math.min(
-                hypothesis.confidence,
-                69,
-            ),
-        );
-    }
 
     /*
      * ------------------------------------------------------------
@@ -464,7 +451,9 @@ function getCausalSupport(
             reason.causalRole ===
             "CAUSE" ||
             reason.causalRole ===
-            "TRIGGER",
+            "TRIGGER" ||
+            reason.causalRole ===
+            "MECHANISM",
     );
 }
 
@@ -501,7 +490,7 @@ function allowsSingleEvidenceValidation(
         return causalReasons.some(
             reason =>
                 reason.strength >=
-                0.85 &&
+                0.75 &&
                 reason.evidenceIds.length >=
                 2,
         );
@@ -509,12 +498,15 @@ function allowsSingleEvidenceValidation(
 
     if (
         hypothesis.title ===
-        "Infrastructure Failure"
+        "Infrastructure Failure" ||
+        hypothesis.id.startsWith("resource-saturation:") ||
+        hypothesis.id.startsWith("security-incident:") ||
+        hypothesis.id.startsWith("dynamic-anomaly:")
     ) {
         return causalReasons.some(
             reason =>
                 reason.strength >=
-                0.9,
+                0.75,
         );
     }
 
@@ -697,6 +689,29 @@ function validateDeploymentRegression(
     }
 
     /*
+     * Single post-deployment error is sufficient when:
+     * - No rollback was attempted (rollback without recovery creates ambiguity)
+     * - No contradicting signals (e.g. service continuing successfully)
+     * - A strong causal relationship exists
+     */
+    if (
+        postDeploymentErrors.length >=
+        1 &&
+        !rollback &&
+        hasStrongDeploymentCausalReason(
+            hypothesis,
+        ) &&
+        !hasContradictingSuccessSignal(
+            context,
+            deployment,
+        )
+    ) {
+        return {
+            valid: true,
+        };
+    }
+
+    /*
      * A single temporal correlation is not enough.
      */
     return {
@@ -709,12 +724,76 @@ function hasStrongDeploymentCausalReason(
 ): boolean {
     return hypothesis.supportingReasons.some(
         reason =>
-            reason.causalRole ===
-            "CAUSE" &&
-            reason.strength >=
-            0.7 &&
-            reason.evidenceIds.length >=
-            2,
+            (reason.causalRole === "CAUSE" || reason.causalRole === "TRIGGER") &&
+            reason.strength >= 0.6 &&
+            reason.evidenceIds.length >= 2,
+    );
+}
+
+/**
+ * Check if the affected service showed continued success shortly
+ * after errors, which contradicts a sustained deployment regression.
+ */
+function hasContradictingSuccessSignal(
+    context: InvestigationContext,
+    deployment: Evidence,
+): boolean {
+    const deploymentTime =
+        deployment.timestamp.getTime();
+
+    return context.evidence.some(
+        evidence => {
+            if (
+                evidence.service !==
+                deployment.service
+            ) {
+                return false;
+            }
+
+            if (
+                evidence.type ===
+                "DEPLOYMENT"
+            ) {
+                return false;
+            }
+
+            const time =
+                evidence.timestamp.getTime();
+
+            if (
+                time <= deploymentTime
+            ) {
+                return false;
+            }
+
+            const text = [
+                evidence.title,
+                evidence.description ?? "",
+            ]
+                .join(" ")
+                .toLowerCase();
+
+            const status =
+                typeof evidence.status ===
+                    "string"
+                    ? evidence.status.toLowerCase()
+                    : "";
+
+            return (
+                status === "success" ||
+                status === "200" ||
+                status === "204" ||
+                text.includes(
+                    "continuing successfully",
+                ) ||
+                text.includes(
+                    "healthy",
+                ) ||
+                text.includes(
+                    "back to normal",
+                )
+            );
+        },
     );
 }
 

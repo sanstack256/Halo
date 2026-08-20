@@ -20,7 +20,10 @@ export type RelationshipType =
     | "MODIFIES"
     | "CORRELATED_WITH"
     | "CAUSES"
-    | "CONTRADICTS";
+    | "CONTRADICTS"
+    | "SUPPORTS"
+    | "AMPLIFIES"
+    | "EXPLAINS";
 
 export interface EvidenceEdge {
     from: string;

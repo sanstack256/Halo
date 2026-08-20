@@ -3,6 +3,10 @@ import type { Evidence } from "../types/evidence";
 import type { Finding } from "../types/finding";
 import type { Hypothesis } from "../types/hypothesis";
 import type { Reason } from "../types/reason";
+import { generateDeploymentHypotheses } from "../hypotheses/deployment";
+import { generateResourceSaturationHypotheses } from "../hypotheses/resource-saturation";
+import { generateSecurityHypotheses } from "../hypotheses/security-incident";
+import { generateDynamicAnomalyHypotheses } from "../hypotheses/dynamic-anomaly";
 
 const DEPLOYMENT_CAUSAL_WINDOW_MS =
     30 * 60 * 1000;
@@ -28,34 +32,20 @@ export function generateHypotheses(
         ...generateCrossServiceHypotheses(
             context,
         ),
+        ...generateResourceSaturationHypotheses(
+            context,
+        ),
+        ...generateSecurityHypotheses(
+            context,
+        ),
+        ...generateDynamicAnomalyHypotheses(
+            context,
+        ),
     ];
 
     return deduplicateHypotheses(
         hypotheses,
     );
-}
-
-function generateDeploymentHypotheses(
-    context: InvestigationContext,
-): Hypothesis[] {
-    return context.deployments
-        .filter(
-            deployment =>
-                deployment.service.length > 0,
-        )
-        .map(
-            deployment =>
-                createDeploymentHypothesis(
-                    deployment,
-                    context,
-                ),
-        )
-        .filter(
-            (
-                hypothesis,
-            ): hypothesis is Hypothesis =>
-                hypothesis !== null,
-        );
 }
 
 function createDeploymentHypothesis(

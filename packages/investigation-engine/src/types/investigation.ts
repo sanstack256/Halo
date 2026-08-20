@@ -7,6 +7,9 @@ import type { Impact } from "./impact";
 import type { Recommendation } from "./recommendation";
 import type { Timeline } from "./timeline";
 import type { ConfidenceLevel } from "./confidence";
+import type { AnomalySignal } from "./anomaly";
+import type { StructuralTemplate } from "./template";
+import type { EngineTelemetry } from "./telemetry";
 
 export type InvestigationStatus =
     | "INVESTIGATING"
@@ -24,6 +27,7 @@ export interface InvestigationReport {
         supportingReasons: string[];
         contradictingReasons: string[];
         missingReasons: string[];
+        propagationPath?: string[];
     } | null;
 
     alternatives: {
@@ -67,4 +71,10 @@ export interface Investigation {
               evidenceIds: string[];
           }
         | null;
+
+    anomalies?: AnomalySignal[];
+
+    templates?: StructuralTemplate[];
+
+    telemetry?: EngineTelemetry;
 }

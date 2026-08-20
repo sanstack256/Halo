@@ -21,6 +21,8 @@ import { rules } from "./rules";
 export function investigate(
     evidence: Evidence[],
 ): Investigation {
+    const startTime = Date.now();
+
     const normalized =
         normalizeEvidence(evidence);
 
@@ -104,6 +106,8 @@ export function investigate(
             ? "CONCLUDED"
             : "UNCERTAIN";
 
+    const executionDurationMs = Date.now() - startTime;
+
     return {
         status,
         evidence: normalized,
@@ -117,6 +121,21 @@ export function investigate(
         recommendations,
         report,
         nextInvestigation,
+        anomalies: context.anomalies,
+        templates: context.templates,
+        telemetry: {
+            executionDurationMs,
+            evidenceCount: normalized.length,
+            nodesCount: graph.nodes.length,
+            edgesCount: graph.edges.length,
+            anomaliesCount: context.anomalies?.length || 0,
+            templatesCount: context.templates?.length || 0,
+            hypothesesEvaluated: evaluated.length,
+            hypothesesPruned: candidates.length - hypotheses.length,
+            rulesEvaluated: rules.length,
+            memoryEstimateBytes: normalized.length * 1024,
+            timestamp: new Date(),
+        },
     };
 }
 
