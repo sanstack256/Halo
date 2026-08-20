@@ -43,11 +43,57 @@ export function SignInForm() {
     }
   }
 
+  async function handleGoogleSignIn() {
+    try {
+      await authClient.signIn.social({
+        provider: "google",
+        callbackURL: "/overview",
+      });
+    } catch (err) {
+      console.error("GOOGLE SIGN-IN ERROR:", err);
+    }
+  }
+
+  async function handleResendVerification() {
+    const email = window.prompt(
+      "Enter your Halo account email",
+    );
+
+    if (!email) {
+      return;
+    }
+
+    try {
+      const result =
+        await authClient.sendVerificationEmail({
+          email,
+          callbackURL: "/sign-in",
+        });
+
+      if (result.error) {
+        console.dir(result.error, { depth: null });
+        return;
+      }
+
+      window.alert(
+        "Verification email sent. Check your inbox.",
+      );
+    } catch (err) {
+      console.error(
+        "RESEND VERIFICATION ERROR:",
+        err,
+      );
+    }
+  }
+
   const inputClass =
     "w-full rounded-xl border border-border bg-surface px-4 py-3 text-text placeholder:text-text-muted outline-none transition-colors focus:border-primary";
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="mt-8 space-y-5">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="mt-8 space-y-5"
+    >
       <div>
         <input
           {...register("email")}
@@ -78,6 +124,23 @@ export function SignInForm() {
         )}
       </div>
 
+      <div className="flex items-center justify-between">
+        <button
+          type="button"
+          onClick={handleResendVerification}
+          className="text-sm text-text-muted transition-colors hover:text-text"
+        >
+          Resend verification
+        </button>
+
+        <a
+          href="/forgot-password"
+          className="text-sm text-primary transition-colors hover:text-primary-hover"
+        >
+          Forgot password?
+        </a>
+      </div>
+
       <button
         type="submit"
         disabled={isSubmitting}
@@ -101,6 +164,41 @@ export function SignInForm() {
         "
       >
         {isSubmitting ? "Signing in..." : "Sign in"}
+      </button>
+
+      <div className="flex items-center gap-4 py-2">
+        <div className="h-px flex-1 bg-border" />
+
+        <span className="text-xs text-text-muted">
+          OR
+        </span>
+
+        <div className="h-px flex-1 bg-border" />
+      </div>
+
+      <button
+        type="button"
+        onClick={handleGoogleSignIn}
+        className="
+          flex
+          w-full
+          items-center
+          justify-center
+          gap-3
+          rounded-xl
+          border
+          border-border
+          bg-surface
+          py-3
+          font-medium
+          text-text
+          transition-all
+          duration-200
+          hover:border-border-strong
+          hover:bg-surface-hover
+        "
+      >
+        Continue with Google
       </button>
     </form>
   );
