@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import {
+    Activity,
     AlertCircle,
     BarChart3,
     BellRing,
@@ -11,23 +12,32 @@ import {
     ChevronRight,
     CircleUserRound,
     Code2,
+    Compass,
+    Cpu,
     Database,
+    FileText,
     FileWarning,
     FolderKanban,
-    Gauge,
     GitBranch,
+    Home,
+    Layers,
     LayoutDashboard,
     ListFilter,
     Monitor,
+    Network,
+    PlusCircle,
+    Radio,
     Search,
+    Server,
     Settings,
     ShieldAlert,
     Sparkles,
     Terminal,
     Waypoints,
-    X,
+    Zap,
 } from "lucide-react";
 import { useState } from "react";
+import { UserProfileMenu } from "./user-profile-menu";
 
 type NavItem = {
     label: string;
@@ -50,50 +60,72 @@ type PrimarySection = {
 
 const primaryNavigation: PrimarySection[] = [
     {
+        id: "overview",
+        label: "Overview",
+        icon: Home,
+        sections: [
+            {
+                items: [
+                    { label: "Home", href: "/overview", icon: Home },
+                    { label: "Active Incidents", href: "/issues?status=OPEN", icon: ShieldAlert },
+                    { label: "Recent Investigations", href: "/investigate", icon: Compass },
+                    { label: "Recent Changes", href: "/explore/errors", icon: GitBranch },
+                    { label: "Halo Discoveries", href: "/overview#discoveries", icon: Sparkles },
+                ],
+            },
+        ],
+    },
+    {
+        id: "investigate",
+        label: "Investigate",
+        icon: Compass,
+        sections: [
+            {
+                items: [
+                    { label: "New Investigation", href: "/investigate", icon: PlusCircle },
+                    { label: "Active", href: "/investigate/active", icon: Activity },
+                    { label: "Recent", href: "/investigate/recent", icon: FileText },
+                    { label: "Saved", href: "/investigate/saved", icon: Sparkles },
+                    { label: "My Investigations", href: "/investigate/mine", icon: CircleUserRound },
+                    { label: "Team Investigations", href: "/investigate/team", icon: Layers },
+                ],
+            },
+        ],
+    },
+    {
         id: "issues",
         label: "Issues",
         icon: ShieldAlert,
         sections: [
             {
                 items: [
-                    {
-                        label: "All Issues",
-                        href: "/issues",
-                        icon: AlertCircle,
-                    },
-                    {
-                        label: "Errors",
-                        href: "/issues/errors",
-                        icon: FileWarning,
-                    },
-                    {
-                        label: "Warnings",
-                        href: "/issues/warnings",
-                        icon: BellRing,
-                    },
+                    { label: "All Issues", href: "/issues", icon: ShieldAlert },
+                    { label: "Errors", href: "/issues/errors", icon: FileWarning },
+                    { label: "Warnings", href: "/issues/warnings", icon: BellRing },
+                    { label: "Regressions", href: "/issues/regressions", icon: Zap },
+                    { label: "Recurring", href: "/issues/recurring", icon: ListFilter },
+                    { label: "Resolved", href: "/issues/resolved", icon: Activity },
+                    { label: "Ignored", href: "/issues/ignored", icon: AlertCircle },
                 ],
             },
         ],
     },
-
     {
-        id: "projects",
-        label: "Projects",
-        icon: FolderKanban,
+        id: "services",
+        label: "Services",
+        icon: Server,
         sections: [
             {
                 items: [
-                    {
-                        label: "All Projects",
-                        href: "/projects",
-                        icon: FolderKanban,
-                    },
+                    { label: "All Services", href: "/services", icon: Server },
+                    { label: "Healthy", href: "/services/healthy", icon: Activity },
+                    { label: "Degraded", href: "/services/degraded", icon: BellRing },
+                    { label: "Critical", href: "/services/critical", icon: ShieldAlert },
+                    { label: "Dependencies", href: "/services/dependencies", icon: Network },
                 ],
             },
         ],
     },
-
-
     {
         id: "explore",
         label: "Explore",
@@ -101,46 +133,14 @@ const primaryNavigation: PrimarySection[] = [
         sections: [
             {
                 items: [
-                    {
-                        label: "Traces",
-                        href: "/explore/traces",
-                        icon: Waypoints,
-                    },
-                    {
-                        label: "Logs",
-                        href: "/explore/logs",
-                        icon: Terminal,
-                    },
-                    {
-                        label: "Metrics",
-                        href: "/explore/metrics",
-                        icon: BarChart3,
-                    },
-                    {
-                        label: "Errors",
-                        href: "/explore/errors",
-                        icon: FileWarning,
-                    },
-                    {
-                        label: "Profiles",
-                        href: "/explore/profiles",
-                        icon: Gauge,
-                    },
-                    {
-                        label: "Replays",
-                        href: "/explore/replays",
-                        icon: Monitor,
-                    },
-                    {
-                        label: "Releases",
-                        href: "/explore/releases",
-                        icon: GitBranch,
-                    },
-                    {
-                        label: "All Queries",
-                        href: "/explore/queries",
-                        icon: ListFilter,
-                    },
+                    { label: "Search", href: "/explore", icon: Search },
+                    { label: "Logs", href: "/explore/logs", icon: Terminal },
+                    { label: "Traces", href: "/explore/traces", icon: Waypoints },
+                    { label: "Errors", href: "/explore/errors", icon: FileWarning },
+                    { label: "Metrics", href: "/explore/metrics", icon: BarChart3 },
+                    { label: "Requests", href: "/explore/requests", icon: Activity },
+                    { label: "Database", href: "/explore/database", icon: Database },
+                    { label: "Infrastructure", href: "/explore/infrastructure", icon: Cpu },
                 ],
             },
         ],
@@ -152,11 +152,10 @@ const primaryNavigation: PrimarySection[] = [
         sections: [
             {
                 items: [
-                    {
-                        label: "All Dashboards",
-                        href: "/dashboards",
-                        icon: LayoutDashboard,
-                    },
+                    { label: "All Dashboards", href: "/dashboards", icon: LayoutDashboard },
+                    { label: "System Health", href: "/dashboards/system", icon: Activity },
+                    { label: "Service Health", href: "/dashboards/services", icon: Server },
+                    { label: "SLO & Error Budget", href: "/dashboards/slo", icon: Radio },
                 ],
             },
         ],
@@ -168,16 +167,22 @@ const primaryNavigation: PrimarySection[] = [
         sections: [
             {
                 items: [
-                    {
-                        label: "All Monitors",
-                        href: "/monitors",
-                        icon: BellRing,
-                    },
-                    {
-                        label: "Alerts",
-                        href: "/monitors/alerts",
-                        icon: AlertCircle,
-                    },
+                    { label: "All Monitors", href: "/monitors", icon: BellRing },
+                    { label: "Firing Alerts", href: "/monitors/firing", icon: ShieldAlert },
+                    { label: "Healthy Monitors", href: "/monitors/healthy", icon: Activity },
+                    { label: "Service SLOs", href: "/monitors/slos", icon: Radio },
+                ],
+            },
+        ],
+    },
+    {
+        id: "projects",
+        label: "Projects",
+        icon: FolderKanban,
+        sections: [
+            {
+                items: [
+                    { label: "All Projects", href: "/projects", icon: FolderKanban },
                 ],
             },
         ],
@@ -190,22 +195,13 @@ const primaryNavigation: PrimarySection[] = [
             {
                 label: "Account",
                 items: [
-                    {
-                        label: "Account Details",
-                        href: "/settings",
-                        icon: CircleUserRound,
-                    },
+                    { label: "Account Details", href: "/settings", icon: CircleUserRound },
                 ],
             },
             {
                 label: "Organization",
                 items: [
-                    {
-                        label: "General Settings",
-                        href: "/settings/organization",
-                        icon: Settings,
-                    },
-                    
+                    { label: "General Settings", href: "/settings/organization", icon: Settings },
                 ],
             },
         ],
@@ -213,36 +209,29 @@ const primaryNavigation: PrimarySection[] = [
 ];
 
 function getActiveSection(pathname: string) {
-    if (
-        pathname.startsWith("/issues") ||
-        pathname.startsWith("/incidents")
-    ) {
-        return "issues";
-    }
+    if (pathname === "/overview" || pathname.startsWith("/overview/")) return "overview";
+    if (pathname.startsWith("/investigate")) return "investigate";
+    if (pathname.startsWith("/issues") || pathname.startsWith("/incidents")) return "issues";
+    if (pathname.startsWith("/services")) return "services";
+    if (pathname.startsWith("/explore")) return "explore";
+    if (pathname.startsWith("/dashboards")) return "dashboards";
+    if (pathname.startsWith("/monitors")) return "monitors";
+    if (pathname.startsWith("/projects")) return "projects";
+    if (pathname.startsWith("/settings")) return "settings";
 
-    if (pathname.startsWith("/explore")) {
-        return "explore";
-    }
-
-    if (pathname.startsWith("/dashboards")) {
-        return "dashboards";
-    }
-
-    if (pathname.startsWith("/monitors")) {
-        return "monitors";
-    }
-
-    if (pathname.startsWith("/settings")) {
-        return "settings";
-    }
-
-    return "issues";
+    return "overview";
 }
 
 function isItemActive(pathname: string, href: string) {
-    if (href === "/settings") {
-        return pathname === "/settings";
-    }
+    if (href === "/settings") return pathname === "/settings";
+    if (href === "/overview") return pathname === "/overview";
+    if (href === "/investigate") return pathname === "/investigate";
+    if (href === "/issues") return pathname === "/issues";
+    if (href === "/services") return pathname === "/services";
+    if (href === "/explore") return pathname === "/explore";
+    if (href === "/dashboards") return pathname === "/dashboards";
+    if (href === "/monitors") return pathname === "/monitors";
+    if (href === "/projects") return pathname === "/projects";
 
     return pathname === href || pathname.startsWith(`${href}/`);
 }
@@ -254,13 +243,11 @@ export default function Sidebar() {
 
     const activeSectionId = getActiveSection(pathname);
 
-    const visibleSectionId =
-        hoveredSection ?? activeSectionId;
+    const visibleSectionId = hoveredSection ?? activeSectionId;
 
     const activeSection =
-        primaryNavigation.find(
-            (section) => section.id === visibleSectionId,
-        ) ?? primaryNavigation[0];
+        primaryNavigation.find((section) => section.id === visibleSectionId) ??
+        primaryNavigation[0];
 
     return (
         <aside className="halo-sidebar-shell">
@@ -277,25 +264,19 @@ export default function Sidebar() {
                 <nav className="halo-sidebar-primary-nav">
                     {primaryNavigation.map((section) => {
                         const Icon = section.icon;
+                        const active = activeSectionId === section.id;
 
-                        const active =
-                            activeSectionId === section.id;
+                        const targetHref =
+                            section.sections[0]?.items[0]?.href ?? `/${section.id}`;
 
                         return (
                             <div
                                 key={section.id}
                                 className="halo-sidebar-primary-item"
-                                onMouseEnter={() =>
-                                    setHoveredSection(section.id)
-                                }
+                                onMouseEnter={() => setHoveredSection(section.id)}
                             >
                                 <Link
-                                    href={
-                                        section.id === "issues"
-                                            ? "/issues"
-                                            : section.sections[0]?.items[0]
-                                                ?.href ?? "/overview"
-                                    }
+                                    href={targetHref}
                                     className={
                                         active
                                             ? "halo-sidebar-primary-link is-active"
@@ -383,11 +364,7 @@ export default function Sidebar() {
                             <div className="halo-sidebar-secondary-items">
                                 {section.items.map((item) => {
                                     const Icon = item.icon;
-
-                                    const active = isItemActive(
-                                        pathname,
-                                        item.href,
-                                    );
+                                    const active = isItemActive(pathname, item.href);
 
                                     return (
                                         <Link
@@ -416,22 +393,7 @@ export default function Sidebar() {
                 </nav>
 
                 <div className="halo-sidebar-secondary-footer">
-                    <div className="halo-sidebar-workspace">
-                        <div className="halo-sidebar-workspace-icon">
-                            H
-                        </div>
-
-                        <div className="halo-sidebar-workspace-content">
-                            <span className="halo-sidebar-workspace-name">
-                                Halo
-                            </span>
-                            <span className="halo-sidebar-workspace-meta">
-                                Workspace
-                            </span>
-                        </div>
-
-                        <ChevronRight size={15} />
-                    </div>
+                    <UserProfileMenu />
                 </div>
             </div>
         </aside>

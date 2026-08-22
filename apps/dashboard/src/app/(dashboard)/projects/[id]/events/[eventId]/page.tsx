@@ -16,6 +16,8 @@ import Breadcrumbs from "@/components/events/breadcrumbs";
 import Tags from "@/components/events/tags";
 import User from "@/components/events/user";
 
+import { BackButton } from "@/components/ui/back-button";
+
 type Props = {
     params: Promise<{
         id: string;
@@ -39,25 +41,7 @@ export default async function EventPage({
 
             {/* Back */}
 
-            <Link
-                href={`/projects/${id}/events`}
-                className="
-                    inline-flex
-                    items-center
-                    gap-2
-                    text-sm
-                    text-muted
-                    transition-colors
-                    hover:text-primary
-                "
-            >
-                <ArrowLeft
-                    className="h-4 w-4"
-                    strokeWidth={1.8}
-                />
-
-                Events
-            </Link>
+            <BackButton fallbackHref={`/projects/${id}/events`} label="Back to Events" />
 
             {/* Header */}
 

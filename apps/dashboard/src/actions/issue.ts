@@ -60,6 +60,49 @@ export async function getIssues(
     });
 }
 
+export async function getAllOrgIssues(filters?: {
+    status?: "OPEN" | "RESOLVED" | "IGNORED";
+    severity?: "FATAL" | "ERROR" | "WARNING" | "INFO";
+    recurring?: boolean;
+    regressions?: boolean;
+}) {
+    const { getSession } = await import("@/lib/session");
+    const { getOrganization } = await import("@/lib/organization");
+
+    const session = await getSession();
+    if (!session) return [];
+
+    const organization = await getOrganization(session.user.id);
+    if (!organization) return [];
+
+    const projects = await prisma.project.findMany({
+        where: { organizationId: organization.id },
+        select: { id: true, name: true },
+    });
+    if (projects.length === 0) return [];
+
+    const projectIds = projects.map((p) => p.id);
+    const projectMap = new Map(projects.map((p) => [p.id, p.name]));
+
+    const sevenDaysAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+    const issues = await prisma.issue.findMany({
+        where: {
+            projectId: { in: projectIds },
+            ...(filters?.status ? { status: filters.status } : {}),
+            ...(filters?.severity ? { severity: filters.severity } : {}),
+            ...(filters?.recurring ? { eventCount: { gt: 10 } } : {}),
+            ...(filters?.regressions ? { firstSeen: { gte: sevenDaysAgo } } : {}),
+        },
+        orderBy: { lastSeen: "desc" },
+    });
+
+    return issues.map((issue) => ({
+        ...issue,
+        projectName: projectMap.get(issue.projectId) ?? "Unknown",
+    }));
+}
+
 export async function getIssue(
     issueId: string,
     projectId?: string,

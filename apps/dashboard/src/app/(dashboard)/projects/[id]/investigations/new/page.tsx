@@ -1,4 +1,5 @@
 import { investigateIssue } from "@/lib/investigation/run";
+import { BackButton } from "@/components/ui/back-button";
 
 import type {
     Investigation,
@@ -76,6 +77,10 @@ function InvestigationView({
 
     return (
         <div className="halo-investigation">
+            <div className="mb-4">
+                <BackButton fallbackHref="/overview" label="Back to Overview" />
+            </div>
+
             {/* Header */}
 
             <header className="halo-investigation-header">

@@ -1702,3 +1702,798 @@ HALO INVESTIGATION
     animation: halo-border-spin 8s linear infinite;
     transform-origin: center;
 }
+
+/* =====================================================
+   BUTTON SYSTEM
+===================================================== */
+
+.halo-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 7px;
+    padding: 9px 16px;
+    border-radius: var(--radius-button);
+    font-size: 13px;
+    font-weight: 500;
+    line-height: 1;
+    white-space: nowrap;
+    cursor: pointer;
+    transition: background var(--transition-fast), opacity var(--transition-fast), box-shadow var(--transition-fast);
+    border: 1px solid transparent;
+    text-decoration: none;
+}
+
+.halo-btn-sm {
+    padding: 6px 12px;
+    font-size: 12px;
+}
+
+.halo-btn-primary {
+    background: var(--accent);
+    color: var(--accent-foreground);
+    font-weight: 600;
+}
+.halo-btn-primary:hover {
+    opacity: .88;
+    color: var(--accent-foreground);
+}
+
+.halo-btn-secondary {
+    background: var(--surface-elevated);
+    border-color: var(--border-strong);
+    color: var(--text-secondary);
+}
+.halo-btn-secondary:hover {
+    background: var(--surface-interactive);
+    color: var(--text);
+}
+
+.halo-btn-ghost {
+    background: transparent;
+    color: var(--text-secondary);
+}
+.halo-btn-ghost:hover {
+    background: var(--surface-elevated);
+    color: var(--text);
+}
+
+.halo-btn-destructive {
+    background: rgba(239,68,68,.12);
+    border-color: rgba(239,68,68,.2);
+    color: var(--error);
+}
+.halo-btn-destructive:hover {
+    background: rgba(239,68,68,.2);
+}
+
+/* =====================================================
+   SEVERITY BADGES
+===================================================== */
+
+.halo-severity {
+    display: inline-flex;
+    align-items: center;
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .05em;
+    text-transform: uppercase;
+    border: 1px solid transparent;
+}
+
+.halo-severity-fatal {
+    background: rgba(239,68,68,.12);
+    border-color: rgba(239,68,68,.22);
+    color: var(--error);
+}
+.halo-severity-error {
+    background: rgba(239,68,68,.08);
+    border-color: rgba(239,68,68,.15);
+    color: #f87171;
+}
+.halo-severity-warning {
+    background: rgba(245,158,11,.08);
+    border-color: rgba(245,158,11,.18);
+    color: var(--warning);
+}
+.halo-severity-info {
+    background: var(--surface-elevated);
+    border-color: var(--border-strong);
+    color: var(--text-muted);
+}
+
+/* =====================================================
+   HEALTH BADGES
+===================================================== */
+
+.halo-health {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 12px;
+    font-weight: 500;
+}
+
+.halo-health-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    flex-shrink: 0;
+}
+
+.halo-health-healthy .halo-health-dot { background: var(--success); }
+.halo-health-healthy { color: var(--success); }
+
+.halo-health-degraded .halo-health-dot { background: var(--warning); }
+.halo-health-degraded { color: var(--warning); }
+
+.halo-health-critical .halo-health-dot { background: var(--error); }
+.halo-health-critical { color: var(--error); }
+
+.halo-health-unknown .halo-health-dot { background: var(--text-muted); }
+.halo-health-unknown { color: var(--text-muted); }
+
+/* =====================================================
+   DATA TABLE
+===================================================== */
+
+.halo-table {
+    width: 100%;
+    border-collapse: collapse;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+    background: var(--surface);
+}
+
+.halo-table-header {
+    display: grid;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--border);
+    background: var(--surface-elevated);
+}
+
+.halo-table-col-label {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.halo-table-row {
+    display: grid;
+    padding: 13px 16px;
+    border-bottom: 1px solid var(--border);
+    transition: background var(--transition-fast);
+    align-items: center;
+    text-decoration: none;
+    color: inherit;
+}
+
+.halo-table-row:last-child {
+    border-bottom: none;
+}
+
+.halo-table-row:hover {
+    background: rgba(255,255,255,.02);
+}
+
+.halo-table-row-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+.halo-table-row-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+.halo-table-cell {
+    font-size: 13px;
+    color: var(--text-secondary);
+}
+
+.halo-table-cell-mono {
+    font-family: var(--font-mono);
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+/* =====================================================
+   STAT ROW / STAT CARD
+===================================================== */
+
+.halo-stat-row {
+    display: grid;
+    gap: 10px;
+}
+
+.halo-stat-card {
+    padding: 18px 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+}
+
+.halo-stat-label {
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+}
+
+.halo-stat-value {
+    margin-top: 8px;
+    font-size: 28px;
+    font-weight: 600;
+    letter-spacing: -.02em;
+    color: var(--text);
+    line-height: 1;
+}
+
+.halo-stat-sub {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.halo-stat-trend-up {
+    color: var(--error);
+}
+
+.halo-stat-trend-down {
+    color: var(--success);
+}
+
+/* =====================================================
+   SECTION NAV (page-level horizontal)
+===================================================== */
+
+.halo-section-nav {
+    display: flex;
+    align-items: center;
+    gap: 2px;
+    border-bottom: 1px solid var(--border);
+    margin-bottom: 28px;
+}
+
+.halo-section-nav-link {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text-secondary);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+    border-radius: 8px 8px 0 0;
+    white-space: nowrap;
+}
+
+.halo-section-nav-link:hover {
+    color: var(--text);
+}
+
+.halo-section-nav-link.is-active {
+    color: var(--text);
+}
+
+.halo-section-nav-link.is-active::after {
+    content: '';
+    position: absolute;
+    bottom: -1px;
+    left: 8px;
+    right: 8px;
+    height: 2px;
+    background: var(--accent);
+    border-radius: 2px 2px 0 0;
+}
+
+.halo-section-nav-count {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 18px;
+    height: 18px;
+    padding: 0 5px;
+    border-radius: 99px;
+    font-size: 10px;
+    font-weight: 600;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-strong);
+    color: var(--text-muted);
+}
+
+/* =====================================================
+   PAGE HEADER
+===================================================== */
+
+.halo-page-header {
+    margin-bottom: 28px;
+}
+
+.halo-page-title {
+    font-size: 26px;
+    font-weight: 600;
+    letter-spacing: -.02em;
+    color: var(--text);
+    margin: 0;
+}
+
+.halo-page-description {
+    margin-top: 5px;
+    font-size: 14px;
+    color: var(--text-secondary);
+}
+
+.halo-page-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.halo-page-header-row {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+}
+
+/* =====================================================
+   NEEDS ATTENTION
+===================================================== */
+
+.halo-needs-attention {
+    margin-bottom: 32px;
+    padding: 20px 24px;
+    border: 1px solid rgba(239,68,68,.18);
+    border-radius: var(--radius-card);
+    background: rgba(239,68,68,.04);
+}
+
+.halo-needs-attention-title {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--error);
+    text-transform: uppercase;
+    letter-spacing: .07em;
+    margin-bottom: 14px;
+}
+
+.halo-attention-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 0;
+    border-bottom: 1px solid rgba(239,68,68,.08);
+    text-decoration: none;
+    color: inherit;
+    transition: opacity var(--transition-fast);
+}
+
+.halo-attention-item:hover {
+    opacity: .8;
+}
+
+.halo-attention-item:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+}
+
+.halo-attention-item-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.halo-attention-item-meta {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+}
+
+/* =====================================================
+   EMPTY STATE
+===================================================== */
+
+.halo-empty-state {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 280px;
+    text-align: center;
+    padding: 40px 24px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+}
+
+.halo-empty-state-icon {
+    width: 40px;
+    height: 40px;
+    margin-bottom: 16px;
+    color: var(--text-muted);
+}
+
+.halo-empty-state-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 6px;
+}
+
+.halo-empty-state-description {
+    font-size: 14px;
+    color: var(--text-secondary);
+    max-width: 360px;
+    line-height: 1.6;
+    margin: 0 0 20px;
+}
+
+/* =====================================================
+   OVERVIEW SECTION
+===================================================== */
+
+.halo-overview-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 10px;
+    margin-bottom: 32px;
+}
+
+.halo-overview-section {
+    margin-bottom: 40px;
+}
+
+.halo-overview-section-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: var(--text);
+    margin: 0 0 14px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.halo-overview-section-link {
+    font-size: 12px;
+    font-weight: 500;
+    color: var(--accent);
+    text-decoration: none;
+}
+
+.halo-overview-section-link:hover {
+    opacity: .8;
+}
+
+/* =====================================================
+   LIST ROW (generic)
+===================================================== */
+
+.halo-list-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--transition-fast);
+}
+
+.halo-list-row:last-child {
+    border-bottom: none;
+}
+
+.halo-list-row:hover {
+    background: rgba(255,255,255,.02);
+}
+
+.halo-list-content {
+    min-width: 0;
+    flex: 1;
+}
+
+.halo-list-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+}
+
+.halo-list-description {
+    margin-top: 3px;
+    font-size: 12px;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* =====================================================
+   EXPLORE EVENT ROW
+===================================================== */
+
+.halo-event-row {
+    display: grid;
+    align-items: start;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--transition-fast);
+}
+
+.halo-event-row:last-child {
+    border-bottom: none;
+}
+
+.halo-event-row:hover {
+    background: rgba(255,255,255,.02);
+}
+
+.halo-event-title {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+    line-height: 1.4;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.halo-event-message {
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-top: 2px;
+    line-height: 1.5;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.halo-event-meta {
+    font-size: 11px;
+    color: var(--text-muted);
+    white-space: nowrap;
+}
+
+/* =====================================================
+   SERVICE CARD
+===================================================== */
+
+.halo-service-row {
+    display: grid;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--transition-fast);
+}
+
+.halo-service-row:last-child {
+    border-bottom: none;
+}
+
+.halo-service-row:hover {
+    background: rgba(255,255,255,.02);
+}
+
+.halo-service-name {
+    font-size: 13px;
+    font-weight: 500;
+    color: var(--text);
+}
+
+.halo-service-meta {
+    font-size: 12px;
+    color: var(--text-muted);
+    margin-top: 2px;
+}
+
+/* =====================================================
+   METRIC PILL
+===================================================== */
+
+.halo-metric-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 3px 8px;
+    border-radius: var(--radius-pill);
+    font-size: 11px;
+    font-weight: 600;
+    background: var(--surface-elevated);
+    border: 1px solid var(--border-strong);
+    color: var(--text-secondary);
+    white-space: nowrap;
+}
+
+/* =====================================================
+   INVESTIGATE INPUT
+===================================================== */
+
+.halo-investigate-input-wrap {
+    position: relative;
+    margin-bottom: 32px;
+}
+
+.halo-investigate-input {
+    width: 100%;
+    padding: 18px 140px 18px 20px;
+    border-radius: 18px;
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    color: var(--text);
+    font-size: 15px;
+    font-family: var(--font-sans);
+    resize: none;
+    outline: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    line-height: 1.6;
+    min-height: 72px;
+}
+
+.halo-investigate-input:focus {
+    border-color: rgba(91,184,255,.35);
+    box-shadow: 0 0 0 3px rgba(91,184,255,.08);
+}
+
+.halo-investigate-input::placeholder {
+    color: var(--text-muted);
+}
+
+.halo-investigate-input-action {
+    position: absolute;
+    right: 12px;
+    bottom: 12px;
+}
+
+.halo-example-questions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 36px;
+}
+
+.halo-example-question {
+    padding: 7px 14px;
+    border-radius: var(--radius-pill);
+    border: 1px solid var(--border-strong);
+    background: var(--surface);
+    font-size: 12px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    transition: border-color var(--transition-fast), color var(--transition-fast);
+    text-decoration: none;
+}
+
+.halo-example-question:hover {
+    border-color: rgba(91,184,255,.3);
+    color: var(--accent);
+}
+
+/* =====================================================
+   MONITOR ROW
+===================================================== */
+
+.halo-monitor-row {
+    display: grid;
+    align-items: center;
+    gap: 12px;
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--border);
+    text-decoration: none;
+    color: inherit;
+    transition: background var(--transition-fast);
+}
+
+.halo-monitor-row:last-child {
+    border-bottom: none;
+}
+
+.halo-monitor-row:hover {
+    background: rgba(255,255,255,.02);
+}
+
+.halo-monitor-state-firing {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--error);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.halo-monitor-state-healthy {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--success);
+    text-transform: uppercase;
+    letter-spacing: .05em;
+}
+
+.halo-monitor-pulse {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+/* =====================================================
+   DASHBOARD WIDGET
+===================================================== */
+
+.halo-widget {
+    padding: 20px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius-card);
+    background: var(--surface);
+}
+
+.halo-widget-title {
+    font-size: 12px;
+    font-weight: 600;
+    letter-spacing: .07em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    margin-bottom: 16px;
+}
+
+.halo-widget-value {
+    font-size: 32px;
+    font-weight: 600;
+    letter-spacing: -.025em;
+    color: var(--text);
+    line-height: 1;
+}
+
+.halo-widget-sub {
+    margin-top: 4px;
+    font-size: 12px;
+    color: var(--text-muted);
+}
+
+.halo-widget-divider {
+    height: 1px;
+    background: var(--border);
+    margin: 16px 0;
+}
+
+/* =====================================================
+   RELEASE BADGE
+===================================================== */
+
+.halo-release-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    padding: 3px 8px;
+    border-radius: 6px;
+    border: 1px solid var(--border-strong);
+    font-size: 11px;
+    font-family: var(--font-mono);
+    color: var(--text-secondary);
+    background: var(--surface-elevated);
+}

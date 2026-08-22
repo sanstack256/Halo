@@ -1,0 +1,77 @@
+import Link from "next/link";
+import { getAllOrgIssues } from "@/actions/issue";
+import { RelativeTime } from "@/components/ui/relative-time";
+import { ArrowUpRight, ShieldAlert } from "lucide-react";
+
+export default async function IssuesPage() {
+    const issues = await getAllOrgIssues();
+
+    return (
+        <div className="space-y-8 pb-12">
+            <div className="halo-page-header">
+                <h1 className="halo-page-title">Issues</h1>
+                <p className="halo-page-description">
+                    All tracked application errors, unhandled exceptions, and fatal crashes across your organization.
+                </p>
+            </div>
+
+            {issues.length === 0 ? (
+                <div className="halo-empty-state">
+                    <ShieldAlert className="halo-empty-state-icon" />
+                    <h3 className="halo-empty-state-title">No issues detected</h3>
+                    <p className="halo-empty-state-description">
+                        Halo hasn't recorded any issues yet. Check your SDK installation or run your app to emit telemetry.
+                    </p>
+                </div>
+            ) : (
+                <div className="halo-table">
+                    <div className="halo-table-header grid-cols-[1fr_140px_100px_100px_140px_140px]">
+                        <div className="halo-table-col-label">Title</div>
+                        <div className="halo-table-col-label">Project</div>
+                        <div className="halo-table-col-label">Severity</div>
+                        <div className="halo-table-col-label">Events</div>
+                        <div className="halo-table-col-label">Last Seen</div>
+                        <div className="halo-table-col-label">Action</div>
+                    </div>
+
+                    {issues.map((issue) => (
+                        <div key={issue.id} className="halo-table-row grid-cols-[1fr_140px_100px_100px_140px_140px]">
+                            <div>
+                                <Link
+                                    href={`/projects/${issue.projectId}/issues/${issue.id}`}
+                                    className="halo-table-row-title hover:text-accent transition-colors"
+                                >
+                                    {issue.title}
+                                </Link>
+                                <div className="halo-table-row-meta">{issue.status}</div>
+                            </div>
+
+                            <div className="halo-table-cell">{issue.projectName}</div>
+
+                            <div>
+                                <span className={`halo-severity halo-severity-${issue.severity.toLowerCase()}`}>
+                                    {issue.severity}
+                                </span>
+                            </div>
+
+                            <div className="halo-table-cell-mono">{issue.eventCount}</div>
+
+                            <div className="halo-table-cell">
+                                <RelativeTime date={issue.lastSeen} />
+                            </div>
+
+                            <div>
+                                <Link
+                                    href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}`}
+                                    className="halo-btn halo-btn-sm halo-btn-primary"
+                                >
+                                    Investigate <ArrowUpRight size={13} />
+                                </Link>
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            )}
+        </div>
+    );
+}

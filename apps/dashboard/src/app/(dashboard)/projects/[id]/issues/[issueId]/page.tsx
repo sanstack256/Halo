@@ -6,6 +6,7 @@ import { getIssue } from "@/actions/issue";
 import { Badge } from "@/components/ui/badge";
 import { SeverityBadge } from "@/components/ui/severity-badge";
 import { RelativeTime } from "@/components/ui/relative-time";
+import { BackButton } from "@/components/ui/back-button";
 
 type Props = {
     params: Promise<{
@@ -31,9 +32,11 @@ export default async function IssuePage({
             {/* Header */}
 
             <header className="space-y-5">
+                <div className="mb-2">
+                    <BackButton fallbackHref="/issues" label="Back to Issues" />
+                </div>
 
                 <div className="flex items-center justify-between">
-
                     <div className="flex items-center gap-3">
 
                         <Badge>{issue.status}</Badge>
