@@ -36,3 +36,12 @@ export const IssueStatus = {
 } as const
 
 export type IssueStatus = (typeof IssueStatus)[keyof typeof IssueStatus]
+
+
+export const OrganizationPlan = {
+  FREE: 'FREE',
+  DEVELOPER: 'DEVELOPER',
+  TEAM: 'TEAM'
+} as const
+
+export type OrganizationPlan = (typeof OrganizationPlan)[keyof typeof OrganizationPlan]

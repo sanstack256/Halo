@@ -5,8 +5,10 @@ import { usePathname } from "next/navigation";
 import {
     Activity,
     AlertCircle,
+    Archive,
     BarChart3,
     BellRing,
+    Blocks,
     ChevronDown,
     ChevronLeft,
     ChevronRight,
@@ -14,16 +16,17 @@ import {
     Code2,
     Compass,
     Cpu,
+    CreditCard,
     Database,
     FileText,
     FileWarning,
     FolderKanban,
     GitBranch,
     Home,
+    Key,
     Layers,
     LayoutDashboard,
     ListFilter,
-    Monitor,
     Network,
     PlusCircle,
     Radio,
@@ -33,6 +36,8 @@ import {
     ShieldAlert,
     Sparkles,
     Terminal,
+    UserPlus,
+    Users,
     Waypoints,
     Zap,
 } from "lucide-react";
@@ -194,14 +199,61 @@ const primaryNavigation: PrimarySection[] = [
         sections: [
             {
                 label: "Account",
+                collapsible: true,
                 items: [
                     { label: "Account Details", href: "/settings", icon: CircleUserRound },
+                    { label: "Security", href: "/settings/security", icon: ShieldAlert },
+                    { label: "Notifications", href: "/settings/alerts", icon: BellRing },
+                    { label: "Email Addresses", href: "/settings/emails", icon: Activity },
+                    { label: "Close Account", href: "/settings/close", icon: Archive },
                 ],
             },
             {
                 label: "Organization",
+                collapsible: true,
                 items: [
                     { label: "General Settings", href: "/settings/organization", icon: Settings },
+                    { label: "Teams", href: "/settings/teams", icon: Users },
+                    { label: "Members", href: "/settings/members", icon: UserPlus },
+                    { label: "Security & Compliance", href: "/settings/privacy", icon: ShieldAlert },
+                    { label: "Audit Log", href: "/settings/audit", icon: FileText },
+                ],
+            },
+            {
+                label: "Halo AI",
+                collapsible: true,
+                items: [
+                    { label: "Autofix", href: "/settings/autofix", icon: Sparkles },
+                    { label: "AI Configuration", href: "/settings/engine", icon: Cpu },
+                ],
+            },
+            {
+                label: "Integrations",
+                collapsible: true,
+                items: [
+                    { label: "MCP & CLI", href: "/settings/mcp", icon: Terminal },
+                    { label: "Integrations", href: "/settings/integrations", icon: Blocks },
+                    { label: "Repositories", href: "/settings/repos", icon: GitBranch },
+                    { label: "Custom Integrations", href: "/settings/custom", icon: Code2 },
+                ],
+            },
+            {
+                label: "Developer Settings",
+                collapsible: true,
+                items: [
+                    { label: "Organization Tokens", href: "/settings/tokens/org", icon: Key },
+                    { label: "Personal Tokens", href: "/settings/tokens/personal", icon: Key },
+                    { label: "OAuth Applications", href: "/settings/oauth", icon: ShieldAlert },
+                ],
+            },
+            {
+                label: "Usage & Billing",
+                collapsible: true,
+                items: [
+                    { label: "Usage", href: "/settings/usage", icon: BarChart3 },
+                    { label: "Subscription", href: "/settings/billing", icon: CreditCard },
+                    { label: "Spike Protection", href: "/settings/project", icon: Zap },
+                    { label: "Legal & Compliance", href: "/settings/legal", icon: FileText },
                 ],
             },
         ],
@@ -240,14 +292,18 @@ export default function Sidebar() {
     const pathname = usePathname();
 
     const [hoveredSection, setHoveredSection] = useState<string | null>(null);
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     const activeSectionId = getActiveSection(pathname);
-
     const visibleSectionId = hoveredSection ?? activeSectionId;
 
     const activeSection =
         primaryNavigation.find((section) => section.id === visibleSectionId) ??
         primaryNavigation[0];
+
+    function toggleCollapse() {
+        setIsCollapsed((prev) => !prev);
+    }
 
     return (
         <aside className="halo-sidebar-shell">
@@ -273,7 +329,10 @@ export default function Sidebar() {
                             <div
                                 key={section.id}
                                 className="halo-sidebar-primary-item"
-                                onMouseEnter={() => setHoveredSection(section.id)}
+                                onMouseEnter={() => {
+                                    if (isCollapsed) setIsCollapsed(false);
+                                    setHoveredSection(section.id);
+                                }}
                             >
                                 <Link
                                     href={targetHref}
@@ -320,16 +379,18 @@ export default function Sidebar() {
                     <button
                         type="button"
                         className="halo-sidebar-utility-button"
-                        aria-label="Collapse navigation"
+                        aria-label={isCollapsed ? "Expand navigation" : "Collapse navigation"}
+                        title={isCollapsed ? "Expand navigation" : "Collapse navigation"}
+                        onClick={toggleCollapse}
                     >
-                        <ChevronLeft size={18} />
+                        {isCollapsed ? <ChevronRight size={18} /> : <ChevronLeft size={18} />}
                     </button>
                 </div>
             </div>
 
             {/* Secondary navigation */}
             <div
-                className="halo-sidebar-secondary"
+                className={`halo-sidebar-secondary${isCollapsed ? " is-collapsed" : ""}`}
                 onMouseLeave={() => setHoveredSection(null)}
             >
                 <div className="halo-sidebar-secondary-header">
@@ -338,8 +399,9 @@ export default function Sidebar() {
                     <button
                         type="button"
                         className="halo-sidebar-collapse-button"
-                        onClick={() => setHoveredSection(null)}
-                        aria-label="Close navigation"
+                        onClick={toggleCollapse}
+                        aria-label="Collapse navigation"
+                        title="Collapse sidebar"
                     >
                         <ChevronLeft size={17} />
                     </button>

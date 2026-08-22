@@ -1160,6 +1160,14 @@ HALO INVESTIGATION
     height: 100%;
     flex-direction: column;
     background: rgba(8, 12, 18, .96);
+    transition: width 0.2s ease, opacity 0.2s ease;
+    overflow: hidden;
+    opacity: 1;
+}
+
+.halo-sidebar-secondary.is-collapsed {
+    width: 0;
+    opacity: 0;
 }
 
 .halo-sidebar-secondary-header {
@@ -1333,10 +1341,46 @@ HALO INVESTIGATION
     backdrop-filter: blur(18px);
 }
 
-.halo-topbar-title {
+.halo-topbar-breadcrumbs {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    flex-wrap: nowrap;
+    overflow: hidden;
+}
+
+.halo-topbar-breadcrumb-item {
+    display: flex;
+    align-items: center;
+    gap: 0;
+    min-width: 0;
+}
+
+.halo-topbar-breadcrumb-sep {
+    color: var(--text-muted);
+    flex-shrink: 0;
+    margin: 0 3px;
+}
+
+.halo-topbar-breadcrumb-link {
+    font-size: 13px;
+    color: var(--text-muted);
+    text-decoration: none;
+    white-space: nowrap;
+    transition: color var(--transition-fast);
+}
+
+.halo-topbar-breadcrumb-link:hover {
     color: var(--text);
-    font-size: 14px;
+}
+
+.halo-topbar-breadcrumb-current {
+    font-size: 13px;
     font-weight: 600;
+    color: var(--text);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 }
 
 .halo-topbar-actions {

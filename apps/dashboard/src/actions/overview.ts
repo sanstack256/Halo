@@ -362,14 +362,17 @@ export async function getOverviewData(): Promise<OverviewData> {
     const crashFreeRate =
         totalSessions > 0
             ? Math.round(((totalSessions - crashedSessions) / totalSessions) * 1000) / 10
-            : 99.8;
+            : 100;
 
     const errorRate24h =
         allEvents24h > 0
             ? Math.round((recentErrorEvents / allEvents24h) * 1000) / 10
-            : 0.2;
+            : 0;
 
-    const apdexScore = Math.max(0.7, Math.round((1 - errorRate24h / 100) * 100) / 100);
+    const apdexScore =
+        allEvents24h === 0
+            ? 1.0
+            : Math.max(0, Math.round((1 - errorRate24h / 100) * 100) / 100);
     const apdexRating: OverviewData["systemHealth"]["apdexRating"] =
         apdexScore >= 0.94 ? "Satisfied" : apdexScore >= 0.85 ? "Tolerating" : "Frustrated";
 
@@ -391,7 +394,7 @@ export async function getOverviewData(): Promise<OverviewData> {
             apdexRating,
             errorRate24h,
             crashFreeRate,
-            impactedUsers24h: Math.round(recentErrorEvents * 4.2),
+            impactedUsers24h: recentErrorEvents,
             totalErrors24h: recentErrorEvents,
             activeServiceCount: serviceHealthList.length,
         },

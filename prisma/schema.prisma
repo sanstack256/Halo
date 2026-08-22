@@ -8,11 +8,12 @@ datasource db {
 }
 
 model Organization {
-  id        String    @id @default(cuid())
+  id        String           @id @default(cuid())
   name      String
-  slug      String    @unique
-  createdAt DateTime  @default(now())
-  updatedAt DateTime  @updatedAt
+  slug      String           @unique
+  plan      OrganizationPlan @default(FREE)
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
   projects  Project[]
   owner     User?
 }
@@ -264,4 +265,10 @@ enum IssueStatus {
   OPEN
   RESOLVED
   IGNORED
+}
+
+enum OrganizationPlan {
+  FREE
+  DEVELOPER
+  TEAM
 }

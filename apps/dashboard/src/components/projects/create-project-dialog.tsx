@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { createProject } from "@/actions/project";
 import { useRouter } from "next/navigation";
-import { Button } from "@/components/ui/button";
+import { Plus } from "lucide-react";
 
 import {
     Dialog,
@@ -18,86 +18,101 @@ export default function CreateProjectDialog() {
     const [open, setOpen] = useState(false);
     const [projectName, setProjectName] = useState("");
     const [description, setDescription] = useState("");
+    const [isCreating, setIsCreating] = useState(false);
 
     return (
         <>
-            <Button onClick={() => setOpen(true)}>
+            <button
+                type="button"
+                onClick={() => setOpen(true)}
+                className="halo-btn halo-btn-primary"
+            >
+                <Plus size={15} />
                 New Project
-            </Button>
+            </button>
 
             <Dialog open={open} onOpenChange={setOpen}>
                 <DialogContent className="max-w-lg">
                     <DialogHeader>
                         <DialogTitle>Create Project</DialogTitle>
-
                         <DialogDescription>
-                            Create a new application that will send telemetry to Halo.
+                            Create a new application to capture errors, traces, and automated root cause analysis.
                         </DialogDescription>
                     </DialogHeader>
 
-                    <div className="space-y-6 py-2">
-                        <div className="space-y-2">
+                    <div className="space-y-4 py-2">
+                        <div className="space-y-1.5">
                             <label
                                 htmlFor="project-name"
-                                className="text-sm font-medium text-zinc-200"
+                                className="block text-xs font-medium text-white"
                             >
-                                Project Name
+                                Project Name <span className="text-error">*</span>
                             </label>
 
                             <input
                                 id="project-name"
                                 type="text"
-                                placeholder="e.g. halo-api"
+                                placeholder="e.g. payment-service"
                                 value={projectName}
                                 onChange={(e) => setProjectName(e.target.value)}
-                                className="w-full rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-sm text-white outline-none transition focus:border-sky-400"
+                                className="w-full rounded-lg border border-border-strong bg-surface-elevated px-3.5 py-2.5 text-sm text-white placeholder:text-muted outline-none transition focus:border-accent"
+                                autoFocus
                             />
                         </div>
 
-                        <div className="space-y-2">
+                        <div className="space-y-1.5">
                             <label
                                 htmlFor="description"
-                                className="text-sm font-medium text-zinc-200"
+                                className="block text-xs font-medium text-white"
                             >
-                                Description
-                                <span className="ml-1 text-zinc-500">(optional)</span>
+                                Description <span className="text-secondary font-normal">(optional)</span>
                             </label>
 
                             <textarea
                                 id="description"
-                                rows={4}
-                                placeholder="Short description about this project..."
+                                rows={3}
+                                placeholder="Brief overview of this service..."
                                 value={description}
                                 onChange={(e) => setDescription(e.target.value)}
-                                className="w-full resize-none rounded-lg border border-zinc-800 bg-zinc-900 px-3 py-2.5 text-sm text-white outline-none transition focus:border-sky-400"
+                                className="w-full resize-none rounded-lg border border-border-strong bg-surface-elevated px-3.5 py-2.5 text-sm text-white placeholder:text-muted outline-none transition focus:border-accent"
                             />
                         </div>
                     </div>
-                    <div className="mt-8 flex justify-end gap-3">
-                        <Button
-                            variant="outline"
+
+                    <div className="flex justify-end gap-2.5 pt-2">
+                        <button
+                            type="button"
+                            className="halo-btn halo-btn-secondary"
                             onClick={() => setOpen(false)}
                         >
                             Cancel
-                        </Button>
+                        </button>
 
-                        <Button
-                            disabled={!projectName.trim()}
+                        <button
+                            type="button"
+                            disabled={!projectName.trim() || isCreating}
+                            className="halo-btn halo-btn-primary"
                             onClick={async () => {
-                                await createProject(
-                                    projectName.trim(),
-                                    description.trim() || undefined
-                                );
+                                setIsCreating(true);
+                                try {
+                                    await createProject(
+                                        projectName.trim(),
+                                        description.trim() || undefined
+                                    );
 
-                                setOpen(false);
-                                setProjectName("");
-                                setDescription("");
-
-                                router.refresh();
+                                    setOpen(false);
+                                    setProjectName("");
+                                    setDescription("");
+                                    router.refresh();
+                                } catch (err) {
+                                    console.error(err);
+                                } finally {
+                                    setIsCreating(false);
+                                }
                             }}
                         >
-                            Create Project
-                        </Button>
+                            {isCreating ? "Creating…" : "Create Project"}
+                        </button>
                     </div>
                 </DialogContent>
             </Dialog>
