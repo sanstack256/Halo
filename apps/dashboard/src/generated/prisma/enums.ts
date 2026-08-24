@@ -45,3 +45,15 @@ export const OrganizationPlan = {
 } as const
 
 export type OrganizationPlan = (typeof OrganizationPlan)[keyof typeof OrganizationPlan]
+
+
+export const ReplayStatus = {
+  RECORDING: 'RECORDING',
+  PROCESSING: 'PROCESSING',
+  AVAILABLE: 'AVAILABLE',
+  EXPIRED: 'EXPIRED',
+  DISABLED: 'DISABLED',
+  ERROR: 'ERROR'
+} as const
+
+export type ReplayStatus = (typeof ReplayStatus)[keyof typeof ReplayStatus]

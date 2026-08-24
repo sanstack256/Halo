@@ -1,14 +1,19 @@
-import { NextRequest, NextResponse } from "next/server";
-
+import { NextRequest } from "next/server";
 import { verifyApiKey } from "@/actions/api-key";
 import { createEvent } from "@/actions/event";
+import { handleOptions, jsonResponse } from "@/lib/cors";
+
+export async function OPTIONS(request: NextRequest) {
+    return handleOptions(request);
+}
 
 export async function POST(request: NextRequest) {
     const authorization =
         request.headers.get("authorization");
 
     if (!authorization?.startsWith("Bearer ")) {
-        return NextResponse.json(
+        return jsonResponse(
+            request,
             { error: "Missing API key" },
             { status: 401 }
         );
@@ -19,14 +24,11 @@ export async function POST(request: NextRequest) {
         ""
     );
 
-    console.log("Received API key:", apiKey);
-
     const verified = await verifyApiKey(apiKey);
 
-    console.log("Verification result:", verified);
-
     if (!verified) {
-        return NextResponse.json(
+        return jsonResponse(
+            request,
             { error: "Invalid API key" },
             { status: 401 }
         );
@@ -72,7 +74,7 @@ export async function POST(request: NextRequest) {
             verified.environment.id,
     });
 
-    return NextResponse.json({
+    return jsonResponse(request, {
         success: true,
     });
 }

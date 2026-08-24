@@ -52,6 +52,7 @@ export type ProjectCountAggregateOutputType = {
   createdAt: number
   updatedAt: number
   description: number
+  replayConfig: number
   _all: number
 }
 
@@ -84,6 +85,7 @@ export type ProjectCountAggregateInputType = {
   createdAt?: true
   updatedAt?: true
   description?: true
+  replayConfig?: true
   _all?: true
 }
 
@@ -167,6 +169,7 @@ export type ProjectGroupByOutputType = {
   createdAt: Date
   updatedAt: Date
   description: string | null
+  replayConfig: runtime.JsonValue | null
   _count: ProjectCountAggregateOutputType | null
   _min: ProjectMinAggregateOutputType | null
   _max: ProjectMaxAggregateOutputType | null
@@ -198,6 +201,7 @@ export type ProjectWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   description?: Prisma.StringNullableFilter<"Project"> | string | null
+  replayConfig?: Prisma.JsonNullableFilter<"Project">
   apiKeys?: Prisma.ApiKeyListRelationFilter
   environments?: Prisma.EnvironmentListRelationFilter
   events?: Prisma.EventListRelationFilter
@@ -205,6 +209,7 @@ export type ProjectWhereInput = {
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   telemetrySessions?: Prisma.TelemetrySessionListRelationFilter
   releases?: Prisma.ReleaseListRelationFilter
+  replaySessions?: Prisma.ReplaySessionListRelationFilter
 }
 
 export type ProjectOrderByWithRelationInput = {
@@ -215,6 +220,7 @@ export type ProjectOrderByWithRelationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  replayConfig?: Prisma.SortOrderInput | Prisma.SortOrder
   apiKeys?: Prisma.ApiKeyOrderByRelationAggregateInput
   environments?: Prisma.EnvironmentOrderByRelationAggregateInput
   events?: Prisma.EventOrderByRelationAggregateInput
@@ -222,6 +228,7 @@ export type ProjectOrderByWithRelationInput = {
   organization?: Prisma.OrganizationOrderByWithRelationInput
   telemetrySessions?: Prisma.TelemetrySessionOrderByRelationAggregateInput
   releases?: Prisma.ReleaseOrderByRelationAggregateInput
+  replaySessions?: Prisma.ReplaySessionOrderByRelationAggregateInput
 }
 
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -236,6 +243,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   description?: Prisma.StringNullableFilter<"Project"> | string | null
+  replayConfig?: Prisma.JsonNullableFilter<"Project">
   apiKeys?: Prisma.ApiKeyListRelationFilter
   environments?: Prisma.EnvironmentListRelationFilter
   events?: Prisma.EventListRelationFilter
@@ -243,6 +251,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
   telemetrySessions?: Prisma.TelemetrySessionListRelationFilter
   releases?: Prisma.ReleaseListRelationFilter
+  replaySessions?: Prisma.ReplaySessionListRelationFilter
 }, "id" | "organizationId_slug">
 
 export type ProjectOrderByWithAggregationInput = {
@@ -253,6 +262,7 @@ export type ProjectOrderByWithAggregationInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   description?: Prisma.SortOrderInput | Prisma.SortOrder
+  replayConfig?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ProjectCountOrderByAggregateInput
   _max?: Prisma.ProjectMaxOrderByAggregateInput
   _min?: Prisma.ProjectMinOrderByAggregateInput
@@ -269,6 +279,7 @@ export type ProjectScalarWhereWithAggregatesInput = {
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Project"> | Date | string
   description?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
+  replayConfig?: Prisma.JsonNullableWithAggregatesFilter<"Project">
 }
 
 export type ProjectCreateInput = {
@@ -278,6 +289,7 @@ export type ProjectCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
@@ -285,6 +297,7 @@ export type ProjectCreateInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateInput = {
@@ -295,12 +308,14 @@ export type ProjectUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUpdateInput = {
@@ -310,6 +325,7 @@ export type ProjectUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
@@ -317,6 +333,7 @@ export type ProjectUpdateInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateInput = {
@@ -327,12 +344,14 @@ export type ProjectUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyInput = {
@@ -343,6 +362,7 @@ export type ProjectCreateManyInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ProjectUpdateManyMutationInput = {
@@ -352,6 +372,7 @@ export type ProjectUpdateManyMutationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ProjectUncheckedUpdateManyInput = {
@@ -362,6 +383,7 @@ export type ProjectUncheckedUpdateManyInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ProjectListRelationFilter = {
@@ -387,6 +409,7 @@ export type ProjectCountOrderByAggregateInput = {
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   description?: Prisma.SortOrder
+  replayConfig?: Prisma.SortOrder
 }
 
 export type ProjectMaxOrderByAggregateInput = {
@@ -544,6 +567,20 @@ export type ProjectUpdateOneRequiredWithoutIssuesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutIssuesInput, Prisma.ProjectUpdateWithoutIssuesInput>, Prisma.ProjectUncheckedUpdateWithoutIssuesInput>
 }
 
+export type ProjectCreateNestedOneWithoutReplaySessionsInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutReplaySessionsInput, Prisma.ProjectUncheckedCreateWithoutReplaySessionsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutReplaySessionsInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneRequiredWithoutReplaySessionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutReplaySessionsInput, Prisma.ProjectUncheckedCreateWithoutReplaySessionsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutReplaySessionsInput
+  upsert?: Prisma.ProjectUpsertWithoutReplaySessionsInput
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutReplaySessionsInput, Prisma.ProjectUpdateWithoutReplaySessionsInput>, Prisma.ProjectUncheckedUpdateWithoutReplaySessionsInput>
+}
+
 export type ProjectCreateWithoutOrganizationInput = {
   id?: string
   name: string
@@ -551,12 +588,14 @@ export type ProjectCreateWithoutOrganizationInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
   telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutOrganizationInput = {
@@ -566,12 +605,14 @@ export type ProjectUncheckedCreateWithoutOrganizationInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutOrganizationInput = {
@@ -611,6 +652,7 @@ export type ProjectScalarWhereInput = {
   createdAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Project"> | Date | string
   description?: Prisma.StringNullableFilter<"Project"> | string | null
+  replayConfig?: Prisma.JsonNullableFilter<"Project">
 }
 
 export type ProjectCreateWithoutEnvironmentsInput = {
@@ -620,12 +662,14 @@ export type ProjectCreateWithoutEnvironmentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
@@ -636,11 +680,13 @@ export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutEnvironmentsInput = {
@@ -666,12 +712,14 @@ export type ProjectUpdateWithoutEnvironmentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
@@ -682,11 +730,13 @@ export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutApiKeysInput = {
@@ -696,12 +746,14 @@ export type ProjectCreateWithoutApiKeysInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutApiKeysInput = {
@@ -712,11 +764,13 @@ export type ProjectUncheckedCreateWithoutApiKeysInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutApiKeysInput = {
@@ -742,12 +796,14 @@ export type ProjectUpdateWithoutApiKeysInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutApiKeysInput = {
@@ -758,11 +814,13 @@ export type ProjectUncheckedUpdateWithoutApiKeysInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutEventsInput = {
@@ -772,12 +830,14 @@ export type ProjectCreateWithoutEventsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutEventsInput = {
@@ -788,11 +848,13 @@ export type ProjectUncheckedCreateWithoutEventsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutEventsInput = {
@@ -818,12 +880,14 @@ export type ProjectUpdateWithoutEventsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutEventsInput = {
@@ -834,11 +898,13 @@ export type ProjectUncheckedUpdateWithoutEventsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutTelemetrySessionsInput = {
@@ -848,12 +914,14 @@ export type ProjectCreateWithoutTelemetrySessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutTelemetrySessionsInput = {
@@ -864,11 +932,13 @@ export type ProjectUncheckedCreateWithoutTelemetrySessionsInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutTelemetrySessionsInput = {
@@ -894,12 +964,14 @@ export type ProjectUpdateWithoutTelemetrySessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutTelemetrySessionsInput = {
@@ -910,11 +982,13 @@ export type ProjectUncheckedUpdateWithoutTelemetrySessionsInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutReleasesInput = {
@@ -924,12 +998,14 @@ export type ProjectCreateWithoutReleasesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutReleasesInput = {
@@ -940,11 +1016,13 @@ export type ProjectUncheckedCreateWithoutReleasesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutReleasesInput = {
@@ -970,12 +1048,14 @@ export type ProjectUpdateWithoutReleasesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutReleasesInput = {
@@ -986,11 +1066,13 @@ export type ProjectUncheckedUpdateWithoutReleasesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutIssuesInput = {
@@ -1000,12 +1082,14 @@ export type ProjectCreateWithoutIssuesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
   telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutIssuesInput = {
@@ -1016,11 +1100,13 @@ export type ProjectUncheckedCreateWithoutIssuesInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutIssuesInput = {
@@ -1046,12 +1132,14 @@ export type ProjectUpdateWithoutIssuesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutIssuesInput = {
@@ -1062,9 +1150,95 @@ export type ProjectUncheckedUpdateWithoutIssuesInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
+  releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutReplaySessionsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
+  environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
+  events?: Prisma.EventCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
+  releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutReplaySessionsInput = {
+  id?: string
+  name: string
+  slug: string
+  organizationId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
+  environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
+  releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutReplaySessionsInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutReplaySessionsInput, Prisma.ProjectUncheckedCreateWithoutReplaySessionsInput>
+}
+
+export type ProjectUpsertWithoutReplaySessionsInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutReplaySessionsInput, Prisma.ProjectUncheckedUpdateWithoutReplaySessionsInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutReplaySessionsInput, Prisma.ProjectUncheckedCreateWithoutReplaySessionsInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutReplaySessionsInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutReplaySessionsInput, Prisma.ProjectUncheckedUpdateWithoutReplaySessionsInput>
+}
+
+export type ProjectUpdateWithoutReplaySessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
+  environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
+  events?: Prisma.EventUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
+  releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutReplaySessionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
+  environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
+  events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
 }
@@ -1076,6 +1250,7 @@ export type ProjectCreateManyOrganizationInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 export type ProjectUpdateWithoutOrganizationInput = {
@@ -1085,12 +1260,14 @@ export type ProjectUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutOrganizationInput = {
@@ -1100,12 +1277,14 @@ export type ProjectUncheckedUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
   telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1115,6 +1294,7 @@ export type ProjectUncheckedUpdateManyWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
 }
 
 
@@ -1129,6 +1309,7 @@ export type ProjectCountOutputType = {
   issues: number
   telemetrySessions: number
   releases: number
+  replaySessions: number
 }
 
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1138,6 +1319,7 @@ export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   issues?: boolean | ProjectCountOutputTypeCountIssuesArgs
   telemetrySessions?: boolean | ProjectCountOutputTypeCountTelemetrySessionsArgs
   releases?: boolean | ProjectCountOutputTypeCountReleasesArgs
+  replaySessions?: boolean | ProjectCountOutputTypeCountReplaySessionsArgs
 }
 
 /**
@@ -1192,6 +1374,13 @@ export type ProjectCountOutputTypeCountReleasesArgs<ExtArgs extends runtime.Type
   where?: Prisma.ReleaseWhereInput
 }
 
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountReplaySessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ReplaySessionWhereInput
+}
+
 
 export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1201,6 +1390,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   createdAt?: boolean
   updatedAt?: boolean
   description?: boolean
+  replayConfig?: boolean
   apiKeys?: boolean | Prisma.Project$apiKeysArgs<ExtArgs>
   environments?: boolean | Prisma.Project$environmentsArgs<ExtArgs>
   events?: boolean | Prisma.Project$eventsArgs<ExtArgs>
@@ -1208,6 +1398,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   telemetrySessions?: boolean | Prisma.Project$telemetrySessionsArgs<ExtArgs>
   releases?: boolean | Prisma.Project$releasesArgs<ExtArgs>
+  replaySessions?: boolean | Prisma.Project$replaySessionsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -1219,6 +1410,7 @@ export type ProjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   createdAt?: boolean
   updatedAt?: boolean
   description?: boolean
+  replayConfig?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -1230,6 +1422,7 @@ export type ProjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   createdAt?: boolean
   updatedAt?: boolean
   description?: boolean
+  replayConfig?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -1241,9 +1434,10 @@ export type ProjectSelectScalar = {
   createdAt?: boolean
   updatedAt?: boolean
   description?: boolean
+  replayConfig?: boolean
 }
 
-export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "organizationId" | "createdAt" | "updatedAt" | "description", ExtArgs["result"]["project"]>
+export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "organizationId" | "createdAt" | "updatedAt" | "description" | "replayConfig", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   apiKeys?: boolean | Prisma.Project$apiKeysArgs<ExtArgs>
   environments?: boolean | Prisma.Project$environmentsArgs<ExtArgs>
@@ -1252,6 +1446,7 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
   telemetrySessions?: boolean | Prisma.Project$telemetrySessionsArgs<ExtArgs>
   releases?: boolean | Prisma.Project$releasesArgs<ExtArgs>
+  replaySessions?: boolean | Prisma.Project$replaySessionsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1271,6 +1466,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     organization: Prisma.$OrganizationPayload<ExtArgs>
     telemetrySessions: Prisma.$TelemetrySessionPayload<ExtArgs>[]
     releases: Prisma.$ReleasePayload<ExtArgs>[]
+    replaySessions: Prisma.$ReplaySessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1280,6 +1476,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     createdAt: Date
     updatedAt: Date
     description: string | null
+    replayConfig: runtime.JsonValue | null
   }, ExtArgs["result"]["project"]>
   composites: {}
 }
@@ -1681,6 +1878,7 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   telemetrySessions<T extends Prisma.Project$telemetrySessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$telemetrySessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TelemetrySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   releases<T extends Prisma.Project$releasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$releasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReleasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  replaySessions<T extends Prisma.Project$replaySessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$replaySessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReplaySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1717,6 +1915,7 @@ export interface ProjectFieldRefs {
   readonly createdAt: Prisma.FieldRef<"Project", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Project", 'DateTime'>
   readonly description: Prisma.FieldRef<"Project", 'String'>
+  readonly replayConfig: Prisma.FieldRef<"Project", 'Json'>
 }
     
 
@@ -2259,6 +2458,30 @@ export type Project$releasesArgs<ExtArgs extends runtime.Types.Extensions.Intern
   take?: number
   skip?: number
   distinct?: Prisma.ReleaseScalarFieldEnum | Prisma.ReleaseScalarFieldEnum[]
+}
+
+/**
+ * Project.replaySessions
+ */
+export type Project$replaySessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ReplaySession
+   */
+  select?: Prisma.ReplaySessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ReplaySession
+   */
+  omit?: Prisma.ReplaySessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ReplaySessionInclude<ExtArgs> | null
+  where?: Prisma.ReplaySessionWhereInput
+  orderBy?: Prisma.ReplaySessionOrderByWithRelationInput | Prisma.ReplaySessionOrderByWithRelationInput[]
+  cursor?: Prisma.ReplaySessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ReplaySessionScalarFieldEnum | Prisma.ReplaySessionScalarFieldEnum[]
 }
 
 /**

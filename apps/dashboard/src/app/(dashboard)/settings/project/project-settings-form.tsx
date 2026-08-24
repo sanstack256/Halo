@@ -20,6 +20,11 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
     const [spikeProtection, setSpikeProtection] = useState(true);
     const [autoResolveDays, setAutoResolveDays] = useState("14");
     const [allowedOrigins, setAllowedOrigins] = useState("http://localhost:3000\nhttps://myapp.com");
+    const [replayEnabled, setReplayEnabled] = useState(true);
+    const [samplingRate, setSamplingRate] = useState(100);
+    const [errorTriggered, setErrorTriggered] = useState(true);
+    const [maskAllText, setMaskAllText] = useState(true);
+    const [ignoreUrls, setIgnoreUrls] = useState("");
     const [isSaving, setIsSaving] = useState(false);
     const [savedSuccess, setSavedSuccess] = useState(false);
 
@@ -155,6 +160,116 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
                         <option value="14">14 days</option>
                         <option value="30">30 days</option>
                     </select>
+                </div>
+            </div>
+
+            {/* SESSION REPLAY CONFIGURATION */}
+            <div className="halo-card p-6 space-y-5">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                    <h2 className="text-xs font-semibold uppercase tracking-wider text-muted">
+                        Session Replay Configuration
+                    </h2>
+                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-accent/10 text-accent font-semibold border border-accent/20">
+                        rrweb Engine
+                    </span>
+                </div>
+
+                <div className="space-y-4">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <p className="text-sm font-medium text-white">Enable Browser Session Recording</p>
+                            <p className="text-xs text-secondary mt-0.5">
+                                Capture DOM mutations, user clicks, and network requests leading up to frontend errors.
+                            </p>
+                        </div>
+                        <button
+                            type="button"
+                            onClick={() => setReplayEnabled(!replayEnabled)}
+                            className={`w-11 h-6 rounded-full transition-colors relative flex items-center px-0.5 ${
+                                replayEnabled ? "bg-accent" : "bg-surface-elevated border border-border-strong"
+                            }`}
+                        >
+                            <span
+                                className={`w-5 h-5 rounded-full bg-white transition-transform ${
+                                    replayEnabled ? "translate-x-5" : "translate-x-0"
+                                }`}
+                            />
+                        </button>
+                    </div>
+
+                    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2">
+                        <div>
+                            <label className="block text-xs font-medium text-white mb-1">
+                                Sampling Rate ({samplingRate}%)
+                            </label>
+                            <input
+                                type="range"
+                                min="0"
+                                max="100"
+                                step="5"
+                                value={samplingRate}
+                                onChange={(e) => setSamplingRate(parseInt(e.target.value))}
+                                className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-accent"
+                            />
+                            <p className="text-[11px] text-muted mt-1">
+                                Fraction of non-error user sessions recorded continuously.
+                            </p>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-medium text-white mb-1">
+                                Error-Triggered Preservation
+                            </label>
+                            <select
+                                value={errorTriggered ? "enabled" : "disabled"}
+                                onChange={(e) => setErrorTriggered(e.target.value === "enabled")}
+                                className="w-full px-3 py-2 rounded-lg border border-border-strong bg-surface-elevated text-xs text-white focus:outline-none focus:border-accent"
+                            >
+                                <option value="enabled">Preserve Pre-Error Buffer (60s)</option>
+                                <option value="disabled">Record Sampled Only</option>
+                            </select>
+                            <p className="text-[11px] text-muted mt-1">
+                                Guarantees replay capture whenever an unhandled exception occurs.
+                            </p>
+                        </div>
+                    </div>
+
+                    <div className="pt-2 border-t border-border space-y-3">
+                        <div className="flex items-center justify-between">
+                            <div>
+                                <p className="text-xs font-medium text-white">Mask All User Text</p>
+                                <p className="text-[11px] text-secondary">
+                                    Replaces all rendered alphanumeric text with asterisks for complete privacy.
+                                </p>
+                            </div>
+                            <button
+                                type="button"
+                                onClick={() => setMaskAllText(!maskAllText)}
+                                className={`w-9 h-5 rounded-full transition-colors relative flex items-center px-0.5 ${
+                                    maskAllText ? "bg-accent" : "bg-surface-elevated border border-border-strong"
+                                }`}
+                            >
+                                <span
+                                    className={`w-4 h-4 rounded-full bg-white transition-transform ${
+                                        maskAllText ? "translate-x-4" : "translate-x-0"
+                                    }`}
+                                />
+                            </button>
+                        </div>
+
+                        <div>
+                            <label className="block text-xs font-medium text-white mb-1">
+                                Excluded URLs (Do not record)
+                            </label>
+                            <input
+                                type="text"
+                                value={ignoreUrls}
+                                onChange={(e) => setIgnoreUrls(e.target.value)}
+                                placeholder="/admin/sensitive, /billing/cards"
+                                className="w-full px-3 py-2 rounded-lg border border-border-strong bg-surface-elevated text-xs text-white font-mono focus:outline-none focus:border-accent transition-colors"
+                            />
+                        </div>
+                    </div>
                 </div>
             </div>
 

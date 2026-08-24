@@ -60,6 +60,16 @@ export async function getIssues(
     });
 }
 
+export async function updateIssueStatus(
+    issueId: string,
+    status: "OPEN" | "RESOLVED" | "IGNORED"
+) {
+    return prisma.issue.update({
+        where: { id: issueId },
+        data: { status },
+    });
+}
+
 export async function getAllOrgIssues(filters?: {
     status?: "OPEN" | "RESOLVED" | "IGNORED";
     severity?: "FATAL" | "ERROR" | "WARNING" | "INFO";

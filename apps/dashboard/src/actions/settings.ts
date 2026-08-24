@@ -61,4 +61,29 @@ export async function revokeApiKey(keyId: string) {
     });
 
     revalidatePath("/settings");
+    return { success: true };
+}
+
+export async function getUserPlan() {
+    try {
+        const session = await getSession();
+        if (!session?.user?.id) return { planId: "FREE", planName: "Free Plan" };
+
+        const organization = await getOrganization(session.user.id);
+        if (!organization) return { planId: "FREE", planName: "Free Plan" };
+
+        const plan = (organization as any).plan || "FREE";
+        const nameMap: Record<string, string> = {
+            FREE: "Free Plan",
+            DEVELOPER: "Developer Plan",
+            TEAM: "Team Plan",
+        };
+
+        return {
+            planId: plan,
+            planName: nameMap[plan] || "Developer Plan",
+        };
+    } catch {
+        return { planId: "FREE", planName: "Free Plan" };
+    }
 }

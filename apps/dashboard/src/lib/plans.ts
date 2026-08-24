@@ -21,6 +21,12 @@ export type PlanLimits = {
     maxAiInvestigationsPerMonth: number | null;
     /** Maximum Autofix usages per month (null = unlimited) */
     maxAutofixPerMonth: number | null;
+    /** Maximum Session Replay sessions per month (null = unlimited) */
+    maxReplaySessionsPerMonth: number | null;
+    /** Replay retention window in days */
+    replayRetentionDays: number;
+    /** Pre-error capture buffer in seconds */
+    maxPreErrorBufferSeconds: number;
 };
 
 export type PlanFeatures = {
@@ -74,6 +80,8 @@ export type PlanFeatures = {
     advancedNotifications: boolean;
     /** Organization-wide analytics */
     orgAnalytics: boolean;
+    /** Session Replay — browser session recording */
+    sessionReplay: boolean;
 };
 
 export type Plan = {
@@ -103,6 +111,9 @@ export const PLANS: Record<PlanId, Plan> = {
             retentionDays: 7,
             maxAiInvestigationsPerMonth: 5,
             maxAutofixPerMonth: 0,
+            maxReplaySessionsPerMonth: 0,
+            replayRetentionDays: 0,
+            maxPreErrorBufferSeconds: 0,
         },
         features: {
             errors: true,
@@ -130,6 +141,7 @@ export const PLANS: Record<PlanId, Plan> = {
             customIntegrations: false,
             advancedNotifications: false,
             orgAnalytics: false,
+            sessionReplay: false,
         },
     },
 
@@ -146,6 +158,9 @@ export const PLANS: Record<PlanId, Plan> = {
             retentionDays: 30,
             maxAiInvestigationsPerMonth: null, // unlimited
             maxAutofixPerMonth: 100,
+            maxReplaySessionsPerMonth: 500,
+            replayRetentionDays: 30,
+            maxPreErrorBufferSeconds: 60,
         },
         features: {
             errors: true,
@@ -173,6 +188,7 @@ export const PLANS: Record<PlanId, Plan> = {
             customIntegrations: false,
             advancedNotifications: false,
             orgAnalytics: false,
+            sessionReplay: true,
         },
     },
 
@@ -188,6 +204,9 @@ export const PLANS: Record<PlanId, Plan> = {
             retentionDays: 90,
             maxAiInvestigationsPerMonth: null, // unlimited
             maxAutofixPerMonth: null, // unlimited
+            maxReplaySessionsPerMonth: null, // unlimited
+            replayRetentionDays: 90,
+            maxPreErrorBufferSeconds: 120,
         },
         features: {
             errors: true,
@@ -215,6 +234,7 @@ export const PLANS: Record<PlanId, Plan> = {
             customIntegrations: true,
             advancedNotifications: true,
             orgAnalytics: true,
+            sessionReplay: true,
         },
     },
 };

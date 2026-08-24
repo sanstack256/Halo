@@ -174,6 +174,7 @@ export async function getProjectHeader(projectId: string) {
       id: true,
       name: true,
       description: true,
+      organizationId: true,
     },
   });
 }

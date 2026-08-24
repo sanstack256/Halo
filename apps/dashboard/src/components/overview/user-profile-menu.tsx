@@ -13,9 +13,11 @@ import {
     Check,
 } from "lucide-react";
 import { authClient } from "@/lib/auth-client";
+import { getUserPlan } from "@/actions/settings";
 
 export function UserProfileMenu() {
     const { data: session, isPending } = authClient.useSession();
+    const [planName, setPlanName] = useState("Developer Plan");
     const [isOpen, setIsOpen] = useState(false);
     const router = useRouter();
     const menuRef = useRef<HTMLDivElement>(null);
@@ -24,6 +26,14 @@ export function UserProfileMenu() {
     const name = user?.name || user?.email?.split("@")[0] || "Developer";
     const email = user?.email || "";
     const initial = name.charAt(0).toUpperCase();
+
+    useEffect(() => {
+        getUserPlan().then((res) => {
+            if (res?.planName) {
+                setPlanName(res.planName);
+            }
+        });
+    }, []);
 
     useEffect(() => {
         function handleClickOutside(event: MouseEvent) {
@@ -61,7 +71,7 @@ export function UserProfileMenu() {
                         </div>
                         <div className="text-[11px] text-muted flex items-center gap-1.5 mt-0.5">
                             <span className="inline-block w-1.5 h-1.5 rounded-full bg-emerald-400" />
-                            Pro Plan
+                            {planName}
                         </div>
                     </div>
                 </div>

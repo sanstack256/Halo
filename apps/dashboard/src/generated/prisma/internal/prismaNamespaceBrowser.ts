@@ -62,7 +62,9 @@ export const ModelName = {
   User: 'User',
   Session: 'Session',
   Account: 'Account',
-  Verification: 'Verification'
+  Verification: 'Verification',
+  ReplaySession: 'ReplaySession',
+  ReplayChunk: 'ReplayChunk'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -100,7 +102,8 @@ export const ProjectScalarFieldEnum = {
   organizationId: 'organizationId',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
-  description: 'description'
+  description: 'description',
+  replayConfig: 'replayConfig'
 } as const
 
 export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -275,6 +278,50 @@ export const VerificationScalarFieldEnum = {
 export type VerificationScalarFieldEnum = (typeof VerificationScalarFieldEnum)[keyof typeof VerificationScalarFieldEnum]
 
 
+export const ReplaySessionScalarFieldEnum = {
+  id: 'id',
+  sessionId: 'sessionId',
+  projectId: 'projectId',
+  environmentId: 'environmentId',
+  issueId: 'issueId',
+  traceId: 'traceId',
+  requestId: 'requestId',
+  browser: 'browser',
+  os: 'os',
+  device: 'device',
+  url: 'url',
+  userAgent: 'userAgent',
+  viewportWidth: 'viewportWidth',
+  viewportHeight: 'viewportHeight',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  errorAt: 'errorAt',
+  status: 'status',
+  totalDurationMs: 'totalDurationMs',
+  chunkCount: 'chunkCount',
+  expiresAt: 'expiresAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ReplaySessionScalarFieldEnum = (typeof ReplaySessionScalarFieldEnum)[keyof typeof ReplaySessionScalarFieldEnum]
+
+
+export const ReplayChunkScalarFieldEnum = {
+  id: 'id',
+  replaySessionId: 'replaySessionId',
+  sequence: 'sequence',
+  events: 'events',
+  startedAt: 'startedAt',
+  endedAt: 'endedAt',
+  eventCount: 'eventCount',
+  sizeBytes: 'sizeBytes',
+  createdAt: 'createdAt'
+} as const
+
+export type ReplayChunkScalarFieldEnum = (typeof ReplayChunkScalarFieldEnum)[keyof typeof ReplayChunkScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -291,20 +338,19 @@ export const NullableJsonNullValueInput = {
 export type NullableJsonNullValueInput = (typeof NullableJsonNullValueInput)[keyof typeof NullableJsonNullValueInput]
 
 
+export const JsonNullValueInput = {
+  JsonNull: JsonNull
+} as const
+
+export type JsonNullValueInput = (typeof JsonNullValueInput)[keyof typeof JsonNullValueInput]
+
+
 export const QueryMode = {
   default: 'default',
   insensitive: 'insensitive'
 } as const
 
 export type QueryMode = (typeof QueryMode)[keyof typeof QueryMode]
-
-
-export const NullsOrder = {
-  first: 'first',
-  last: 'last'
-} as const
-
-export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
 export const JsonNullValueFilter = {
@@ -314,4 +360,12 @@ export const JsonNullValueFilter = {
 } as const
 
 export type JsonNullValueFilter = (typeof JsonNullValueFilter)[keyof typeof JsonNullValueFilter]
+
+
+export const NullsOrder = {
+  first: 'first',
+  last: 'last'
+} as const
+
+export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 

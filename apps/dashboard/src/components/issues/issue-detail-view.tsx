@@ -5,23 +5,30 @@ import Link from "next/link";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { BackButton } from "@/components/ui/back-button";
 import {
+    Activity,
+    AlertCircle,
     Archive,
+    ArrowUpRight,
     Check,
     ChevronDown,
-    Code2,
+    Clock,
     Copy,
     ExternalLink,
-    FileCode,
+    Filter,
     GitBranch,
-    MessageSquare,
+    Layers,
     Play,
-    RotateCcw,
     Send,
-    Share2,
+    ShieldAlert,
     Sparkles,
+    Tag,
     Terminal,
     User,
+    Wifi,
+    Zap,
 } from "lucide-react";
+import { ReplayPlayerClient } from "@/components/replay/replay-player-client";
+import { ReplayStatus } from "@/components/replay/replay-status";
 
 type EventItem = {
     id: string;
@@ -51,15 +58,17 @@ type IssueDetailProps = {
         projectId: string;
         events: EventItem[];
     };
+    replaySession?: any | null;
+    hasReplayAccess?: boolean;
 };
 
-export function IssueDetailView({ issue }: IssueDetailProps) {
+export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }: IssueDetailProps) {
     const [status, setStatus] = useState(issue.status);
     const [assignee, setAssignee] = useState("Unassigned");
     const [priority, setPriority] = useState("High");
-    const [activeTab, setActiveTab] = useState<"recommended" | "all">("recommended");
+    const [selectedTab, setSelectedTab] = useState<"tags" | "contexts" | "breadcrumbs">("tags");
+    const [selectedEnvironment, setSelectedEnvironment] = useState<string>("all");
     const [copiedStack, setCopiedStack] = useState(false);
-    const [isPlayingReplay, setIsPlayingReplay] = useState(false);
     const [commentText, setCommentText] = useState("");
     const [comments, setComments] = useState<Array<{ id: string; text: string; date: Date }>>([
         {
@@ -201,51 +210,17 @@ export function IssueDetailView({ issue }: IssueDetailProps) {
                         </div>
                     </div>
 
-                    {/* Session Replay / Timeline Scrubber (Image 4 feature) */}
-                    <div className="halo-card p-5 space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-white font-semibold text-sm">
-                                <Play size={16} className="text-accent" />
-                                Session Replay & Player Scrubber
-                            </div>
-                            <button
-                                type="button"
-                                onClick={() => setIsPlayingReplay(!isPlayingReplay)}
-                                className="halo-btn halo-btn-sm halo-btn-secondary"
-                            >
-                                {isPlayingReplay ? "Pause Replay" : "Start Replay"}
-                            </button>
-                        </div>
-
-                        {/* Video Player Frame */}
-                        <div className="relative aspect-video rounded-xl bg-black/80 border border-border flex flex-col items-center justify-center p-6 text-center overflow-hidden">
-                            {isPlayingReplay ? (
-                                <div className="space-y-2 animate-pulse">
-                                    <div className="text-xs font-mono text-emerald-400">Replaying session recording...</div>
-                                    <div className="text-xs text-muted font-mono">[00:04] DOM Mutation &rarr; Exception triggered in handleRequest()</div>
-                                </div>
-                            ) : (
-                                <div className="space-y-3">
-                                    <div className="w-12 h-12 rounded-full bg-accent/20 border border-accent/40 flex items-center justify-center text-accent mx-auto">
-                                        <Play size={20} className="ml-0.5" />
-                                    </div>
-                                    <p className="text-xs text-secondary max-w-sm">
-                                        Click Play to watch DOM mutations, click events, and console logs leading up to this exception.
-                                    </p>
-                                </div>
-                            )}
-
-                            {/* Scrubber Timeline Bar */}
-                            <div className="absolute bottom-3 left-4 right-4 flex items-center gap-3">
-                                <span className="text-[10px] font-mono text-muted">00:00</span>
-                                <div className="flex-1 h-1.5 rounded-full bg-surface-elevated relative cursor-pointer">
-                                    <div className="absolute left-0 top-0 bottom-0 w-1/3 bg-accent rounded-full" />
-                                    <div className="absolute left-1/3 top-1/2 -translate-y-1/2 w-3 h-3 rounded-full bg-white border border-accent" />
-                                </div>
-                                <span className="text-[10px] font-mono text-muted">00:12</span>
-                            </div>
-                        </div>
-                    </div>
+                    {/* Real Session Replay Player or Status */}
+                    {!hasReplayAccess ? (
+                        <ReplayStatus status="PLAN_REQUIRED" projectId={issue.projectId} />
+                    ) : replaySession ? (
+                        <ReplayPlayerClient
+                            replaySession={replaySession}
+                            issueTitle={issue.title}
+                        />
+                    ) : (
+                        <ReplayStatus status="NO_REPLAY" projectId={issue.projectId} />
+                    )}
 
                     {/* Highlights Card (Image 5 style) */}
                     <div className="halo-card p-5 space-y-3">

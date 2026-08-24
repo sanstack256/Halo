@@ -26,6 +26,7 @@ model Project {
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   description       String?
+  replayConfig      Json?
   apiKeys           ApiKey[]
   environments      Environment[]
   events            Event[]
@@ -33,6 +34,7 @@ model Project {
   organization      Organization       @relation(fields: [organizationId], references: [id])
   telemetrySessions TelemetrySession[]
   releases          Release[]
+  replaySessions    ReplaySession[]
 
   @@unique([organizationId, slug])
 }
@@ -180,6 +182,7 @@ model Issue {
   lastEventId String?
   events      Event[]
   project     Project       @relation(fields: [projectId], references: [id])
+  replaySessions ReplaySession[]
 
   @@unique([projectId, fingerprint])
 }
@@ -271,4 +274,66 @@ enum OrganizationPlan {
   FREE
   DEVELOPER
   TEAM
+}
+
+model ReplaySession {
+  id              String              @id @default(cuid())
+  sessionId       String              @unique
+  projectId       String
+  environmentId   String
+  issueId         String?
+  traceId         String?
+  requestId       String?
+  browser         String?
+  os              String?
+  device          String?
+  url             String?
+  userAgent       String?
+  viewportWidth   Int?
+  viewportHeight  Int?
+  startedAt       DateTime
+  endedAt         DateTime?
+  errorAt         DateTime?
+  status          ReplayStatus        @default(RECORDING)
+  totalDurationMs Int?
+  chunkCount      Int                 @default(0)
+  expiresAt       DateTime?
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  project         Project             @relation(fields: [projectId], references: [id])
+  issue           Issue?              @relation(fields: [issueId], references: [id])
+  chunks          ReplayChunk[]
+
+  @@index([projectId, startedAt])
+  @@index([projectId, status])
+  @@index([issueId])
+  @@index([sessionId])
+  @@index([expiresAt])
+}
+
+model ReplayChunk {
+  id              String        @id @default(cuid())
+  replaySessionId String
+  sequence        Int
+  events          Json
+  startedAt       DateTime
+  endedAt         DateTime
+  eventCount      Int
+  sizeBytes       Int
+  createdAt       DateTime      @default(now())
+
+  replaySession   ReplaySession @relation(fields: [replaySessionId], references: [id], onDelete: Cascade)
+
+  @@unique([replaySessionId, sequence])
+  @@index([replaySessionId, sequence])
+}
+
+enum ReplayStatus {
+  RECORDING
+  PROCESSING
+  AVAILABLE
+  EXPIRED
+  DISABLED
+  ERROR
 }

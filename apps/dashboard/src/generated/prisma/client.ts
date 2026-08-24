@@ -101,3 +101,13 @@ export type Account = Prisma.AccountModel
  * 
  */
 export type Verification = Prisma.VerificationModel
+/**
+ * Model ReplaySession
+ * 
+ */
+export type ReplaySession = Prisma.ReplaySessionModel
+/**
+ * Model ReplayChunk
+ * 
+ */
+export type ReplayChunk = Prisma.ReplayChunkModel

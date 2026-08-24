@@ -17,6 +17,11 @@ type Props = {
     }>;
 };
 
+import { NoEventsInvestigationModal } from "./no-events-modal";
+import { getReplaySessionForIssue } from "@/actions/replay";
+import { ReplayPlayerClient } from "@/components/replay/replay-player-client";
+import { ReplayStatus } from "@/components/replay/replay-status";
+
 export default async function InvestigationPage({
     params,
     searchParams,
@@ -26,29 +31,34 @@ export default async function InvestigationPage({
 
     if (!issueId) {
         return (
-            <div className="halo-empty-state">
-                <h1 className="halo-empty-state-title">
-                    No issue selected
-                </h1>
-
-                <p className="halo-empty-state-description">
-                    Select an issue to investigate.
-                </p>
-            </div>
+            <NoEventsInvestigationModal
+                projectId={id}
+                errorMessage="Please select an active issue to start an investigation."
+            />
         );
     }
 
-    const investigation =
-        await investigateIssue(
-            issueId,
-            id
+    try {
+        const [investigation, replaySession] = await Promise.all([
+            investigateIssue(issueId, id),
+            getReplaySessionForIssue(issueId),
+        ]);
+        return (
+            <InvestigationView
+                investigation={investigation}
+                replaySession={replaySession}
+                projectId={id}
+            />
         );
-
-    return (
-        <InvestigationView
-            investigation={investigation}
-        />
-    );
+    } catch (error) {
+        const message = error instanceof Error ? error.message : "Failed to run investigation.";
+        return (
+            <NoEventsInvestigationModal
+                projectId={id}
+                errorMessage={message}
+            />
+        );
+    }
 }
 
 /* -------------------------------------------------------------------------- */
@@ -57,8 +67,12 @@ export default async function InvestigationPage({
 
 function InvestigationView({
     investigation,
+    replaySession,
+    projectId,
 }: {
     investigation: Investigation;
+    replaySession?: any | null;
+    projectId: string;
 }) {
     const {
         status,
@@ -201,6 +215,81 @@ function InvestigationView({
                     </div>
                 </section>
             )}
+
+            {/* User Session Replay */}
+            <section className="halo-section">
+                <SectionHeading
+                    title="User Session Replay"
+                    description="Reconstructed browser DOM interactions, mouse clicks, and network requests correlated directly with this failure."
+                />
+
+                {replaySession ? (
+                    <div className="space-y-4">
+                        {/* Correlated Evidence Chain */}
+                        <div className="p-3.5 rounded-xl bg-surface-elevated border border-border flex flex-wrap items-center gap-2 text-xs">
+                            <span className="text-muted uppercase text-[10px] font-semibold tracking-wider mr-1">
+                                Correlated Evidence Flow:
+                            </span>
+                            <div className="flex items-center gap-1 text-accent font-medium">
+                                <span>User Interaction</span>
+                            </div>
+                            <span className="text-muted font-mono">→</span>
+                            {replaySession.url && (
+                                <>
+                                    <div className="flex items-center gap-1 text-blue-400 font-mono text-[11px]">
+                                        <span>{replaySession.url.replace(/^https?:\/\/[^/]+/, '') || '/'}</span>
+                                    </div>
+                                    <span className="text-muted font-mono">→</span>
+                                </>
+                            )}
+                            {replaySession.traceId && (
+                                <>
+                                    <div className="flex items-center gap-1 text-purple-400 font-mono text-[11px]">
+                                        <span>trace:{replaySession.traceId.slice(0, 8)}</span>
+                                    </div>
+                                    <span className="text-muted font-mono">→</span>
+                                </>
+                            )}
+                            {evidence.find((e) => e.service)?.service && (
+                                <>
+                                    <div className="flex items-center gap-1 text-emerald-400 font-medium">
+                                        <span>{evidence.find((e) => e.service)?.service}</span>
+                                    </div>
+                                    <span className="text-muted font-mono">→</span>
+                                </>
+                            )}
+                            <div className="flex items-center gap-1 text-red-400 font-medium">
+                                <span>{rootCause?.title || "Failure Event"}</span>
+                            </div>
+                            <span className="text-muted font-mono">→</span>
+                            <div className="flex items-center gap-1 text-amber-400 font-medium">
+                                <span>Root Cause Hypothesis</span>
+                            </div>
+                        </div>
+
+                        <ReplayPlayerClient
+                            replaySession={replaySession}
+                            issueTitle={rootCause?.title || "Incident Session"}
+                        />
+                    </div>
+                ) : (
+                    <ReplayStatus status="NO_REPLAY" projectId={projectId} />
+                )}
+            </section>
+
+            {/* Recommended Next Steps to Resolve */}
+            <section className="halo-section">
+                <SectionHeading
+                    title="Recommended Next Steps to Resolve"
+                    description="Actionable remediation plan, verification tasks, and automated fix recommendations derived from the investigation evidence."
+                />
+
+                <ResolutionNextSteps
+                    recommendations={recommendations}
+                    rootCause={rootCause}
+                    hasRootCause={hasRootCause}
+                />
+            </section>
 
             {/* Evidence */}
 
@@ -432,32 +521,6 @@ function InvestigationView({
                                         {uncertainty}
                                     </p>
                                 </div>
-                            )
-                        )}
-                    </div>
-                </section>
-            )}
-
-            {/* Next steps */}
-
-            {recommendations.length > 0 && (
-                <section className="halo-section">
-                    <SectionHeading
-                        title="Recommended next steps"
-                        description="Actions that can reduce uncertainty or validate the investigation."
-                    />
-
-                    <div className="halo-stack">
-                        {recommendations.map(
-                            (recommendation) => (
-                                <RecommendationCard
-                                    key={
-                                        recommendation.id
-                                    }
-                                    recommendation={
-                                        recommendation
-                                    }
-                                />
                             )
                         )}
                     </div>
@@ -897,8 +960,98 @@ function getStrengthLevel(
 }
 
 /* -------------------------------------------------------------------------- */
-/* Recommendations                                                             */
+/* Recommendations & Next Steps to Resolve                                     */
 /* -------------------------------------------------------------------------- */
+
+function ResolutionNextSteps({
+    recommendations,
+    rootCause,
+    hasRootCause,
+}: {
+    recommendations: Recommendation[];
+    rootCause: Hypothesis | null;
+    hasRootCause: boolean;
+}) {
+    return (
+        <div className="space-y-4">
+            {/* Specific Engine Recommendations */}
+            {recommendations.length > 0 && (
+                <div className="halo-stack">
+                    {recommendations.map((recommendation) => (
+                        <RecommendationCard
+                            key={recommendation.id}
+                            recommendation={recommendation}
+                        />
+                    ))}
+                </div>
+            )}
+
+            {/* Structured Step-by-Step Action Plan */}
+            <div className="halo-card p-6 space-y-4">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                    <h3 className="text-sm font-semibold text-white">
+                        Standard Resolution &amp; Verification Checklist
+                    </h3>
+                    <span className="text-xs text-muted">
+                        {hasRootCause ? "Targeted for verified root cause" : "General triage plan"}
+                    </span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="p-4 rounded-xl bg-surface border border-border space-y-1.5">
+                        <div className="flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-bold flex items-center justify-center">
+                                1
+                            </span>
+                            <p className="text-xs font-semibold text-white">Code Remediation</p>
+                        </div>
+                        <p className="text-xs text-secondary leading-relaxed">
+                            {rootCause
+                                ? `Inspect the failure point for "${rootCause.title}". Review handler logic, add null/undefined checks, and boundary guards.`
+                                : "Review the stack trace frames and surrounding log context for unhandled runtime exceptions."}
+                        </p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-surface border border-border space-y-1.5">
+                        <div className="flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-bold flex items-center justify-center">
+                                2
+                            </span>
+                            <p className="text-xs font-semibold text-white">Deployment / Rollback</p>
+                        </div>
+                        <p className="text-xs text-secondary leading-relaxed">
+                            If this failure correlated with a recent release, consider immediate canary rollback or deploying a fast-forward patch.
+                        </p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-surface border border-border space-y-1.5">
+                        <div className="flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-bold flex items-center justify-center">
+                                3
+                            </span>
+                            <p className="text-xs font-semibold text-white">Verification &amp; Regression Test</p>
+                        </div>
+                        <p className="text-xs text-secondary leading-relaxed">
+                            Write a unit or integration test reproducing the exact input conditions that triggered this event before merging to production.
+                        </p>
+                    </div>
+
+                    <div className="p-4 rounded-xl bg-surface border border-border space-y-1.5">
+                        <div className="flex items-center gap-2">
+                            <span className="w-5 h-5 rounded-full bg-accent/10 border border-accent/30 text-accent text-xs font-bold flex items-center justify-center">
+                                4
+                            </span>
+                            <p className="text-xs font-semibold text-white">Monitor Telemetry Recovery</p>
+                        </div>
+                        <p className="text-xs text-secondary leading-relaxed">
+                            Check the System Health Dashboard to ensure error rates decline to 0% and crash-free session metrics return to 100%.
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    );
+}
 
 function RecommendationCard({
     recommendation,
