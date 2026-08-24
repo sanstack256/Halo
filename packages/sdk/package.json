@@ -39,5 +39,8 @@
   "license": "MIT",
   "devDependencies": {
     "tsup": "^8.5.1"
+  },
+  "dependencies": {
+    "@halo-trace/sdk": "1.0.0"
   }
 }

@@ -155,6 +155,10 @@ importers:
         version: 5.9.3
 
   packages/sdk:
+    dependencies:
+      '@halo-trace/sdk':
+        specifier: 1.0.0
+        version: 1.0.0
     devDependencies:
       tsup:
         specifier: ^8.5.1
@@ -736,6 +740,9 @@ packages:
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
+
+  '@halo-trace/sdk@1.0.0':
+    resolution: {integrity: sha512-Wd7GfC/O1QNRN1LdG3fKjDUH4XN9MTeIWBrvx7B6PXNlUaFUZBGmoZDgdxiCnupCcpo5iBYUhaGxKl2hiOcvsA==}
 
   '@hookform/resolvers@5.7.1':
     resolution: {integrity: sha512-8wS/P4UDr5sQDe4nFaV51TVyfDPrWgNIXweqG0Bs9Z5LSuzKLb+RQNPvkN2oHM5SRrJyWrVH/F+LOUcFjUyvwQ==}
@@ -4622,6 +4629,8 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
 
   '@floating-ui/utils@0.2.12': {}
+
+  '@halo-trace/sdk@1.0.0': {}
 
   '@hookform/resolvers@5.7.1(@standard-schema/spec@1.1.0)(ajv@8.20.0)(effect@3.20.0)(react-hook-form@7.84.0(react@19.2.4))(valibot@1.4.2(typescript@5.9.3))(zod@4.4.3)':
     dependencies:

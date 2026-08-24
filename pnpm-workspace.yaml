@@ -9,3 +9,6 @@ allowBuilds:
   prisma: true
   sharp: true
   unrs-resolver: true
+
+minimumReleaseAgeExclude:
+  - '@halo-trace/sdk@1.0.0'
