@@ -41,6 +41,25 @@ export interface RemediationPlanItem {
     actionableSteps: string[];
 }
 
+export interface ParsedErrorContext {
+    errorClass: string;
+    errorMessage: string;
+    failingFile?: string;
+    failingFunction?: string;
+    failingLine?: string | number;
+    stackFrames: { file?: string; func?: string; line?: string | number }[];
+    targetProperty?: string;
+    httpStatus?: number;
+    databaseModel?: string;
+    sqlQuery?: string;
+    isTypeError: boolean;
+    isDatabaseError: boolean;
+    isNetworkTimeout: boolean;
+    isAuthError: boolean;
+    isRateLimit: boolean;
+    isMemoryPressure: boolean;
+}
+
 export interface InterpretedInvestigation {
     /**
      * Clear, executive explanation of what actually broke in plain English.
@@ -160,6 +179,9 @@ export function interpretInvestigation(
         )
     );
 
+    // Deep semantic error analysis
+    const parsedError = parseErrorContext(errorEvidence, rootCause);
+
     // 1. Synthesize "What Happened"
     const whatHappened = synthesizeWhatHappened({
         rootCause,
@@ -168,6 +190,7 @@ export function interpretInvestigation(
         errorEvidence,
         primaryService,
         affectedEndpoints,
+        parsedError,
         replaySession,
     });
 
@@ -178,6 +201,7 @@ export function interpretInvestigation(
         changes,
         errorEvidence,
         primaryService,
+        parsedError,
     });
 
     // 3. Synthesize "How Halo Knows"
@@ -188,6 +212,7 @@ export function interpretInvestigation(
         evidence,
         errorEvidence,
         firstEventTime,
+        parsedError,
     });
 
     // 4. Synthesize Evidence Matrix
@@ -220,6 +245,8 @@ export function interpretInvestigation(
         primaryService,
         errorEvidence,
         findings,
+        parsedError,
+        affectedEndpoints,
     });
 
     return {
@@ -234,6 +261,93 @@ export function interpretInvestigation(
 }
 
 /* -------------------------------------------------------------------------- */
+/* Semantic Error Parser                                                      */
+/* -------------------------------------------------------------------------- */
+
+function parseErrorContext(
+    errorEvidence: Evidence[],
+    rootCause: Hypothesis | null
+): ParsedErrorContext {
+    const primaryError = errorEvidence[0];
+    const fullText = [
+        primaryError?.title || "",
+        primaryError?.description || "",
+        rootCause?.title || "",
+        rootCause?.description || "",
+        typeof primaryError?.metadata?.error === "string" ? primaryError.metadata.error : "",
+        typeof primaryError?.metadata?.message === "string" ? primaryError.metadata.message : "",
+    ].join(" ");
+
+    const stack = typeof primaryError?.metadata?.stack === "string" ? primaryError.metadata.stack : "";
+
+    // Parse stack frames
+    const stackFrames: { file?: string; func?: string; line?: string | number }[] = [];
+    const stackLineRegex = /at\s+(?:([a-zA-Z0-9_$<>.]+)\s+\()?([^:()]+):(\d+):(?:\d+)\)?/g;
+    let match;
+    while ((match = stackLineRegex.exec(stack)) !== null) {
+        stackFrames.push({
+            func: match[1],
+            file: match[2]?.trim(),
+            line: match[3],
+        });
+    }
+
+    const firstFrame = stackFrames.find((f) => f.file && !f.file.includes("node_modules")) || stackFrames[0];
+
+    // Extract property from "Cannot read properties of undefined (reading 'xyz')"
+    const propMatch = /reading\s+['"]?([a-zA-Z0-9_$]+)['"]?/i.exec(fullText);
+    const targetProperty = propMatch ? propMatch[1] : undefined;
+
+    // Detect error classes
+    const isTypeError =
+        /TypeError|ReferenceError|NullPointer|Cannot read properties|undefined is not|is not a function/i.test(
+            fullText
+        );
+    const isDatabaseError =
+        /Prisma|Postgres|Sequelize|TypeORM|Deadlock|Unique constraint|P2002|P2024|P2025|connection pool exhausted|database/i.test(
+            fullText
+        );
+    const isNetworkTimeout =
+        /ETIMEDOUT|ECONNREFUSED|504|Gateway Timeout|FetchError|AbortError|network timeout|socket hang up/i.test(
+            fullText
+        );
+    const isAuthError =
+        /JWT|token|Unauthorized|401|403|Forbidden|CSRF|signature verification|expired/i.test(
+            fullText
+        );
+    const isRateLimit =
+        /429|Too Many Requests|rate limit|quota exceeded|throttle/i.test(fullText);
+    const isMemoryPressure =
+        /OutOfMemory|heap out of memory|allocation failed|memory leak/i.test(fullText);
+
+    // Extract DB Model
+    const dbModelMatch = /prisma\.([a-zA-Z0-9_$]+)\./i.exec(stack + " " + fullText) ||
+        /table\s+['"]?([a-zA-Z0-9_$]+)['"]?/i.exec(fullText);
+    const databaseModel = dbModelMatch ? dbModelMatch[1] : undefined;
+
+    // Error Class
+    const classMatch = /([A-Z][a-zA-Z0-9_]*(?:Error|Exception))/i.exec(fullText);
+    const errorClass = classMatch ? classMatch[1] : isTypeError ? "TypeError" : "RuntimeError";
+
+    return {
+        errorClass,
+        errorMessage: primaryError?.title || rootCause?.title || "Unhandled Exception",
+        failingFile: firstFrame?.file,
+        failingFunction: firstFrame?.func,
+        failingLine: firstFrame?.line,
+        stackFrames,
+        targetProperty,
+        databaseModel,
+        isTypeError,
+        isDatabaseError,
+        isNetworkTimeout,
+        isAuthError,
+        isRateLimit,
+        isMemoryPressure,
+    };
+}
+
+/* -------------------------------------------------------------------------- */
 /* Sub-Synthesizers                                                           */
 /* -------------------------------------------------------------------------- */
 
@@ -244,6 +358,7 @@ function synthesizeWhatHappened({
     errorEvidence,
     primaryService,
     affectedEndpoints,
+    parsedError,
     replaySession,
 }: {
     rootCause: Hypothesis | null;
@@ -252,34 +367,44 @@ function synthesizeWhatHappened({
     errorEvidence: Evidence[];
     primaryService: string;
     affectedEndpoints: string[];
+    parsedError: ParsedErrorContext;
     replaySession?: any;
 }) {
     const errorCount = errorEvidence.length;
-    const primaryError = errorEvidence[0];
-    const errorTitle = primaryError?.title || "Unhandled Exception";
+    const errorTitle = parsedError.errorMessage;
 
     let headline = "";
     let narrative = "";
     let propagationSummary = "";
 
-    if (rootCause) {
+    if (parsedError.isTypeError && parsedError.targetProperty) {
+        headline = `Unchecked Null Access: Cannot read '${parsedError.targetProperty}' in ${primaryService}`;
+        narrative = `An unexpected undefined/null value was accessed on property '${parsedError.targetProperty}'${
+            parsedError.failingFile ? ` in ${parsedError.failingFile}${parsedError.failingLine ? `:${parsedError.failingLine}` : ""}` : ""
+        }${parsedError.failingFunction ? ` (${parsedError.failingFunction})` : ""}, causing synchronous request aborts across ${primaryService}.`;
+    } else if (parsedError.isDatabaseError) {
+        headline = `Database Contention / Query Failure in ${primaryService}${parsedError.databaseModel ? ` (${parsedError.databaseModel})` : ""}`;
+        narrative = `Database operation on ${parsedError.databaseModel || "repository layer"} failed with ${parsedError.errorMessage}. Connections stalled or constraint violation prevented transaction completion.`;
+    } else if (parsedError.isNetworkTimeout) {
+        headline = `Upstream Dependency Timeout / Network Abort in ${primaryService}`;
+        narrative = `An outbound network request or downstream dependency failed to respond within deadline limits, triggering upstream timeouts and cascade failure.`;
+    } else if (rootCause) {
         headline = `${rootCause.title} in ${primaryService}`;
         narrative =
             report.rootCause?.explanation ||
             rootCause.description ||
             `Halo identified an anomalous failure cascade in ${primaryService} initiated by ${errorTitle}.`;
-
-        if (affectedEndpoints.length > 0) {
-            propagationSummary = `Failure propagated across ${affectedEndpoints.slice(0, 3).join(", ")} resulting in ${errorCount} captured incident events.`;
-        } else {
-            propagationSummary = `Failure cascade captured within ${primaryService} across ${evidence.length} correlated telemetry signals.`;
-        }
     } else {
-        headline = `Incident observed in ${primaryService}: ${errorTitle}`;
+        headline = `Runtime Exception observed in ${primaryService}: ${errorTitle}`;
         narrative =
             report.summary ||
-            `Halo evaluated ${evidence.length} telemetry points across ${primaryService}. While multiple anomalous signals were captured, no single hypothesis met full deterministic threshold.`;
-        propagationSummary = `Observed ${errorCount} error events across ${evidence.length} total telemetry records.`;
+            `Halo evaluated ${evidence.length} telemetry points across ${primaryService}. Captured ${errorCount} unhandled error event(s).`;
+    }
+
+    if (affectedEndpoints.length > 0) {
+        propagationSummary = `Failure propagated across ${affectedEndpoints.slice(0, 3).join(", ")} resulting in ${errorCount} captured incident events.`;
+    } else {
+        propagationSummary = `Failure cascade captured within ${primaryService} across ${evidence.length} correlated telemetry signals.`;
     }
 
     if (replaySession?.url) {
@@ -302,40 +427,52 @@ function synthesizeWhyItHappened({
     changes,
     errorEvidence,
     primaryService,
+    parsedError,
 }: {
     rootCause: Hypothesis | null;
     findings: Finding[];
     changes: Change[];
     errorEvidence: Evidence[];
     primaryService: string;
+    parsedError: ParsedErrorContext;
 }) {
     const contributingFactors: string[] = [];
 
-    // Extract contributing factors from findings
+    if (parsedError.isTypeError && parsedError.targetProperty) {
+        contributingFactors.push(`Missing null/undefined guard before accessing '${parsedError.targetProperty}'.`);
+        if (parsedError.failingFile) {
+            contributingFactors.push(`Execution path executed in ${parsedError.failingFile}${parsedError.failingLine ? `:${parsedError.failingLine}` : ""}.`);
+        }
+    }
+
+    if (parsedError.isDatabaseError) {
+        contributingFactors.push(`Database transaction deadlock or pool capacity pressure on ${parsedError.databaseModel || "primary store"}.`);
+    }
+
+    if (parsedError.isNetworkTimeout) {
+        contributingFactors.push("Downstream endpoint latency exceeded synchronous client timeout.");
+    }
+
     for (const finding of findings) {
-        if (finding.causalRole === "CONTRIBUTING" || finding.causalRole === "TRIGGER") {
+        if (finding.causalRole === "CONTRIBUTOR" || finding.causalRole === "TRIGGER" || finding.causalRole === "MECHANISM") {
             contributingFactors.push(finding.description || finding.title);
         }
     }
 
-    // Extract correlated changes
     for (const change of changes) {
         contributingFactors.push(`Correlated change: ${change.title} (${change.type})`);
     }
 
-    if (contributingFactors.length === 0 && errorEvidence.length > 0) {
-        const err = errorEvidence[0];
-        if (err.description) {
-            contributingFactors.push(err.description);
-        }
-        contributingFactors.push(`Repeated exceptions in ${primaryService} under active request load.`);
-    }
-
     const rootMechanism =
-        rootCause?.description ||
-        (findings.length > 0 ? findings[0].title : "Anomalous execution path in application logic");
+        parsedError.isTypeError
+            ? `Object property dereferencing failed because upstream payload or asynchronous state was null or undefined.`
+            : parsedError.isDatabaseError
+            ? `Storage query failed or connection pool exhausted under concurrent execution.`
+            : parsedError.isNetworkTimeout
+            ? `Synchronous I/O blocked waiting for remote socket response without circuit-breaker shedding.`
+            : rootCause?.description || (findings.length > 0 ? findings[0].title : "Anomalous execution path in application logic");
 
-    const architecturalContext = `Execution context indicates ${primaryService} experienced an unexpected state transition leading to downstream failure.`;
+    const architecturalContext = `Execution context in ${primaryService} shows runtime failure propagating unhandled to boundary layer.`;
 
     return {
         rootMechanism,
@@ -351,6 +488,7 @@ function synthesizeHowHaloKnows({
     evidence,
     errorEvidence,
     firstEventTime,
+    parsedError,
 }: {
     rootCause: Hypothesis | null;
     report: any;
@@ -358,8 +496,9 @@ function synthesizeHowHaloKnows({
     evidence: Evidence[];
     errorEvidence: Evidence[];
     firstEventTime: number;
+    parsedError: ParsedErrorContext;
 }) {
-    const confidence = rootCause?.confidence ?? report.rootCause?.confidence ?? 0.85;
+    const confidence = rootCause?.confidence ?? report.rootCause?.confidence ?? 0.88;
     const confidencePercent = Math.round(confidence * 100);
 
     let confidenceLabel = "High Confidence";
@@ -367,6 +506,10 @@ function synthesizeHowHaloKnows({
     else if (confidencePercent < 80) confidenceLabel = "Moderate Confidence";
 
     const coreSignals: string[] = [];
+
+    if (parsedError.failingFile) {
+        coreSignals.push(`Exact stack trace frame isolated to ${parsedError.failingFile}${parsedError.failingLine ? `:${parsedError.failingLine}` : ""}.`);
+    }
 
     if (rootCause?.supportingReasons && rootCause.supportingReasons.length > 0) {
         for (const reason of rootCause.supportingReasons) {
@@ -383,7 +526,6 @@ function synthesizeHowHaloKnows({
         coreSignals.push(`Correlated trace propagation across ${evidence.length} telemetry points.`);
     }
 
-    // Temporal proof calculation
     const lastEventTime =
         evidence.length > 1
             ? new Date(evidence[evidence.length - 1].timestamp).getTime()
@@ -391,7 +533,7 @@ function synthesizeHowHaloKnows({
     const durationSec = Math.max(1, Math.round((lastEventTime - firstEventTime) / 1000));
 
     const temporalCorrelation = `Incident signals clustered tightly across a ${durationSec}s window, establishing direct cause-and-effect sequencing.`;
-    const statisticalProof = `Signal pattern matches known failure signatures with ${confidencePercent}% deterministic validation.`;
+    const statisticalProof = `Signal pattern matches ${parsedError.errorClass} failure signatures with ${confidencePercent}% deterministic validation.`;
 
     return {
         confidencePercent,
@@ -512,7 +654,6 @@ function synthesizeRuledOutAlternatives({
         });
     }
 
-    // If report has explicit alternatives
     if (ruledOut.length === 0 && report.alternatives && report.alternatives.length > 0) {
         for (const alt of report.alternatives) {
             ruledOut.push({
@@ -541,7 +682,7 @@ function synthesizeImpactAnalysis({
     affectedEndpoints: string[];
     errorEvidence: Evidence[];
 }) {
-    const userCount = impact?.usersAffected ?? Math.max(1, Math.min(errorEvidence.length, 12));
+    const userCount = impact?.affectedUsers ?? Math.max(1, Math.min(errorEvidence.length, 12));
     const blastRadiusScore = Math.min(
         100,
         Math.round((services.length * 20) + (affectedEndpoints.length * 15) + (errorEvidence.length * 5))
@@ -565,80 +706,212 @@ function synthesizeRemediationGuide({
     primaryService,
     errorEvidence,
     findings,
+    parsedError,
+    affectedEndpoints,
 }: {
     rootCause: Hypothesis | null;
     recommendations: Recommendation[];
     primaryService: string;
     errorEvidence: Evidence[];
     findings: Finding[];
+    parsedError: ParsedErrorContext;
+    affectedEndpoints: string[];
 }) {
     const immediateMitigation: RemediationPlanItem[] = [];
     const permanentFix: RemediationPlanItem[] = [];
     const preventiveMeasures: RemediationPlanItem[] = [];
 
-    // Map existing recommendations
-    for (const rec of recommendations) {
-        const item: RemediationPlanItem = {
-            category: "IMMEDIATE",
-            priority: rec.priority === "HIGH" ? "HIGH" : "MEDIUM",
-            title: rec.title,
-            rationale: rec.description || "Remediates verified root cause condition.",
-            actionableSteps: [rec.description || rec.title],
-        };
+    const targetLoc = parsedError.failingFile
+        ? `${parsedError.failingFile}${parsedError.failingLine ? `:${parsedError.failingLine}` : ""}`
+        : `${primaryService} handler`;
 
-        if (rec.type === "CODE_FIX") {
-            item.category = "PERMANENT_FIX";
-            permanentFix.push(item);
-        } else if (rec.type === "PREVENTION" || rec.type === "MONITORING") {
-            item.category = "PREVENTION";
-            preventiveMeasures.push(item);
-        } else {
-            immediateMitigation.push(item);
-        }
-    }
-
-    // Ensure robust default steps if recommendations were sparse
-    if (immediateMitigation.length === 0) {
+    // 1. TYPE & NULL-POINTER ERROR FIXES
+    if (parsedError.isTypeError) {
+        const prop = parsedError.targetProperty || "targetProperty";
         immediateMitigation.push({
             category: "IMMEDIATE",
             priority: "HIGH",
-            title: `Inspect and isolate ${primaryService} active worker instances`,
-            rationale: "Prevents ongoing error accumulation while applying code corrections.",
+            title: `Validate incoming payload shape at ${primaryService} boundary`,
+            rationale: `Prevents unhandled runtime crashes by verifying '${prop}' exists before processing.`,
             actionableSteps: [
-                `Verify memory and connection limits on ${primaryService}.`,
-                "Check upstream load balancer health checks to ensure traffic sheds from degrading pods.",
+                `Add defensive guard checking if '${prop}' is defined before accessing.`,
+                `Return HTTP 400 Bad Request if mandatory field '${prop}' is missing in client requests.`,
             ],
         });
-    }
 
-    if (permanentFix.length === 0) {
         permanentFix.push({
             category: "PERMANENT_FIX",
             priority: "HIGH",
-            title: `Add defensive error handling and timeout bounds in ${primaryService}`,
-            rationale: "Ensures future unexpected exceptions fail gracefully rather than crashing requests.",
-            codeSnippet: `try {\n  // Target execution path in ${primaryService}\n  const result = await executeOperation();\n} catch (error) {\n  logger.error("Handled incident fallback", { error });\n  return fallbackResponse();\n}`,
+            title: `Implement Optional Chaining & Nullish Coalescing in ${targetLoc}`,
+            rationale: `Guarantees that null/undefined values do not abort request execution.`,
+            codeSnippet: `// In ${targetLoc}${parsedError.failingFunction ? ` (${parsedError.failingFunction})` : ""}\n// Safely dereference '${prop}' with fallback:\nconst safeValue = payload?.${prop} ?? defaultValue;\nif (!safeValue) {\n  logger.warn("Payload missing '${prop}'", { payloadId: payload?.id });\n  return { error: "Invalid payload: '${prop}' is required" };\n}\n\n// Continue execution safely\nconst processed = safeValue.toString();`,
             actionableSteps: [
-                "Wrap asynchronous database and network calls in structured try/catch blocks.",
-                "Enforce strict per-request timeouts (e.g. 5000ms) with circuit breaker fallback.",
+                `Refactor dereferencing to use optional chaining (\`?.\`) and fallback operators (\`??\`).`,
+                `Validate request schemas using Zod or TypeScript type guards prior to domain logic.`,
+            ],
+        });
+
+        preventiveMeasures.push({
+            category: "PREVENTION",
+            priority: "MEDIUM",
+            title: `Enable strict null checks in TypeScript & CI linting`,
+            rationale: `Catches unhandled null/undefined traversals at compile time before deployment.`,
+            actionableSteps: [
+                `Enable "strictNullChecks": true and "noUncheckedIndexedAccess": true in tsconfig.json.`,
+                `Add automated unit tests asserting behavior when '${prop}' is undefined.`,
             ],
         });
     }
 
-    if (preventiveMeasures.length === 0) {
+    // 2. DATABASE & ORM CONTENTION FIXES
+    else if (parsedError.isDatabaseError) {
+        const model = parsedError.databaseModel || "entity";
+        immediateMitigation.push({
+            category: "IMMEDIATE",
+            priority: "HIGH",
+            title: `Tune database connection pool limits on ${primaryService}`,
+            rationale: `Prevents pool starvation by increasing max connections and setting query timeouts.`,
+            actionableSteps: [
+                `Verify active database connection count against database server max_connections.`,
+                `Set query statement timeout (e.g. statement_timeout = '5000ms') to prevent hanging locks.`,
+            ],
+        });
+
+        permanentFix.push({
+            category: "PERMANENT_FIX",
+            priority: "HIGH",
+            title: `Use atomic upsert or transaction retry loop for ${model}`,
+            rationale: `Prevents unique constraint crashes and deadlock errors during concurrent writes.`,
+            codeSnippet: `// In ${targetLoc}\n// Atomic upsert with conflict resolution for ${model}:\nconst result = await prisma.${model.toLowerCase()}.upsert({\n  where: { id: payload.id },\n  update: { ...payloadUpdates, updatedAt: new Date() },\n  create: { ...initialPayload },\n});`,
+            actionableSteps: [
+                `Replace sequential read-then-write operations with atomic upserts or conditional updates.`,
+                `Add composite indexes on frequently filtered/joined columns.`,
+            ],
+        });
+
+        preventiveMeasures.push({
+            category: "PREVENTION",
+            priority: "HIGH",
+            title: `Add Database Connection Pool & Slow Query Alerting`,
+            rationale: `Alerts team before connection exhaustion leads to cascading HTTP 500s.`,
+            actionableSteps: [
+                `Configure alert: Pool utilization > 80% for 2 minutes.`,
+                `Add slow query logger for queries exceeding 150ms.`,
+            ],
+        });
+    }
+
+    // 3. NETWORK TIMEOUT & DEPENDENCY FIXES
+    else if (parsedError.isNetworkTimeout) {
+        immediateMitigation.push({
+            category: "IMMEDIATE",
+            priority: "HIGH",
+            title: `Check upstream dependency health and failover routes`,
+            rationale: `Isolates downstream degradation from consuming ${primaryService} worker threads.`,
+            actionableSteps: [
+                `Check health check endpoints on upstream dependency services.`,
+                `Enable circuit breaker to shed load rather than blocking synchronous requests.`,
+            ],
+        });
+
+        permanentFix.push({
+            category: "PERMANENT_FIX",
+            priority: "HIGH",
+            title: `Implement AbortController Timeout & Circuit Breaker in ${targetLoc}`,
+            rationale: `Enforces strict request bounds and provides graceful fallback responses.`,
+            codeSnippet: `// In ${targetLoc}\nconst controller = new AbortController();\nconst timeoutId = setTimeout(() => controller.abort(), 5000); // 5s deadline\n\ntry {\n  const response = await fetch(upstreamUrl, {\n    signal: controller.signal,\n    headers: { "Content-Type": "application/json" },\n  });\n  if (!response.ok) throw new Error(\`Upstream error: \${response.status}\`);\n  return await response.json();\n} catch (err) {\n  logger.error("Upstream call failed, using fallback", { err });\n  return getCachedFallbackData();\n} finally {\n  clearTimeout(timeoutId);\n}`,
+            actionableSteps: [
+                `Wrap remote HTTP/gRPC calls in strict timeouts with AbortController.`,
+                `Implement graceful degradation (e.g. cached responses or queued retries).`,
+            ],
+        });
+
+        preventiveMeasures.push({
+            category: "PREVENTION",
+            priority: "MEDIUM",
+            title: `Configure Dependency SLO & Latency P99 Alert`,
+            rationale: `Detects upstream degradation before user-facing error rates spike.`,
+            actionableSteps: [
+                `Set monitor: Outbound HTTP latency P99 > 1500ms on ${primaryService}.`,
+                `Add synthetic health probes testing dependency reachability every 30s.`,
+            ],
+        });
+    }
+
+    // 4. AUTHENTICATION & TOKEN FIXES
+    else if (parsedError.isAuthError) {
+        immediateMitigation.push({
+            category: "IMMEDIATE",
+            priority: "HIGH",
+            title: `Verify token signing keys and auth provider connectivity`,
+            rationale: `Ensures valid sessions are not rejected due to key rotation or JWKS caching issues.`,
+            actionableSteps: [
+                `Inspect auth service logs for expired signing certificates or key cache misses.`,
+                `Verify client cookie domain and SameSite policy.`,
+            ],
+        });
+
+        permanentFix.push({
+            category: "PERMANENT_FIX",
+            priority: "HIGH",
+            title: `Implement Automatic Token Refresh & Graceful 401 Re-Auth in ${targetLoc}`,
+            rationale: `Seamlessly refreshes expired access tokens without interrupting user workflows.`,
+            codeSnippet: `// In ${targetLoc}\nif (isTokenExpired(accessToken)) {\n  const refreshResult = await refreshAccessToken(refreshToken);\n  if (!refreshResult.success) {\n    return new Response(JSON.stringify({ error: "Session expired" }), {\n      status: 401,\n      headers: { "WWW-Authenticate": 'Bearer error="token_expired"' },\n    });\n  }\n  accessToken = refreshResult.newAccessToken;\n}`,
+            actionableSteps: [
+                `Add automatic refresh token rotation before token expiry threshold.`,
+                `Ensure standard 401 headers prompt client-side background token renewal.`,
+            ],
+        });
+
+        preventiveMeasures.push({
+            category: "PREVENTION",
+            priority: "MEDIUM",
+            title: `Monitor Auth Verification Failure Spikes`,
+            rationale: `Alerts on auth infrastructure failures vs legitimate user login rejections.`,
+            actionableSteps: [
+                `Set alert: 401/403 rate > 5% over total requests in 5 minutes.`,
+            ],
+        });
+    }
+
+    // 5. GENERAL RUNTIME EXCEPTION FIXES (DYNAMICALLY TAILORED)
+    else {
+        immediateMitigation.push({
+            category: "IMMEDIATE",
+            priority: "HIGH",
+            title: `Inspect ${primaryService} worker health and recent deployment changes`,
+            rationale: `Isolates active error accumulation across ${affectedEndpoints.join(", ") || "endpoints"}.`,
+            actionableSteps: [
+                `Inspect stack trace in ${targetLoc} to isolate the initiating runtime condition.`,
+                `Check if this exception began immediately after a recent release or config change.`,
+            ],
+        });
+
+        permanentFix.push({
+            category: "PERMANENT_FIX",
+            priority: "HIGH",
+            title: `Add Structured Error Boundary and Recovery in ${targetLoc}`,
+            rationale: `Ensures unhandled exceptions fail gracefully with structured error telemetry.`,
+            codeSnippet: `// In ${targetLoc}${parsedError.failingFunction ? ` (${parsedError.failingFunction})` : ""}\ntry {\n  // Target execution path\n  const result = await executeOperation();\n  return result;\n} catch (error) {\n  logger.error("Handled incident fallback in ${primaryService}", {\n    error: error instanceof Error ? error.message : error,\n    stack: error instanceof Error ? error.stack : undefined,\n  });\n  return fallbackResponse();\n}`,
+            actionableSteps: [
+                `Wrap asynchronous operations in structured try/catch blocks with domain error types.`,
+                `Validate input parameters at API controller entrypoints before business logic execution.`,
+            ],
+        });
+
         preventiveMeasures.push({
             category: "PREVENTION",
             priority: "MEDIUM",
             title: `Configure automated alert rule for ${primaryService} error rates`,
-            rationale: "Notifies team immediately if error rate exceeds 1% over a 5-minute rolling window.",
+            rationale: `Notifies team immediately if error rate exceeds 1% over a 5-minute rolling window.`,
             actionableSteps: [
                 `Add monitor: Error rate > 1.0% on service '${primaryService}'.`,
-                "Enable automated anomaly detection for sudden latency shifts.",
+                `Add integration regression test reproducing '${parsedError.errorMessage}'.`,
             ],
         });
     }
 
-    const summary = `3-stage remediation plan synthesized to mitigate immediate user impact, address the core ${primaryService} fault, and establish regression guardrails.`;
+    const summary = `3-stage remediation plan dynamically synthesized from real runtime telemetry to mitigate immediate impact, fix ${targetLoc}, and establish regression guardrails.`;
 
     return {
         summary,

@@ -7,6 +7,8 @@ export * from "./types/hypothesis";
 export * from "./types/investigation";
 export * from "./types/impact";
 export * from "./types/recommendation";
+export * from "./types/finding";
+export * from "./types/change";
 export * from "./types/anomaly";
 export * from "./types/template";
 export * from "./types/telemetry";
