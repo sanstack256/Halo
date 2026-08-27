@@ -31,7 +31,56 @@ export function generateRecommendations(
         leading,
     );
 
-    if (leading.id.startsWith("resource-saturation:")) {
+    if (leading.id.startsWith("cascading-failure:")) {
+        recommendations.push({
+            id: `fix:cascading-guard:${normalizeId(leading.id)}`,
+            title: `Add HTTP status validation before response dereferencing`,
+            description: `Guard client response handler against non-2xx status codes before accessing payload properties.`,
+            priority: "HIGH",
+            confidence: 0.96,
+            evidenceIds: leading.evidenceIds,
+            question: `Does the response handler check response.ok or response.status before accessing body properties?`,
+        });
+        recommendations.push({
+            id: `investigate:upstream-server:${normalizeId(leading.id)}`,
+            title: `Inspect upstream endpoint server execution logs`,
+            description: `Investigate why the upstream service or API endpoint produced a non-2xx status response.`,
+            priority: "HIGH",
+            confidence: 0.92,
+            evidenceIds: leading.evidenceIds,
+            question: `What backend exception or dependency failure caused the upstream endpoint to fail?`,
+        });
+    } else if (leading.id.startsWith("database-failure:")) {
+        recommendations.push({
+            id: `fix:database-operation:${normalizeId(leading.id)}`,
+            title: `Handle database constraint or connection failure`,
+            description: `Review query parameters, ensure record existence, or adjust connection pool limits to remediate database error.`,
+            priority: "HIGH",
+            confidence: 0.95,
+            evidenceIds: leading.evidenceIds,
+            question: `What query parameters or pool configurations triggered the database constraint violation or timeout?`,
+        });
+    } else if (leading.id.startsWith("network-protocol:")) {
+        recommendations.push({
+            id: `fix:network-resilience:${normalizeId(leading.id)}`,
+            title: `Remediate network or endpoint failure`,
+            description: `Inspect route handler exceptions for 5xx errors, verify authentication headers for 401/403, or apply retry/backoff for 429/timeouts.`,
+            priority: "HIGH",
+            confidence: 0.92,
+            evidenceIds: leading.evidenceIds,
+            question: `What caused the network endpoint to return an error response?`,
+        });
+    } else if (leading.id.startsWith("runtime-exception:")) {
+        recommendations.push({
+            id: `fix:runtime-guard:${normalizeId(leading.id)}`,
+            title: `Add defensive null/undefined checks or type guards`,
+            description: `Verify variable initialization and use optional chaining (?.) or defensive guards before property dereference.`,
+            priority: "HIGH",
+            confidence: 0.9,
+            evidenceIds: leading.evidenceIds,
+            question: `Which code path produced the unhandled exception?`,
+        });
+    } else if (leading.id.startsWith("resource-saturation:")) {
         recommendations.push({
             id: `investigate:resource:${normalizeId(leading.id)}`,
             title: `Investigate ${leading.title}`,

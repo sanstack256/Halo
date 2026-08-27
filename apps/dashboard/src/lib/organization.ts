@@ -31,21 +31,53 @@ export async function ensureOrganization(userId: string) {
         throw new Error("User not found.");
     }
 
-    const organization = await prisma.organization.create({
-        data: {
-            name: `${user.name}'s Organization`,
-            slug: slugify(`${user.name}-${user.id.slice(0, 8)}`),
-        },
-    });
+    const displayName = user.name?.trim() || user.email?.split("@")[0] || "My Workspace";
+    const baseSlug = slugify(displayName) || "org";
+    const uniqueSlug = `${baseSlug}-${user.id.slice(0, 8)}`;
 
-    await prisma.user.update({
-        where: {
-            id: user.id,
-        },
-        data: {
-            organizationId: organization.id,
-        },
-    });
+    try {
+        const organization = await prisma.organization.create({
+            data: {
+                name: `${displayName}'s Organization`,
+                slug: uniqueSlug,
+            },
+        });
 
-    return organization;
+        await prisma.user.update({
+            where: {
+                id: user.id,
+            },
+            data: {
+                organizationId: organization.id,
+            },
+        });
+
+        return organization;
+    } catch {
+        // In case of race condition or existing slug, fetch fresh user organization
+        const refreshed = await getOrganization(userId);
+        if (refreshed) {
+            return refreshed;
+        }
+
+        // Retry with timestamp suffix if slug collided
+        const fallbackSlug = `${baseSlug}-${user.id.slice(0, 6)}-${Date.now().toString(36)}`;
+        const organization = await prisma.organization.create({
+            data: {
+                name: `${displayName}'s Organization`,
+                slug: fallbackSlug,
+            },
+        });
+
+        await prisma.user.update({
+            where: {
+                id: user.id,
+            },
+            data: {
+                organizationId: organization.id,
+            },
+        });
+
+        return organization;
+    }
 }

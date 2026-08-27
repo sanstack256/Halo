@@ -9,7 +9,7 @@ export default async function Page() {
         <div className="space-y-8 pb-16">
             <div className="halo-page-header">
                 <h1 className="halo-page-title">Autofix</h1>
-                <p className="halo-page-description">Configure Halo AI Autofix — automated code fix suggestions for detected errors.</p>
+                <p className="halo-page-description">Configure Halo Autofix — automated code fix suggestions for detected errors.</p>
             </div>
 
             <div className="halo-card p-12 flex flex-col items-center text-center gap-4">

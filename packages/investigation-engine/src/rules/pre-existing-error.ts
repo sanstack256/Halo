@@ -17,6 +17,13 @@ export function preExistingError(
     const findings: Finding[] = [];
 
     for (const deployment of deployments) {
+        const isRollback = /\b(?:rollback|revert)\b/i.test(
+            `${deployment.title} ${deployment.description || ""}`
+        );
+        if (isRollback) {
+            continue;
+        }
+
         const previousIssues = evidence.filter(
             (item) =>
                 item.service === deployment.service &&

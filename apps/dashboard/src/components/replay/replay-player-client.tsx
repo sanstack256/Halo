@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import {
     Activity,
@@ -62,12 +62,14 @@ export function ReplayPlayerClient({
 }: ReplayPlayerClientProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const playerInstanceRef = useRef<any>(null);
+    const animFrameRef = useRef<number | null>(null);
     const [loading, setLoading] = useState(true);
     const [events, setEvents] = useState<any[]>([]);
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentMs, setCurrentMs] = useState(0);
     const [durationMs, setDurationMs] = useState(0);
     const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
+    const [isHoveringCanvas, setIsHoveringCanvas] = useState(false);
 
     // Fetch real rrweb chunks from server
     useEffect(() => {
@@ -94,7 +96,7 @@ export function ReplayPlayerClient({
         };
     }, [replaySession.id]);
 
-    // Extract dynamic timeline milestones from the real rrweb events array
+    // Extract dynamic timeline milestones from real rrweb events array
     const timelineMarkers = useMemo<TimelineMarker[]>(() => {
         if (!events || events.length === 0) return [];
 
@@ -111,7 +113,7 @@ export function ReplayPlayerClient({
         });
 
         // 2. Parse real user interaction events from rrweb event stream
-        let lastInteractionTime = -500; // debounce threshold for micro-events
+        let lastInteractionTime = -500;
 
         for (const ev of events) {
             const offsetMs = Math.max(0, ev.timestamp - startTimestamp);
@@ -131,7 +133,7 @@ export function ReplayPlayerClient({
             if (ev.type === 3 && ev.data) {
                 const source = ev.data.source;
 
-                // Mouse interaction (Click = 2, TouchStart = 4, etc.)
+                // Mouse interaction (Click = 2, TouchStart = 4)
                 if (source === 1 && (ev.data.type === 2 || ev.data.type === 4)) {
                     if (offsetMs - lastInteractionTime > 300) {
                         markers.push({
@@ -197,11 +199,10 @@ export function ReplayPlayerClient({
             });
         }
 
-        // Sort markers chronologically
         return markers.sort((a, b) => a.timeMs - b.timeMs);
     }, [events, replaySession, issueTitle]);
 
-    // Initialize rrweb-player when events are loaded
+    // Initialize rrweb-player with mouseTail: false to remove red trailing lines
     useEffect(() => {
         if (loading || events.length === 0 || !containerRef.current) return;
 
@@ -228,6 +229,7 @@ export function ReplayPlayerClient({
                         height: 480,
                         autoPlay: false,
                         showController: false,
+                        mouseTail: false, // Disables the red line cursor trail!
                         speed: playbackSpeed,
                     },
                 });
@@ -238,7 +240,10 @@ export function ReplayPlayerClient({
                 if (replayer) {
                     replayer.on("start", () => setIsPlaying(true));
                     replayer.on("pause", () => setIsPlaying(false));
-                    replayer.on("finish", () => setIsPlaying(false));
+                    replayer.on("finish", () => {
+                        setIsPlaying(false);
+                        setCurrentMs(total);
+                    });
                     replayer.on("statechange", () => {
                         const current = replayer.getCurrentTime();
                         setCurrentMs(current);
@@ -260,6 +265,77 @@ export function ReplayPlayerClient({
         };
     }, [events, loading]);
 
+    // Smooth real-time timer sync during active playback
+    useEffect(() => {
+        if (!isPlaying) {
+            if (animFrameRef.current) {
+                cancelAnimationFrame(animFrameRef.current);
+                animFrameRef.current = null;
+            }
+            return;
+        }
+
+        function updateProgress() {
+            const player = playerInstanceRef.current;
+            if (player) {
+                const replayer = player.getReplayer();
+                if (replayer) {
+                    const time = replayer.getCurrentTime();
+                    setCurrentMs(time);
+                }
+            }
+            animFrameRef.current = requestAnimationFrame(updateProgress);
+        }
+
+        animFrameRef.current = requestAnimationFrame(updateProgress);
+
+        return () => {
+            if (animFrameRef.current) {
+                cancelAnimationFrame(animFrameRef.current);
+                animFrameRef.current = null;
+            }
+        };
+    }, [isPlaying]);
+
+    const togglePlay = useCallback(() => {
+        const player = playerInstanceRef.current;
+        if (!player) return;
+        if (isPlaying) {
+            player.pause();
+            setIsPlaying(false);
+        } else {
+            // If ended, restart from 0
+            if (currentMs >= durationMs - 100) {
+                player.goto(0);
+                setCurrentMs(0);
+            }
+            player.play();
+            setIsPlaying(true);
+        }
+    }, [isPlaying, currentMs, durationMs]);
+
+    const seekTo = useCallback((ms: number) => {
+        const player = playerInstanceRef.current;
+        if (!player) return;
+        player.goto(ms, true);
+        setCurrentMs(ms);
+    }, []);
+
+    const setSpeed = useCallback((speed: number) => {
+        setPlaybackSpeed(speed);
+        const player = playerInstanceRef.current;
+        if (!player) return;
+        player.setSpeed(speed);
+    }, []);
+
+    const jumpToError = useCallback(() => {
+        if (!replaySession.errorAt || events.length === 0) return;
+        const start = events[0].timestamp;
+        const errorTime = new Date(replaySession.errorAt).getTime();
+        const errorOffset = Math.max(0, errorTime - start - 2000); // 2s before crash
+        seekTo(errorOffset);
+    }, [replaySession.errorAt, events, seekTo]);
+
     if (loading) {
         return <ReplayStatus status="PROCESSING" message="Loading replay chunks from storage..." />;
     }
@@ -272,40 +348,6 @@ export function ReplayPlayerClient({
                 projectId={replaySession.projectId}
             />
         );
-    }
-
-    function togglePlay() {
-        const player = playerInstanceRef.current;
-        if (!player) return;
-        if (isPlaying) {
-            player.pause();
-            setIsPlaying(false);
-        } else {
-            player.play();
-            setIsPlaying(true);
-        }
-    }
-
-    function seekTo(ms: number) {
-        const player = playerInstanceRef.current;
-        if (!player) return;
-        player.goto(ms);
-        setCurrentMs(ms);
-    }
-
-    function setSpeed(speed: number) {
-        setPlaybackSpeed(speed);
-        const player = playerInstanceRef.current;
-        if (!player) return;
-        player.setSpeed(speed);
-    }
-
-    function jumpToError() {
-        if (!replaySession.errorAt || events.length === 0) return;
-        const start = events[0].timestamp;
-        const errorTime = new Date(replaySession.errorAt).getTime();
-        const errorOffset = Math.max(0, errorTime - start - 2000); // 2s before error
-        seekTo(errorOffset);
     }
 
     const startTimestamp = events[0]?.timestamp || 0;
@@ -359,10 +401,14 @@ export function ReplayPlayerClient({
                 </div>
             </div>
 
-            {/* RRWeb Canvas Viewport Frame */}
-            <div className="relative rounded-2xl bg-[#080b11] border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center">
+            {/* RRWeb Canvas Viewport Frame with Hover Play/Pause Overlay */}
+            <div 
+                className="relative rounded-2xl bg-[#080b11] border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center group"
+                onMouseEnter={() => setIsHoveringCanvas(true)}
+                onMouseLeave={() => setIsHoveringCanvas(false)}
+            >
                 {/* Browser URL Bar header */}
-                <div className="w-full h-8 bg-[#0f141f] border-b border-white/10 flex items-center justify-between px-3 gap-2 text-[11px] font-mono text-zinc-400">
+                <div className="w-full h-8 bg-[#0f141f] border-b border-white/10 flex items-center justify-between px-3 gap-2 text-[11px] font-mono text-zinc-400 z-10">
                     <div className="flex items-center gap-1.5">
                         <span className="w-2.5 h-2.5 rounded-full bg-red-500/80" />
                         <span className="w-2.5 h-2.5 rounded-full bg-yellow-500/80" />
@@ -379,11 +425,27 @@ export function ReplayPlayerClient({
                 {/* Player Target container */}
                 <div
                     ref={containerRef}
-                    className="w-full min-h-[480px] bg-white flex items-center justify-center overflow-auto"
+                    onClick={togglePlay}
+                    className="w-full min-h-[480px] bg-white flex items-center justify-center overflow-auto cursor-pointer"
                 />
 
+                {/* Center Hover Play/Pause Button Overlay */}
+                <div 
+                    className={`absolute inset-0 top-8 bottom-16 flex items-center justify-center pointer-events-none transition-opacity duration-200 ${
+                        isHoveringCanvas || !isPlaying ? "opacity-100" : "opacity-0"
+                    }`}
+                >
+                    <button
+                        type="button"
+                        onClick={togglePlay}
+                        className="pointer-events-auto w-16 h-16 rounded-full bg-black/75 hover:bg-black/90 text-white border border-white/20 shadow-2xl backdrop-blur-md flex items-center justify-center transition-transform transform hover:scale-110 active:scale-95"
+                    >
+                        {isPlaying ? <Pause size={28} /> : <Play size={28} className="ml-1 text-accent" />}
+                    </button>
+                </div>
+
                 {/* Custom Halo Controls & Scrubber */}
-                <div className="w-full bg-[#0f141f] border-t border-white/10 p-3 space-y-2">
+                <div className="w-full bg-[#0f141f] border-t border-white/10 p-3 space-y-2 z-10">
                     {/* Scrubber with Error Marker */}
                     <div className="flex items-center gap-3">
                         <span className="text-[11px] font-mono text-zinc-400 w-12 text-right">
@@ -394,7 +456,7 @@ export function ReplayPlayerClient({
                             {/* Error milestone pin on the timeline */}
                             {errorOffsetMs !== null && durationMs > 0 && (
                                 <div
-                                    className="absolute -top-1.5 -bottom-1.5 w-1 bg-red-500 z-10 rounded-full cursor-pointer hover:scale-125 transition-transform"
+                                    className="absolute -top-1.5 -bottom-1.5 w-1.5 bg-red-500 z-20 rounded-full cursor-pointer hover:scale-125 transition-transform"
                                     style={{
                                         left: `${Math.min(100, Math.max(0, (errorOffsetMs / durationMs) * 100))}%`,
                                     }}
@@ -407,10 +469,10 @@ export function ReplayPlayerClient({
                                 type="range"
                                 min="0"
                                 max={durationMs || 100}
-                                step="100"
+                                step="50"
                                 value={currentMs}
                                 onChange={(e) => seekTo(parseFloat(e.target.value))}
-                                className="w-full h-1.5 bg-white/10 rounded-lg appearance-none cursor-pointer accent-accent focus:outline-none"
+                                className="w-full h-1.5 bg-white/15 rounded-lg appearance-none cursor-pointer accent-accent focus:outline-none"
                             />
                         </div>
 
@@ -446,7 +508,7 @@ export function ReplayPlayerClient({
                                         key={spd}
                                         type="button"
                                         onClick={() => setSpeed(spd)}
-                                        className={`px-2 py-0.5 rounded ${
+                                        className={`px-2 py-0.5 rounded transition-colors ${
                                             playbackSpeed === spd
                                                 ? "bg-accent text-white font-bold"
                                                 : "text-muted hover:text-white"
@@ -458,59 +520,56 @@ export function ReplayPlayerClient({
                             </div>
                         </div>
 
-                        <div className="flex items-center gap-2 text-xs text-muted font-mono">
-                            <span>Session ID: {replaySession.sessionId.slice(0, 16)}...</span>
+                        <div className="flex items-center gap-2 text-xs text-secondary">
+                            <span className="text-[11px] font-mono">
+                                {events.length} chunks
+                            </span>
                         </div>
                     </div>
                 </div>
             </div>
 
-            {/* Dynamic Timeline Milestones Extracted from DOM Stream */}
-            <div className="rounded-xl bg-surface border border-border p-4 space-y-2">
-                <div className="text-muted text-[11px] uppercase tracking-wider font-semibold border-b border-border pb-2 flex items-center justify-between">
-                    <span>Captured Session Timeline ({timelineMarkers.length} milestones)</span>
-                    <span className="font-mono text-xs text-secondary">Click milestone to seek</span>
+            {/* Dynamic Event Stream Timeline Markers */}
+            <div className="pt-2">
+                <div className="flex items-center justify-between pb-2 border-b border-border">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-white">
+                        Recorded Session Milestones
+                    </span>
+                    <span className="text-[11px] font-mono text-muted">
+                        {timelineMarkers.length} user events
+                    </span>
                 </div>
 
-                <div className="space-y-1.5 max-h-60 overflow-y-auto pr-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-2 pt-3">
                     {timelineMarkers.map((marker, idx) => {
                         const Icon = marker.icon;
+                        const isCurrent = Math.abs(currentMs - marker.timeMs) < 1000;
                         const isError = marker.type === "error";
+
                         return (
                             <div
                                 key={idx}
-                                className={`w-full flex items-center justify-between p-2 rounded-lg text-xs transition-colors ${
-                                    isError
-                                        ? "bg-red-500/10 border border-red-500/30 text-red-300"
-                                        : "bg-surface-elevated hover:bg-surface-hover text-secondary"
+                                onClick={() => seekTo(marker.timeMs)}
+                                className={`p-2.5 rounded-lg border text-xs cursor-pointer transition-all ${
+                                    isCurrent
+                                        ? "bg-accent/10 border-accent text-white shadow-sm"
+                                        : isError
+                                        ? "bg-red-500/10 border-red-500/30 text-red-300 hover:bg-red-500/20"
+                                        : "bg-surface border-border text-secondary hover:bg-surface-hover hover:text-white"
                                 }`}
                             >
-                                <button
-                                    type="button"
-                                    onClick={() => seekTo(marker.timeMs)}
-                                    className="flex-1 flex items-center gap-2.5 text-left cursor-pointer"
-                                >
-                                    <Icon size={14} className={isError ? "text-red-400" : "text-accent"} />
-                                    <span className="font-semibold text-white">{marker.label}</span>
-                                    <span className="text-muted truncate max-w-sm font-mono text-[11px]">
-                                        {marker.detail}
-                                    </span>
-                                </button>
-
-                                <div className="flex items-center gap-3">
-                                    {marker.traceId && (
-                                        <Link
-                                            href={`/explore/traces`}
-                                            className="text-[10px] font-mono px-2 py-0.5 rounded bg-accent/10 text-accent border border-accent/20 flex items-center gap-1 hover:bg-accent/20"
-                                        >
-                                            <Layers size={10} />
-                                            Trace: {marker.traceId.slice(0, 8)}...
-                                        </Link>
-                                    )}
-                                    <span className="font-mono text-[11px] text-muted">
+                                <div className="flex items-center justify-between">
+                                    <div className="flex items-center gap-1.5 font-medium">
+                                        <Icon size={13} className={isError ? "text-red-400" : isCurrent ? "text-accent" : "text-muted"} />
+                                        <span>{marker.label}</span>
+                                    </div>
+                                    <span className="font-mono text-[10px] text-muted">
                                         {formatMs(marker.timeMs)}
                                     </span>
                                 </div>
+                                <p className="text-[11px] text-muted truncate mt-1">
+                                    {marker.detail}
+                                </p>
                             </div>
                         );
                     })}
@@ -521,8 +580,8 @@ export function ReplayPlayerClient({
 }
 
 function formatMs(ms: number): string {
-    const totalSeconds = Math.floor(ms / 1000);
-    const mins = Math.floor(totalSeconds / 60);
-    const secs = totalSeconds % 60;
-    return `${String(mins).padStart(2, "0")}:${String(secs).padStart(2, "0")}`;
+    const totalSec = Math.floor(ms / 1000);
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    return `${m}:${s.toString().padStart(2, "0")}`;
 }

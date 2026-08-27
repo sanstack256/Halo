@@ -657,3 +657,243 @@ function uniqueStrings(
         ),
     ];
 }
+
+/**
+ * Returns the telemetry relevant to investigating a SINGLE
+ * occurrence of an Issue.
+ *
+ * Issue grouping and Incident reconstruction are separate concerns:
+ *
+ * - Issue grouping: many events sharing a fingerprint → one Issue.
+ * - Incident reconstruction: one specific occurrence (anchorEvent)
+ *   → causal evidence around THAT event only.
+ *
+ * If `anchorEventId` is supplied, that exact event is used as the
+ * incident anchor. Otherwise the most recent Issue event is chosen.
+ *
+ * Historical occurrences of the same Issue are NOT included in the
+ * active incident telemetry. They are returned separately as
+ * `historicalOccurrenceCount` so the UI can display them as context
+ * without contaminating causal reasoning.
+ */
+export async function getInvestigationEventsForOccurrence(
+    issueId: string,
+    projectId: string,
+    anchorEventId?: string | null,
+): Promise<{
+    anchorEvent: NonNullable<
+        Awaited<ReturnType<typeof prisma.event.findFirst>>
+    >;
+    events: Awaited<ReturnType<typeof prisma.event.findMany>>;
+    historicalOccurrenceCount: number;
+} | null> {
+    /*
+     * Load the Issue with its events so we can:
+     *   a) Verify the Issue exists in this project.
+     *   b) Select the correct anchor occurrence.
+     *   c) Count historical occurrences for the UI.
+     */
+    const issue = await prisma.issue.findFirst({
+        where: {
+            id: issueId,
+            projectId,
+        },
+
+        include: {
+            events: {
+                orderBy: {
+                    timestamp: "desc",
+                },
+
+                /*
+                 * We only need enough events to find the
+                 * requested anchor and count occurrences.
+                 * A hard cap prevents runaway queries on
+                 * Issues with thousands of events.
+                 */
+                take: INVESTIGATION_ANCHOR_LIMIT,
+
+                include: {
+                    environment: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    if (!issue) {
+        return null;
+    }
+
+    if (issue.events.length === 0) {
+        return null;
+    }
+
+    /*
+     * --------------------------------------------------
+     * Anchor selection
+     * --------------------------------------------------
+     *
+     * The anchor is the single event representing the
+     * occurrence being investigated.
+     *
+     * Priority:
+     *   1. The caller-specified anchorEventId (user clicked
+     *      "Investigate this occurrence").
+     *   2. The most recent Issue event (default).
+     */
+    const anchorEvent =
+        (anchorEventId
+            ? issue.events.find(
+                  (ev) => ev.id === anchorEventId,
+              )
+            : undefined) ?? issue.events[0]; // events are desc, so [0] is most recent
+
+    if (!anchorEvent) {
+        return null;
+    }
+
+    /*
+     * Every other Issue event is a historical occurrence
+     * of the same error — NOT part of this investigation.
+     * We count them so the UI can say "3 other historical
+     * occurrences exist and are excluded from this causal graph."
+     */
+    const historicalOccurrenceCount = issue.events.filter(
+        (ev) => ev.id !== anchorEvent.id,
+    ).length;
+
+    /*
+     * --------------------------------------------------
+     * Build incident bounds from the single anchor
+     * --------------------------------------------------
+     *
+     * Temporal bounds are derived from THIS occurrence
+     * only, not from the spread across all occurrences.
+     */
+    const anchorTimeMs = anchorEvent.timestamp.getTime();
+
+    const from = new Date(anchorTimeMs - INVESTIGATION_WINDOW_MS);
+    const to = new Date(anchorTimeMs + INVESTIGATION_WINDOW_MS);
+
+    /*
+     * --------------------------------------------------
+     * Extract correlation identifiers from the anchor
+     * --------------------------------------------------
+     *
+     * Only the anchor event's IDs are used to broaden
+     * the telemetry search. This prevents other sessions
+     * or other occurrences from leaking into the evidence.
+     */
+    const correlationConditions: object[] = [
+        /*
+         * The anchor event itself is always included.
+         */
+        { id: anchorEvent.id },
+    ];
+
+    if (anchorEvent.requestId) {
+        correlationConditions.push({
+            requestId: anchorEvent.requestId,
+        });
+    }
+
+    if (anchorEvent.traceId) {
+        correlationConditions.push({
+            traceId: anchorEvent.traceId,
+        });
+    }
+
+    if (anchorEvent.sessionId) {
+        correlationConditions.push({
+            sessionId: anchorEvent.sessionId,
+        });
+    }
+
+    /*
+     * --------------------------------------------------
+     * Fetch bounded candidate telemetry
+     * --------------------------------------------------
+     *
+     * Candidates must be within the anchor's temporal
+     * window AND share a direct correlation identifier,
+     * OR be the anchor itself.
+     *
+     * Service/resource/release matching is NOT used here
+     * as a sole criterion — those are too broad and can
+     * pull in unrelated historical events.
+     */
+    const candidates = await prisma.event.findMany({
+        where: {
+            projectId,
+
+            timestamp: {
+                gte: from,
+                lte: to,
+            },
+
+            OR: correlationConditions,
+        },
+
+        orderBy: {
+            timestamp: "asc",
+        },
+
+        take: INVESTIGATION_EVENT_LIMIT,
+
+        include: {
+            environment: {
+                select: {
+                    name: true,
+                },
+            },
+        },
+    });
+
+    /*
+     * Score and filter — same approach as the original
+     * getInvestigationEvents, but using only the single
+     * anchor as the reference point.
+     */
+    const scored = candidates.map((event) => ({
+        event,
+        score: scoreInvestigationRelevance(event, [anchorEvent]),
+    }));
+
+    const anchorId = anchorEvent.id;
+
+    const selected = scored
+        .filter(
+            (item) =>
+                item.event.id === anchorId || item.score > 0,
+        )
+        .sort((a, b) => {
+            if (b.score !== a.score) {
+                return b.score - a.score;
+            }
+            return (
+                b.event.timestamp.getTime() -
+                a.event.timestamp.getTime()
+            );
+        })
+        .slice(0, INVESTIGATION_EVENT_LIMIT)
+        .map((item) => item.event);
+
+    /*
+     * Return chronologically ordered evidence so the
+     * investigation engine receives the actual sequence.
+     */
+    const events = selected.sort(
+        (a, b) =>
+            a.timestamp.getTime() - b.timestamp.getTime(),
+    );
+
+    return {
+        anchorEvent,
+        events,
+        historicalOccurrenceCount,
+    };
+}

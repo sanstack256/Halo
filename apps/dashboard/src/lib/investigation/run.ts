@@ -4,6 +4,7 @@ import {
 
 import {
     getInvestigationEvents,
+    getInvestigationEventsForOccurrence,
 } from "@/actions/issue";
 
 import {
@@ -148,4 +149,102 @@ export async function investigateIssue(
     return investigate(
         evidence,
     );
+}
+
+/**
+ * Run an investigation for ONE specific occurrence of an Issue.
+ *
+ * Issue grouping and Incident reconstruction are strictly separate:
+ *
+ * - Issue grouping:        fingerprint matching → many events → one Issue.
+ * - Incident reconstruction: one occurrence (anchor event) → causal graph
+ *                            built from evidence around THAT event only.
+ *
+ * If `anchorEventId` is provided, that exact event is the incident anchor.
+ * If omitted, the most recent occurrence is chosen automatically.
+ *
+ * Historical occurrences of the same error are excluded from the
+ * active causal chain; their count is returned for UI display only.
+ *
+ * This answers: "Why did THIS occurrence happen?"
+ * not:          "Why does this Issue exist?"
+ */
+export async function investigateIssueOccurrence(
+    issueId: string,
+    projectId: string,
+    anchorEventId?: string | null,
+): Promise<{
+    investigation: Awaited<ReturnType<typeof investigate>>;
+    incidentAnchorId: string;
+    incidentAnchorTimestamp: Date;
+    historicalOccurrenceCount: number;
+}> {
+    if (!issueId) {
+        throw new Error(
+            "Cannot investigate without an issue ID.",
+        );
+    }
+
+    if (!projectId) {
+        throw new Error(
+            "Cannot investigate without a project ID.",
+        );
+    }
+
+    /*
+     * --------------------------------------------------
+     * Occurrence-scoped evidence
+     * --------------------------------------------------
+     *
+     * getInvestigationEventsForOccurrence() returns:
+     *
+     * - anchorEvent:              the one specific occurrence
+     * - events:                   telemetry correlated to that
+     *                             occurrence only (same session/
+     *                             trace/request, ±5 min window)
+     * - historicalOccurrenceCount: count of other occurrences
+     *                             in the Issue (excluded from
+     *                             causal reasoning)
+     */
+    const result =
+        await getInvestigationEventsForOccurrence(
+            issueId,
+            projectId,
+            anchorEventId,
+        );
+
+    if (result === null) {
+        throw new Error(
+            "Issue not found or has no events.",
+        );
+    }
+
+    const { anchorEvent, events, historicalOccurrenceCount } = result;
+
+    if (events.length === 0) {
+        throw new Error(
+            "Cannot investigate an occurrence with no correlated evidence.",
+        );
+    }
+
+    /*
+     * --------------------------------------------------
+     * Evidence normalization
+     * --------------------------------------------------
+     */
+    const evidence = eventsToEvidence(events);
+
+    /*
+     * --------------------------------------------------
+     * Investigation engine
+     * --------------------------------------------------
+     */
+    const investigation = await investigate(evidence);
+
+    return {
+        investigation,
+        incidentAnchorId: anchorEvent.id,
+        incidentAnchorTimestamp: anchorEvent.timestamp,
+        historicalOccurrenceCount,
+    };
 }

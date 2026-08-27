@@ -146,11 +146,11 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                         </button>
 
                         <Link
-                            href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}`}
-                            className="halo-btn halo-btn-sm halo-btn-primary bg-gradient-to-r from-accent to-blue-500 hover:opacity-90"
+                            href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}${latestEvent ? `&eventId=${latestEvent.id}` : ""}`}
+                            className="halo-btn halo-btn-sm halo-btn-primary"
                         >
-                            <Sparkles size={14} />
-                            Investigate with Halo AI
+                            <Activity size={14} />
+                            Investigate Root Cause
                         </Link>
                     </div>
                 </div>
@@ -317,22 +317,22 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
 
                 {/* Right Sidebar Column */}
                 <div className="space-y-6">
-                    {/* Seer / Halo AI Root Cause Autofix Card (Image 4 & 5 style) */}
+                    {/* Halo Root Cause & Causal Engine Card */}
                     <div className="halo-card p-5 border-accent/30 bg-accent/5 space-y-4">
                         <div className="flex items-center gap-2 text-accent font-semibold text-sm">
-                            <Sparkles size={16} />
-                            Halo Autonomous Autofix
+                            <Activity size={16} />
+                            Halo Causal Investigation
                         </div>
 
                         <p className="text-xs text-secondary leading-relaxed">
-                            Halo AI evaluates evidence, pinpointing root cause & proposing an automated code fix pull request.
+                            Halo evaluates telemetry and causal evidence to pinpoint the root cause and reconstruct the incident cascade.
                         </p>
 
                         <Link
-                            href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}`}
+                            href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}${latestEvent ? `&eventId=${latestEvent.id}` : ""}`}
                             className="halo-btn halo-btn-primary w-full justify-center"
                         >
-                            Run Root Cause AI
+                            Investigate Root Cause
                         </Link>
                     </div>
 

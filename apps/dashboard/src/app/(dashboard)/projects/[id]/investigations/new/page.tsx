@@ -1,5 +1,29 @@
-import { investigateIssue } from "@/lib/investigation/run";
+import { investigateIssueOccurrence } from "@/lib/investigation/run";
 import { BackButton } from "@/components/ui/back-button";
+import {
+    Activity,
+    AlertCircle,
+    ArrowDown,
+    ArrowRight,
+    CheckCircle2,
+    Clock,
+    Code2,
+    Compass,
+    Copy,
+    HelpCircle,
+    History,
+    Info,
+    Layers,
+    Lock,
+    Maximize2,
+    MousePointer,
+    RotateCcw,
+    Server,
+    ShieldAlert,
+    Terminal,
+    XCircle,
+    Zap,
+} from "lucide-react";
 
 import type {
     Investigation,
@@ -14,6 +38,7 @@ type Props = {
 
     searchParams: Promise<{
         issueId?: string;
+        eventId?: string;
     }>;
 };
 
@@ -21,13 +46,14 @@ import { NoEventsInvestigationModal } from "./no-events-modal";
 import { getReplaySessionForIssue } from "@/actions/replay";
 import { ReplayPlayerClient } from "@/components/replay/replay-player-client";
 import { ReplayStatus } from "@/components/replay/replay-status";
+import { interpretInvestigation, type InterpretedInvestigation } from "@/lib/investigation/interpreter";
 
 export default async function InvestigationPage({
     params,
     searchParams,
 }: Props) {
     const { id } = await params;
-    const { issueId } = await searchParams;
+    const { issueId, eventId } = await searchParams;
 
     if (!issueId) {
         return (
@@ -39,8 +65,8 @@ export default async function InvestigationPage({
     }
 
     try {
-        const [investigation, replaySession] = await Promise.all([
-            investigateIssue(issueId, id),
+        const [{ investigation, incidentAnchorId, incidentAnchorTimestamp, historicalOccurrenceCount }, replaySession] = await Promise.all([
+            investigateIssueOccurrence(issueId, id, eventId),
             getReplaySessionForIssue(issueId),
         ]);
         return (
@@ -48,6 +74,9 @@ export default async function InvestigationPage({
                 investigation={investigation}
                 replaySession={replaySession}
                 projectId={id}
+                incidentAnchorId={incidentAnchorId}
+                incidentAnchorTimestamp={incidentAnchorTimestamp}
+                historicalOccurrenceCount={historicalOccurrenceCount}
             />
         );
     } catch (error) {
@@ -62,19 +91,23 @@ export default async function InvestigationPage({
 }
 
 /* -------------------------------------------------------------------------- */
-/* Main view                                                                   */
+/* Main Investigation View                                                    */
 /* -------------------------------------------------------------------------- */
-
-import { interpretInvestigation, type InterpretedInvestigation } from "@/lib/investigation/interpreter";
 
 function InvestigationView({
     investigation,
     replaySession,
     projectId,
+    incidentAnchorId,
+    incidentAnchorTimestamp,
+    historicalOccurrenceCount,
 }: {
     investigation: Investigation;
     replaySession?: any | null;
     projectId: string;
+    incidentAnchorId?: string;
+    incidentAnchorTimestamp?: Date;
+    historicalOccurrenceCount?: number;
 }) {
     const {
         status,
@@ -89,151 +122,406 @@ function InvestigationView({
         recommendations,
     } = investigation;
 
-    const hasRootCause = rootCause !== null;
-    const interpreted = interpretInvestigation(investigation, replaySession);
+    const interpreted = interpretInvestigation(investigation, replaySession, incidentAnchorId);
+
+    const formattedAnchorTime = incidentAnchorTimestamp
+        ? new Intl.DateTimeFormat("en-US", {
+              month: "short",
+              day: "numeric",
+              hour: "numeric",
+              minute: "numeric",
+              second: "numeric",
+              hour12: true,
+          }).format(new Date(incidentAnchorTimestamp))
+        : null;
 
     return (
-        <div className="halo-investigation">
+        <div className="halo-investigation max-w-5xl mx-auto space-y-8 pb-16">
             <div className="mb-4">
                 <BackButton fallbackHref="/overview" label="Back to Overview" />
             </div>
 
             {/* Header */}
-
-            <header className="halo-investigation-header">
-                <div className="halo-eyebrow-row">
-                    <span className="halo-eyebrow">
-                        Automated Investigation &amp; Root Cause Analysis
-                    </span>
-
+            <header className="halo-investigation-header space-y-3">
+                <div className="halo-eyebrow-row flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                        <span className="halo-eyebrow font-mono text-xs uppercase tracking-wider text-accent font-semibold">
+                            Incident Investigation Report
+                        </span>
+                        {formattedAnchorTime && (
+                            <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-surface border border-border text-secondary">
+                                Occurrence: {formattedAnchorTime}
+                            </span>
+                        )}
+                    </div>
                     <StatusBadge status={status} />
                 </div>
 
-                <h1 className="halo-investigation-title">
-                    {interpreted.whatHappened.headline}
+                <h1 className="text-3xl font-bold text-white tracking-tight">
+                    {interpreted.headline}
                 </h1>
 
-                <p className="halo-investigation-description">
-                    Halo evaluated {evidence.length} telemetry signals, reconstructed the timeline, and synthesized the causal failure chain.
+                <p className="text-sm text-secondary">
+                    Reconstructed transaction cascade across browser client and backend APIs for this specific occurrence.
                 </p>
+
+                {/* Strict Boundary Context Callout */}
+                {typeof historicalOccurrenceCount === "number" && historicalOccurrenceCount > 0 && (
+                    <div className="flex items-start gap-2.5 p-3 rounded-lg bg-surface/60 border border-border/80 text-xs text-secondary">
+                        <History className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                        <div>
+                            <span className="font-semibold text-zinc-300">Strict Occurrence Isolation:</span>{" "}
+                            Investigating single occurrence anchor (ID: <code className="font-mono text-accent text-[11px]">{incidentAnchorId?.slice(0, 12)}…</code>).{" "}
+                            {historicalOccurrenceCount} other historical occurrence{historicalOccurrenceCount > 1 ? "s" : ""} in this Issue remain isolated as historical context and excluded from this incident's active causal chain.
+                        </div>
+                    </div>
+                )}
             </header>
 
-            {/* Verdict */}
+            {/* 1. Root Cause Section */}
+            <section className="halo-card p-6 border-border space-y-5">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                    <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse" />
+                        <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
+                            Root cause
+                        </h2>
+                    </div>
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted font-mono">Confidence:</span>
+                        <span className="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            {interpreted.rootCauseSummary.confidenceLabel}
+                        </span>
+                    </div>
+                </div>
 
-            <section className="halo-verdict">
-                <div className="halo-verdict-header">
-                    <span className="halo-section-label">
-                        Executive Diagnosis
-                    </span>
+                <div className="space-y-4">
+                    <p className="text-base text-zinc-200 leading-relaxed font-medium">
+                        {interpreted.rootCauseSummary.rootCauseStatement}
+                    </p>
+
+                    {/* Visual Causal Flowchart Box */}
+                    <div className="rounded-xl bg-[#080b11] border border-white/10 p-4 font-mono text-xs text-zinc-300 overflow-x-auto space-y-1">
+                        <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-sans font-semibold mb-2">
+                            The evidence directly establishes the sequence:
+                        </div>
+                        <pre className="text-emerald-400 leading-snug">
+                            {interpreted.asciiFlow}
+                        </pre>
+                    </div>
+
+                    <p className="text-xs text-secondary italic">
+                        The browser exception is therefore <strong className="text-white">a downstream symptom</strong>, not the originating failure.
+                    </p>
+                </div>
+            </section>
+
+            {/* 2. What Happened Section */}
+            <section className="halo-card p-6 border-border space-y-5">
+                <div className="border-b border-border pb-3 flex items-center justify-between">
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
+                        What happened
+                    </h2>
                     <span className="text-xs font-mono text-secondary">
-                        Blast Radius: {interpreted.impactAnalysis.blastRadiusScore}/100
+                        {interpreted.whatHappened.timeFormatted} &bull; {interpreted.whatHappened.pageUrl}
                     </span>
                 </div>
 
-                <div className="halo-verdict-body">
-                    <div className="halo-verdict-content">
-                        <div className="halo-verdict-main space-y-3">
-                            <div className="flex items-center gap-2">
-                                <span className="halo-result-label">
-                                    {hasRootCause
-                                        ? "Validated Root Cause"
-                                        : "Inconclusive Signal"}
-                                </span>
-                                <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-accent/10 text-accent border border-accent/20">
-                                    {interpreted.whatHappened.initiatingService}
+                <p className="text-sm text-zinc-300">
+                    At <strong className="text-white font-mono">{interpreted.whatHappened.timeFormatted}</strong>, the user was on <code className="text-accent bg-surface px-1.5 py-0.5 rounded text-xs">{interpreted.whatHappened.pageUrl}</code> and clicked <strong className="text-white">Pay</strong>. Halo observed:
+                </p>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Step 1: User Action */}
+                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-accent">
+                                <MousePointer size={14} />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                    1. User action
+                                </h3>
+                            </div>
+                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                Observed
+                            </span>
+                        </div>
+                        <p className="text-xs text-secondary leading-relaxed">
+                            {interpreted.whatHappened.userAction.description}.
+                        </p>
+                        <p className="text-[11px] text-muted italic">
+                            {interpreted.whatHappened.userAction.replayEvidence}
+                        </p>
+                    </div>
+
+                    {/* Step 2: Failed Request */}
+                    {interpreted.whatHappened.failedRequest && (
+                        <div className="p-4 rounded-xl bg-surface border border-red-500/20 space-y-2">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 text-red-400">
+                                    <Server size={14} />
+                                    <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                        2. Failed request
+                                    </h3>
+                                </div>
+                                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                    Observed
                                 </span>
                             </div>
-
-                            <h2 className="halo-verdict-title text-xl font-bold text-white">
-                                {hasRootCause
-                                    ? report.rootCause?.title || rootCause.title
-                                    : "No singular root cause established"}
-                            </h2>
-
-                            <p className="halo-verdict-summary text-sm text-zinc-300 leading-relaxed">
-                                {interpreted.whatHappened.narrative}
-                            </p>
-
-                            <div className="p-3 rounded-lg bg-surface border border-border text-xs text-secondary flex items-start gap-2">
-                                <span className="text-accent font-semibold">Propagation:</span>
-                                <span>{interpreted.whatHappened.propagationSummary}</span>
+                            <div className="rounded bg-[#080b11] p-2 font-mono text-[11px] text-zinc-300 space-y-0.5">
+                                <div className="text-red-400 font-bold">
+                                    {interpreted.whatHappened.failedRequest.method} {interpreted.whatHappened.failedRequest.endpoint}
+                                </div>
+                                <div>Status: {interpreted.whatHappened.failedRequest.status}</div>
+                                <div>Duration: {interpreted.whatHappened.failedRequest.durationMs} ms</div>
                             </div>
                         </div>
+                    )}
 
-                        {hasRootCause &&
-                            report.rootCause && (
-                                <Confidence
-                                    value={
-                                        report.rootCause
-                                            .confidence
-                                    }
-                                    supportingCount={
-                                        rootCause
-                                            ?.supportingReasons
-                                            .length ?? 0
-                                    }
-                                    contradictingCount={
-                                        rootCause
-                                            ?.contradictingReasons
-                                            .length ?? 0
-                                    }
-                                    missingCount={
-                                        rootCause
-                                            ?.missingReasons
-                                            .length ?? 0
-                                    }
-                                />
-                            )}
+                    {/* Step 3: Client Exception */}
+                    <div className="p-4 rounded-xl bg-surface border border-amber-500/20 space-y-2">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-amber-400">
+                                <AlertCircle size={14} />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                    3. Client exception
+                                </h3>
+                            </div>
+                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                Observed
+                            </span>
+                        </div>
+                        <p className="text-xs text-secondary">
+                            Immediately afterward:
+                        </p>
+                        <div className="rounded bg-[#080b11] p-2 font-mono text-[11px] text-amber-300">
+                            {interpreted.whatHappened.clientException.title}
+                        </div>
+                        <p className="text-[11px] font-mono text-muted">
+                            at: {interpreted.whatHappened.clientException.failingLocation}
+                        </p>
+                    </div>
+
+                    {/* Step 4: User Impact */}
+                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-blue-400">
+                                <Activity size={14} />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                    4. User impact
+                                </h3>
+                            </div>
+                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                Inferred
+                            </span>
+                        </div>
+                        <p className="text-xs text-secondary leading-relaxed">
+                            {interpreted.whatHappened.userImpact}
+                        </p>
                     </div>
                 </div>
             </section>
 
-            {/* Root cause */}
+            {/* 3. Why this is the root cause chain */}
+            <section className="halo-card p-6 border-border space-y-4">
+                <div className="border-b border-border pb-3">
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
+                        Why this is the root cause chain
+                    </h2>
+                </div>
 
-            {rootCause && (
-                <section className="halo-section">
-                    <SectionHeading
-                        title="Root cause & Diagnostic Reasoning"
-                        description="The strongest explanation supported by the available telemetry, architectural context, and causal proof."
-                    />
+                <p className="text-sm text-zinc-300 leading-relaxed">
+                    {interpreted.whyThisConclusion.narrative}
+                </p>
 
-                    <RootCauseCard
-                        hypothesis={rootCause}
-                        interpreted={interpreted}
-                    />
-                </section>
-            )}
+                <div className="p-4 rounded-xl bg-[#080b11] border border-white/10 space-y-2">
+                    <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider font-semibold">
+                        Causal relationship
+                    </span>
+                    <pre className="font-mono text-xs text-zinc-300 leading-relaxed">
+                        {interpreted.whyThisConclusion.treeDiagram}
+                    </pre>
+                </div>
+            </section>
 
-            {/* Timeline */}
+            {/* 4. What is known vs unknown */}
+            <section className="halo-card p-6 border-border space-y-5">
+                <div className="border-b border-border pb-3 flex items-center justify-between">
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
+                        What is known vs unknown
+                    </h2>
+                    <span className="text-xs font-mono text-muted">Deterministic Boundary</span>
+                </div>
 
-            {timeline.events.length > 0 && (
-                <section className="halo-section">
-                    <SectionHeading
-                        title="Timeline"
-                        description="The sequence of events Halo reconstructed around the failure."
-                    />
-
-                    <div className="halo-card halo-timeline">
-                        {timeline.events.map(
-                            (event, index) => (
-                                <TimelineItem
-                                    key={event.id}
-                                    event={event}
-                                    isLast={
-                                        index ===
-                                        timeline.events
-                                            .length -
-                                        1
-                                    }
-                                />
-                            )
-                        )}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Confirmed */}
+                    <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-3">
+                        <div className="flex items-center gap-2 text-emerald-400">
+                            <CheckCircle2 size={15} />
+                            <h3 className="text-xs font-bold uppercase tracking-wider">
+                                Confirmed
+                            </h3>
+                        </div>
+                        <ul className="space-y-2 text-xs text-zinc-300">
+                            {interpreted.evidenceIntegrity.confirmedFacts.map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-2">
+                                    <span className="text-emerald-400 font-bold">&bull;</span>
+                                    <span>{item.statement}</span>
+                                </li>
+                            ))}
+                        </ul>
                     </div>
+
+                    {/* Unknown */}
+                    <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-3">
+                        <div className="flex items-center gap-2 text-amber-400">
+                            <HelpCircle size={15} />
+                            <h3 className="text-xs font-bold uppercase tracking-wider">
+                                Unknown
+                            </h3>
+                        </div>
+                        <ul className="space-y-2 text-xs text-zinc-300">
+                            {interpreted.evidenceIntegrity.unknowns.map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-2">
+                                    <span className="text-amber-400 font-bold">&bull;</span>
+                                    <span>{item.statement}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <p className="text-[11px] text-amber-300/80 italic pt-1 border-t border-amber-500/20">
+                            Halo should never invent the missing backend cause just because a TypeError is available.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            {/* 5. Historical / Unrelated Evidence Filter */}
+            {interpreted.historicalObservations.hasUnrelatedEvents && (
+                <section className="p-4 rounded-xl bg-surface border border-border space-y-2">
+                    <div className="flex items-center gap-2 text-secondary">
+                        <Info size={14} className="text-accent" />
+                        <h3 className="text-xs font-semibold uppercase tracking-wider text-white">
+                            Historical / Unrelated Evidence
+                        </h3>
+                    </div>
+                    <blockquote className="text-xs text-secondary italic border-l-2 border-accent/40 pl-3 py-1">
+                        {interpreted.historicalObservations.explanation}
+                    </blockquote>
                 </section>
             )}
 
-            {/* User Session Replay */}
-            <section className="halo-section">
+            {/* 6. Evidence Matrix Table */}
+            <section className="halo-card p-6 border-border space-y-4 overflow-hidden">
+                <div className="border-b border-border pb-3 flex items-center justify-between">
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
+                        Evidence
+                    </h2>
+                    <span className="text-xs font-mono text-secondary">
+                        {interpreted.causalEvidenceGraph.length} signals evaluated
+                    </span>
+                </div>
+
+                <div className="overflow-x-auto">
+                    <table className="w-full text-left text-xs border-collapse">
+                        <thead>
+                            <tr className="border-b border-border text-muted font-mono uppercase text-[10px]">
+                                <th className="py-2.5 px-3">Evidence</th>
+                                <th className="py-2.5 px-3">Relationship</th>
+                                <th className="py-2.5 px-3">Strength</th>
+                                <th className="py-2.5 px-3">Explanation</th>
+                            </tr>
+                        </thead>
+                        <tbody className="divide-y divide-border">
+                            {interpreted.causalEvidenceGraph.map((row) => (
+                                <tr key={row.id} className="hover:bg-surface-hover/50 transition-colors">
+                                    <td className="py-3 px-3 font-mono font-medium text-white max-w-xs truncate">
+                                        {row.label}
+                                    </td>
+                                    <td className="py-3 px-3">
+                                        <span className={`text-[11px] font-mono px-2 py-0.5 rounded ${
+                                            row.role === "Upstream failure"
+                                                ? "bg-red-500/10 text-red-400 border border-red-500/20"
+                                                : row.role === "Downstream consequence"
+                                                ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                                : row.role === "Trigger"
+                                                ? "bg-blue-500/10 text-blue-400 border border-blue-500/20"
+                                                : row.role === "Missing evidence"
+                                                ? "bg-zinc-800 text-zinc-400 border border-zinc-700"
+                                                : "bg-surface text-muted"
+                                        }`}>
+                                            {row.role}
+                                        </span>
+                                    </td>
+                                    <td className="py-3 px-3">
+                                        <span className={`font-semibold ${
+                                            row.strength === "Very High"
+                                                ? "text-emerald-400"
+                                                : row.strength === "High"
+                                                ? "text-blue-400"
+                                                : row.strength === "Missing"
+                                                ? "text-zinc-500"
+                                                : "text-zinc-400"
+                                        }`}>
+                                            {row.strength}
+                                        </span>
+                                    </td>
+                                    <td className="py-3 px-3 text-secondary max-w-md leading-relaxed">
+                                        {row.explanation}
+                                    </td>
+                                </tr>
+                            ))}
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            {/* 7. Qualitative Confidence Breakdown */}
+            <section className="halo-card p-6 border-border space-y-4">
+                <div className="border-b border-border pb-3 flex items-center justify-between">
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
+                        Confidence
+                    </h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Root Cause Confidence */}
+                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-xs font-semibold text-white">
+                                Root-cause confidence:
+                            </h3>
+                            <span className="text-xs font-bold text-emerald-400">
+                                {interpreted.rootCauseSummary.confidenceLabel}
+                            </span>
+                        </div>
+                        <ul className="space-y-1.5 text-xs text-secondary pt-1">
+                            {interpreted.rootCauseSummary.reasoning.map((r, idx) => (
+                                <li key={idx} className="flex items-start gap-1.5">
+                                    <span className="text-accent font-bold">&bull;</span>
+                                    <span>{r}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Exact Backend Cause Confidence */}
+                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
+                        <div className="flex items-center justify-between">
+                            <h3 className="text-xs font-semibold text-white">
+                                Exact backend cause:
+                            </h3>
+                            <span className="text-xs font-bold text-amber-400">
+                                Unknown
+                            </span>
+                        </div>
+                        <p className="text-xs text-secondary pt-1">
+                            Because Halo lacks server-side evidence explaining the 500.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            {/* 8. User Session Replay */}
+            <section className="halo-section space-y-3">
                 <SectionHeading
                     title="User Session Replay"
                     description="Reconstructed browser DOM interactions, mouse clicks, and network requests correlated directly with this failure."
@@ -241,48 +529,6 @@ function InvestigationView({
 
                 {replaySession ? (
                     <div className="space-y-4">
-                        {/* Correlated Evidence Chain */}
-                        <div className="p-3.5 rounded-xl bg-surface-elevated border border-border flex flex-wrap items-center gap-2 text-xs">
-                            <span className="text-muted uppercase text-[10px] font-semibold tracking-wider mr-1">
-                                Correlated Evidence Flow:
-                            </span>
-                            <div className="flex items-center gap-1 text-accent font-medium">
-                                <span>User Interaction</span>
-                            </div>
-                            <span className="text-muted font-mono">→</span>
-                            {replaySession.url && (
-                                <>
-                                    <div className="flex items-center gap-1 text-blue-400 font-mono text-[11px]">
-                                        <span>{replaySession.url.replace(/^https?:\/\/[^/]+/, '') || '/'}</span>
-                                    </div>
-                                    <span className="text-muted font-mono">→</span>
-                                </>
-                            )}
-                            {replaySession.traceId && (
-                                <>
-                                    <div className="flex items-center gap-1 text-purple-400 font-mono text-[11px]">
-                                        <span>trace:{replaySession.traceId.slice(0, 8)}</span>
-                                    </div>
-                                    <span className="text-muted font-mono">→</span>
-                                </>
-                            )}
-                            {evidence.find((e) => e.service)?.service && (
-                                <>
-                                    <div className="flex items-center gap-1 text-emerald-400 font-medium">
-                                        <span>{evidence.find((e) => e.service)?.service}</span>
-                                    </div>
-                                    <span className="text-muted font-mono">→</span>
-                                </>
-                            )}
-                            <div className="flex items-center gap-1 text-red-400 font-medium">
-                                <span>{rootCause?.title || "Failure Event"}</span>
-                            </div>
-                            <span className="text-muted font-mono">→</span>
-                            <div className="flex items-center gap-1 text-amber-400 font-medium">
-                                <span>Root Cause Hypothesis</span>
-                            </div>
-                        </div>
-
                         <ReplayPlayerClient
                             replaySession={replaySession}
                             issueTitle={rootCause?.title || "Incident Session"}
@@ -293,281 +539,84 @@ function InvestigationView({
                 )}
             </section>
 
-            {/* Recommended Next Steps to Resolve */}
-            <section className="halo-section">
-                <SectionHeading
-                    title="Recommended Next Steps to Resolve"
-                    description="Actionable remediation plan, verification tasks, and automated fix recommendations derived from the investigation evidence."
-                />
+            {/* 9. What Halo recommends */}
+            <section className="halo-card p-6 border-border space-y-6">
+                <div className="border-b border-border pb-3 flex items-center justify-between">
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
+                        What Halo recommends
+                    </h2>
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-accent/10 text-accent font-semibold">
+                        Actionable Fix Plan
+                    </span>
+                </div>
 
-                <ResolutionNextSteps
-                    recommendations={recommendations}
-                    rootCause={rootCause}
-                    hasRootCause={hasRootCause}
-                    interpreted={interpreted}
-                />
+                <div className="space-y-5">
+                    {/* Immediate Backend Investigation */}
+                    <div className="p-4 rounded-xl bg-surface border border-red-500/20 space-y-2">
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-red-400">
+                            Immediate investigation
+                        </h3>
+                        <p className="text-xs font-semibold text-white">
+                            {interpreted.recommendations.immediateInvestigation.title}
+                        </p>
+                        <p className="text-xs text-secondary">
+                            {interpreted.recommendations.immediateInvestigation.description}
+                        </p>
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
+                            {interpreted.recommendations.immediateInvestigation.checklist.map((item, idx) => (
+                                <li key={idx} className="p-2 rounded bg-[#080b11] border border-white/5 text-xs text-zinc-300 flex items-center gap-2">
+                                    <span className="text-red-400 font-bold">&rarr;</span>
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Likely Client-Side Bug */}
+                    {interpreted.recommendations.likelyRemediation && (
+                        <div className="p-4 rounded-xl bg-surface border border-blue-500/20 space-y-2">
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400">
+                                Likely client-side bug
+                            </h3>
+                            <p className="text-xs font-semibold text-white">
+                                {interpreted.recommendations.likelyRemediation.title}
+                            </p>
+                            <p className="text-xs text-secondary">
+                                {interpreted.recommendations.likelyRemediation.description}
+                            </p>
+                            <pre className="p-3 rounded-lg bg-[#080b11] border border-white/10 text-xs font-mono text-emerald-300 overflow-x-auto my-2 leading-relaxed">
+                                <code>{interpreted.recommendations.likelyRemediation.codeSnippet}</code>
+                            </pre>
+                        </div>
+                    )}
+
+                    {/* Verification */}
+                    <div className="p-4 rounded-xl bg-surface border border-emerald-500/20 space-y-2">
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400">
+                            Verification
+                        </h3>
+                        <p className="text-xs text-secondary">
+                            After fixing the backend failure:
+                        </p>
+                        <ol className="space-y-1.5 pt-1 text-xs text-zinc-300">
+                            {interpreted.recommendations.verificationSteps.map((step, idx) => (
+                                <li key={idx} className="flex items-start gap-2">
+                                    <span className="w-4 h-4 rounded-full bg-emerald-500/10 text-emerald-400 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                        {idx + 1}
+                                    </span>
+                                    <span>{step}</span>
+                                </li>
+                            ))}
+                        </ol>
+                    </div>
+                </div>
             </section>
-
-            {/* Evidence */}
-
-            {evidence.length > 0 && (
-                <section className="halo-section">
-                    <SectionHeading
-                        title="Evidence Matrix"
-                        description={`${evidence.length} ${evidence.length === 1
-                            ? "piece"
-                            : "pieces"
-                            } of evidence analyzed across timing offsets and telemetry channels.`}
-                    />
-
-                    <div className="halo-stack">
-                        {evidence.map((item) => (
-                            <EvidenceCard
-                                key={item.id}
-                                evidence={item}
-                            />
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {/* Findings */}
-
-            {findings.length > 0 && (
-                <section className="halo-section">
-                    <SectionHeading
-                        title="Findings"
-                        description="Observations derived from the evidence."
-                    />
-
-                    <div className="halo-grid-2">
-                        {findings.map((finding) => (
-                            <div
-                                key={finding.id}
-                                className="halo-card halo-finding"
-                            >
-                                <div className="halo-card-top">
-                                    <div>
-                                        <span className="halo-meta-label">
-                                            {formatLabel(
-                                                finding.causalRole
-                                            )}
-                                        </span>
-
-                                        <h3 className="halo-card-title">
-                                            {finding.title}
-                                        </h3>
-                                    </div>
-
-                                    <Strength
-                                        value={
-                                            finding.strength
-                                        }
-                                    />
-                                </div>
-
-                                <p className="halo-card-description">
-                                    {finding.description}
-                                </p>
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {/* Alternatives / Ruled out causes */}
-
-            {interpreted.ruledOutAlternatives.length > 0 && (
-                <section className="halo-section">
-                    <SectionHeading
-                        title="Evaluated &amp; Ruled Out Hypotheses"
-                        description="Alternative explanations considered and why Halo rejected them based on contradictory telemetry."
-                    />
-
-                    <div className="halo-stack">
-                        {interpreted.ruledOutAlternatives.map(
-                            (alt, index) => (
-                                <div
-                                    key={`${alt.title}-${index}`}
-                                    className="halo-card p-4 space-y-2 border border-border"
-                                >
-                                    <div className="flex items-center justify-between">
-                                        <h4 className="text-sm font-semibold text-white">
-                                            {alt.title}
-                                        </h4>
-                                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-surface border border-border text-muted">
-                                            {alt.confidenceLevel}
-                                        </span>
-                                    </div>
-                                    <div className="p-2.5 rounded bg-red-500/5 border border-red-500/20 text-xs text-red-300">
-                                        <span className="font-semibold text-red-400">Why Ruled Out: </span>
-                                        {alt.whyRejected}
-                                    </div>
-                                </div>
-                            )
-                        )}
-                    </div>
-                </section>
-            )}
-
-            {/* Changes */}
-
-            {changes.length > 0 && (
-                <section className="halo-section">
-                    <SectionHeading
-                        title="Changes"
-                        description="Changes detected around the incident."
-                    />
-
-                    <div className="halo-stack">
-                        {changes.map((change) => (
-                            <div
-                                key={change.id}
-                                className="halo-card"
-                            >
-                                <div className="halo-change-header">
-                                    <div className="halo-change-title">
-                                        <span className="halo-type-badge">
-                                            {formatLabel(
-                                                change.type
-                                            )}
-                                        </span>
-
-                                        <h3 className="halo-card-title">
-                                            {change.title}
-                                        </h3>
-                                    </div>
-
-                                    <time className="halo-time">
-                                        {formatDate(
-                                            change.timestamp
-                                        )}
-                                    </time>
-                                </div>
-
-                                {change.description && (
-                                    <p className="halo-card-description">
-                                        {
-                                            change.description
-                                        }
-                                    </p>
-                                )}
-                            </div>
-                        ))}
-                    </div>
-                </section>
-            )}
-
-            {/* Impact */}
-
-            {impact && (
-                <section className="halo-section">
-                    <SectionHeading
-                        title="Impact"
-                        description="The observed scope of the incident."
-                    />
-
-                    <div className="halo-grid-3">
-                        <ImpactCard
-                            label="Severity"
-                            value={formatLabel(
-                                impact.severity
-                            )}
-                        />
-
-                        <ImpactCard
-                            label="Affected users"
-                            value={impact.affectedUsers.toLocaleString()}
-                        />
-
-                        <ImpactCard
-                            label="Affected services"
-                            value={impact.affectedServices.length.toLocaleString()}
-                        />
-                    </div>
-
-                    {(impact.affectedServices.length >
-                        0 ||
-                        impact.affectedRegions.length >
-                        0) && (
-                            <div className="halo-grid-2">
-                                {impact.affectedServices.length >
-                                    0 && (
-                                        <ListCard
-                                            title="Services"
-                                            items={
-                                                impact.affectedServices
-                                            }
-                                        />
-                                    )}
-
-                                {impact.affectedRegions.length >
-                                    0 && (
-                                        <ListCard
-                                            title="Regions"
-                                            items={
-                                                impact.affectedRegions
-                                            }
-                                        />
-                                    )}
-                            </div>
-                        )}
-                </section>
-            )}
-
-            {/* Uncertainties */}
-
-            {report.uncertainties.length > 0 && (
-                <section className="halo-section">
-                    <SectionHeading
-                        title="What is still unknown"
-                        description="Evidence gaps that prevent a stronger conclusion."
-                    />
-
-                    <div className="halo-card">
-                        {report.uncertainties.map(
-                            (uncertainty, index) => (
-                                <div
-                                    key={`${uncertainty}-${index}`}
-                                    className="halo-list-row halo-uncertainty"
-                                >
-                                    <span className="halo-uncertainty-marker" />
-
-                                    <p className="halo-list-description">
-                                        {uncertainty}
-                                    </p>
-                                </div>
-                            )
-                        )}
-                    </div>
-                </section>
-            )}
-
-            {/* Hypotheses */}
-
-            {hypotheses.length > 0 && (
-                <section className="halo-section">
-                    <SectionHeading
-                        title="Investigation hypotheses"
-                        description="How Halo evaluated the possible explanations."
-                    />
-
-                    <div className="halo-stack">
-                        {hypotheses.map((hypothesis) => (
-                            <HypothesisCard
-                                key={hypothesis.id}
-                                hypothesis={hypothesis}
-                            />
-                        ))}
-                    </div>
-                </section>
-            )}
         </div>
     );
 }
 
 /* -------------------------------------------------------------------------- */
-/* Sections                                                                    */
+/* Helper UI Components                                                       */
 /* -------------------------------------------------------------------------- */
 
 function SectionHeading({
@@ -590,10 +639,6 @@ function SectionHeading({
     );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Status                                                                      */
-/* -------------------------------------------------------------------------- */
-
 function StatusBadge({
     status,
 }: {
@@ -608,734 +653,6 @@ function StatusBadge({
     );
 }
 
-/* -------------------------------------------------------------------------- */
-/* Confidence                                                                  */
-/* -------------------------------------------------------------------------- */
-
-function Confidence({
-    value,
-    supportingCount,
-    contradictingCount,
-    missingCount,
-}: {
-    value: number;
-    supportingCount?: number;
-    contradictingCount?: number;
-    missingCount?: number;
-}) {
-    const level = getConfidenceLevel(value);
-
-    return (
-        <div
-            className={`halo-confidence halo-confidence-${level.toLowerCase().replace(" ", "-")}`}
-            title={`${value}% internal confidence`}
-        >
-            <span className="halo-confidence-dot" />
-
-            <div>
-                <p className="halo-confidence-level">
-                    {level} confidence
-                </p>
-
-                {(supportingCount !== undefined ||
-                    contradictingCount !== undefined ||
-                    missingCount !== undefined) && (
-                        <p className="halo-confidence-detail">
-                            {supportingCount ?? 0} supporting
-                            {" · "}
-                            {contradictingCount ?? 0} contradicting
-                            {" · "}
-                            {missingCount ?? 0} missing
-                        </p>
-                    )}
-            </div>
-        </div>
-    );
-}
-
-function getConfidenceLevel(
-    value: number
-): "Low" | "Medium" | "High" | "Very High" {
-    if (value >= 85) {
-        return "Very High";
-    }
-
-    if (value >= 65) {
-        return "High";
-    }
-
-    if (value >= 40) {
-        return "Medium";
-    }
-
-    return "Low";
-}
-
-function RootCauseCard({
-    hypothesis,
-    interpreted,
-}: {
-    hypothesis: Hypothesis;
-    interpreted?: InterpretedInvestigation;
-}) {
-    return (
-        <div className="halo-card halo-root-cause space-y-6">
-            {/* Header / Verdict */}
-            <div className="halo-root-cause-header">
-                <div>
-                    <span className="halo-result-label">
-                        Primary Root Cause
-                    </span>
-
-                    <h3 className="halo-root-cause-title text-lg font-bold text-white mt-1">
-                        {hypothesis.title}
-                    </h3>
-
-                    <p className="halo-card-description text-sm text-zinc-300 mt-1.5 leading-relaxed">
-                        {hypothesis.description}
-                    </p>
-                </div>
-
-                <Confidence
-                    value={hypothesis.confidence}
-                    supportingCount={
-                        hypothesis.supportingReasons.length
-                    }
-                    contradictingCount={
-                        hypothesis.contradictingReasons
-                            .length
-                    }
-                    missingCount={
-                        hypothesis.missingReasons.length
-                    }
-                />
-            </div>
-
-            {/* Deep Developer Interpretation Panels */}
-            {interpreted && (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 border-t border-border pt-4">
-                    {/* Why It Happened Panel */}
-                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2.5">
-                        <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-amber-400" />
-                            <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
-                                Why It Likely Happened
-                            </h4>
-                        </div>
-                        <p className="text-xs text-secondary leading-relaxed">
-                            {interpreted.whyItHappened.rootMechanism}
-                        </p>
-                        {interpreted.whyItHappened.contributingFactors.length > 0 && (
-                            <div className="space-y-1.5 pt-1">
-                                <span className="text-[11px] font-semibold text-zinc-400">
-                                    Contributing Factors:
-                                </span>
-                                <ul className="space-y-1">
-                                    {interpreted.whyItHappened.contributingFactors.map((factor, idx) => (
-                                        <li key={idx} className="text-[11px] text-zinc-300 flex items-start gap-1.5">
-                                            <span className="text-amber-400/80 font-bold">&bull;</span>
-                                            <span>{factor}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                    </div>
-
-                    {/* How Halo Knows Panel */}
-                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2.5">
-                        <div className="flex items-center gap-2">
-                            <span className="w-2 h-2 rounded-full bg-accent" />
-                            <h4 className="text-xs font-semibold text-white uppercase tracking-wider">
-                                How Halo Validated This
-                            </h4>
-                        </div>
-                        <p className="text-xs text-secondary leading-relaxed">
-                            {interpreted.howHaloKnows.temporalCorrelation}
-                        </p>
-                        <div className="p-2 rounded bg-accent/5 border border-accent/20 text-[11px] text-accent">
-                            <span className="font-semibold">Diagnostic Proof: </span>
-                            {interpreted.howHaloKnows.statisticalProof}
-                        </div>
-                    </div>
-                </div>
-            )}
-
-            {/* Structured Reasons */}
-            <div className="halo-reason-grid border-t border-border pt-4">
-                <ReasonGroup
-                    title="Supporting Telemetry Signals"
-                    reasons={
-                        hypothesis.supportingReasons
-                    }
-                    type="supporting"
-                />
-
-                <ReasonGroup
-                    title="Contradicting / Counter Evidence"
-                    reasons={
-                        hypothesis.contradictingReasons
-                    }
-                    type="contradicting"
-                />
-            </div>
-
-            {hypothesis.missingReasons.length > 0 && (
-                <div className="halo-reason-missing">
-                    <ReasonGroup
-                        title="Evidence still needed for 100% certainty"
-                        reasons={
-                            hypothesis.missingReasons
-                        }
-                        type="missing"
-                    />
-                </div>
-            )}
-        </div>
-    );
-}
-
-function ReasonGroup({
-    title,
-    reasons,
-    type,
-}: {
-    title: string;
-    reasons: Hypothesis["supportingReasons"];
-    type:
-    | "supporting"
-    | "contradicting"
-    | "missing";
-}) {
-    if (reasons.length === 0) {
-        return (
-            <div>
-                <p className="halo-reason-title">
-                    {title}
-                </p>
-
-                <p className="halo-empty-text">
-                    None identified.
-                </p>
-            </div>
-        );
-    }
-
-    return (
-        <div>
-            <p className="halo-reason-title">
-                {title}
-            </p>
-
-            <div className="halo-reason-list">
-                {reasons.slice(0, 5).map(
-                    (reason, index) => (
-                        <div
-                            key={`${reason.title}-${index}`}
-                            className={`halo-reason halo-reason-${type}`}
-                        >
-                            <span className="halo-reason-marker" />
-
-                            <div>
-                                <p className="halo-reason-name">
-                                    {reason.title}
-                                </p>
-
-                                <p className="halo-reason-description">
-                                    {
-                                        reason.description
-                                    }
-                                </p>
-                            </div>
-                        </div>
-                    )
-                )}
-            </div>
-        </div>
-    );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Timeline                                                                    */
-/* -------------------------------------------------------------------------- */
-
-function TimelineItem({
-    event,
-    isLast,
-}: {
-    event: Investigation["timeline"]["events"][number];
-    isLast: boolean;
-}) {
-    return (
-        <div className="halo-timeline-item">
-            <time className="halo-timeline-time">
-                {formatDate(event.timestamp)}
-            </time>
-
-            <div className="halo-timeline-track">
-                <span className="halo-timeline-dot" />
-
-                {!isLast && (
-                    <span className="halo-timeline-line" />
-                )}
-            </div>
-
-            <div className="halo-timeline-content">
-                <div className="halo-timeline-title-row">
-                    <h3 className="halo-card-title">
-                        {event.title}
-                    </h3>
-
-                    <span className="halo-meta-label">
-                        {formatLabel(event.type)}
-                    </span>
-                </div>
-
-                {event.description && (
-                    <p className="halo-card-description">
-                        {event.description}
-                    </p>
-                )}
-            </div>
-        </div>
-    );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Evidence                                                                    */
-/* -------------------------------------------------------------------------- */
-
-function EvidenceCard({
-    evidence,
-}: {
-    evidence: Investigation["evidence"][number];
-}) {
-    return (
-        <div className="halo-card halo-evidence">
-            <div className="halo-evidence-header">
-                <div className="halo-evidence-main">
-                    <span className="halo-type-badge">
-                        {formatLabel(evidence.type)}
-                    </span>
-
-                    <div>
-                        <h3 className="halo-card-title">
-                            {evidence.title}
-                        </h3>
-
-                        <p className="halo-evidence-source">
-                            {evidence.source}
-                            {" · "}
-                            {evidence.service}
-                        </p>
-                    </div>
-                </div>
-
-                <time className="halo-time">
-                    {formatDate(evidence.timestamp)}
-                </time>
-            </div>
-
-            {evidence.description && (
-                <p className="halo-card-description">
-                    {evidence.description}
-                </p>
-            )}
-
-            <div className="halo-metadata">
-                {evidence.environment && (
-                    <MetadataChip
-                        label="environment"
-                        value={evidence.environment}
-                    />
-                )}
-
-                {evidence.release && (
-                    <MetadataChip
-                        label="release"
-                        value={evidence.release}
-                    />
-                )}
-
-                {evidence.operation && (
-                    <MetadataChip
-                        label="operation"
-                        value={evidence.operation}
-                    />
-                )}
-
-                {evidence.resource && (
-                    <MetadataChip
-                        label="resource"
-                        value={evidence.resource}
-                    />
-                )}
-
-                {evidence.status !== undefined && (
-                    <MetadataChip
-                        label="status"
-                        value={String(
-                            evidence.status
-                        )}
-                    />
-                )}
-
-                {evidence.durationMs !== undefined && (
-                    <MetadataChip
-                        label="duration"
-                        value={`${evidence.durationMs}ms`}
-                    />
-                )}
-            </div>
-        </div>
-    );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Findings                                                                    */
-/* -------------------------------------------------------------------------- */
-
-function Strength({
-    value,
-}: {
-    value: number;
-}) {
-    return (
-        <span className="halo-strength">
-            {getStrengthLevel(value)}
-        </span>
-    );
-}
-
-function getStrengthLevel(
-    value: number
-): "Weak" | "Moderate" | "Strong" | "Very Strong" {
-    if (value >= 0.85) {
-        return "Very Strong";
-    }
-
-    if (value >= 0.65) {
-        return "Strong";
-    }
-
-    if (value >= 0.4) {
-        return "Moderate";
-    }
-
-    return "Weak";
-}
-
-/* -------------------------------------------------------------------------- */
-/* Recommendations & Next Steps to Resolve                                     */
-/* -------------------------------------------------------------------------- */
-
-function ResolutionNextSteps({
-    recommendations,
-    rootCause,
-    hasRootCause,
-    interpreted,
-}: {
-    recommendations: Recommendation[];
-    rootCause: Hypothesis | null;
-    hasRootCause: boolean;
-    interpreted?: InterpretedInvestigation;
-}) {
-    return (
-        <div className="space-y-6">
-            {/* Specific Engine Recommendations */}
-            {recommendations.length > 0 && (
-                <div className="halo-stack">
-                    {recommendations.map((recommendation) => (
-                        <RecommendationCard
-                            key={recommendation.id}
-                            recommendation={recommendation}
-                        />
-                    ))}
-                </div>
-            )}
-
-            {/* Synthesized 3-Stage Developer Action Plan */}
-            {interpreted && (
-                <div className="halo-card p-6 space-y-5 border border-border">
-                    <div className="flex flex-col sm:flex-row sm:items-center justify-between pb-3 border-b border-border gap-2">
-                        <div>
-                            <h3 className="text-sm font-semibold text-white">
-                                Actionable Developer Remediation Plan
-                            </h3>
-                            <p className="text-xs text-secondary mt-0.5">
-                                {interpreted.remediationGuide.summary}
-                            </p>
-                        </div>
-                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold self-start sm:self-auto">
-                            Prioritized Guide
-                        </span>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                        {/* Stage 1: Immediate Mitigation */}
-                        <div className="p-4 rounded-xl bg-surface border border-red-500/20 space-y-3 flex flex-col justify-between">
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-red-500/10 text-red-400 border border-red-500/30 font-semibold">
-                                        Stage 1 &bull; Immediate
-                                    </span>
-                                    <span className="text-[10px] text-muted uppercase font-bold">Mitigate</span>
-                                </div>
-                                {interpreted.remediationGuide.immediateMitigation.map((item, idx) => (
-                                    <div key={idx} className="space-y-1.5 pt-1">
-                                        <h4 className="text-xs font-semibold text-white">{item.title}</h4>
-                                        <p className="text-xs text-zinc-300 leading-relaxed">{item.rationale}</p>
-                                        <ul className="space-y-1 pt-1">
-                                            {item.actionableSteps.map((step, sIdx) => (
-                                                <li key={sIdx} className="text-[11px] text-zinc-400 flex items-start gap-1.5">
-                                                    <span className="text-red-400 font-bold">&rarr;</span>
-                                                    <span>{step}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Stage 2: Permanent Code Fix */}
-                        <div className="p-4 rounded-xl bg-surface border border-blue-500/20 space-y-3 flex flex-col justify-between">
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/30 font-semibold">
-                                        Stage 2 &bull; Permanent Fix
-                                    </span>
-                                    <span className="text-[10px] text-muted uppercase font-bold">Code / Architecture</span>
-                                </div>
-                                {interpreted.remediationGuide.permanentFix.map((item, idx) => (
-                                    <div key={idx} className="space-y-1.5 pt-1">
-                                        <h4 className="text-xs font-semibold text-white">{item.title}</h4>
-                                        <p className="text-xs text-zinc-300 leading-relaxed">{item.rationale}</p>
-                                        {item.codeSnippet && (
-                                            <pre className="p-2.5 rounded-lg bg-[#0a0d14] border border-white/10 text-[10px] font-mono text-emerald-300 overflow-x-auto my-2">
-                                                <code>{item.codeSnippet}</code>
-                                            </pre>
-                                        )}
-                                        <ul className="space-y-1 pt-1">
-                                            {item.actionableSteps.map((step, sIdx) => (
-                                                <li key={sIdx} className="text-[11px] text-zinc-400 flex items-start gap-1.5">
-                                                    <span className="text-blue-400 font-bold">&rarr;</span>
-                                                    <span>{step}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-
-                        {/* Stage 3: Prevention & Guardrails */}
-                        <div className="p-4 rounded-xl bg-surface border border-emerald-500/20 space-y-3 flex flex-col justify-between">
-                            <div className="space-y-2">
-                                <div className="flex items-center justify-between">
-                                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 font-semibold">
-                                        Stage 3 &bull; Guardrails
-                                    </span>
-                                    <span className="text-[10px] text-muted uppercase font-bold">Prevention</span>
-                                </div>
-                                {interpreted.remediationGuide.preventiveMeasures.map((item, idx) => (
-                                    <div key={idx} className="space-y-1.5 pt-1">
-                                        <h4 className="text-xs font-semibold text-white">{item.title}</h4>
-                                        <p className="text-xs text-zinc-300 leading-relaxed">{item.rationale}</p>
-                                        <ul className="space-y-1 pt-1">
-                                            {item.actionableSteps.map((step, sIdx) => (
-                                                <li key={sIdx} className="text-[11px] text-zinc-400 flex items-start gap-1.5">
-                                                    <span className="text-emerald-400 font-bold">&rarr;</span>
-                                                    <span>{step}</span>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            )}
-        </div>
-    );
-}
-
-function RecommendationCard({
-    recommendation,
-}: {
-    recommendation: Recommendation;
-}) {
-    return (
-        <div className="halo-card">
-            <div className="halo-card-top">
-                <div>
-                    <div className="halo-recommendation-title">
-                        <h3 className="halo-card-title">
-                            {recommendation.title}
-                        </h3>
-
-                        <PriorityBadge
-                            priority={
-                                recommendation.priority
-                            }
-                        />
-                    </div>
-
-                    <p className="halo-card-description">
-                        {recommendation.description}
-                    </p>
-                </div>
-
-                <Confidence
-                    value={recommendation.confidence}
-                />
-            </div>
-
-            {recommendation.question && (
-                <div className="halo-question">
-                    <span className="halo-meta-label">
-                        Question to answer
-                    </span>
-
-                    <p className="halo-question-text">
-                        {recommendation.question}
-                    </p>
-                </div>
-            )}
-        </div>
-    );
-}
-
-function PriorityBadge({
-    priority,
-}: {
-    priority: Recommendation["priority"];
-}) {
-    return (
-        <span
-            className={`halo-priority halo-priority-${priority.toLowerCase()}`}
-        >
-            {priority}
-        </span>
-    );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Hypotheses                                                                  */
-/* -------------------------------------------------------------------------- */
-
-function HypothesisCard({
-    hypothesis,
-}: {
-    hypothesis: Hypothesis;
-}) {
-    return (
-        <div className="halo-card">
-            <div className="halo-card-top">
-                <div>
-                    <div className="halo-hypothesis-title">
-                        <h3 className="halo-card-title">
-                            {hypothesis.title}
-                        </h3>
-
-                        <span className="halo-type-badge">
-                            {formatLabel(
-                                hypothesis.status
-                            )}
-                        </span>
-                    </div>
-
-                    <p className="halo-card-description">
-                        {hypothesis.description}
-                    </p>
-                </div>
-
-                <Confidence
-                    value={hypothesis.confidence}
-                />
-            </div>
-        </div>
-    );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Impact                                                                      */
-/* -------------------------------------------------------------------------- */
-
-function ImpactCard({
-    label,
-    value,
-}: {
-    label: string;
-    value: string;
-}) {
-    return (
-        <div className="halo-card halo-impact-card">
-            <span className="halo-meta-label">
-                {label}
-            </span>
-
-            <p className="halo-impact-value">
-                {value}
-            </p>
-        </div>
-    );
-}
-
-function ListCard({
-    title,
-    items,
-}: {
-    title: string;
-    items: string[];
-}) {
-    return (
-        <div className="halo-card">
-            <span className="halo-meta-label">
-                {title}
-            </span>
-
-            <div className="halo-list-chips">
-                {items.map((item, index) => (
-                    <span
-                        key={`${item}-${index}`}
-                        className="halo-list-chip"
-                    >
-                        {item}
-                    </span>
-                ))}
-            </div>
-        </div>
-    );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Metadata                                                                    */
-/* -------------------------------------------------------------------------- */
-
-function MetadataChip({
-    label,
-    value,
-}: {
-    label: string;
-    value: string;
-}) {
-    return (
-        <span className="halo-metadata-chip">
-            <span className="halo-metadata-label">
-                {label}
-            </span>
-
-            {value}
-        </span>
-    );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Utilities                                                                   */
-/* -------------------------------------------------------------------------- */
-
 function formatLabel(value: string) {
     return value
         .toLowerCase()
@@ -1343,11 +660,4 @@ function formatLabel(value: string) {
         .replace(/\b\w/g, (character) =>
             character.toUpperCase()
         );
-}
-
-function formatDate(value: Date) {
-    return new Intl.DateTimeFormat("en", {
-        dateStyle: "medium",
-        timeStyle: "short",
-    }).format(new Date(value));
 }

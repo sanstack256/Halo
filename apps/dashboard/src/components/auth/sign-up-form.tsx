@@ -48,6 +48,7 @@ export function SignUpForm() {
             }
 
             router.push("/overview");
+            router.refresh();
         } catch (err: unknown) {
             const message = err instanceof Error ? err.message : "An unexpected error occurred.";
             setFormError(message);

@@ -1,0 +1,43 @@
+# Diff Summary
+
+Date : 2026-08-27 23:47:24
+
+Directory /Users/nssanjeev/Development/Halo
+
+Total : 15 files,  251 codes, 134 comments, -16 blanks, all 369 lines
+
+[Summary](results.md) / [Details](details.md) / Diff Summary / [Diff Details](diff-details.md)
+
+## Languages
+| language | files | code | comment | blank | total |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| TypeScript | 11 | 755 | 163 | 80 | 998 |
+| TypeScript JSX | 4 | -504 | -29 | -96 | -629 |
+
+## Directories
+| path | files | code | comment | blank | total |
+| :--- | ---: | ---: | ---: | ---: | ---: |
+| . | 15 | 251 | 134 | -16 | 369 |
+| apps | 9 | -235 | 129 | -53 | -159 |
+| apps/dashboard | 9 | -235 | 129 | -53 | -159 |
+| apps/dashboard/src | 9 | -235 | 129 | -53 | -159 |
+| apps/dashboard/src/actions | 1 | 123 | 91 | 26 | 240 |
+| apps/dashboard/src/app | 1 | -558 | -31 | -101 | -690 |
+| apps/dashboard/src/app/(dashboard) | 1 | -558 | -31 | -101 | -690 |
+| apps/dashboard/src/app/(dashboard)/projects | 1 | -558 | -31 | -101 | -690 |
+| apps/dashboard/src/app/(dashboard)/projects/[id] | 1 | -558 | -31 | -101 | -690 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/investigations | 1 | -558 | -31 | -101 | -690 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/investigations/new | 1 | -558 | -31 | -101 | -690 |
+| apps/dashboard/src/components | 3 | 54 | 2 | 5 | 61 |
+| apps/dashboard/src/components/auth | 2 | 2 | 0 | 0 | 2 |
+| apps/dashboard/src/components/replay | 1 | 52 | 2 | 5 | 59 |
+| apps/dashboard/src/lib | 4 | 146 | 67 | 17 | 230 |
+| apps/dashboard/src/lib (Files) | 2 | 34 | 2 | 5 | 41 |
+| apps/dashboard/src/lib/investigation | 2 | 112 | 65 | 12 | 189 |
+| packages | 6 | 486 | 5 | 37 | 528 |
+| packages/investigation-engine | 6 | 486 | 5 | 37 | 528 |
+| packages/investigation-engine/src | 6 | 486 | 5 | 37 | 528 |
+| packages/investigation-engine/src/hypotheses | 4 | 421 | 5 | 37 | 463 |
+| packages/investigation-engine/src/pipeline | 2 | 65 | 0 | 0 | 65 |
+
+[Summary](results.md) / [Details](details.md) / Diff Summary / [Diff Details](diff-details.md)

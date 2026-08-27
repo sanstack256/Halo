@@ -60,9 +60,9 @@ export function UniversalSearchClient() {
                             type="button"
                             onClick={handleStartInvestigation}
                             className="halo-btn halo-btn-sm halo-btn-primary flex-shrink-0 gap-1.5"
-                            title="Trigger autonomous AI investigation"
+                            title="Trigger automated investigation"
                         >
-                            <Sparkles size={13} />
+                            <Compass size={13} />
                             Investigate
                         </button>
                     )}
@@ -81,7 +81,7 @@ export function UniversalSearchClient() {
                                 className="text-accent hover:underline inline-flex items-center gap-1"
                             >
                                 <Compass size={12} />
-                                Start AI Root Cause Investigation on &ldquo;{query}&rdquo;
+                                Start Root Cause Investigation on &ldquo;{query}&rdquo;
                             </button>
                         )}
                     </div>
@@ -96,8 +96,8 @@ export function UniversalSearchClient() {
                                 onClick={handleStartInvestigation}
                                 className="halo-btn halo-btn-primary mx-auto"
                             >
-                                <Sparkles size={14} />
-                                Trigger AI Investigation on this symptom
+                                <Compass size={14} />
+                                Trigger Investigation on this symptom
                             </button>
                         </div>
                     ) : (

@@ -7,6 +7,10 @@ import { generateDeploymentHypotheses } from "../hypotheses/deployment";
 import { generateResourceSaturationHypotheses } from "../hypotheses/resource-saturation";
 import { generateSecurityHypotheses } from "../hypotheses/security-incident";
 import { generateDynamicAnomalyHypotheses } from "../hypotheses/dynamic-anomaly";
+import { generateCascadingFailureHypotheses } from "../hypotheses/cascading-failure";
+import { generateDatabaseHypotheses } from "../hypotheses/database-failure";
+import { generateNetworkProtocolHypotheses } from "../hypotheses/network-protocol";
+import { generateRuntimeExceptionHypotheses } from "../hypotheses/runtime-exception";
 
 const DEPLOYMENT_CAUSAL_WINDOW_MS =
     30 * 60 * 1000;
@@ -27,6 +31,18 @@ export function generateHypotheses(
             context,
         ),
         ...generateInfrastructureHypotheses(
+            context,
+        ),
+        ...generateCascadingFailureHypotheses(
+            context,
+        ),
+        ...generateDatabaseHypotheses(
+            context,
+        ),
+        ...generateNetworkProtocolHypotheses(
+            context,
+        ),
+        ...generateRuntimeExceptionHypotheses(
             context,
         ),
         ...generateCrossServiceHypotheses(

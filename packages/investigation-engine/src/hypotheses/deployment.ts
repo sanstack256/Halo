@@ -191,18 +191,8 @@ function createDeploymentHypothesis(
         });
     }
 
-    // Missing reasons
+    // Missing reasons are computed comprehensively in evaluate.ts
     const missingReasons: Reason[] = [];
-    if (!rollback || !recovery) {
-        missingReasons.push({
-            type: "MISSING",
-            causalRole: "CONTEXT",
-            title: "Rollback or recovery evidence is unavailable",
-            description: "A rollback or revert followed by service recovery would provide stronger causal evidence.",
-            strength: 0.25,
-            evidenceIds: [],
-        });
-    }
 
     const firstPostError = sameServicePostErrors[0];
     const deltaMinutes = firstPostError
