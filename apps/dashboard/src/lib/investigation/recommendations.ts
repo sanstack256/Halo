@@ -168,6 +168,12 @@ export interface RecommendationTelemetryContext {
     /** Whether exact backend root cause is known */
     isExactRootCauseKnown: boolean;
 
+    /**
+     * Whether actual source code was resolved from disk for the anchor event.
+     * When false, code patches must NOT be generated — they would be fabricated.
+     */
+    sourceResolved: boolean;
+
     /** Backend server trace evidence, if present */
     backendServerTrace: {
         id: string;
@@ -207,9 +213,10 @@ export function buildDashboardRecommendations(
         primary = buildInterpreterDerivedRecommendation(telemetry);
     }
 
-    // Enrich the primary recommendation with interpreter-specific context
-    // when engine lacks a code patch but the interpreter parsed one from the stack
-    if (!primary.codePatch && telemetry.isDownstreamResponseHandler && telemetry.failedRequest) {
+    // Only attempt a code patch when actual source was resolved from disk.
+    // When sourceResolved is false, buildResponseHandlerPatch would generate a
+    // fabricated file path — which is explicitly forbidden.
+    if (!primary.codePatch && telemetry.isDownstreamResponseHandler && telemetry.failedRequest && telemetry.sourceResolved) {
         const interpreterPatch = buildResponseHandlerPatch(telemetry);
         if (interpreterPatch) {
             primary = { ...primary, codePatch: interpreterPatch };
@@ -320,7 +327,8 @@ function buildInterpreterDerivedRecommendation(
             : failedRequest.endpoint ?? "the endpoint";
 
         const prop = parsedError.targetProperty ?? "response properties";
-        const codePatch = buildResponseHandlerPatch(telemetry);
+        // Only generate code patch when actual source was resolved
+        const codePatch = telemetry.sourceResolved ? buildResponseHandlerPatch(telemetry) : null;
 
         return {
             id: `interpreter-derived:cascading:${anchorErrorId ?? "unknown"}`,
@@ -418,49 +426,80 @@ function buildInterpreterDerivedRecommendation(
 /* -------------------------------------------------------------------------- */
 
 function buildResponseHandlerPatch(telemetry: RecommendationTelemetryContext): DashboardCodePatch | null {
-    const { parsedError, failedRequest } = telemetry;
+    const { parsedError, failedRequest, sourceResolved } = telemetry;
 
+    // Never generate a code patch without actual source provenance.
+    // A fabricated file path is more harmful than no patch at all.
+    if (!sourceResolved) return null;
     if (!failedRequest?.endpoint || !failedRequest.method) return null;
+    // Require an actual failing file from source resolution
+    if (!parsedError.failingFile) return null;
 
     const prop = parsedError.targetProperty ?? null;
+    const isHttpError = failedRequest.status != null && String(failedRequest.status).match(/^[45]/);
+
     const locComment = parsedError.failingFile
-        ? `// In ${parsedError.failingFile}${parsedError.failingLine ? `:${parsedError.failingLine}` : ""}\n`
+        ? `// In ${parsedError.failingFile.split("/").pop()}${parsedError.failingLine ? `:${parsedError.failingLine}` : ""}\n`
         : "";
 
-    const before = parsedError.failingFile
-        ? `// Response handler in ${parsedError.failingFile}${parsedError.failingLine ? `:${parsedError.failingLine}` : ""}\n` +
-          (prop ? `// Unguarded: accesses \`${prop}\` without checking response status` : `// No HTTP status guard before accessing response body`)
-        : prop
-        ? `// Unguarded property access — \`${prop}\` is read from the response body\n// without first checking that the HTTP status is 2xx`
-        : `// HTTP response accessed without status validation`;
+    let before: string;
+    let after: string;
+    let explanation: string;
 
-    const after =
-        `${locComment}const response = await fetch("${failedRequest.endpoint}", {\n` +
-        `  method: "${failedRequest.method}",\n` +
-        `  headers: { "Content-Type": "application/json" },\n` +
-        `});\n\n` +
-        `if (!response.ok) {\n` +
-        `  // Handle the error — do not access ${prop ? `\`${prop}\`` : "response properties"} here\n` +
-        `  const errorBody = await response.json().catch(() => ({}));\n` +
-        `  throw new Error(errorBody.message ?? \`Request failed: \${response.status}\`);\n` +
-        `}\n\n` +
-        `const result = await response.json();\n` +
-        (prop ? `// \`${prop}\` is safe to access after the 2xx guard` : `// Response body is safe to access after the 2xx guard`);
+    if (isHttpError) {
+        before =
+            locComment +
+            `const response = await fetch("${failedRequest.endpoint}", { method: "${failedRequest.method}" });\n` +
+            `const data = await response.json();\n` +
+            (prop ? `// Unguarded: accesses \`${prop}\` on non-2xx response body\nreturn data.${prop};` : `return data;`);
+
+        after =
+            locComment +
+            `const response = await fetch("${failedRequest.endpoint}", { method: "${failedRequest.method}" });\n` +
+            `if (!response.ok) {\n` +
+            `  const errorBody = await response.json().catch(() => ({}));\n` +
+            `  throw new Error(errorBody.message ?? \`Request failed with HTTP \${response.status}\`);\n` +
+            `}\n` +
+            `const data = await response.json();\n` +
+            (prop ? `return data.${prop};` : `return data;`);
+
+        explanation =
+            `The response handler accessed \`${prop ?? "response properties"}\` without verifying that ` +
+            `\`${failedRequest.method} ${failedRequest.endpoint}\` returned a 2xx status. ` +
+            `When the endpoint returns HTTP ${failedRequest.status}, the response body contains error details ` +
+            `rather than the expected schema, causing \`${parsedError.errorMessage}\`.`;
+    } else {
+        // HTTP 200 unexpected payload / null entity
+        const entityName = prop?.split(".")[0] || "entity";
+        before =
+            locComment +
+            (parsedError.failingFunction ? `function ${parsedError.failingFunction}(${entityName}) {\n` : "") +
+            (prop ? `  // Unguarded: assumes \`${entityName}\` is non-null\n  return ${prop};\n` : `  return payload;\n`) +
+            (parsedError.failingFunction ? `}` : "");
+
+        after =
+            locComment +
+            (parsedError.failingFunction ? `function ${parsedError.failingFunction}(${entityName}) {\n` : "") +
+            `  if (!${entityName}) {\n` +
+            `    throw new Error(\`Expected ${entityName} to be defined in response from ${failedRequest.endpoint}\`);\n` +
+            `  }\n` +
+            (prop ? `  return ${prop};\n` : `  return payload;\n`) +
+            (parsedError.failingFunction ? `}` : "");
+
+        explanation =
+            `The function \`${parsedError.failingFunction || "handler"}()\` received an unexpected null or empty ` +
+            `\`${entityName}\` from \`${failedRequest.method} ${failedRequest.endpoint}\`. Adding an explicit validation ` +
+            `prevents attempting to access \`${prop ?? "properties"}\` on null.`;
+    }
 
     return {
-        filePath: parsedError.failingFile ?? `${failedRequest.endpoint.replace(/^\//, "").replace(/\//g, "_")}.ts`,
+        filePath: parsedError.failingFile,
         functionOrComponent: parsedError.failingFunction ?? undefined,
         lineRange: parsedError.failingLine ? String(parsedError.failingLine) : undefined,
         before,
         after,
-        explanation:
-            `The response handler accessed \`${prop ?? "response properties"}\` without first verifying that ` +
-            `\`${failedRequest.method} ${failedRequest.endpoint}\` returned a 2xx status. ` +
-            `When the endpoint returns HTTP ${failedRequest.status ?? "non-2xx"}, the response body does not ` +
-            `contain the expected structure, causing the \`${parsedError.errorMessage}\` exception. ` +
-            `The \`response.ok\` check prevents the dereference when the upstream fails.`,
+        explanation,
         sideEffects:
-            `Callers must handle the thrown error. If this function is called in a try/catch or .catch() chain, ` +
-            `verify the error handling logic covers the new thrown error format.`,
+            `Callers must handle the potential thrown error or return value when the upstream payload is invalid.`,
     };
 }

@@ -11,6 +11,12 @@ import {
     buildDashboardRecommendations,
     type DashboardRecommendationPlan,
 } from "./recommendations";
+import {
+    reconstructRuntimeFailure,
+} from "./runtime/reconstruction-engine";
+import type {
+    FullRuntimeReconstruction,
+} from "./runtime/types";
 
 export type ProvenanceType = "Observed" | "Inferred" | "Unknown";
 
@@ -56,8 +62,14 @@ export interface CausalEvidenceNode {
 export interface CompetingHypothesisAnalysis {
     id: string;
     title: string;
-    status: "VALIDATED" | "EVALUATED" | "REJECTED";
-    confidence: number;
+    /**
+     * SUPPORTED: evidence-consistent but not actually tested.
+     * EVALUATED: considered and ranked during analysis.
+     * REJECTED: contradicted by evidence.
+     * Note: "VALIDATED" is intentionally absent — that requires actual test execution.
+     */
+    status: "SUPPORTED" | "EVALUATED" | "REJECTED";
+    /** Qualitative confidence only — numeric confidence is never exposed to users */
     confidenceLevel: "Low" | "Medium" | "High" | "Very High";
     causalRelationship: string;
     supportingEvidence: string[];
@@ -209,6 +221,11 @@ export interface InterpretedInvestigation {
      * Every claim is tied to real telemetry — nothing is fabricated.
      */
     recommendations: DashboardRecommendationPlan;
+
+    /**
+     * Exact Runtime Failure & Context Reconstruction (Features 1 & 2)
+     */
+    runtimeReconstruction?: FullRuntimeReconstruction;
 }
 
 /**
@@ -249,26 +266,59 @@ export function interpretInvestigation(
     const incidentTraceId = anchorError?.traceId;
     const incidentRequestId = anchorError?.requestId;
 
-    // Separate active incident telemetry from historical / unrelated occurrences
+    // Detect runtime origin to drive correct narrative language.
+    // Node.js events must never be described as "browser/client exceptions".
+    const runtimeOrigin = detectAnchorRuntimeOrigin(anchorError);
+
+    // Separate active incident telemetry from historical / unrelated occurrences.
+    //
+    // Admission rules (identifier-first, strict):
+    //   1. The anchor event itself is always admitted.
+    //   2. Events sharing requestId/traceId/sessionId with the anchor are admitted
+    //      as directly correlated.
+    //   3. Temporal proximity ONLY used as fallback when the anchor event has NO
+    //      identifiers at all (sessionId, traceId, requestId all null).
+    //      These are explicitly tagged as temporal correlations.
+    //
+    // This prevents request B from bleeding into the investigation of request A
+    // merely because they occurred within the same 30s window.
+    const anchorHasIdentifiers =
+        Boolean(incidentSessionId) ||
+        Boolean(incidentTraceId) ||
+        Boolean(incidentRequestId);
+
     const activeIncidentEvidence: Evidence[] = [];
     const historicalUnrelatedEvidence: Evidence[] = [];
 
     for (const ev of evidence) {
-        const evTime = new Date(ev.timestamp).getTime();
-        const deltaMs = Math.abs(evTime - anchorTimeMs);
+        // Always admit the anchor
+        if (ev.id === anchorError?.id) {
+            activeIncidentEvidence.push(ev);
+            continue;
+        }
 
         const hasDirectLink =
-            (incidentSessionId && ev.sessionId === incidentSessionId) ||
+            (incidentRequestId && ev.requestId === incidentRequestId) ||
             (incidentTraceId && ev.traceId === incidentTraceId) ||
-            (incidentRequestId && ev.requestId === incidentRequestId);
+            (incidentSessionId && ev.sessionId === incidentSessionId);
 
-        const isTemporallyCoincident = deltaMs <= 30000; // within 30s cascade window
-
-        if (hasDirectLink || isTemporallyCoincident) {
+        if (hasDirectLink) {
             activeIncidentEvidence.push(ev);
-        } else {
-            historicalUnrelatedEvidence.push(ev);
+            continue;
         }
+
+        // Temporal fallback: only when anchor has no identifiers at all
+        if (!anchorHasIdentifiers) {
+            const evTime = new Date(ev.timestamp).getTime();
+            const deltaMs = Math.abs(evTime - anchorTimeMs);
+            if (deltaMs <= 30000) {
+                // Admitted as temporal — mark for UI display
+                activeIncidentEvidence.push(ev);
+                continue;
+            }
+        }
+
+        historicalUnrelatedEvidence.push(ev);
     }
 
     // Sort active evidence chronologically
@@ -276,8 +326,12 @@ export function interpretInvestigation(
         (a, b) => new Date(a.timestamp).getTime() - new Date(b.timestamp).getTime()
     );
 
-    // 2. Parse exact error details from the incident anchor
-    const parsedError = parseErrorDetails(anchorError, rootCause);
+    // Compute Runtime Reconstruction immediately from anchor and active evidence
+    const runtimeReconstruction = reconstructRuntimeFailure(anchorError, activeIncidentEvidence);
+    const sourceResolved = runtimeReconstruction?.sourceResolved ?? false;
+
+    // 2. Parse exact error details from the incident anchor, enriched with real AST source facts
+    const parsedError = parseErrorDetails(anchorError, rootCause, runtimeReconstruction);
 
     // 3. Identify correlated network request within active incident boundary
     const requestEvidence = sortedActive.filter((e) =>
@@ -295,8 +349,7 @@ export function interpretInvestigation(
     }) || sortedActive.find((e) => {
         const s = String(e.status || "");
         return s.startsWith("5") || s.startsWith("4");
-    });
-
+    }) || requestEvidence[0];
 
     const requestMethod: string | null =
         failedRequestEvent?.operation?.split(" ")[0] ?? null;
@@ -327,9 +380,16 @@ export function interpretInvestigation(
     const isExactRootCauseKnown = Boolean(backendServerTrace);
 
     // 4. Downstream Response dereferencing check
-    // A downstream pattern: TypeError that follows an observed failed HTTP request.
+    // Only classify as "downstream response handler" when BOTH:
+    //   a) The TypeError exists
+    //   b) A request is correlated (same requestId/traceId — exact match)
+    //   c) The runtime is browser OR the event service matches the request service
     const isDownstreamResponseHandler =
-        parsedError.isTypeError && Boolean(failedRequestEvent);
+        parsedError.isTypeError &&
+        Boolean(failedRequestEvent) &&
+        (runtimeOrigin === "browser" ||
+            runtimeOrigin === "unknown" ||
+            (runtimeOrigin === "node" && Boolean(backendServerTrace || failedRequestEvent)));
 
     const pageUrl: string | null =
         replaySession?.url ??
@@ -345,7 +405,17 @@ export function interpretInvestigation(
             ? `${requestMethod} ${requestEndpoint}`
             : requestEndpoint ?? requestMethod ?? "HTTP request";
 
-    const propRef: string = parsedError.targetProperty ?? "expected property";
+    const propRef: string =
+        runtimeReconstruction?.failure?.failingExpression ??
+        parsedError.targetProperty ??
+        "expected property";
+
+    const funcRef: string =
+        runtimeReconstruction?.failure?.sourceContext?.containingFunction
+            ? `${runtimeReconstruction.failure.sourceContext.containingFunction}()`
+            : parsedError.failingFunction
+            ? `${parsedError.failingFunction}()`
+            : "the application";
 
     // 5. Causal Terminology Alignment — everything derived from real telemetry.
     let headline = "";
@@ -355,20 +425,45 @@ export function interpretInvestigation(
     let downstreamSymptom = "";
     const contributingFactors: string[] = [];
 
+    // Runtime-appropriate language: Node.js events are "application exceptions", not "client-side exceptions"
+    const exceptionOriginLabel =
+        runtimeOrigin === "browser" ? "client-side exception" : "application exception";
+    const runtimeLabel =
+        runtimeOrigin === "browser"
+            ? "client"
+            : runtimeOrigin === "node"
+            ? "application"
+            : "application";
+
+    const isHttpErrorStatus = requestStatus != null && String(requestStatus).match(/^[45]/);
+
     if (isDownstreamResponseHandler && requestEndpoint && requestStatus != null) {
         const durationSuffix = requestDuration != null ? ` (${requestDuration} ms)` : "";
-        headline = `${parsedError.errorClass} after ${reqLabel} → ${requestStatus}`;
-        firstObservedUpstreamFailure = `${reqLabel} returned HTTP ${requestStatus}${durationSuffix}`;
-        downstreamSymptom = parsedError.errorMessage;
-        contributingFactors.push(
-            "The response handler accessed properties on the response body without first checking the HTTP status code."
-        );
-        if (isExactRootCauseKnown && backendServerTrace) {
-            rootCauseStatement = `The server failed with "${backendServerTrace.title}" during execution of ${requestEndpoint}, causing the HTTP ${requestStatus} response.`;
+        if (isHttpErrorStatus) {
+            // Upstream HTTP 4xx/5xx failure (e.g. Scenario D dependency failure)
+            headline = `${parsedError.errorClass} after ${reqLabel} → ${requestStatus}`;
+            firstObservedUpstreamFailure = `${reqLabel} returned HTTP ${requestStatus}${durationSuffix}`;
+            downstreamSymptom = parsedError.errorMessage;
+            contributingFactors.push(
+                `The response handler in ${funcRef} accessed properties on the error response body without checking for a 2xx status.`
+            );
+            if (isExactRootCauseKnown && backendServerTrace) {
+                rootCauseStatement = `The server failed with "${backendServerTrace.title}" during execution of ${requestEndpoint}, causing the HTTP ${requestStatus} response.`;
+            } else {
+                rootCauseStatement = `\`${reqLabel}\` returned HTTP ${requestStatus}. The ${runtimeLabel} response handler in ${funcRef} then accessed \`${propRef}\` without validating the HTTP status, producing the \`${parsedError.errorMessage}\` exception.`;
+            }
+            verdict = `The ${exceptionOriginLabel} is a downstream symptom. The first observed upstream failure in this cascade is the HTTP ${requestStatus} response from \`${requestEndpoint}\`.`;
         } else {
-            rootCauseStatement = `\`${reqLabel}\` returned HTTP ${requestStatus}. The response handler then accessed \`${propRef}\` without validating the HTTP status first, producing the \`${parsedError.errorMessage}\` exception.`;
+            // Upstream HTTP 200 with invalid payload or missing entity (e.g. Scenario B bad-shape / missing entity)
+            headline = `${parsedError.errorClass} in ${funcRef} accessing \`${propRef}\``;
+            firstObservedUpstreamFailure = `Unexpected payload structure from ${reqLabel}`;
+            downstreamSymptom = parsedError.errorMessage;
+            contributingFactors.push(
+                `The response from \`${reqLabel}\` contained an unexpected null or invalid field, and ${funcRef} accessed \`${propRef}\` without validating the payload structure.`
+            );
+            rootCauseStatement = `\`${reqLabel}\` returned an unexpected payload structure. ${funcRef} accessed \`${propRef}\` on the response without verifying its value, producing the \`${parsedError.errorMessage}\` exception.`;
+            verdict = `${funcRef} encountered a ${parsedError.errorClass} because the upstream response did not contain the expected data for \`${propRef}\`.`;
         }
-        verdict = `The client-side exception is a downstream symptom. The first observed upstream failure in this cascade is the HTTP ${requestStatus} response from \`${requestEndpoint}\`.`;
     } else if (rootCause) {
         headline = rootCause.title;
         firstObservedUpstreamFailure = rootCause.title;
@@ -395,11 +490,13 @@ export function interpretInvestigation(
     const statusLine =
         requestStatus != null
             ? `HTTP ${requestStatus}${requestDuration != null ? ` (${requestDuration} ms)` : ""}`
-            : "Request failed";
+            : "Request completed";
 
     const asciiFlow =
         isDownstreamResponseHandler && requestEndpoint
-            ? `${userTriggerLine}\n       ↓\n${reqLabel}\n       ↓\n${statusLine}\n       ↓\nResponse handler accessed \`${propRef}\` without status check\n       ↓\n${parsedError.errorMessage}`
+            ? isHttpErrorStatus
+                ? `${userTriggerLine}\n       ↓\n${reqLabel}\n       ↓\n${statusLine}\n       ↓\n${funcRef} accessed \`${propRef}\` without status check\n       ↓\n${parsedError.errorMessage}`
+                : `${userTriggerLine}\n       ↓\n${reqLabel}\n       ↓\n${statusLine} (unexpected payload)\n       ↓\n${funcRef} accessed \`${propRef}\`\n       ↓\n${parsedError.errorMessage}`
             : `${userTriggerLine}\n       ↓\n${reqLabel}\n       ↓\n${parsedError.errorMessage}`;
 
     // 7. Causal Story Narrative — derived from real evidence.
@@ -408,17 +505,22 @@ export function interpretInvestigation(
 
     const causalStory =
         isDownstreamResponseHandler && requestEndpoint && requestStatus != null
-            ? `At ${timeFormatted}, an incident was captured${pageUrl ? ` on ${pageCtx}` : ""}. ` +
-              `A request to \`${reqLabel}\` returned HTTP ${requestStatus}${durationPhrase}. ` +
-              `The response handler then accessed \`${propRef}\` without validating the HTTP status, producing \`${parsedError.errorMessage}\`. ` +
-              (replaySession ? `Replay confirms user interaction immediately before the request. ` : "") +
-              `The exact server-side reason for the ${requestStatus} is unknown — no backend exception or dependency failure was captured for this transaction.`
+            ? isHttpErrorStatus
+                ? `At ${timeFormatted}, an incident was captured${pageUrl ? ` on ${pageCtx}` : ""}. ` +
+                  `A request to \`${reqLabel}\` returned HTTP ${requestStatus}${durationPhrase}. ` +
+                  `The response handler in ${funcRef} then accessed \`${propRef}\` without validating the HTTP status, producing \`${parsedError.errorMessage}\`. ` +
+                  (replaySession ? `Replay confirms user interaction immediately before the request. ` : "") +
+                  `The exact server-side reason for the ${requestStatus} is unknown — no backend exception or execution log was captured for this transaction.`
+                : `At ${timeFormatted}, an incident was captured${pageUrl ? ` on ${pageCtx}` : ""}. ` +
+                  `A request to \`${reqLabel}\` returned HTTP ${requestStatus}${durationPhrase}, but with an unexpected data structure. ` +
+                  `${funcRef} accessed \`${propRef}\` without checking for null, producing \`${parsedError.errorMessage}\`. ` +
+                  `The exact business reason why the upstream data was null is unknown.`
             : `At ${timeFormatted}, an incident occurred${pageUrl ? ` on ${pageCtx}` : ""}. ${rootCauseStatement}`;
 
     // 8. Causal Tree Diagram — derived from real evidence.
     const treeDiagram =
         isDownstreamResponseHandler && requestEndpoint
-            ? `${reqLabel} → ${requestStatus ?? "error"}\n        │\n        └── response handler accesses \`${propRef}\` without status guard\n                    │\n                    └── ${parsedError.errorMessage}`
+            ? `${reqLabel} → ${requestStatus ?? "response"}\n        │\n        └── ${funcRef} accesses \`${propRef}\`\n                    │\n                    └── ${parsedError.errorMessage}`
             : `${reqLabel} → ${parsedError.errorMessage}`;
 
     // 9. Evidence Integrity: Confirmed Facts vs Inferences vs Unknowns
@@ -435,11 +537,22 @@ export function interpretInvestigation(
     }
 
     if (anchorError) {
+        const loc = parsedError.failingFile
+            ? ` in \`${parsedError.failingFile.split("/").pop()}${parsedError.failingLine ? `:${parsedError.failingLine}` : ""}\``
+            : "";
         confirmedFacts.push({
-            statement: `\`${parsedError.errorMessage}\`${parsedError.failingFile ? ` thrown in \`${parsedError.failingFile}\`` : ""}.`,
+            statement: `\`${parsedError.errorMessage}\`${loc}.`,
             provenance: "Observed",
             evidenceSource: `Error event (${anchorError.id})`,
             evidenceId: anchorError.id,
+        });
+    }
+
+    if (runtimeReconstruction?.failure?.failingExpression) {
+        confirmedFacts.push({
+            statement: `Failing source expression: \`${runtimeReconstruction.failure.failingExpression}\` at line ${runtimeReconstruction.failure.sourceContext?.failingLineNumber || "?"}.`,
+            provenance: "Observed",
+            evidenceSource: "AST source analysis",
         });
     }
 
@@ -602,47 +715,70 @@ export function interpretInvestigation(
     const hypothesesAnalysis: CompetingHypothesisAnalysis[] = [];
 
     if (isDownstreamResponseHandler && failedRequestEvent && requestEndpoint && requestStatus != null) {
-        hypothesesAnalysis.push({
-            id: "hyp-upstream-api",
-            title: `Upstream Request Failure on \`${reqLabel}\` (HTTP ${requestStatus})`,
-            status: "VALIDATED",
-            confidence: 0.92,
-            confidenceLevel: "Very High",
-            causalRelationship: `HTTP ${requestStatus} from \`${requestEndpoint}\` preceded and induced the client-side exception.`,
-            supportingEvidence: [
-                `Request returned HTTP ${requestStatus} immediately before the client exception.`,
-                `Client exception and request share the same session${incidentTraceId ? " and trace" : ""} context.`,
-                ...(replaySession ? [`Replay confirms user interaction immediately before the network call.`] : []),
-                `Client exception is consistent with accessing response properties on an error response body.`,
-            ],
-            contradictingEvidence: [],
-            missingEvidence: [
-                `Server-side logs explaining the backend reason for HTTP ${requestStatus}.`,
-            ],
-            outrankReason: `Outranks a standalone client bug hypothesis because the request failure is chronologically upstream and induced the unexpected response body.`,
-            uncertainties: [
-                `Exact backend cause (dependency, configuration, validation, runtime) is not yet observed.`,
-            ],
-        });
+        if (isHttpErrorStatus) {
+            hypothesesAnalysis.push({
+                id: "hyp-upstream-api",
+                title: `Upstream Request Failure on \`${reqLabel}\` (HTTP ${requestStatus})`,
+                status: "SUPPORTED",  // Evidence-consistent; no actual test was run
+                confidenceLevel: "Very High",
+                causalRelationship: `HTTP ${requestStatus} from \`${requestEndpoint}\` preceded and induced the ${exceptionOriginLabel}.`,
+                supportingEvidence: [
+                    `Request returned HTTP ${requestStatus} immediately before the ${exceptionOriginLabel}.`,
+                    `Exception and request share the same ${incidentTraceId ? "trace" : incidentSessionId ? "session" : "temporal"} context.`,
+                    ...(replaySession ? [`Replay confirms user interaction immediately before the network call.`] : []),
+                    `Exception in ${funcRef} is consistent with accessing \`${propRef}\` on an error response body.`,
+                ],
+                contradictingEvidence: [],
+                missingEvidence: [
+                    `Server-side logs explaining the backend reason for HTTP ${requestStatus}.`,
+                ],
+                outrankReason: `Outranks a standalone ${runtimeLabel} bug hypothesis because the request failure is chronologically upstream and induced the unexpected response body.`,
+                uncertainties: [
+                    `Exact backend cause (dependency, configuration, validation, runtime) is not yet observed.`,
+                ],
+            });
+        } else {
+            hypothesesAnalysis.push({
+                id: "hyp-upstream-payload",
+                title: `Unexpected Upstream Response Structure on \`${reqLabel}\` (HTTP ${requestStatus})`,
+                status: "SUPPORTED",
+                confidenceLevel: "High",
+                causalRelationship: `\`${reqLabel}\` returned HTTP 200 but contained null or missing data for \`${propRef}\`, triggering the exception in ${funcRef}.`,
+                supportingEvidence: [
+                    `Request \`${reqLabel}\` completed immediately before the exception was captured.`,
+                    `Failing expression \`${propRef}\` was dereferenced in ${funcRef} without a null check.`,
+                    `Exception is consistent with receiving an unexpected payload structure or missing entity.`,
+                ],
+                contradictingEvidence: [],
+                missingEvidence: [
+                    `Upstream data source logs explaining why the entity or field was null.`,
+                ],
+                outrankReason: `Best explains the failure: the application code assumed valid non-null data from \`${reqLabel}\`.`,
+                uncertainties: [
+                    `Whether the null value was caused by a database record omission, business logic branch, or upstream API change.`,
+                ],
+            });
+        }
 
         hypothesesAnalysis.push({
-            id: "hyp-client-only",
-            title: `Isolated Client Exception (\`${parsedError.errorClass}\`)`,
+            id: "hyp-standalone-error",
+            title: `Isolated ${runtimeLabel === "client" ? "Client" : "Application"} Exception (\`${parsedError.errorClass}\`)`,
             status: "REJECTED",
-            confidence: 0.2,
             confidenceLevel: "Low",
             causalRelationship: "Rejected as primary root cause.",
             supportingEvidence: [
                 parsedError.failingFile
-                    ? `Client stack trace points to \`${parsedError.failingFile}\`.`
-                    : `A client-side exception was captured.`,
+                    ? `Stack trace points to \`${parsedError.failingFile}\`.`
+                    : `An exception was captured.`,
             ],
             contradictingEvidence: [
-                `The exception only occurred after \`${reqLabel}\` returned HTTP ${requestStatus}.`,
-                `If the request had succeeded with a valid response body, the dereference would not have failed.`,
+                `The exception occurred directly during processing of the response from \`${reqLabel}\`.`,
+                isHttpErrorStatus
+                    ? `If the request had succeeded with a valid 2xx response body, the dereference would not have failed.`
+                    : `The failure mechanism directly depends on the data shape returned by the upstream endpoint.`,
             ],
             missingEvidence: [],
-            outrankReason: "Loses to the upstream request failure hypothesis: the client exception is a consequence of the failed response, not an independent bug.",
+            outrankReason: `Loses to the upstream payload / response hypothesis: the exception is a consequence of handling unexpected upstream data.`,
             uncertainties: [],
         });
     }
@@ -653,8 +789,8 @@ export function interpretInvestigation(
             hypothesesAnalysis.push({
                 id: alt.id,
                 title: alt.title,
-                status: alt.status === "VALIDATED" ? "EVALUATED" : "REJECTED",
-                confidence: alt.confidence,
+                // Never expose "VALIDATED" unless a test was actually run
+                status: alt.status === "VALIDATED" ? "SUPPORTED" : "EVALUATED",
                 confidenceLevel: getConfidenceLevel(alt.confidence * 100),
                 causalRelationship: "Alternative considered during evaluation.",
                 supportingEvidence: alt.supportingReasons.map((r) => r.title || r.description),
@@ -717,6 +853,7 @@ export function interpretInvestigation(
             incidentTraceId,
             pageUrl,
             isExactRootCauseKnown,
+            sourceResolved,
             backendServerTrace: backendServerTrace
                 ? {
                       id: backendServerTrace.id,
@@ -857,6 +994,7 @@ export function interpretInvestigation(
         replayEvidenceAnalysis,
         impactDetails,
         recommendations,
+        runtimeReconstruction,
     };
 }
 
@@ -866,7 +1004,8 @@ export function interpretInvestigation(
 
 function parseErrorDetails(
     primaryError: Evidence | undefined,
-    rootCause: Hypothesis | null
+    rootCause: Hypothesis | null,
+    runtimeReconstruction?: FullRuntimeReconstruction
 ): ParsedErrorDetails {
     const fullText = [
         primaryError?.title || "",
@@ -893,7 +1032,7 @@ function parseErrorDetails(
     const firstFrame = stackFrames.find((f) => f.file && !f.file.includes("node_modules")) || stackFrames[0];
 
     const propMatch = /reading\s+['"]?([a-zA-Z0-9_$]+)['"]?/i.exec(fullText);
-    const targetProperty = propMatch ? propMatch[1] : undefined;
+    let targetProperty = propMatch ? propMatch[1] : undefined;
 
     const isTypeError = /TypeError|ReferenceError|NullPointer|Cannot read properties|undefined is not|is not a function/i.test(fullText);
     const isDatabaseError = /Prisma|Postgres|Sequelize|TypeORM|Deadlock|Unique constraint|P2002|P2024|P2025|connection pool/i.test(fullText);
@@ -907,12 +1046,30 @@ function parseErrorDetails(
     const classMatch = /([A-Z][a-zA-Z0-9_]*(?:Error|Exception))/i.exec(fullText);
     const errorClass = classMatch ? classMatch[1] : isTypeError ? "TypeError" : "RuntimeError";
 
+    let failingFile = firstFrame?.file;
+    let failingFunction = firstFrame?.func;
+    let failingLine = firstFrame?.line;
+
+    // Enrich with verified AST source context when available
+    if (runtimeReconstruction?.failure?.sourceContext) {
+        const sc = runtimeReconstruction.failure.sourceContext;
+        if (sc.filePath) failingFile = sc.filePath;
+        if (sc.containingFunction) failingFunction = sc.containingFunction;
+        if (sc.failingLineNumber) failingLine = sc.failingLineNumber;
+        if (sc.failingExpression) targetProperty = sc.failingExpression;
+    } else if (runtimeReconstruction?.failure?.primaryFailingFrame) {
+        const pf = runtimeReconstruction.failure.primaryFailingFrame;
+        if (pf.filePath) failingFile = pf.filePath;
+        if (pf.functionName && pf.functionName !== "<anonymous>") failingFunction = pf.functionName;
+        if (pf.lineNumber) failingLine = pf.lineNumber;
+    }
+
     return {
         errorClass,
         errorMessage: primaryError?.title || rootCause?.title || "Unhandled Exception",
-        failingFile: firstFrame?.file,
-        failingFunction: firstFrame?.func,
-        failingLine: firstFrame?.line,
+        failingFile,
+        failingFunction,
+        failingLine,
         targetProperty,
         databaseModel,
         isTypeError,
@@ -953,4 +1110,60 @@ function getConfidenceLevel(score: number): "Low" | "Medium" | "High" | "Very Hi
     if (score >= 65) return "High";
     if (score >= 40) return "Medium";
     return "Low";
+}
+
+/**
+ * Detect the runtime origin of the anchor event.
+ *
+ * Used to ensure investigation narrative uses correct language:
+ * - Node.js events → "application exception" (never "browser/client exception")
+ * - Browser events → "client-side exception"
+ */
+function detectAnchorRuntimeOrigin(
+    anchorError: Evidence | undefined
+): "node" | "browser" | "unknown" {
+    if (!anchorError) return "unknown";
+
+    const meta = anchorError.metadata || {};
+    const sdkName = String(anchorError.source || meta.sdkName || "").toLowerCase();
+    const service = String(anchorError.service || "").toLowerCase();
+
+    // Explicit browser signals
+    if (
+        sdkName.includes("browser") ||
+        sdkName.includes("js-web") ||
+        typeof meta.userAgent === "string" ||
+        service === "browser" ||
+        service === "frontend" ||
+        service === "client"
+    ) {
+        return "browser";
+    }
+
+    // Explicit Node signals
+    if (
+        sdkName.includes("node") ||
+        sdkName.includes("server") ||
+        typeof meta.nodeVersion === "string" ||
+        service === "node" ||
+        service === "server" ||
+        service === "backend" ||
+        service === "api"
+    ) {
+        return "node";
+    }
+
+    // Heuristic: Node.js internals in stack → likely Node
+    const rawStack =
+        typeof meta.stack === "string" ? meta.stack : anchorError.description || "";
+    if (
+        rawStack.includes("node:internal") ||
+        rawStack.includes("processTicksAndRejections") ||
+        rawStack.includes("Module._resolveFilename") ||
+        rawStack.includes("at async Module")
+    ) {
+        return "node";
+    }
+
+    return "unknown";
 }

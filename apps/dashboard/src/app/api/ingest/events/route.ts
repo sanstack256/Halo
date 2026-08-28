@@ -63,6 +63,9 @@ export async function POST(request: NextRequest) {
         status: body.status,
         durationMs: body.durationMs,
 
+        requestId: body.requestId,
+        traceId: body.traceId,
+
         sessionId: body.sessionId,
         sessionStartedAt:
             body.sessionStartedAt,

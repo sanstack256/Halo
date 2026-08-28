@@ -47,6 +47,7 @@ import { getReplaySessionForIssue } from "@/actions/replay";
 import { ReplayPlayerClient } from "@/components/replay/replay-player-client";
 import { ReplayStatus } from "@/components/replay/replay-status";
 import { interpretInvestigation, type InterpretedInvestigation } from "@/lib/investigation/interpreter";
+import { RuntimeReconstructionView } from "@/components/investigation/runtime-reconstruction-view";
 
 export default async function InvestigationPage({
     params,
@@ -520,7 +521,10 @@ function InvestigationView({
                 </div>
             </section>
 
-            {/* 8. User Session Replay */}
+            {/* 8. Exact Runtime Failure & Context Reconstruction (Features 1 & 2) */}
+            <RuntimeReconstructionView reconstruction={interpreted.runtimeReconstruction} />
+
+            {/* 9. User Session Replay */}
             <section className="halo-section space-y-3">
                 <SectionHeading
                     title="User Session Replay"
@@ -539,7 +543,7 @@ function InvestigationView({
                 )}
             </section>
 
-            {/* 9. What Halo recommends */}
+            {/* 10. What Halo recommends */}
             <RecommendationPlanSection plan={interpreted.recommendations} />
         </div>
     );
@@ -598,7 +602,7 @@ function RecommendationPlanSection({ plan }: { plan: InterpretedInvestigation["r
                         </span>
                         {primary.confidence > 0 && (
                             <span className="text-xs font-mono text-secondary">
-                                Confidence: {Math.round(primary.confidence * 100)}%
+                                Confidence: {primary.confidence >= 0.85 || primary.confidence >= 85 ? "Very High" : primary.confidence >= 0.65 || primary.confidence >= 65 ? "High" : primary.confidence >= 0.4 || primary.confidence >= 40 ? "Medium" : "Low"}
                             </span>
                         )}
                     </div>
