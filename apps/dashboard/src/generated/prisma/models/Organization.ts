@@ -28,27 +28,27 @@ export type OrganizationMinAggregateOutputType = {
   id: string | null
   name: string | null
   slug: string | null
-  plan: $Enums.OrganizationPlan | null
   createdAt: Date | null
   updatedAt: Date | null
+  plan: $Enums.OrganizationPlan | null
 }
 
 export type OrganizationMaxAggregateOutputType = {
   id: string | null
   name: string | null
   slug: string | null
-  plan: $Enums.OrganizationPlan | null
   createdAt: Date | null
   updatedAt: Date | null
+  plan: $Enums.OrganizationPlan | null
 }
 
 export type OrganizationCountAggregateOutputType = {
   id: number
   name: number
   slug: number
-  plan: number
   createdAt: number
   updatedAt: number
+  plan: number
   _all: number
 }
 
@@ -57,27 +57,27 @@ export type OrganizationMinAggregateInputType = {
   id?: true
   name?: true
   slug?: true
-  plan?: true
   createdAt?: true
   updatedAt?: true
+  plan?: true
 }
 
 export type OrganizationMaxAggregateInputType = {
   id?: true
   name?: true
   slug?: true
-  plan?: true
   createdAt?: true
   updatedAt?: true
+  plan?: true
 }
 
 export type OrganizationCountAggregateInputType = {
   id?: true
   name?: true
   slug?: true
-  plan?: true
   createdAt?: true
   updatedAt?: true
+  plan?: true
   _all?: true
 }
 
@@ -157,9 +157,9 @@ export type OrganizationGroupByOutputType = {
   id: string
   name: string
   slug: string
-  plan: $Enums.OrganizationPlan
   createdAt: Date
   updatedAt: Date
+  plan: $Enums.OrganizationPlan
   _count: OrganizationCountAggregateOutputType | null
   _min: OrganizationMinAggregateOutputType | null
   _max: OrganizationMaxAggregateOutputType | null
@@ -187,9 +187,9 @@ export type OrganizationWhereInput = {
   id?: Prisma.StringFilter<"Organization"> | string
   name?: Prisma.StringFilter<"Organization"> | string
   slug?: Prisma.StringFilter<"Organization"> | string
-  plan?: Prisma.EnumOrganizationPlanFilter<"Organization"> | $Enums.OrganizationPlan
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  plan?: Prisma.EnumOrganizationPlanFilter<"Organization"> | $Enums.OrganizationPlan
   projects?: Prisma.ProjectListRelationFilter
   owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }
@@ -198,9 +198,9 @@ export type OrganizationOrderByWithRelationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  plan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
   projects?: Prisma.ProjectOrderByRelationAggregateInput
   owner?: Prisma.UserOrderByWithRelationInput
 }
@@ -212,9 +212,9 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   OR?: Prisma.OrganizationWhereInput[]
   NOT?: Prisma.OrganizationWhereInput | Prisma.OrganizationWhereInput[]
   name?: Prisma.StringFilter<"Organization"> | string
-  plan?: Prisma.EnumOrganizationPlanFilter<"Organization"> | $Enums.OrganizationPlan
   createdAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Organization"> | Date | string
+  plan?: Prisma.EnumOrganizationPlanFilter<"Organization"> | $Enums.OrganizationPlan
   projects?: Prisma.ProjectListRelationFilter
   owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
 }, "id" | "slug">
@@ -223,9 +223,9 @@ export type OrganizationOrderByWithAggregationInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  plan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
   _count?: Prisma.OrganizationCountOrderByAggregateInput
   _max?: Prisma.OrganizationMaxOrderByAggregateInput
   _min?: Prisma.OrganizationMinOrderByAggregateInput
@@ -238,18 +238,18 @@ export type OrganizationScalarWhereWithAggregatesInput = {
   id?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   name?: Prisma.StringWithAggregatesFilter<"Organization"> | string
   slug?: Prisma.StringWithAggregatesFilter<"Organization"> | string
-  plan?: Prisma.EnumOrganizationPlanWithAggregatesFilter<"Organization"> | $Enums.OrganizationPlan
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Organization"> | Date | string
+  plan?: Prisma.EnumOrganizationPlanWithAggregatesFilter<"Organization"> | $Enums.OrganizationPlan
 }
 
 export type OrganizationCreateInput = {
   id?: string
   name: string
   slug: string
-  plan?: $Enums.OrganizationPlan
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
   projects?: Prisma.ProjectCreateNestedManyWithoutOrganizationInput
   owner?: Prisma.UserCreateNestedOneWithoutOrganizationInput
 }
@@ -258,9 +258,9 @@ export type OrganizationUncheckedCreateInput = {
   id?: string
   name: string
   slug: string
-  plan?: $Enums.OrganizationPlan
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrganizationInput
   owner?: Prisma.UserUncheckedCreateNestedOneWithoutOrganizationInput
 }
@@ -269,9 +269,9 @@ export type OrganizationUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   projects?: Prisma.ProjectUpdateManyWithoutOrganizationNestedInput
   owner?: Prisma.UserUpdateOneWithoutOrganizationNestedInput
 }
@@ -280,9 +280,9 @@ export type OrganizationUncheckedUpdateInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
   owner?: Prisma.UserUncheckedUpdateOneWithoutOrganizationNestedInput
 }
@@ -291,54 +291,54 @@ export type OrganizationCreateManyInput = {
   id?: string
   name: string
   slug: string
-  plan?: $Enums.OrganizationPlan
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
 }
 
 export type OrganizationUpdateManyMutationInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
 }
 
 export type OrganizationUncheckedUpdateManyInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
 }
 
 export type OrganizationCountOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  plan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
 }
 
 export type OrganizationMaxOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  plan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
 }
 
 export type OrganizationMinOrderByAggregateInput = {
   id?: Prisma.SortOrder
   name?: Prisma.SortOrder
   slug?: Prisma.SortOrder
-  plan?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  plan?: Prisma.SortOrder
 }
 
 export type OrganizationScalarRelationFilter = {
@@ -355,12 +355,12 @@ export type StringFieldUpdateOperationsInput = {
   set?: string
 }
 
-export type EnumOrganizationPlanFieldUpdateOperationsInput = {
-  set?: $Enums.OrganizationPlan
-}
-
 export type DateTimeFieldUpdateOperationsInput = {
   set?: Date | string
+}
+
+export type EnumOrganizationPlanFieldUpdateOperationsInput = {
+  set?: $Enums.OrganizationPlan
 }
 
 export type OrganizationCreateNestedOneWithoutProjectsInput = {
@@ -397,9 +397,9 @@ export type OrganizationCreateWithoutProjectsInput = {
   id?: string
   name: string
   slug: string
-  plan?: $Enums.OrganizationPlan
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
   owner?: Prisma.UserCreateNestedOneWithoutOrganizationInput
 }
 
@@ -407,9 +407,9 @@ export type OrganizationUncheckedCreateWithoutProjectsInput = {
   id?: string
   name: string
   slug: string
-  plan?: $Enums.OrganizationPlan
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
   owner?: Prisma.UserUncheckedCreateNestedOneWithoutOrganizationInput
 }
 
@@ -433,9 +433,9 @@ export type OrganizationUpdateWithoutProjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   owner?: Prisma.UserUpdateOneWithoutOrganizationNestedInput
 }
 
@@ -443,9 +443,9 @@ export type OrganizationUncheckedUpdateWithoutProjectsInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   owner?: Prisma.UserUncheckedUpdateOneWithoutOrganizationNestedInput
 }
 
@@ -453,9 +453,9 @@ export type OrganizationCreateWithoutOwnerInput = {
   id?: string
   name: string
   slug: string
-  plan?: $Enums.OrganizationPlan
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
   projects?: Prisma.ProjectCreateNestedManyWithoutOrganizationInput
 }
 
@@ -463,9 +463,9 @@ export type OrganizationUncheckedCreateWithoutOwnerInput = {
   id?: string
   name: string
   slug: string
-  plan?: $Enums.OrganizationPlan
   createdAt?: Date | string
   updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
@@ -489,9 +489,9 @@ export type OrganizationUpdateWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   projects?: Prisma.ProjectUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -499,9 +499,9 @@ export type OrganizationUncheckedUpdateWithoutOwnerInput = {
   id?: Prisma.StringFieldUpdateOperationsInput | string
   name?: Prisma.StringFieldUpdateOperationsInput | string
   slug?: Prisma.StringFieldUpdateOperationsInput | string
-  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
@@ -540,9 +540,9 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   id?: boolean
   name?: boolean
   slug?: boolean
-  plan?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  plan?: boolean
   projects?: boolean | Prisma.Organization$projectsArgs<ExtArgs>
   owner?: boolean | Prisma.Organization$ownerArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
@@ -552,30 +552,30 @@ export type OrganizationSelectCreateManyAndReturn<ExtArgs extends runtime.Types.
   id?: boolean
   name?: boolean
   slug?: boolean
-  plan?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  plan?: boolean
 }, ExtArgs["result"]["organization"]>
 
 export type OrganizationSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
   name?: boolean
   slug?: boolean
-  plan?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  plan?: boolean
 }, ExtArgs["result"]["organization"]>
 
 export type OrganizationSelectScalar = {
   id?: boolean
   name?: boolean
   slug?: boolean
-  plan?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  plan?: boolean
 }
 
-export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "plan" | "createdAt" | "updatedAt", ExtArgs["result"]["organization"]>
+export type OrganizationOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "createdAt" | "updatedAt" | "plan", ExtArgs["result"]["organization"]>
 export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   projects?: boolean | Prisma.Organization$projectsArgs<ExtArgs>
   owner?: boolean | Prisma.Organization$ownerArgs<ExtArgs>
@@ -594,9 +594,9 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     id: string
     name: string
     slug: string
-    plan: $Enums.OrganizationPlan
     createdAt: Date
     updatedAt: Date
+    plan: $Enums.OrganizationPlan
   }, ExtArgs["result"]["organization"]>
   composites: {}
 }
@@ -1025,9 +1025,9 @@ export interface OrganizationFieldRefs {
   readonly id: Prisma.FieldRef<"Organization", 'String'>
   readonly name: Prisma.FieldRef<"Organization", 'String'>
   readonly slug: Prisma.FieldRef<"Organization", 'String'>
-  readonly plan: Prisma.FieldRef<"Organization", 'OrganizationPlan'>
   readonly createdAt: Prisma.FieldRef<"Organization", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Organization", 'DateTime'>
+  readonly plan: Prisma.FieldRef<"Organization", 'OrganizationPlan'>
 }
     
 

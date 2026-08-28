@@ -372,9 +372,9 @@ export type ReplaySessionWhereInput = {
   expiresAt?: Prisma.DateTimeNullableFilter<"ReplaySession"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ReplaySession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ReplaySession"> | Date | string
-  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
-  issue?: Prisma.XOR<Prisma.IssueNullableScalarRelationFilter, Prisma.IssueWhereInput> | null
   chunks?: Prisma.ReplayChunkListRelationFilter
+  issue?: Prisma.XOR<Prisma.IssueNullableScalarRelationFilter, Prisma.IssueWhereInput> | null
+  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
 }
 
 export type ReplaySessionOrderByWithRelationInput = {
@@ -401,9 +401,9 @@ export type ReplaySessionOrderByWithRelationInput = {
   expiresAt?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  project?: Prisma.ProjectOrderByWithRelationInput
-  issue?: Prisma.IssueOrderByWithRelationInput
   chunks?: Prisma.ReplayChunkOrderByRelationAggregateInput
+  issue?: Prisma.IssueOrderByWithRelationInput
+  project?: Prisma.ProjectOrderByWithRelationInput
 }
 
 export type ReplaySessionWhereUniqueInput = Prisma.AtLeast<{
@@ -433,9 +433,9 @@ export type ReplaySessionWhereUniqueInput = Prisma.AtLeast<{
   expiresAt?: Prisma.DateTimeNullableFilter<"ReplaySession"> | Date | string | null
   createdAt?: Prisma.DateTimeFilter<"ReplaySession"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"ReplaySession"> | Date | string
-  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
-  issue?: Prisma.XOR<Prisma.IssueNullableScalarRelationFilter, Prisma.IssueWhereInput> | null
   chunks?: Prisma.ReplayChunkListRelationFilter
+  issue?: Prisma.XOR<Prisma.IssueNullableScalarRelationFilter, Prisma.IssueWhereInput> | null
+  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
 }, "id" | "sessionId">
 
 export type ReplaySessionOrderByWithAggregationInput = {
@@ -520,9 +520,9 @@ export type ReplaySessionCreateInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  project: Prisma.ProjectCreateNestedOneWithoutReplaySessionsInput
-  issue?: Prisma.IssueCreateNestedOneWithoutReplaySessionsInput
   chunks?: Prisma.ReplayChunkCreateNestedManyWithoutReplaySessionInput
+  issue?: Prisma.IssueCreateNestedOneWithoutReplaySessionsInput
+  project: Prisma.ProjectCreateNestedOneWithoutReplaySessionsInput
 }
 
 export type ReplaySessionUncheckedCreateInput = {
@@ -574,9 +574,9 @@ export type ReplaySessionUpdateInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProjectUpdateOneRequiredWithoutReplaySessionsNestedInput
-  issue?: Prisma.IssueUpdateOneWithoutReplaySessionsNestedInput
   chunks?: Prisma.ReplayChunkUpdateManyWithoutReplaySessionNestedInput
+  issue?: Prisma.IssueUpdateOneWithoutReplaySessionsNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutReplaySessionsNestedInput
 }
 
 export type ReplaySessionUncheckedUpdateInput = {
@@ -913,8 +913,8 @@ export type ReplaySessionCreateWithoutProjectInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  issue?: Prisma.IssueCreateNestedOneWithoutReplaySessionsInput
   chunks?: Prisma.ReplayChunkCreateNestedManyWithoutReplaySessionInput
+  issue?: Prisma.IssueCreateNestedOneWithoutReplaySessionsInput
 }
 
 export type ReplaySessionUncheckedCreateWithoutProjectInput = {
@@ -1020,8 +1020,8 @@ export type ReplaySessionCreateWithoutIssueInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  project: Prisma.ProjectCreateNestedOneWithoutReplaySessionsInput
   chunks?: Prisma.ReplayChunkCreateNestedManyWithoutReplaySessionInput
+  project: Prisma.ProjectCreateNestedOneWithoutReplaySessionsInput
 }
 
 export type ReplaySessionUncheckedCreateWithoutIssueInput = {
@@ -1098,8 +1098,8 @@ export type ReplaySessionCreateWithoutChunksInput = {
   expiresAt?: Date | string | null
   createdAt?: Date | string
   updatedAt?: Date | string
-  project: Prisma.ProjectCreateNestedOneWithoutReplaySessionsInput
   issue?: Prisma.IssueCreateNestedOneWithoutReplaySessionsInput
+  project: Prisma.ProjectCreateNestedOneWithoutReplaySessionsInput
 }
 
 export type ReplaySessionUncheckedCreateWithoutChunksInput = {
@@ -1166,8 +1166,8 @@ export type ReplaySessionUpdateWithoutChunksInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProjectUpdateOneRequiredWithoutReplaySessionsNestedInput
   issue?: Prisma.IssueUpdateOneWithoutReplaySessionsNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutReplaySessionsNestedInput
 }
 
 export type ReplaySessionUncheckedUpdateWithoutChunksInput = {
@@ -1243,8 +1243,8 @@ export type ReplaySessionUpdateWithoutProjectInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  issue?: Prisma.IssueUpdateOneWithoutReplaySessionsNestedInput
   chunks?: Prisma.ReplayChunkUpdateManyWithoutReplaySessionNestedInput
+  issue?: Prisma.IssueUpdateOneWithoutReplaySessionsNestedInput
 }
 
 export type ReplaySessionUncheckedUpdateWithoutProjectInput = {
@@ -1345,8 +1345,8 @@ export type ReplaySessionUpdateWithoutIssueInput = {
   expiresAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProjectUpdateOneRequiredWithoutReplaySessionsNestedInput
   chunks?: Prisma.ReplayChunkUpdateManyWithoutReplaySessionNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutReplaySessionsNestedInput
 }
 
 export type ReplaySessionUncheckedUpdateWithoutIssueInput = {
@@ -1455,9 +1455,9 @@ export type ReplaySessionSelect<ExtArgs extends runtime.Types.Extensions.Interna
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
-  issue?: boolean | Prisma.ReplaySession$issueArgs<ExtArgs>
   chunks?: boolean | Prisma.ReplaySession$chunksArgs<ExtArgs>
+  issue?: boolean | Prisma.ReplaySession$issueArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ReplaySessionCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["replaySession"]>
 
@@ -1485,8 +1485,8 @@ export type ReplaySessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.ReplaySession$issueArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["replaySession"]>
 
 export type ReplaySessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1513,8 +1513,8 @@ export type ReplaySessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   expiresAt?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.ReplaySession$issueArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["replaySession"]>
 
 export type ReplaySessionSelectScalar = {
@@ -1545,26 +1545,26 @@ export type ReplaySessionSelectScalar = {
 
 export type ReplaySessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "projectId" | "environmentId" | "issueId" | "traceId" | "requestId" | "browser" | "os" | "device" | "url" | "userAgent" | "viewportWidth" | "viewportHeight" | "startedAt" | "endedAt" | "errorAt" | "status" | "totalDurationMs" | "chunkCount" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["replaySession"]>
 export type ReplaySessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
-  issue?: boolean | Prisma.ReplaySession$issueArgs<ExtArgs>
   chunks?: boolean | Prisma.ReplaySession$chunksArgs<ExtArgs>
+  issue?: boolean | Prisma.ReplaySession$issueArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ReplaySessionCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ReplaySessionIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.ReplaySession$issueArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }
 export type ReplaySessionIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   issue?: boolean | Prisma.ReplaySession$issueArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
 }
 
 export type $ReplaySessionPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "ReplaySession"
   objects: {
-    project: Prisma.$ProjectPayload<ExtArgs>
-    issue: Prisma.$IssuePayload<ExtArgs> | null
     chunks: Prisma.$ReplayChunkPayload<ExtArgs>[]
+    issue: Prisma.$IssuePayload<ExtArgs> | null
+    project: Prisma.$ProjectPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1984,9 +1984,9 @@ readonly fields: ReplaySessionFieldRefs;
  */
 export interface Prisma__ReplaySessionClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  issue<T extends Prisma.ReplaySession$issueArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ReplaySession$issueArgs<ExtArgs>>): Prisma.Prisma__IssueClient<runtime.Types.Result.GetResult<Prisma.$IssuePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   chunks<T extends Prisma.ReplaySession$chunksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ReplaySession$chunksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReplayChunkPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  issue<T extends Prisma.ReplaySession$issueArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ReplaySession$issueArgs<ExtArgs>>): Prisma.Prisma__IssueClient<runtime.Types.Result.GetResult<Prisma.$IssuePayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
+  project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2440,25 +2440,6 @@ export type ReplaySessionDeleteManyArgs<ExtArgs extends runtime.Types.Extensions
 }
 
 /**
- * ReplaySession.issue
- */
-export type ReplaySession$issueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the Issue
-   */
-  select?: Prisma.IssueSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the Issue
-   */
-  omit?: Prisma.IssueOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.IssueInclude<ExtArgs> | null
-  where?: Prisma.IssueWhereInput
-}
-
-/**
  * ReplaySession.chunks
  */
 export type ReplaySession$chunksArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2480,6 +2461,25 @@ export type ReplaySession$chunksArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.ReplayChunkScalarFieldEnum | Prisma.ReplayChunkScalarFieldEnum[]
+}
+
+/**
+ * ReplaySession.issue
+ */
+export type ReplaySession$issueArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Issue
+   */
+  select?: Prisma.IssueSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Issue
+   */
+  omit?: Prisma.IssueOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.IssueInclude<ExtArgs> | null
+  where?: Prisma.IssueWhereInput
 }
 
 /**

@@ -29,13 +29,6 @@ export type StringFilter<$PrismaModel = never> = {
   not?: Prisma.NestedStringFilter<$PrismaModel> | string
 }
 
-export type EnumOrganizationPlanFilter<$PrismaModel = never> = {
-  equals?: $Enums.OrganizationPlan | Prisma.EnumOrganizationPlanFieldRefInput<$PrismaModel>
-  in?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
-  notIn?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumOrganizationPlanFilter<$PrismaModel> | $Enums.OrganizationPlan
-}
-
 export type DateTimeFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel>
@@ -45,6 +38,13 @@ export type DateTimeFilter<$PrismaModel = never> = {
   gt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   gte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   not?: Prisma.NestedDateTimeFilter<$PrismaModel> | Date | string
+}
+
+export type EnumOrganizationPlanFilter<$PrismaModel = never> = {
+  equals?: $Enums.OrganizationPlan | Prisma.EnumOrganizationPlanFieldRefInput<$PrismaModel>
+  in?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
+  notIn?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumOrganizationPlanFilter<$PrismaModel> | $Enums.OrganizationPlan
 }
 
 export type StringWithAggregatesFilter<$PrismaModel = never> = {
@@ -65,16 +65,6 @@ export type StringWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedStringFilter<$PrismaModel>
 }
 
-export type EnumOrganizationPlanWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.OrganizationPlan | Prisma.EnumOrganizationPlanFieldRefInput<$PrismaModel>
-  in?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
-  notIn?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumOrganizationPlanWithAggregatesFilter<$PrismaModel> | $Enums.OrganizationPlan
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumOrganizationPlanFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumOrganizationPlanFilter<$PrismaModel>
-}
-
 export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel>
@@ -87,6 +77,16 @@ export type DateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>
+}
+
+export type EnumOrganizationPlanWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.OrganizationPlan | Prisma.EnumOrganizationPlanFieldRefInput<$PrismaModel>
+  in?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
+  notIn?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumOrganizationPlanWithAggregatesFilter<$PrismaModel> | $Enums.OrganizationPlan
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumOrganizationPlanFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumOrganizationPlanFilter<$PrismaModel>
 }
 
 export type StringNullableFilter<$PrismaModel = never> = {
@@ -403,13 +403,6 @@ export type NestedStringFilter<$PrismaModel = never> = {
   not?: Prisma.NestedStringFilter<$PrismaModel> | string
 }
 
-export type NestedEnumOrganizationPlanFilter<$PrismaModel = never> = {
-  equals?: $Enums.OrganizationPlan | Prisma.EnumOrganizationPlanFieldRefInput<$PrismaModel>
-  in?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
-  notIn?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumOrganizationPlanFilter<$PrismaModel> | $Enums.OrganizationPlan
-}
-
 export type NestedDateTimeFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel>
@@ -419,6 +412,13 @@ export type NestedDateTimeFilter<$PrismaModel = never> = {
   gt?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   gte?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   not?: Prisma.NestedDateTimeFilter<$PrismaModel> | Date | string
+}
+
+export type NestedEnumOrganizationPlanFilter<$PrismaModel = never> = {
+  equals?: $Enums.OrganizationPlan | Prisma.EnumOrganizationPlanFieldRefInput<$PrismaModel>
+  in?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
+  notIn?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumOrganizationPlanFilter<$PrismaModel> | $Enums.OrganizationPlan
 }
 
 export type NestedStringWithAggregatesFilter<$PrismaModel = never> = {
@@ -449,16 +449,6 @@ export type NestedIntFilter<$PrismaModel = never> = {
   not?: Prisma.NestedIntFilter<$PrismaModel> | number
 }
 
-export type NestedEnumOrganizationPlanWithAggregatesFilter<$PrismaModel = never> = {
-  equals?: $Enums.OrganizationPlan | Prisma.EnumOrganizationPlanFieldRefInput<$PrismaModel>
-  in?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
-  notIn?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
-  not?: Prisma.NestedEnumOrganizationPlanWithAggregatesFilter<$PrismaModel> | $Enums.OrganizationPlan
-  _count?: Prisma.NestedIntFilter<$PrismaModel>
-  _min?: Prisma.NestedEnumOrganizationPlanFilter<$PrismaModel>
-  _max?: Prisma.NestedEnumOrganizationPlanFilter<$PrismaModel>
-}
-
 export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
   equals?: Date | string | Prisma.DateTimeFieldRefInput<$PrismaModel>
   in?: Date[] | string[] | Prisma.ListDateTimeFieldRefInput<$PrismaModel>
@@ -471,6 +461,16 @@ export type NestedDateTimeWithAggregatesFilter<$PrismaModel = never> = {
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedDateTimeFilter<$PrismaModel>
   _max?: Prisma.NestedDateTimeFilter<$PrismaModel>
+}
+
+export type NestedEnumOrganizationPlanWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.OrganizationPlan | Prisma.EnumOrganizationPlanFieldRefInput<$PrismaModel>
+  in?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
+  notIn?: $Enums.OrganizationPlan[] | Prisma.ListEnumOrganizationPlanFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumOrganizationPlanWithAggregatesFilter<$PrismaModel> | $Enums.OrganizationPlan
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumOrganizationPlanFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumOrganizationPlanFilter<$PrismaModel>
 }
 
 export type NestedStringNullableFilter<$PrismaModel = never> = {

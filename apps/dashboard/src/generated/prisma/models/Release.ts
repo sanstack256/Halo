@@ -264,8 +264,8 @@ export type ReleaseWhereInput = {
   traceCount?: Prisma.IntFilter<"Release"> | number
   createdAt?: Prisma.DateTimeFilter<"Release"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Release"> | Date | string
-  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   events?: Prisma.EventListRelationFilter
+  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
 }
 
 export type ReleaseOrderByWithRelationInput = {
@@ -279,8 +279,8 @@ export type ReleaseOrderByWithRelationInput = {
   traceCount?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
-  project?: Prisma.ProjectOrderByWithRelationInput
   events?: Prisma.EventOrderByRelationAggregateInput
+  project?: Prisma.ProjectOrderByWithRelationInput
 }
 
 export type ReleaseWhereUniqueInput = Prisma.AtLeast<{
@@ -298,8 +298,8 @@ export type ReleaseWhereUniqueInput = Prisma.AtLeast<{
   traceCount?: Prisma.IntFilter<"Release"> | number
   createdAt?: Prisma.DateTimeFilter<"Release"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Release"> | Date | string
-  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   events?: Prisma.EventListRelationFilter
+  project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
 }, "id" | "projectId_version">
 
 export type ReleaseOrderByWithAggregationInput = {
@@ -346,8 +346,8 @@ export type ReleaseCreateInput = {
   traceCount?: number
   createdAt?: Date | string
   updatedAt?: Date | string
-  project: Prisma.ProjectCreateNestedOneWithoutReleasesInput
   events?: Prisma.EventCreateNestedManyWithoutReleaseRefInput
+  project: Prisma.ProjectCreateNestedOneWithoutReleasesInput
 }
 
 export type ReleaseUncheckedCreateInput = {
@@ -374,8 +374,8 @@ export type ReleaseUpdateInput = {
   traceCount?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
-  project?: Prisma.ProjectUpdateOneRequiredWithoutReleasesNestedInput
   events?: Prisma.EventUpdateManyWithoutReleaseRefNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutReleasesNestedInput
 }
 
 export type ReleaseUncheckedUpdateInput = {
@@ -795,8 +795,8 @@ export type ReleaseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   traceCount?: boolean
   createdAt?: boolean
   updatedAt?: boolean
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   events?: boolean | Prisma.Release$eventsArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ReleaseCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["release"]>
 
@@ -843,8 +843,8 @@ export type ReleaseSelectScalar = {
 
 export type ReleaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "version" | "projectId" | "firstSeen" | "lastSeen" | "eventCount" | "errorCount" | "traceCount" | "createdAt" | "updatedAt", ExtArgs["result"]["release"]>
 export type ReleaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   events?: boolean | Prisma.Release$eventsArgs<ExtArgs>
+  project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   _count?: boolean | Prisma.ReleaseCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ReleaseIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -857,8 +857,8 @@ export type ReleaseIncludeUpdateManyAndReturn<ExtArgs extends runtime.Types.Exte
 export type $ReleasePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "Release"
   objects: {
-    project: Prisma.$ProjectPayload<ExtArgs>
     events: Prisma.$EventPayload<ExtArgs>[]
+    project: Prisma.$ProjectPayload<ExtArgs>
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1265,8 +1265,8 @@ readonly fields: ReleaseFieldRefs;
  */
 export interface Prisma__ReleaseClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
-  project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   events<T extends Prisma.Release$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Release$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.

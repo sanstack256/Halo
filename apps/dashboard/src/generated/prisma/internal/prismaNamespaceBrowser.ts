@@ -87,9 +87,9 @@ export const OrganizationScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  plan: 'plan',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  plan: 'plan'
 } as const
 
 export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
@@ -146,7 +146,6 @@ export const EventScalarFieldEnum = {
   createdAt: 'createdAt',
   metadata: 'metadata',
   release: 'release',
-  releaseId: 'releaseId',
   sdkName: 'sdkName',
   sdkVersion: 'sdkVersion',
   severity: 'severity',
@@ -162,6 +161,7 @@ export const EventScalarFieldEnum = {
   service: 'service',
   sessionId: 'sessionId',
   status: 'status',
+  releaseId: 'releaseId',
   requestId: 'requestId',
   traceId: 'traceId'
 } as const

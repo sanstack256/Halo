@@ -11,9 +11,9 @@ model Organization {
   id        String           @id @default(cuid())
   name      String
   slug      String           @unique
-  plan      OrganizationPlan @default(FREE)
   createdAt DateTime         @default(now())
   updatedAt DateTime         @updatedAt
+  plan      OrganizationPlan @default(FREE)
   projects  Project[]
   owner     User?
 }
@@ -32,9 +32,9 @@ model Project {
   events            Event[]
   issues            Issue[]
   organization      Organization       @relation(fields: [organizationId], references: [id])
-  telemetrySessions TelemetrySession[]
   releases          Release[]
   replaySessions    ReplaySession[]
+  telemetrySessions TelemetrySession[]
 
   @@unique([organizationId, slug])
 }
@@ -76,39 +76,30 @@ model Event {
   projectId     String
   environmentId String
   createdAt     DateTime          @default(now())
-
   metadata      Json?
-
   release       String?
-  releaseId     String?
-  releaseRef    Release?          @relation(fields: [releaseId], references: [id])
-
   sdkName       String?
   sdkVersion    String?
-
   severity      EventSeverity     @default(INFO)
-
   issueId       String?
-
   breadcrumbs   Json?
   fingerprint   String?
   stack         String?
   tags          Json?
   user          Json?
-
   durationMs    Int?
   operation     String?
   resource      String?
   service       String?
   sessionId     String?
   status        String?
-
+  releaseId     String?
   requestId     String?
   traceId       String?
-
   environment   Environment       @relation(fields: [environmentId], references: [id])
   issue         Issue?            @relation(fields: [issueId], references: [id])
   project       Project           @relation(fields: [projectId], references: [id])
+  releaseRef    Release?          @relation(fields: [releaseId], references: [id])
   session       TelemetrySession? @relation(fields: [sessionId], references: [id])
 
   @@index([projectId, timestamp])
@@ -143,24 +134,18 @@ model TelemetrySession {
 }
 
 model Release {
-  id          String   @id @default(cuid())
-
-  version     String
-
-  projectId   String
-  project     Project  @relation(fields: [projectId], references: [id])
-
-  firstSeen   DateTime @default(now())
-  lastSeen    DateTime @default(now())
-
-  eventCount  Int      @default(0)
-  errorCount  Int      @default(0)
-  traceCount  Int      @default(0)
-
-  events      Event[]
-
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
+  id         String   @id @default(cuid())
+  version    String
+  projectId  String
+  firstSeen  DateTime @default(now())
+  lastSeen   DateTime @default(now())
+  eventCount Int      @default(0)
+  errorCount Int      @default(0)
+  traceCount Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  events     Event[]
+  project    Project  @relation(fields: [projectId], references: [id])
 
   @@unique([projectId, version])
   @@index([projectId, lastSeen])
@@ -168,20 +153,20 @@ model Release {
 }
 
 model Issue {
-  id          String        @id @default(cuid())
-  fingerprint String
-  title       String
-  status      IssueStatus   @default(OPEN)
-  firstSeen   DateTime      @default(now())
-  lastSeen    DateTime      @default(now())
-  projectId   String
-  createdAt   DateTime      @default(now())
-  updatedAt   DateTime      @updatedAt
-  eventCount  Int           @default(1)
-  severity    EventSeverity @default(INFO)
-  lastEventId String?
-  events      Event[]
-  project     Project       @relation(fields: [projectId], references: [id])
+  id             String          @id @default(cuid())
+  fingerprint    String
+  title          String
+  status         IssueStatus     @default(OPEN)
+  firstSeen      DateTime        @default(now())
+  lastSeen       DateTime        @default(now())
+  projectId      String
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  eventCount     Int             @default(1)
+  severity       EventSeverity   @default(INFO)
+  lastEventId    String?
+  events         Event[]
+  project        Project         @relation(fields: [projectId], references: [id])
   replaySessions ReplaySession[]
 
   @@unique([projectId, fingerprint])
@@ -250,6 +235,57 @@ model Verification {
   @@map("verification")
 }
 
+model ReplaySession {
+  id              String        @id @default(cuid())
+  sessionId       String        @unique
+  projectId       String
+  environmentId   String
+  issueId         String?
+  traceId         String?
+  requestId       String?
+  browser         String?
+  os              String?
+  device          String?
+  url             String?
+  userAgent       String?
+  viewportWidth   Int?
+  viewportHeight  Int?
+  startedAt       DateTime
+  endedAt         DateTime?
+  errorAt         DateTime?
+  status          ReplayStatus  @default(RECORDING)
+  totalDurationMs Int?
+  chunkCount      Int           @default(0)
+  expiresAt       DateTime?
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  chunks          ReplayChunk[]
+  issue           Issue?        @relation(fields: [issueId], references: [id])
+  project         Project       @relation(fields: [projectId], references: [id])
+
+  @@index([projectId, startedAt])
+  @@index([projectId, status])
+  @@index([issueId])
+  @@index([sessionId])
+  @@index([expiresAt])
+}
+
+model ReplayChunk {
+  id              String        @id @default(cuid())
+  replaySessionId String
+  sequence        Int
+  events          Json
+  startedAt       DateTime
+  endedAt         DateTime
+  eventCount      Int
+  sizeBytes       Int
+  createdAt       DateTime      @default(now())
+  replaySession   ReplaySession @relation(fields: [replaySessionId], references: [id], onDelete: Cascade)
+
+  @@unique([replaySessionId, sequence])
+  @@index([replaySessionId, sequence])
+}
+
 enum EventType {
   ERROR
   LOG
@@ -274,59 +310,6 @@ enum OrganizationPlan {
   FREE
   DEVELOPER
   TEAM
-}
-
-model ReplaySession {
-  id              String              @id @default(cuid())
-  sessionId       String              @unique
-  projectId       String
-  environmentId   String
-  issueId         String?
-  traceId         String?
-  requestId       String?
-  browser         String?
-  os              String?
-  device          String?
-  url             String?
-  userAgent       String?
-  viewportWidth   Int?
-  viewportHeight  Int?
-  startedAt       DateTime
-  endedAt         DateTime?
-  errorAt         DateTime?
-  status          ReplayStatus        @default(RECORDING)
-  totalDurationMs Int?
-  chunkCount      Int                 @default(0)
-  expiresAt       DateTime?
-  createdAt       DateTime            @default(now())
-  updatedAt       DateTime            @updatedAt
-
-  project         Project             @relation(fields: [projectId], references: [id])
-  issue           Issue?              @relation(fields: [issueId], references: [id])
-  chunks          ReplayChunk[]
-
-  @@index([projectId, startedAt])
-  @@index([projectId, status])
-  @@index([issueId])
-  @@index([sessionId])
-  @@index([expiresAt])
-}
-
-model ReplayChunk {
-  id              String        @id @default(cuid())
-  replaySessionId String
-  sequence        Int
-  events          Json
-  startedAt       DateTime
-  endedAt         DateTime
-  eventCount      Int
-  sizeBytes       Int
-  createdAt       DateTime      @default(now())
-
-  replaySession   ReplaySession @relation(fields: [replaySessionId], references: [id], onDelete: Cascade)
-
-  @@unique([replaySessionId, sequence])
-  @@index([replaySessionId, sequence])
 }
 
 enum ReplayStatus {

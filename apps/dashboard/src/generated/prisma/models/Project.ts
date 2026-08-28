@@ -207,9 +207,9 @@ export type ProjectWhereInput = {
   events?: Prisma.EventListRelationFilter
   issues?: Prisma.IssueListRelationFilter
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
-  telemetrySessions?: Prisma.TelemetrySessionListRelationFilter
   releases?: Prisma.ReleaseListRelationFilter
   replaySessions?: Prisma.ReplaySessionListRelationFilter
+  telemetrySessions?: Prisma.TelemetrySessionListRelationFilter
 }
 
 export type ProjectOrderByWithRelationInput = {
@@ -226,9 +226,9 @@ export type ProjectOrderByWithRelationInput = {
   events?: Prisma.EventOrderByRelationAggregateInput
   issues?: Prisma.IssueOrderByRelationAggregateInput
   organization?: Prisma.OrganizationOrderByWithRelationInput
-  telemetrySessions?: Prisma.TelemetrySessionOrderByRelationAggregateInput
   releases?: Prisma.ReleaseOrderByRelationAggregateInput
   replaySessions?: Prisma.ReplaySessionOrderByRelationAggregateInput
+  telemetrySessions?: Prisma.TelemetrySessionOrderByRelationAggregateInput
 }
 
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -249,9 +249,9 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   events?: Prisma.EventListRelationFilter
   issues?: Prisma.IssueListRelationFilter
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
-  telemetrySessions?: Prisma.TelemetrySessionListRelationFilter
   releases?: Prisma.ReleaseListRelationFilter
   replaySessions?: Prisma.ReplaySessionListRelationFilter
+  telemetrySessions?: Prisma.TelemetrySessionListRelationFilter
 }, "id" | "organizationId_slug">
 
 export type ProjectOrderByWithAggregationInput = {
@@ -295,9 +295,9 @@ export type ProjectCreateInput = {
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
-  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateInput = {
@@ -313,9 +313,9 @@ export type ProjectUncheckedCreateInput = {
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUpdateInput = {
@@ -331,9 +331,9 @@ export type ProjectUpdateInput = {
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateInput = {
@@ -349,9 +349,9 @@ export type ProjectUncheckedUpdateInput = {
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyInput = {
@@ -593,9 +593,9 @@ export type ProjectCreateWithoutOrganizationInput = {
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
-  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutOrganizationInput = {
@@ -610,9 +610,9 @@ export type ProjectUncheckedCreateWithoutOrganizationInput = {
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutOrganizationInput = {
@@ -667,9 +667,9 @@ export type ProjectCreateWithoutEnvironmentsInput = {
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
-  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
@@ -684,9 +684,9 @@ export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutEnvironmentsInput = {
@@ -717,9 +717,9 @@ export type ProjectUpdateWithoutEnvironmentsInput = {
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
@@ -734,9 +734,9 @@ export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutApiKeysInput = {
@@ -751,9 +751,9 @@ export type ProjectCreateWithoutApiKeysInput = {
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
-  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutApiKeysInput = {
@@ -768,9 +768,9 @@ export type ProjectUncheckedCreateWithoutApiKeysInput = {
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutApiKeysInput = {
@@ -801,9 +801,9 @@ export type ProjectUpdateWithoutApiKeysInput = {
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutApiKeysInput = {
@@ -818,9 +818,9 @@ export type ProjectUncheckedUpdateWithoutApiKeysInput = {
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutEventsInput = {
@@ -835,9 +835,9 @@ export type ProjectCreateWithoutEventsInput = {
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
-  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutEventsInput = {
@@ -852,9 +852,9 @@ export type ProjectUncheckedCreateWithoutEventsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutEventsInput = {
@@ -885,9 +885,9 @@ export type ProjectUpdateWithoutEventsInput = {
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutEventsInput = {
@@ -902,9 +902,9 @@ export type ProjectUncheckedUpdateWithoutEventsInput = {
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutTelemetrySessionsInput = {
@@ -1004,8 +1004,8 @@ export type ProjectCreateWithoutReleasesInput = {
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
-  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutReleasesInput = {
@@ -1021,8 +1021,8 @@ export type ProjectUncheckedCreateWithoutReleasesInput = {
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutReleasesInput = {
@@ -1054,8 +1054,8 @@ export type ProjectUpdateWithoutReleasesInput = {
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutReleasesInput = {
@@ -1071,8 +1071,8 @@ export type ProjectUncheckedUpdateWithoutReleasesInput = {
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutIssuesInput = {
@@ -1087,9 +1087,9 @@ export type ProjectCreateWithoutIssuesInput = {
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
-  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutIssuesInput = {
@@ -1104,9 +1104,9 @@ export type ProjectUncheckedCreateWithoutIssuesInput = {
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutIssuesInput = {
@@ -1137,9 +1137,9 @@ export type ProjectUpdateWithoutIssuesInput = {
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutIssuesInput = {
@@ -1154,9 +1154,9 @@ export type ProjectUncheckedUpdateWithoutIssuesInput = {
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutReplaySessionsInput = {
@@ -1172,8 +1172,8 @@ export type ProjectCreateWithoutReplaySessionsInput = {
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
   organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
-  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutReplaySessionsInput = {
@@ -1189,8 +1189,8 @@ export type ProjectUncheckedCreateWithoutReplaySessionsInput = {
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
   releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutReplaySessionsInput = {
@@ -1222,8 +1222,8 @@ export type ProjectUpdateWithoutReplaySessionsInput = {
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutReplaySessionsInput = {
@@ -1239,8 +1239,8 @@ export type ProjectUncheckedUpdateWithoutReplaySessionsInput = {
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyOrganizationInput = {
@@ -1265,9 +1265,9 @@ export type ProjectUpdateWithoutOrganizationInput = {
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutOrganizationInput = {
@@ -1282,9 +1282,9 @@ export type ProjectUncheckedUpdateWithoutOrganizationInput = {
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
-  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
   releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1307,9 +1307,9 @@ export type ProjectCountOutputType = {
   environments: number
   events: number
   issues: number
-  telemetrySessions: number
   releases: number
   replaySessions: number
+  telemetrySessions: number
 }
 
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1317,9 +1317,9 @@ export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   environments?: boolean | ProjectCountOutputTypeCountEnvironmentsArgs
   events?: boolean | ProjectCountOutputTypeCountEventsArgs
   issues?: boolean | ProjectCountOutputTypeCountIssuesArgs
-  telemetrySessions?: boolean | ProjectCountOutputTypeCountTelemetrySessionsArgs
   releases?: boolean | ProjectCountOutputTypeCountReleasesArgs
   replaySessions?: boolean | ProjectCountOutputTypeCountReplaySessionsArgs
+  telemetrySessions?: boolean | ProjectCountOutputTypeCountTelemetrySessionsArgs
 }
 
 /**
@@ -1363,13 +1363,6 @@ export type ProjectCountOutputTypeCountIssuesArgs<ExtArgs extends runtime.Types.
 /**
  * ProjectCountOutputType without action
  */
-export type ProjectCountOutputTypeCountTelemetrySessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  where?: Prisma.TelemetrySessionWhereInput
-}
-
-/**
- * ProjectCountOutputType without action
- */
 export type ProjectCountOutputTypeCountReleasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ReleaseWhereInput
 }
@@ -1379,6 +1372,13 @@ export type ProjectCountOutputTypeCountReleasesArgs<ExtArgs extends runtime.Type
  */
 export type ProjectCountOutputTypeCountReplaySessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.ReplaySessionWhereInput
+}
+
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountTelemetrySessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.TelemetrySessionWhereInput
 }
 
 
@@ -1396,9 +1396,9 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   events?: boolean | Prisma.Project$eventsArgs<ExtArgs>
   issues?: boolean | Prisma.Project$issuesArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  telemetrySessions?: boolean | Prisma.Project$telemetrySessionsArgs<ExtArgs>
   releases?: boolean | Prisma.Project$releasesArgs<ExtArgs>
   replaySessions?: boolean | Prisma.Project$replaySessionsArgs<ExtArgs>
+  telemetrySessions?: boolean | Prisma.Project$telemetrySessionsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -1444,9 +1444,9 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   events?: boolean | Prisma.Project$eventsArgs<ExtArgs>
   issues?: boolean | Prisma.Project$issuesArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
-  telemetrySessions?: boolean | Prisma.Project$telemetrySessionsArgs<ExtArgs>
   releases?: boolean | Prisma.Project$releasesArgs<ExtArgs>
   replaySessions?: boolean | Prisma.Project$replaySessionsArgs<ExtArgs>
+  telemetrySessions?: boolean | Prisma.Project$telemetrySessionsArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1464,9 +1464,9 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     events: Prisma.$EventPayload<ExtArgs>[]
     issues: Prisma.$IssuePayload<ExtArgs>[]
     organization: Prisma.$OrganizationPayload<ExtArgs>
-    telemetrySessions: Prisma.$TelemetrySessionPayload<ExtArgs>[]
     releases: Prisma.$ReleasePayload<ExtArgs>[]
     replaySessions: Prisma.$ReplaySessionPayload<ExtArgs>[]
+    telemetrySessions: Prisma.$TelemetrySessionPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1876,9 +1876,9 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   events<T extends Prisma.Project$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   issues<T extends Prisma.Project$issuesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$issuesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IssuePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
-  telemetrySessions<T extends Prisma.Project$telemetrySessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$telemetrySessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TelemetrySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   releases<T extends Prisma.Project$releasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$releasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReleasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   replaySessions<T extends Prisma.Project$replaySessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$replaySessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReplaySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  telemetrySessions<T extends Prisma.Project$telemetrySessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$telemetrySessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$TelemetrySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2413,30 +2413,6 @@ export type Project$issuesArgs<ExtArgs extends runtime.Types.Extensions.Internal
 }
 
 /**
- * Project.telemetrySessions
- */
-export type Project$telemetrySessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
-  /**
-   * Select specific fields to fetch from the TelemetrySession
-   */
-  select?: Prisma.TelemetrySessionSelect<ExtArgs> | null
-  /**
-   * Omit specific fields from the TelemetrySession
-   */
-  omit?: Prisma.TelemetrySessionOmit<ExtArgs> | null
-  /**
-   * Choose, which related nodes to fetch as well
-   */
-  include?: Prisma.TelemetrySessionInclude<ExtArgs> | null
-  where?: Prisma.TelemetrySessionWhereInput
-  orderBy?: Prisma.TelemetrySessionOrderByWithRelationInput | Prisma.TelemetrySessionOrderByWithRelationInput[]
-  cursor?: Prisma.TelemetrySessionWhereUniqueInput
-  take?: number
-  skip?: number
-  distinct?: Prisma.TelemetrySessionScalarFieldEnum | Prisma.TelemetrySessionScalarFieldEnum[]
-}
-
-/**
  * Project.releases
  */
 export type Project$releasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2482,6 +2458,30 @@ export type Project$replaySessionsArgs<ExtArgs extends runtime.Types.Extensions.
   take?: number
   skip?: number
   distinct?: Prisma.ReplaySessionScalarFieldEnum | Prisma.ReplaySessionScalarFieldEnum[]
+}
+
+/**
+ * Project.telemetrySessions
+ */
+export type Project$telemetrySessionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the TelemetrySession
+   */
+  select?: Prisma.TelemetrySessionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the TelemetrySession
+   */
+  omit?: Prisma.TelemetrySessionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.TelemetrySessionInclude<ExtArgs> | null
+  where?: Prisma.TelemetrySessionWhereInput
+  orderBy?: Prisma.TelemetrySessionOrderByWithRelationInput | Prisma.TelemetrySessionOrderByWithRelationInput[]
+  cursor?: Prisma.TelemetrySessionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.TelemetrySessionScalarFieldEnum | Prisma.TelemetrySessionScalarFieldEnum[]
 }
 
 /**

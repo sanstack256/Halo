@@ -1509,9 +1509,9 @@ export const OrganizationScalarFieldEnum = {
   id: 'id',
   name: 'name',
   slug: 'slug',
-  plan: 'plan',
   createdAt: 'createdAt',
-  updatedAt: 'updatedAt'
+  updatedAt: 'updatedAt',
+  plan: 'plan'
 } as const
 
 export type OrganizationScalarFieldEnum = (typeof OrganizationScalarFieldEnum)[keyof typeof OrganizationScalarFieldEnum]
@@ -1568,7 +1568,6 @@ export const EventScalarFieldEnum = {
   createdAt: 'createdAt',
   metadata: 'metadata',
   release: 'release',
-  releaseId: 'releaseId',
   sdkName: 'sdkName',
   sdkVersion: 'sdkVersion',
   severity: 'severity',
@@ -1584,6 +1583,7 @@ export const EventScalarFieldEnum = {
   service: 'service',
   sessionId: 'sessionId',
   status: 'status',
+  releaseId: 'releaseId',
   requestId: 'requestId',
   traceId: 'traceId'
 } as const
@@ -1813,20 +1813,6 @@ export type ListStringFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaMod
 
 
 /**
- * Reference to a field of type 'OrganizationPlan'
- */
-export type EnumOrganizationPlanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrganizationPlan'>
-    
-
-
-/**
- * Reference to a field of type 'OrganizationPlan[]'
- */
-export type ListEnumOrganizationPlanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrganizationPlan[]'>
-    
-
-
-/**
  * Reference to a field of type 'DateTime'
  */
 export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime'>
@@ -1837,6 +1823,20 @@ export type DateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel
  * Reference to a field of type 'DateTime[]'
  */
 export type ListDateTimeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'DateTime[]'>
+    
+
+
+/**
+ * Reference to a field of type 'OrganizationPlan'
+ */
+export type EnumOrganizationPlanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrganizationPlan'>
+    
+
+
+/**
+ * Reference to a field of type 'OrganizationPlan[]'
+ */
+export type ListEnumOrganizationPlanFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OrganizationPlan[]'>
     
 
 

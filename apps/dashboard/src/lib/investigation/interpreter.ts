@@ -7,6 +7,10 @@ import type {
     Impact,
     Recommendation,
 } from "@halo/investigation-engine";
+import {
+    buildDashboardRecommendations,
+    type DashboardRecommendationPlan,
+} from "./recommendations";
 
 export type ProvenanceType = "Observed" | "Inferred" | "Unknown";
 
@@ -201,22 +205,10 @@ export interface InterpretedInvestigation {
     };
 
     /**
-     * Actionable Engineering Remediation Plan
+     * Evidence-grounded fix plan from the Recommendation Engine.
+     * Every claim is tied to real telemetry — nothing is fabricated.
      */
-    recommendations: {
-        immediateInvestigation: {
-            title: string;
-            description: string;
-            checklist: string[];
-        };
-        likelyRemediation?: {
-            title: string;
-            description: string;
-            codeSnippet: string;
-        };
-        verificationSteps: string[];
-        preventionGuardrails: string[];
-    };
+    recommendations: DashboardRecommendationPlan;
 }
 
 /**
@@ -700,66 +692,40 @@ export function interpretInvestigation(
         severity: impact?.severity ? String(impact.severity) : "HIGH",
     };
 
-    // 15. Actionable Developer Recommendations — tied to actual evidence.
-    const targetLoc = parsedError.failingFile
-        ? `${parsedError.failingFile}${parsedError.failingLine ? `:${parsedError.failingLine}` : ""}`
-        : null;
-
-    const immediateTitle = requestEndpoint && requestStatus != null
-        ? `Inspect server-side execution of \`${reqLabel}\` for the HTTP ${requestStatus} response`
-        : `Inspect the execution context of \`${parsedError.errorClass}\` in ${anchorError?.service ?? "the application"}`;
-
-    const immediateDesc = requestEndpoint
-        ? `The originating failure is in the backend handler for \`${requestEndpoint}\`. Review server telemetry:`
-        : `Review the execution context for this error:`;
-
-    const immediateChecklist: string[] = requestEndpoint
-        ? [
-              `Uncaught backend exception or error log in \`${requestEndpoint}\``,
-              `Failed downstream dependency call (database, cache, external service)`,
-              `Missing or invalid environment configuration`,
-              `Request payload or authentication validation failure`,
-              `Recent deployment or configuration change coinciding with this occurrence`,
-          ]
-        : [
-              `Stack frame at \`${targetLoc ?? parsedError.errorClass}\``,
-              `Variable or property state at the point of the exception`,
-              `Any preceding breadcrumbs or log entries in the same session`,
-          ];
-
-    type RemediationBlock = {
-        title: string;
-        description: string;
-        codeSnippet: string;
-    };
-
-    let likelyRemediation: RemediationBlock | undefined;
-
-    if (isDownstreamResponseHandler && requestEndpoint && requestMethod) {
-        const locComment = targetLoc ? `// In ${targetLoc}\n` : "";
-        likelyRemediation = {
-            title: targetLoc
-                ? `Guard the response handler in \`${targetLoc}\` against non-2xx responses`
-                : `Guard the response handler against non-2xx HTTP responses`,
-            description:
-                `The response handler accesses \`${propRef}\` without first verifying the HTTP status. ` +
-                `Add a non-2xx guard before accessing the response body:`,
-            codeSnippet:
-                `${locComment}const response = await fetch("${requestEndpoint}", {\n` +
-                `  method: "${requestMethod}",\n` +
-                `  headers: { "Content-Type": "application/json" },\n` +
-                `  body: JSON.stringify(payload),\n` +
-                `});\n\n` +
-                `if (!response.ok) {\n` +
-                `  const errorBody = await response.json().catch(() => ({}));\n` +
-                `  // Handle the error — do not access ${propRef} here.\n` +
-                `  displayError(errorBody.message ?? "Request failed.");\n` +
-                `  return;\n` +
-                `}\n\n` +
-                `const result = await response.json();\n` +
-                `// ${propRef} is now safe to access after the 2xx guard.`,
-        };
-    }
+    // 15. Recommendation Engine — build evidence-grounded fix plan.
+    const recommendations = buildDashboardRecommendations(
+        investigation,
+        {
+            parsedError,
+            failedRequest: failedRequestEvent
+                ? {
+                      id: failedRequestEvent.id,
+                      type: failedRequestEvent.type,
+                      method: requestMethod,
+                      endpoint: requestEndpoint,
+                      status: requestStatus,
+                      durationMs: requestDuration,
+                      traceId: failedRequestEvent.traceId,
+                      requestId: failedRequestEvent.requestId,
+                      service: failedRequestEvent.service,
+                  }
+                : null,
+            isDownstreamResponseHandler,
+            anchorErrorId: anchorError?.id,
+            anchorErrorTitle: anchorError?.title,
+            incidentSessionId,
+            incidentTraceId,
+            pageUrl,
+            isExactRootCauseKnown,
+            backendServerTrace: backendServerTrace
+                ? {
+                      id: backendServerTrace.id,
+                      title: backendServerTrace.title,
+                      service: backendServerTrace.service ?? "unknown",
+                  }
+                : null,
+        },
+    );
 
     const reasoningPoints: string[] = [];
     if (failedRequestEvent && requestStatus != null) {
@@ -816,29 +782,7 @@ export function interpretInvestigation(
         (pageUrl ? ` on \`${pageUrl}\`` : ` in ${anchorError?.service ?? "the application"}`) +
         `. Halo correlated ${activeIncidentEvidence.length} telemetry point${activeIncidentEvidence.length !== 1 ? "s" : ""} to reconstruct the causal sequence.`;
 
-    const verificationSteps: string[] = [
-        requestEndpoint
-            ? `Reproduce the conditions under which \`${reqLabel}\` was called.`
-            : `Reproduce the conditions that triggered \`${parsedError.errorClass}\`.`,
-        ...(requestEndpoint && requestStatus != null
-            ? [`Confirm \`${requestEndpoint}\` returns HTTP 2xx under identical inputs.`]
-            : []),
-        ...(isDownstreamResponseHandler
-            ? [`Confirm the client \`${parsedError.errorMessage}\` no longer occurs after the response guard is in place.`]
-            : [`Confirm the \`${parsedError.errorMessage}\` no longer occurs.`]),
-        ...(replaySession ? [`Verify the session replay for this occurrence shows a successful user journey.`] : []),
-    ];
-
-    const preventionGuardrails: string[] = [
-        `Enforce strict response schema validation across all API endpoints.`,
-        ...(requestEndpoint
-            ? [`Add integration tests asserting correct error handling when \`${requestEndpoint}\` returns a non-2xx status.`]
-            : []),
-        `Enable TypeScript \`strictNullChecks\` to surface unchecked property access at build time.`,
-        ...(requestEndpoint && requestStatus != null
-            ? [`Configure a monitor alert for \`${requestEndpoint}\` error rate exceeding threshold.`]
-            : []),
-    ];
+    // Verification and prevention are now carried inside the recommendations plan.
 
     return {
         headline,
@@ -912,16 +856,7 @@ export function interpretInvestigation(
         hypothesesAnalysis,
         replayEvidenceAnalysis,
         impactDetails,
-        recommendations: {
-            immediateInvestigation: {
-                title: immediateTitle,
-                description: immediateDesc,
-                checklist: immediateChecklist,
-            },
-            likelyRemediation,
-            verificationSteps,
-            preventionGuardrails,
-        },
+        recommendations,
     };
 }
 

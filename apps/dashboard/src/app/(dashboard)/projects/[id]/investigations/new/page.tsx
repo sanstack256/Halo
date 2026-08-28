@@ -540,78 +540,284 @@ function InvestigationView({
             </section>
 
             {/* 9. What Halo recommends */}
-            <section className="halo-card p-6 border-border space-y-6">
-                <div className="border-b border-border pb-3 flex items-center justify-between">
+            <RecommendationPlanSection plan={interpreted.recommendations} />
+        </div>
+    );
+}
+
+/* -------------------------------------------------------------------------- */
+/* Recommendation Engine UI Components                                        */
+/* -------------------------------------------------------------------------- */
+
+function RecommendationPlanSection({ plan }: { plan: InterpretedInvestigation["recommendations"] }) {
+    const { primary, secondary } = plan;
+
+    const getKindBadge = (kind: string) => {
+        switch (kind) {
+            case "exact-code-fix":
+                return { label: "Exact Code Fix", bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/20" };
+            case "rollback":
+                return { label: "Deployment Rollback", bg: "bg-red-500/10", text: "text-red-400", border: "border-red-500/20" };
+            case "config-fix":
+                return { label: "Configuration Fix", bg: "bg-amber-500/10", text: "text-amber-400", border: "border-amber-500/20" };
+            case "operational-fix":
+                return { label: "Operational Remediation", bg: "bg-purple-500/10", text: "text-purple-400", border: "border-purple-500/20" };
+            case "dependency-fix":
+                return { label: "Dependency Remediation", bg: "bg-cyan-500/10", text: "text-cyan-400", border: "border-cyan-500/20" };
+            case "insufficient-evidence":
+                return { label: "Telemetry Required", bg: "bg-zinc-800", text: "text-zinc-400", border: "border-zinc-700" };
+            default:
+                return { label: "Targeted Investigation", bg: "bg-amber-500/10", text: "text-amber-400", border: "border-amber-500/20" };
+        }
+    };
+
+    const badge = getKindBadge(primary.kind);
+
+    return (
+        <section className="halo-card p-6 border-border space-y-6">
+            <div className="border-b border-border pb-3 flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                    <Zap className="w-4 h-4 text-accent" />
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
                         What Halo recommends
                     </h2>
-                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-accent/10 text-accent font-semibold">
-                        Actionable Fix Plan
+                </div>
+                <div className="flex items-center gap-2">
+                    <span className={`text-[11px] font-mono px-2 py-0.5 rounded ${badge.bg} ${badge.text} border ${badge.border} font-semibold`}>
+                        {badge.label}
                     </span>
                 </div>
+            </div>
 
-                <div className="space-y-5">
-                    {/* Immediate Backend Investigation */}
-                    <div className="p-4 rounded-xl bg-surface border border-red-500/20 space-y-2">
-                        <h3 className="text-xs font-bold uppercase tracking-wider text-red-400">
-                            Immediate investigation
-                        </h3>
-                        <p className="text-xs font-semibold text-white">
-                            {interpreted.recommendations.immediateInvestigation.title}
-                        </p>
-                        <p className="text-xs text-secondary">
-                            {interpreted.recommendations.immediateInvestigation.description}
-                        </p>
-                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 pt-2">
-                            {interpreted.recommendations.immediateInvestigation.checklist.map((item, idx) => (
-                                <li key={idx} className="p-2 rounded bg-[#080b11] border border-white/5 text-xs text-zinc-300 flex items-center gap-2">
-                                    <span className="text-red-400 font-bold">&rarr;</span>
-                                    <span>{item}</span>
-                                </li>
-                            ))}
-                        </ul>
+            <div className="space-y-6">
+                {/* 1. Primary Action Box */}
+                <div className="p-5 rounded-xl bg-surface border border-accent/30 space-y-3 shadow-lg shadow-accent/5">
+                    <div className="flex items-center justify-between">
+                        <span className="text-[10px] font-mono uppercase tracking-wider text-accent font-bold">
+                            Immediate Resolution
+                        </span>
+                        {primary.confidence > 0 && (
+                            <span className="text-xs font-mono text-secondary">
+                                Confidence: {Math.round(primary.confidence * 100)}%
+                            </span>
+                        )}
                     </div>
 
-                    {/* Likely Client-Side Bug */}
-                    {interpreted.recommendations.likelyRemediation && (
-                        <div className="p-4 rounded-xl bg-surface border border-blue-500/20 space-y-2">
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-blue-400">
-                                Likely client-side bug
-                            </h3>
-                            <p className="text-xs font-semibold text-white">
-                                {interpreted.recommendations.likelyRemediation.title}
-                            </p>
-                            <p className="text-xs text-secondary">
-                                {interpreted.recommendations.likelyRemediation.description}
-                            </p>
-                            <pre className="p-3 rounded-lg bg-[#080b11] border border-white/10 text-xs font-mono text-emerald-300 overflow-x-auto my-2 leading-relaxed">
-                                <code>{interpreted.recommendations.likelyRemediation.codeSnippet}</code>
+                    <p className="text-base font-bold text-white leading-snug">
+                        {primary.immediateAction}
+                    </p>
+
+                    <p className="text-xs text-secondary leading-relaxed border-t border-border/60 pt-2.5">
+                        {primary.rootCauseExplanation}
+                    </p>
+                </div>
+
+                {/* 2. Code Patch Diff (if available) */}
+                {primary.codePatch && (
+                    <div className="p-4 rounded-xl bg-surface border border-blue-500/20 space-y-3">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-blue-400">
+                                <Code2 size={15} />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                    Recommended Code Patch
+                                </h3>
+                            </div>
+                            <span className="text-[11px] font-mono text-zinc-400">
+                                {primary.codePatch.filePath}
+                                {primary.codePatch.lineRange ? `:${primary.codePatch.lineRange}` : ""}
+                            </span>
+                        </div>
+
+                        {primary.codePatch.functionOrComponent && (
+                            <div className="text-xs text-secondary font-mono">
+                                Component/Function: <code className="text-accent bg-surface-hover px-1.5 py-0.5 rounded">{primary.codePatch.functionOrComponent}()</code>
+                            </div>
+                        )}
+
+                        <div className="rounded-lg bg-[#080b11] border border-white/10 overflow-hidden text-xs font-mono">
+                            <div className="px-3 py-1.5 bg-zinc-900/80 border-b border-white/5 text-[11px] text-zinc-400 flex items-center justify-between">
+                                <span>Suggested Patch</span>
+                                <span className="text-[10px] text-emerald-400">Validated against telemetry</span>
+                            </div>
+                            <pre className="p-3 text-emerald-300 overflow-x-auto leading-relaxed whitespace-pre font-mono text-xs">
+                                <code>{primary.codePatch.after}</code>
                             </pre>
                         </div>
-                    )}
 
-                    {/* Verification */}
-                    <div className="p-4 rounded-xl bg-surface border border-emerald-500/20 space-y-2">
-                        <h3 className="text-xs font-bold uppercase tracking-wider text-emerald-400">
-                            Verification
-                        </h3>
-                        <p className="text-xs text-secondary">
-                            After fixing the backend failure:
+                        <p className="text-xs text-secondary leading-relaxed">
+                            {primary.codePatch.explanation}
                         </p>
-                        <ol className="space-y-1.5 pt-1 text-xs text-zinc-300">
-                            {interpreted.recommendations.verificationSteps.map((step, idx) => (
-                                <li key={idx} className="flex items-start gap-2">
-                                    <span className="w-4 h-4 rounded-full bg-emerald-500/10 text-emerald-400 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+
+                        {primary.codePatch.sideEffects && (
+                            <div className="p-2.5 rounded bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300 flex items-start gap-2">
+                                <Info size={14} className="shrink-0 mt-0.5 text-amber-400" />
+                                <span>{primary.codePatch.sideEffects}</span>
+                            </div>
+                        )}
+                    </div>
+                )}
+
+                {/* 3. Operational Steps (if present) */}
+                {primary.operationalSteps && primary.operationalSteps.length > 0 && (
+                    <div className="p-4 rounded-xl bg-surface border border-purple-500/20 space-y-3">
+                        <div className="flex items-center gap-2 text-purple-400">
+                            <Terminal size={15} />
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                Operational Action Steps
+                            </h3>
+                        </div>
+                        <ol className="space-y-2 pt-1 text-xs text-zinc-300">
+                            {primary.operationalSteps.map((step, idx) => (
+                                <li key={idx} className="flex items-start gap-2.5 p-2 rounded bg-[#080b11] border border-white/5">
+                                    <span className="w-4 h-4 rounded-full bg-purple-500/10 text-purple-400 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">
                                         {idx + 1}
                                     </span>
-                                    <span>{step}</span>
+                                    <span className="leading-relaxed">{step}</span>
                                 </li>
                             ))}
                         </ol>
                     </div>
+                )}
+
+                {/* 4. Evidence Traceability Chain */}
+                {primary.evidenceChain && primary.evidenceChain.length > 0 && (
+                    <div className="p-4 rounded-xl bg-surface/60 border border-border/80 space-y-2.5">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-zinc-400">
+                                <Layers size={14} />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">
+                                    Evidence Provenance
+                                </h3>
+                            </div>
+                            <span className="text-[10px] font-mono text-muted">
+                                {primary.evidenceChain.length} supporting signals
+                            </span>
+                        </div>
+                        <div className="divide-y divide-border/60 rounded-lg bg-[#080b11] border border-white/5 overflow-hidden">
+                            {primary.evidenceChain.map((link, idx) => (
+                                <div key={idx} className="p-2.5 flex items-center justify-between gap-3 text-xs font-mono">
+                                    <div className="flex items-center gap-2 min-w-0">
+                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface border border-border text-zinc-400 shrink-0">
+                                            {link.role}
+                                        </span>
+                                        <span className="text-zinc-300 truncate text-[11px]">
+                                            {link.excerpt}
+                                        </span>
+                                    </div>
+                                    <span className="text-[10px] text-muted shrink-0">
+                                        {link.evidenceId.slice(0, 10)}…
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
+                {/* 5. Insufficient Evidence Diagnostics (if telemetry is missing) */}
+                {primary.insufficientEvidence && (
+                    <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-3">
+                        <div className="flex items-center gap-2 text-amber-400">
+                            <HelpCircle size={15} />
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-amber-300">
+                                Telemetry Gaps & Unknowns
+                            </h3>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
+                            <div className="p-3 rounded-lg bg-[#080b11] border border-white/5 space-y-1.5">
+                                <span className="text-[10px] font-mono uppercase text-emerald-400 font-semibold">
+                                    What Halo Confirmed
+                                </span>
+                                <ul className="space-y-1 text-zinc-300">
+                                    {primary.insufficientEvidence.whatHaloKnows.map((k, i) => (
+                                        <li key={i} className="flex items-start gap-1.5">
+                                            <span className="text-emerald-400 font-bold">&bull;</span>
+                                            <span>{k}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+
+                            <div className="p-3 rounded-lg bg-[#080b11] border border-white/5 space-y-1.5">
+                                <span className="text-[10px] font-mono uppercase text-amber-400 font-semibold">
+                                    Missing Telemetry
+                                </span>
+                                <ul className="space-y-1 text-zinc-300">
+                                    {primary.insufficientEvidence.whatIsMissing.map((m, i) => (
+                                        <li key={i} className="flex items-start gap-1.5">
+                                            <span className="text-amber-400 font-bold">&bull;</span>
+                                            <span>{m}</span>
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        </div>
+
+                        <p className="text-[11px] text-amber-300/80 italic border-t border-amber-500/20 pt-2">
+                            <strong>Required:</strong> {primary.insufficientEvidence.requiredEvidence} &mdash; {primary.insufficientEvidence.why}
+                        </p>
+                    </div>
+                )}
+
+                {/* 6. Verification Steps */}
+                <div className="p-4 rounded-xl bg-surface border border-emerald-500/20 space-y-3">
+                    <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2 text-emerald-400">
+                            <CheckCircle2 size={15} />
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                Verification Procedure
+                            </h3>
+                        </div>
+                        <span className="text-[10px] font-mono text-emerald-400">
+                            Expected: {primary.verification.expectedOutcome}
+                        </span>
+                    </div>
+
+                    <ol className="space-y-1.5 pt-1 text-xs text-zinc-300">
+                        {primary.verification.steps.map((step, idx) => (
+                            <li key={idx} className="flex items-start gap-2">
+                                <span className="w-4 h-4 rounded-full bg-emerald-500/10 text-emerald-400 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">
+                                    {idx + 1}
+                                </span>
+                                <span>{step}</span>
+                            </li>
+                        ))}
+                    </ol>
+
+                    {primary.verification.regressionTest && (
+                        <div className="p-2.5 rounded bg-[#080b11] border border-emerald-500/20 text-xs text-zinc-300 font-mono flex items-start gap-2">
+                            <span className="text-emerald-400 font-bold text-[10px] uppercase">Test:</span>
+                            <span className="text-[11px]">{primary.verification.regressionTest}</span>
+                        </div>
+                    )}
                 </div>
-            </section>
-        </div>
+
+                {/* 7. Prevention Guardrails */}
+                {primary.prevention && primary.prevention.items.length > 0 && (
+                    <div className="p-4 rounded-xl bg-surface border border-border space-y-3">
+                        <div className="flex items-center gap-2 text-zinc-400">
+                            <ShieldAlert size={15} />
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                Prevention Guardrails
+                            </h3>
+                        </div>
+                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-secondary">
+                            {primary.prevention.items.map((item, idx) => (
+                                <li key={idx} className="p-2.5 rounded bg-[#080b11] border border-white/5 flex items-start gap-2">
+                                    <span className="text-accent font-bold">&bull;</span>
+                                    <span>{item}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        {primary.prevention.monitoring && (
+                            <p className="text-[11px] font-mono text-accent pt-1">
+                                Alert Rule: {primary.prevention.monitoring}
+                            </p>
+                        )}
+                    </div>
+                )}
+            </div>
+        </section>
     );
 }
 
