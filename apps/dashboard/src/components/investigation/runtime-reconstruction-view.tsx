@@ -322,15 +322,28 @@ export function RuntimeReconstructionView({ reconstruction }: Props) {
                     {failure.sourceContext && failure.sourceContext.lines.length > 0 ? (
                         <div className="rounded-xl bg-[#080b11] border border-white/10 overflow-hidden font-mono text-xs">
                             <div className="px-4 py-2 bg-zinc-900/90 border-b border-white/5 flex items-center justify-between text-zinc-400">
-                                <span className="text-[11px] truncate">{failure.sourceContext.filePath}</span>
-                                <div className="flex items-center gap-2">
-                                    {failure.sourceContext.revision && (
-                                        <span className="text-[10px] font-mono text-zinc-500">
-                                            rev {failure.sourceContext.revision.slice(0, 8)}
+                                <div className="flex items-center gap-2 truncate">
+                                    {failure.sourceContext.repositoryFullName && (
+                                        <span className="text-[11px] text-zinc-300 font-semibold">
+                                            {failure.sourceContext.repositoryFullName} :
                                         </span>
                                     )}
-                                    <span className="text-[10px] text-emerald-400 font-sans font-semibold">
-                                        Verified from source
+                                    <span className="text-[11px] truncate text-zinc-300">{failure.sourceContext.filePath}</span>
+                                    {failure.sourceContext.failingLineNumber && (
+                                        <span className="text-[11px] text-red-400 font-bold">
+                                            :{failure.sourceContext.failingLineNumber}
+                                        </span>
+                                    )}
+                                </div>
+                                <div className="flex items-center gap-2 shrink-0">
+                                    {failure.sourceContext.revision && (
+                                        <span className="text-[10px] font-mono text-zinc-400 bg-white/5 px-2 py-0.5 rounded border border-white/10">
+                                            commit {failure.sourceContext.revision.slice(0, 8)}
+                                        </span>
+                                    )}
+                                    <span className="text-[10px] text-emerald-400 font-sans font-semibold flex items-center gap-1">
+                                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+                                        GitHub verified
                                     </span>
                                 </div>
                             </div>
@@ -355,13 +368,19 @@ export function RuntimeReconstructionView({ reconstruction }: Props) {
                             </div>
                         </div>
                     ) : (
-                        <div className="p-6 rounded-xl bg-surface border border-border text-center space-y-2">
+                        <div className="p-6 rounded-xl bg-surface border border-border text-center space-y-3">
                             <FileCode size={24} className="text-muted mx-auto" />
-                            <p className="text-xs font-semibold text-white">Source Unavailable</p>
-                            <p className="text-xs text-secondary max-w-md mx-auto">
+                            <div className="space-y-1">
+                                <p className="text-xs font-semibold text-white">Source Unavailable</p>
+                                <div className="inline-flex items-center gap-1.5 px-2 py-0.5 rounded text-[10px] font-mono uppercase bg-surface-elevated border border-border text-secondary">
+                                    <span>Status:</span>
+                                    <span className="text-white font-bold">{failure.sourceContext?.resolutionStatus || "not_resolved"}</span>
+                                </div>
+                            </div>
+                            <p className="text-xs text-secondary max-w-lg mx-auto leading-relaxed">
                                 {failure.sourceContext?.unavailabilityReason ||
                                     (failure.primaryFailingFrame?.filePath
-                                        ? `The file \`${failure.primaryFailingFrame.filePath}\` could not be located. Configure a source provider in project settings.`
+                                        ? `The file \`${failure.primaryFailingFrame.filePath}\` could not be retrieved. Connect a GitHub repository in Project Settings to enable remote source resolution.`
                                         : "No file path was recorded in the stack frame.")}
                             </p>
                         </div>

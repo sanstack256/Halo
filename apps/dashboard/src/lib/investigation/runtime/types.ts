@@ -55,13 +55,31 @@ export interface SourceContext {
     containingFunction?: string;
     failingExpression?: string;
     failingStatement?: string;
-    resolutionStatus: "exact_file" | "fallback_local" | "source_revision_unavailable" | "file_not_found";
+    resolutionStatus:
+        | "exact_file"                  // Retrieved from disk or GitHub at exact commit
+        | "source_revision_unavailable" // Commit SHA known but file could not be found at that revision
+        | "file_not_found"              // File path not found locally or on GitHub
+        | "repository_not_configured"   // No GitHub repository connected to this project
+        | "commit_unavailable"          // Release/commit SHA not available
+        | "source_access_denied"        // GitHub auth failed or private repo without credentials
+        | "rate_limit"                  // GitHub API rate limited
+        | "github_api_error"            // GitHub API returned an unexpected error
+        | "source_map_unavailable"      // Source map referenced but not found
+        | "no_frame"                    // No usable stack frame for source resolution
+        ;
     /**
      * Human-readable reason when source could not be resolved.
      * Never fabricated. Only present when resolutionStatus !== "exact_file".
      */
     unavailabilityReason?: string;
+    /**
+     * The git commit SHA that was used (or attempted) for resolution.
+     */
     revision?: string;
+    /**
+     * The GitHub repository identifier (owner/repo) the source was fetched from.
+     */
+    repositoryFullName?: string;
 }
 
 export interface CallChainStep {

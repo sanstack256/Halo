@@ -103,7 +103,12 @@ export const ProjectScalarFieldEnum = {
   createdAt: 'createdAt',
   updatedAt: 'updatedAt',
   description: 'description',
-  replayConfig: 'replayConfig'
+  replayConfig: 'replayConfig',
+  githubRepoOwner: 'githubRepoOwner',
+  githubRepoName: 'githubRepoName',
+  githubToken: 'githubToken',
+  githubDefaultBranch: 'githubDefaultBranch',
+  githubInstallationId: 'githubInstallationId'
 } as const
 
 export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -194,6 +199,7 @@ export const ReleaseScalarFieldEnum = {
   eventCount: 'eventCount',
   errorCount: 'errorCount',
   traceCount: 'traceCount',
+  commitSha: 'commitSha',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const

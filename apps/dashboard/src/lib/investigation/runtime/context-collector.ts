@@ -31,7 +31,8 @@ import { detectMaterialGaps } from "./telemetry-gaps";
 export function collectRuntimeContext(
     anchorError: Evidence,
     correlatedEvents: Evidence[],
-    sourceContext?: SourceContext
+    sourceContext?: SourceContext,
+    hasServerSideEvidence?: boolean
 ): RuntimeContextReconstruction {
     const request = extractRequestContext(anchorError, correlatedEvents);
     const breadcrumbs = extractCategorizedBreadcrumbs(anchorError);
@@ -74,7 +75,8 @@ export function collectRuntimeContext(
         request,
         breadcrumbs,
         spanTree,
-        sourceContext
+        sourceContext,
+        hasServerSideEvidence
     );
 
     return {

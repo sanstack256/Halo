@@ -183,16 +183,21 @@ function InvestigationView({
             <section className="halo-card p-6 border-border space-y-5">
                 <div className="flex items-center justify-between border-b border-border pb-3">
                     <div className="flex items-center gap-2">
-                        <span className="w-2.5 h-2.5 rounded-full bg-accent animate-pulse" />
+                        <span className={`w-2.5 h-2.5 rounded-full ${interpreted.rootCauseSummary.isExactRootCauseKnown ? "bg-accent animate-pulse" : "bg-amber-400"}`} />
                         <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
-                            Root cause
+                            {interpreted.rootCauseSummary.isExactRootCauseKnown ? "Root Cause" : "Earliest Observed Failure"}
                         </h2>
                     </div>
-                    <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted font-mono">Confidence:</span>
+                    <div className="flex items-center gap-2 flex-wrap justify-end">
+                        <span className="text-xs text-muted font-mono">Causal Confidence:</span>
                         <span className="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                             {interpreted.rootCauseSummary.confidenceLabel}
                         </span>
+                        {!interpreted.rootCauseSummary.isExactRootCauseKnown && (
+                            <span className="text-xs font-medium px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                Exact Backend Cause: Unknown
+                            </span>
+                        )}
                     </div>
                 </div>
 
@@ -212,7 +217,7 @@ function InvestigationView({
                     </div>
 
                     <p className="text-xs text-secondary italic">
-                        The browser exception is therefore <strong className="text-white">a downstream symptom</strong>, not the originating failure.
+                        The client exception is therefore <strong className="text-white">a downstream symptom</strong> of the earlier request failure.
                     </p>
                 </div>
             </section>
@@ -224,13 +229,20 @@ function InvestigationView({
                         What happened
                     </h2>
                     <span className="text-xs font-mono text-secondary">
-                        {interpreted.whatHappened.timeFormatted} &bull; {interpreted.whatHappened.pageUrl}
+                        {interpreted.whatHappened.timeFormatted}
+                        {interpreted.whatHappened.pageUrl ? ` • ${interpreted.whatHappened.pageUrl}` : ""}
                     </span>
                 </div>
 
-                <p className="text-sm text-zinc-300">
-                    At <strong className="text-white font-mono">{interpreted.whatHappened.timeFormatted}</strong>, the user was on <code className="text-accent bg-surface px-1.5 py-0.5 rounded text-xs">{interpreted.whatHappened.pageUrl}</code> and clicked <strong className="text-white">Pay</strong>. Halo observed:
-                </p>
+                {interpreted.whatHappened.pageUrl ? (
+                    <p className="text-sm text-zinc-300">
+                        At <strong className="text-white font-mono">{interpreted.whatHappened.timeFormatted}</strong>, activity was recorded on <code className="text-accent bg-surface px-1.5 py-0.5 rounded text-xs">{interpreted.whatHappened.pageUrl}</code>. Halo reconstructed the following sequence:
+                    </p>
+                ) : (
+                    <p className="text-sm text-zinc-300">
+                        At <strong className="text-white font-mono">{interpreted.whatHappened.timeFormatted}</strong>, an incident occurred in the application. Halo reconstructed the following sequence:
+                    </p>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {/* Step 1: User Action */}
@@ -242,12 +254,18 @@ function InvestigationView({
                                     1. User action
                                 </h3>
                             </div>
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                Observed
+                            <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                                interpreted.whatHappened.userAction.provenance === "Observed"
+                                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                    : interpreted.whatHappened.userAction.provenance === "Inferred"
+                                    ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                                    : "bg-zinc-800 text-zinc-400 border-zinc-700"
+                            }`}>
+                                {interpreted.whatHappened.userAction.provenance}
                             </span>
                         </div>
                         <p className="text-xs text-secondary leading-relaxed">
-                            {interpreted.whatHappened.userAction.description}.
+                            {interpreted.whatHappened.userAction.description}
                         </p>
                         <p className="text-[11px] text-muted italic">
                             {interpreted.whatHappened.userAction.replayEvidence}

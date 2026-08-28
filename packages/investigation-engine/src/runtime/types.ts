@@ -1,33 +1,17 @@
 /**
  * Runtime Failure and Context Reconstruction Types
- *
- * Provides structured models for:
- * - Feature 1: Exact Runtime Failure Reconstruction
- * - Feature 2: Runtime Context Reconstruction
- *
- * Every element tracks its exact provenance:
- * - Observed: directly captured in verified telemetry
- * - Correlated: matched via shared IDs (session/trace/request)
- * - Inferred: derived through logical deduction
- * - Unavailable: genuinely not captured
  */
 
 export type ReconstructionProvenance = "Observed" | "Correlated" | "Inferred" | "Unavailable";
 
-/**
- * How a piece of correlated telemetry was linked to the anchor occurrence.
- */
 export type CorrelationBasis =
-    | "Anchor"       // This IS the anchor event
-    | "RequestId"    // Exact requestId match
-    | "TraceId"      // Exact traceId match
-    | "SessionId"    // Same sessionId
-    | "Temporal"     // Temporally adjacent only (weakest — only when no identifiers exist)
-    | "Derived";     // Derived from anchor metadata fields
+    | "Anchor"
+    | "RequestId"
+    | "TraceId"
+    | "SessionId"
+    | "Temporal"
+    | "Derived";
 
-/**
- * Frame classification for developer-facing presentation.
- */
 export type FrameClassification = "Application" | "Framework" | "Runtime" | "Vendor" | "Native" | "Unknown";
 
 export interface StackFrame {
@@ -40,7 +24,6 @@ export interface StackFrame {
     columnNumber?: number;
     isInternal: boolean;
     isApplication: boolean;
-    /** Developer-facing classification used to filter the application call chain */
     classification: FrameClassification;
     sourceMapStatus?: "exact" | "not_needed" | "missing_map" | "failed";
     generatedLocation?: { file: string; line?: number; column?: number };
@@ -55,13 +38,20 @@ export interface SourceContext {
     containingFunction?: string;
     failingExpression?: string;
     failingStatement?: string;
-    resolutionStatus: "exact_file" | "fallback_local" | "source_revision_unavailable" | "file_not_found";
-    /**
-     * Human-readable reason when source could not be resolved.
-     * Never fabricated. Only present when resolutionStatus !== "exact_file".
-     */
+    resolutionStatus:
+        | "exact_file"
+        | "source_revision_unavailable"
+        | "file_not_found"
+        | "repository_not_configured"
+        | "commit_unavailable"
+        | "source_access_denied"
+        | "rate_limit"
+        | "github_api_error"
+        | "source_map_unavailable"
+        | "no_frame";
     unavailabilityReason?: string;
     revision?: string;
+    repositoryFullName?: string;
 }
 
 export interface CallChainStep {
@@ -81,17 +71,8 @@ export interface RuntimeFailureReconstruction {
     exceptionClass: string;
     exceptionMessage: string;
     rawStack: string;
-    /** All frames unfiltered — for raw stack view */
     frames: StackFrame[];
-    /**
-     * Application-only frames in caller→callee order.
-     * This is the primary developer-facing chain.
-     */
     applicationCallChain: CallChainStep[];
-    /**
-     * Full chain including framework/runtime frames.
-     * Shown in expanded "raw stack" view.
-     */
     fullCallChain: CallChainStep[];
     primaryFailingFrame?: StackFrame;
     sourceContext?: SourceContext;
@@ -105,64 +86,67 @@ export interface ReconstructedRequestContext {
     routePath: string;
     status?: number | string;
     durationMs?: number;
+    headers?: Record<string, string>;
+    queryParams?: Record<string, string>;
+    bodyExcerpt?: string;
     requestId?: string;
     traceId?: string;
-    queryParams?: Record<string, string>;
-    headers?: Record<string, string>;
-    bodyExcerpt?: string;
-    /** How this request was correlated to the anchor event */
     correlationBasis: CorrelationBasis;
-    /** Human-readable explanation, e.g. "Exact requestId match: req-abc-123" */
     correlationExplanation: string;
     provenance: ReconstructionProvenance;
 }
 
 export interface CategorizedBreadcrumb {
-    timestamp?: Date;
-    timeOffsetFormatted: string;
-    category: "navigation" | "request" | "database" | "user-action" | "application" | "error" | "other";
+    timestamp: Date;
+    category: "http" | "navigation" | "user_action" | "console" | "database" | "system" | "other";
     message: string;
     data?: Record<string, unknown>;
-    provenance: ReconstructionProvenance;
+    level?: string;
+    timeOffsetMs?: number;
 }
 
 export interface ReconstructedSpanNode {
     id: string;
+    parentId?: string;
     name: string;
-    service?: string;
-    durationMs?: number;
-    status?: string | number;
-    isFailingSpan: boolean;
-    parentSpanId?: string;
+    service: string;
+    durationMs: number;
+    startTimeMs: number;
+    status: "ok" | "error" | "unset";
+    errorMessage?: string;
+    attributes?: Record<string, unknown>;
     children: ReconstructedSpanNode[];
-    provenance: ReconstructionProvenance;
+    isFailingSpan?: boolean;
 }
 
 export interface ReconstructedRuntimeMetadata {
-    runtimeType: "node" | "browser" | "unknown";
-    runtimeVersion?: string;
-    os?: string;
-    architecture?: string;
     environment?: string;
     release?: string;
-    service?: string;
-    provenance: ReconstructionProvenance;
+    nodeVersion?: string;
+    os?: string;
+    sdkName?: string;
+    sdkVersion?: string;
+    serverHost?: string;
 }
 
 export interface ReconstructedSessionContext {
     sessionId?: string;
-    userKey?: string;
-    sessionStartedAt?: Date;
-    crashedAt?: Date;
-    isCrashed: boolean;
-    provenance: ReconstructionProvenance;
+    userId?: string;
+    userEmail?: string;
+    deviceType?: string;
+    browser?: string;
+    ipAddress?: string;
 }
 
 export interface ContextualExecutionStep {
-    nodeType: "request" | "input" | "operation" | "function" | "data-access" | "observed-result" | "failing-expression" | "exception";
-    label: string;
-    detail?: string;
+    order: number;
+    timestamp: Date;
+    timeOffsetMs: number;
+    category: "request" | "breadcrumb" | "span" | "error" | "reconstruction";
+    title: string;
+    details?: string;
     provenance: ReconstructionProvenance;
+    isAnchor?: boolean;
 }
 
 export interface MaterialTelemetryGap {
@@ -186,8 +170,6 @@ export interface RuntimeContextReconstruction {
 export interface FullRuntimeReconstruction {
     failure: RuntimeFailureReconstruction;
     context: RuntimeContextReconstruction;
-    /** Detected runtime of the anchor event — drives narrative (never call Node events "browser exceptions") */
     runtimeOrigin: "node" | "browser" | "unknown";
-    /** True when actual source was resolved from disk — gates code patch generation */
     sourceResolved: boolean;
 }

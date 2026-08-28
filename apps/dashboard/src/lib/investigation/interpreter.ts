@@ -124,7 +124,17 @@ export interface InterpretedInvestigation {
         confidenceScore: number;
         reasoning: string[];
         isClientDownstream: boolean;
+        /**
+         * Per-claim confidence. Each claim is independently evidence-grounded.
+         * High confidence in the HTTP 500 occurring ≠ high confidence in the backend cause.
+         */
+        claimConfidence: {
+            upstreamHttpFailureOccurred: "Very High" | "High" | "Unknown";
+            typeErrorIsDownstream: "Very High" | "High" | "Low";
+            exactBackendCause: "High" | "Unknown";
+        };
     };
+
 
     /**
      * Causal chain narrative & visual flow
@@ -417,7 +427,15 @@ export function interpretInvestigation(
             ? `${parsedError.failingFunction}()`
             : "the application";
 
-    // 5. Causal Terminology Alignment — everything derived from real telemetry.
+    // 5. Causal Classification — strictly evidence-driven with explicit per-claim confidence.
+    //
+    // Rules:
+    //   - HTTP 500/4xx is ALWAYS the earliest observed upstream failure when present.
+    //   - A later TypeError/dereference is ALWAYS a downstream consequence — never the backend root cause.
+    //   - The exact backend reason for an HTTP 500 is Unknown unless server-side execution evidence is present.
+    //   - No backend exception is inferred from the client TypeError message.
+    //   - No cause (database, dependency, validation) is assumed from endpoint name or error string.
+
     let headline = "";
     let verdict = "";
     let rootCauseStatement = "";
@@ -425,44 +443,86 @@ export function interpretInvestigation(
     let downstreamSymptom = "";
     const contributingFactors: string[] = [];
 
-    // Runtime-appropriate language: Node.js events are "application exceptions", not "client-side exceptions"
+    // Runtime-appropriate labels.
     const exceptionOriginLabel =
         runtimeOrigin === "browser" ? "client-side exception" : "application exception";
     const runtimeLabel =
-        runtimeOrigin === "browser"
-            ? "client"
-            : runtimeOrigin === "node"
-            ? "application"
-            : "application";
+        runtimeOrigin === "browser" ? "client" : "application";
 
     const isHttpErrorStatus = requestStatus != null && String(requestStatus).match(/^[45]/);
+
+    // Per-claim confidence tracking.
+    // Each claim has its own evidence-basis — never let high confidence in one claim
+    // bleed into an unsupported claim.
+    const claimConfidence = {
+        /** Confidence that the upstream HTTP failure occurred (backed by HTTP telemetry event) */
+        upstreamHttpFailureOccurred: failedRequestEvent && isHttpErrorStatus
+            ? ("Very High" as const)
+            : failedRequestEvent
+            ? ("High" as const)
+            : ("Unknown" as const),
+
+        /** Confidence that the TypeError is a downstream consequence (backed by chronology + handler context) */
+        typeErrorIsDownstream: isDownstreamResponseHandler && failedRequestEvent
+            ? (incidentTraceId || incidentRequestId ? "Very High" as const : "High" as const)
+            : ("Low" as const),
+
+        /** Confidence in the exact backend root cause (only High/Very High if server-side evidence present) */
+        exactBackendCause: isExactRootCauseKnown
+            ? ("High" as const)
+            : ("Unknown" as const),
+    };
 
     if (isDownstreamResponseHandler && requestEndpoint && requestStatus != null) {
         const durationSuffix = requestDuration != null ? ` (${requestDuration} ms)` : "";
         if (isHttpErrorStatus) {
-            // Upstream HTTP 4xx/5xx failure (e.g. Scenario D dependency failure)
-            headline = `${parsedError.errorClass} after ${reqLabel} → ${requestStatus}`;
-            firstObservedUpstreamFailure = `${reqLabel} returned HTTP ${requestStatus}${durationSuffix}`;
+            // Pattern: HTTP 500 → failed client response → response handler → TypeError
+            // Correct classification:
+            //   1. HTTP 500 = observed upstream failure (the initiating event)
+            //   2. TypeError = observed downstream consequence (NOT a backend cause)
+            //   3. Exact server-side backend cause = Unknown (no server-side execution evidence)
+            headline = `${parsedError.errorClass} following ${reqLabel} → HTTP ${requestStatus}`;
+            firstObservedUpstreamFailure = `${reqLabel} returned HTTP ${requestStatus}${durationSuffix} (earliest observed failure in this incident)`;
             downstreamSymptom = parsedError.errorMessage;
             contributingFactors.push(
-                `The response handler in ${funcRef} accessed properties on the error response body without checking for a 2xx status.`
+                sourceResolved
+                    ? `The ${runtimeLabel} response handler in ${funcRef} accessed \`${propRef}\` without first verifying the HTTP status code was 2xx.`
+                    : `Telemetry indicates the response handler attempted to access \`${propRef}\` following the failed HTTP ${requestStatus} response.`
             );
+            // CRITICAL: rootCauseStatement must NOT promote the TypeError to the backend root cause.
+            // The backend cause for the HTTP 500 is unknown unless server evidence is present.
             if (isExactRootCauseKnown && backendServerTrace) {
-                rootCauseStatement = `The server failed with "${backendServerTrace.title}" during execution of ${requestEndpoint}, causing the HTTP ${requestStatus} response.`;
+                // Server-side execution evidence identifies the backend failure.
+                rootCauseStatement = `\`${reqLabel}\` failed at the server with: "${backendServerTrace.title}". Downstream, the ${runtimeLabel} response handler accessed \`${propRef}\`, producing \`${parsedError.errorMessage}\`.`;
             } else {
-                rootCauseStatement = `\`${reqLabel}\` returned HTTP ${requestStatus}. The ${runtimeLabel} response handler in ${funcRef} then accessed \`${propRef}\` without validating the HTTP status, producing the \`${parsedError.errorMessage}\` exception.`;
+                // HTTP 500 observed, client TypeError observed, backend cause = Unknown.
+                rootCauseStatement =
+                    `The earliest observed failure is \`${reqLabel}\` returning HTTP ${requestStatus}${durationSuffix}. ` +
+                    `The internal backend cause for this HTTP ${requestStatus} is unknown — no server-side exception or execution log was captured for this transaction. ` +
+                    (sourceResolved
+                        ? `In source code, ${funcRef} accessed \`${propRef}\` without validating the HTTP status, producing \`${parsedError.errorMessage}\`.`
+                        : `Downstream telemetry indicates the response handler attempted to access \`${propRef}\` after the failed response, producing \`${parsedError.errorMessage}\`.`);
             }
-            verdict = `The ${exceptionOriginLabel} is a downstream symptom. The first observed upstream failure in this cascade is the HTTP ${requestStatus} response from \`${requestEndpoint}\`.`;
+            verdict =
+                `The \`${parsedError.errorMessage}\` is a downstream consequence of the HTTP ${requestStatus} — ` +
+                `it is not the backend root cause. ` +
+                `The first observed failure in this cascade is \`${reqLabel}\` returning HTTP ${requestStatus}. ` +
+                (isExactRootCauseKnown
+                    ? `The backend cause is identified from server-side telemetry.`
+                    : `The exact server-side backend cause is unknown.`);
         } else {
-            // Upstream HTTP 200 with invalid payload or missing entity (e.g. Scenario B bad-shape / missing entity)
-            headline = `${parsedError.errorClass} in ${funcRef} accessing \`${propRef}\``;
-            firstObservedUpstreamFailure = `Unexpected payload structure from ${reqLabel}`;
+            // Pattern: HTTP 200 unexpected payload → access on null → TypeError
+            headline = `${parsedError.errorClass} in ${funcRef} — unexpected payload from ${reqLabel}`;
+            firstObservedUpstreamFailure = `${reqLabel} returned an unexpected payload structure (HTTP ${requestStatus})`;
             downstreamSymptom = parsedError.errorMessage;
             contributingFactors.push(
-                `The response from \`${reqLabel}\` contained an unexpected null or invalid field, and ${funcRef} accessed \`${propRef}\` without validating the payload structure.`
+                `\`${reqLabel}\` returned HTTP ${requestStatus} but with an unexpected data structure. ${funcRef} accessed \`${propRef}\` without validating the payload.`
             );
-            rootCauseStatement = `\`${reqLabel}\` returned an unexpected payload structure. ${funcRef} accessed \`${propRef}\` on the response without verifying its value, producing the \`${parsedError.errorMessage}\` exception.`;
-            verdict = `${funcRef} encountered a ${parsedError.errorClass} because the upstream response did not contain the expected data for \`${propRef}\`.`;
+            rootCauseStatement =
+                `\`${reqLabel}\` returned HTTP ${requestStatus} with an unexpected or incomplete payload. ` +
+                `${funcRef} accessed \`${propRef}\` without null-checking the response value, producing \`${parsedError.errorMessage}\`. ` +
+                `The upstream reason why the payload structure was unexpected is unknown from available telemetry.`;
+            verdict = `${funcRef} threw \`${parsedError.errorClass}\` because the upstream response from \`${reqLabel}\` did not contain the expected data shape for \`${propRef}\`.`;
         }
     } else if (rootCause) {
         headline = rootCause.title;
@@ -481,23 +541,34 @@ export function interpretInvestigation(
         verdict = "Inconclusive telemetry signal prevents establishing a single definitive root cause.";
     }
 
-    // 6. Visual Causal Flowchart — derived purely from evidence.
-    const userTriggerLine =
-        replaySession
-            ? `User interaction on ${pageUrl ?? "unknown page"}`
-            : `Event on ${pageUrl ?? anchorError?.service ?? "unknown context"}`;
+    // 6. Causal Flow — HTTP request → HTTP status → client response handling → exception.
+    //    Chain never adds invented backend exceptions between HTTP status and client exception.
+    //    User trigger only shown when replay or user action event is observed.
+    const hasObservedUserAction = Boolean(replaySession);
+    const userTriggerLine = replaySession
+        ? (pageUrl ? `User interaction on \`${pageUrl}\`` : `Observed user interaction`)
+        : null; // No user action observed — don't fabricate
 
     const statusLine =
         requestStatus != null
             ? `HTTP ${requestStatus}${requestDuration != null ? ` (${requestDuration} ms)` : ""}`
-            : "Request completed";
+            : null;
 
-    const asciiFlow =
-        isDownstreamResponseHandler && requestEndpoint
-            ? isHttpErrorStatus
-                ? `${userTriggerLine}\n       ↓\n${reqLabel}\n       ↓\n${statusLine}\n       ↓\n${funcRef} accessed \`${propRef}\` without status check\n       ↓\n${parsedError.errorMessage}`
-                : `${userTriggerLine}\n       ↓\n${reqLabel}\n       ↓\n${statusLine} (unexpected payload)\n       ↓\n${funcRef} accessed \`${propRef}\`\n       ↓\n${parsedError.errorMessage}`
-            : `${userTriggerLine}\n       ↓\n${reqLabel}\n       ↓\n${parsedError.errorMessage}`;
+    // Build causal chain bottom-up from what is actually observed:
+    //   [optional user trigger] → HTTP request → HTTP status → client response handler → TypeError
+    const chainSteps: string[] = [];
+    if (userTriggerLine) chainSteps.push(userTriggerLine);
+    if (requestEndpoint) chainSteps.push(reqLabel);
+    if (statusLine) chainSteps.push(statusLine);
+    if (isDownstreamResponseHandler && requestEndpoint) {
+        chainSteps.push(
+            isHttpErrorStatus
+                ? `${funcRef} accessed \`${propRef}\` without HTTP status check`
+                : `${funcRef} accessed \`${propRef}\` on unexpected payload`
+        );
+    }
+    chainSteps.push(parsedError.errorMessage);
+    const asciiFlow = chainSteps.join("\n       ↓\n");
 
     // 7. Causal Story Narrative — derived from real evidence.
     const pageCtx = pageUrl ? `\`${pageUrl}\`` : anchorError?.service ?? "the application";
@@ -508,20 +579,25 @@ export function interpretInvestigation(
             ? isHttpErrorStatus
                 ? `At ${timeFormatted}, an incident was captured${pageUrl ? ` on ${pageCtx}` : ""}. ` +
                   `A request to \`${reqLabel}\` returned HTTP ${requestStatus}${durationPhrase}. ` +
-                  `The response handler in ${funcRef} then accessed \`${propRef}\` without validating the HTTP status, producing \`${parsedError.errorMessage}\`. ` +
+                  `The ${runtimeLabel} response handler in ${funcRef} then accessed \`${propRef}\` without validating the HTTP status code, producing \`${parsedError.errorMessage}\`. ` +
                   (replaySession ? `Replay confirms user interaction immediately before the request. ` : "") +
-                  `The exact server-side reason for the ${requestStatus} is unknown — no backend exception or execution log was captured for this transaction.`
+                  `The exact server-side reason for the HTTP ${requestStatus} is unknown — ` +
+                  (isExactRootCauseKnown
+                      ? `server-side telemetry: "${backendServerTrace?.title}".`
+                      : `no backend exception or server-side execution log was captured for this transaction.`)
                 : `At ${timeFormatted}, an incident was captured${pageUrl ? ` on ${pageCtx}` : ""}. ` +
-                  `A request to \`${reqLabel}\` returned HTTP ${requestStatus}${durationPhrase}, but with an unexpected data structure. ` +
-                  `${funcRef} accessed \`${propRef}\` without checking for null, producing \`${parsedError.errorMessage}\`. ` +
-                  `The exact business reason why the upstream data was null is unknown.`
+                  `A request to \`${reqLabel}\` returned HTTP ${requestStatus}${durationPhrase} with an unexpected payload structure. ` +
+                  `${funcRef} accessed \`${propRef}\` without null-checking, producing \`${parsedError.errorMessage}\`. ` +
+                  `The upstream reason why the payload was unexpected is not established from available telemetry.`
             : `At ${timeFormatted}, an incident occurred${pageUrl ? ` on ${pageCtx}` : ""}. ${rootCauseStatement}`;
 
-    // 8. Causal Tree Diagram — derived from real evidence.
+    // 8. Causal Tree Diagram — reflects observed chain, no invented nodes.
     const treeDiagram =
-        isDownstreamResponseHandler && requestEndpoint
-            ? `${reqLabel} → ${requestStatus ?? "response"}\n        │\n        └── ${funcRef} accesses \`${propRef}\`\n                    │\n                    └── ${parsedError.errorMessage}`
-            : `${reqLabel} → ${parsedError.errorMessage}`;
+        isDownstreamResponseHandler && requestEndpoint && requestStatus != null
+            ? isHttpErrorStatus
+                ? `${reqLabel} → HTTP ${requestStatus} (observed upstream failure)\n        │\n        └── ${funcRef} accessed \`${propRef}\` without status guard\n                    │\n                    └── ${parsedError.errorMessage} (downstream consequence)\n\n[Exact backend cause for HTTP ${requestStatus}]: Unknown — no server-side telemetry captured`
+                : `${reqLabel} → HTTP ${requestStatus} (unexpected payload)\n        │\n        └── ${funcRef} accessed \`${propRef}\`\n                    │\n                    └── ${parsedError.errorMessage}`
+            : `${reqLabel ?? parsedError.errorClass} → ${parsedError.errorMessage}`;
 
     // 9. Evidence Integrity: Confirmed Facts vs Inferences vs Unknowns
     const confirmedFacts: EvidenceClaim[] = [];
@@ -864,33 +940,51 @@ export function interpretInvestigation(
         },
     );
 
+    // Reasoning points for Why This Conclusion section.
     const reasoningPoints: string[] = [];
     if (failedRequestEvent && requestStatus != null) {
-        reasoningPoints.push(`\`${reqLabel}\` returned HTTP ${requestStatus}, which precedes the client exception in chronological order.`);
+        const correlationBasis = incidentTraceId
+            ? `trace ID (${incidentTraceId.slice(0, 8)}…)`
+            : incidentRequestId
+            ? `request ID (${incidentRequestId.slice(0, 8)}…)`
+            : incidentSessionId
+            ? `session ID (${incidentSessionId.slice(0, 8)}…)`
+            : "temporal ordering";
+        reasoningPoints.push(
+            `\`${reqLabel}\` returned HTTP ${requestStatus} and is correlated to the error event via ${correlationBasis}, establishing chronological precedence.`
+        );
     }
-    if (incidentSessionId) {
-        reasoningPoints.push(`The request and error share the same session context (${incidentSessionId.slice(0, 8)}…).`);
-    }
-    if (incidentTraceId) {
-        reasoningPoints.push(`Shared trace ID (${incidentTraceId.slice(0, 8)}…) links request and error as part of the same distributed transaction.`);
+    if (isDownstreamResponseHandler) {
+        reasoningPoints.push(
+            `The \`${parsedError.errorMessage}\` exception is classified as a downstream consequence: ` +
+            `it occurred inside the ${runtimeLabel} response handler of \`${reqLabel}\`, after the upstream HTTP failure already returned an unexpected response body.`
+        );
     }
     if (replaySession) {
         reasoningPoints.push(`Session replay confirms user interaction immediately before the network call.`);
     }
-    if (isDownstreamResponseHandler) {
-        reasoningPoints.push(`The client exception stack frame is consistent with accessing a property on an undefined response body.`);
+    if (!isExactRootCauseKnown && isHttpErrorStatus) {
+        reasoningPoints.push(
+            `The exact server-side backend cause for HTTP ${requestStatus} remains Unknown — no server-side execution log or exception was captured for this transaction.`
+        );
     }
     if (reasoningPoints.length === 0) {
         reasoningPoints.push(`Available telemetry was insufficient to establish a high-confidence causal chain.`);
     }
 
+    // What Happened — only include what is actually observed in telemetry.
+    // Do not fabricate user actions, page context, or session information.
+    const hasObservedPageUrl = Boolean(pageUrl); // Only from replay or metadata — not inferred
     const userActionDescription = replaySession
-        ? pageUrl
+        ? (pageUrl
             ? `User interacted on \`${pageUrl}\` immediately before the incident.`
-            : `A user session was recorded for this occurrence.`
-        : pageUrl
-        ? `Activity was recorded on \`${pageUrl}\`.`
-        : `Activity was recorded in ${anchorError?.service ?? "the application"}.`;
+            : `A user session was recorded for this occurrence.`)
+        : hasObservedPageUrl
+        ? `Activity was recorded on \`${pageUrl}\` (no session replay captured).`
+        : `No user action event was captured for this occurrence — only the application error event.`;
+
+    // userAction.provenance: Observed only when replay exists, otherwise Inferred from URL metadata
+    const userActionProvenance: ProvenanceType = replaySession ? "Observed" : (hasObservedPageUrl ? "Inferred" : "Unknown");
 
     const clientExceptionLocation =
         parsedError.failingFunction && parsedError.targetProperty
@@ -906,12 +1000,14 @@ export function interpretInvestigation(
             ? `The operation on \`${pageUrl}\` did not complete and the application entered an error state.`
             : `The operation in ${anchorError?.service ?? "the application"} did not complete and an error state was reached.`;
 
-    const hasRequestAndError = Boolean(failedRequestEvent && anchorError);
+    // Per-claim confidence (not a single blended score).
+    // Each claim's confidence must be independently grounded in the evidence for that claim.
+    // High confidence in HTTP 500 occurring ≠ high confidence in the exact backend cause.
     const hasSharedId = Boolean(incidentSessionId || incidentTraceId || incidentRequestId);
     const confidenceScore =
-        hasRequestAndError && hasSharedId ? 90
-        : hasRequestAndError ? 72
-        : 45;
+        failedRequestEvent && anchorError && hasSharedId ? 88
+        : failedRequestEvent && anchorError ? 70
+        : 42;
     const confidenceLabel = getConfidenceLevel(confidenceScore);
 
     const executiveNarrative =
@@ -939,10 +1035,13 @@ export function interpretInvestigation(
             firstObservedUpstreamFailure,
             downstreamSymptom,
             contributingFactors,
+            // Overall qualitative confidence label (blended, for summary display)
             confidenceLabel,
             confidenceScore,
             reasoning: reasoningPoints,
             isClientDownstream: isDownstreamResponseHandler,
+            // Per-claim confidence — each claim is independently grounded in evidence
+            claimConfidence,
         },
         causalStory,
         asciiFlow,
@@ -951,7 +1050,10 @@ export function interpretInvestigation(
             pageUrl: pageUrl ?? "",
             userAction: {
                 description: userActionDescription,
-                provenance: "Observed",
+                // Provenance is Observed only when a session replay event exists.
+                // Inferred when only page URL from event metadata is available.
+                // Unknown when neither replay nor URL is present.
+                provenance: userActionProvenance,
                 replayEvidence: replaySession
                     ? `Session replay was recorded for this occurrence.`
                     : `No session replay was recorded for this occurrence.`,

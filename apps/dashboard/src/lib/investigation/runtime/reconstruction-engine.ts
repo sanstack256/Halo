@@ -78,7 +78,17 @@ export function reconstructRuntimeFailure(
     };
 
     // --- Context collection (occurrence-scoped) ---
-    const context = collectRuntimeContext(anchorError, correlatedEvents, sourceContext);
+    // Detect whether any server-side execution evidence exists (beyond the anchor event itself)
+    const hasServerSideEvidence = correlatedEvents.some((ev) =>
+        ev.id !== anchorError.id &&
+        ev.service &&
+        ev.service !== "browser" &&
+        ev.service !== "frontend" &&
+        ev.service !== "client" &&
+        (ev.type === "ERROR" || ev.type === "LOG")
+    );
+
+    const context = collectRuntimeContext(anchorError, correlatedEvents, sourceContext, hasServerSideEvidence);
 
     return {
         failure,

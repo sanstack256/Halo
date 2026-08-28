@@ -26,15 +26,20 @@ model Project {
   createdAt         DateTime           @default(now())
   updatedAt         DateTime           @updatedAt
   description       String?
-  replayConfig      Json?
-  apiKeys           ApiKey[]
-  environments      Environment[]
-  events            Event[]
-  issues            Issue[]
-  organization      Organization       @relation(fields: [organizationId], references: [id])
-  releases          Release[]
-  replaySessions    ReplaySession[]
-  telemetrySessions TelemetrySession[]
+  replayConfig        Json?
+  githubRepoOwner     String?
+  githubRepoName      String?
+  githubToken         String?
+  githubDefaultBranch String?            @default("main")
+  githubInstallationId String?
+  apiKeys             ApiKey[]
+  environments        Environment[]
+  events              Event[]
+  issues              Issue[]
+  organization        Organization       @relation(fields: [organizationId], references: [id])
+  releases            Release[]
+  replaySessions      ReplaySession[]
+  telemetrySessions   TelemetrySession[]
 
   @@unique([organizationId, slug])
 }
@@ -142,6 +147,7 @@ model Release {
   eventCount Int      @default(0)
   errorCount Int      @default(0)
   traceCount Int      @default(0)
+  commitSha  String?
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   events     Event[]

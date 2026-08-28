@@ -47,6 +47,7 @@ export type ReleaseMinAggregateOutputType = {
   eventCount: number | null
   errorCount: number | null
   traceCount: number | null
+  commitSha: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -60,6 +61,7 @@ export type ReleaseMaxAggregateOutputType = {
   eventCount: number | null
   errorCount: number | null
   traceCount: number | null
+  commitSha: string | null
   createdAt: Date | null
   updatedAt: Date | null
 }
@@ -73,6 +75,7 @@ export type ReleaseCountAggregateOutputType = {
   eventCount: number
   errorCount: number
   traceCount: number
+  commitSha: number
   createdAt: number
   updatedAt: number
   _all: number
@@ -100,6 +103,7 @@ export type ReleaseMinAggregateInputType = {
   eventCount?: true
   errorCount?: true
   traceCount?: true
+  commitSha?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -113,6 +117,7 @@ export type ReleaseMaxAggregateInputType = {
   eventCount?: true
   errorCount?: true
   traceCount?: true
+  commitSha?: true
   createdAt?: true
   updatedAt?: true
 }
@@ -126,6 +131,7 @@ export type ReleaseCountAggregateInputType = {
   eventCount?: true
   errorCount?: true
   traceCount?: true
+  commitSha?: true
   createdAt?: true
   updatedAt?: true
   _all?: true
@@ -226,6 +232,7 @@ export type ReleaseGroupByOutputType = {
   eventCount: number
   errorCount: number
   traceCount: number
+  commitSha: string | null
   createdAt: Date
   updatedAt: Date
   _count: ReleaseCountAggregateOutputType | null
@@ -262,6 +269,7 @@ export type ReleaseWhereInput = {
   eventCount?: Prisma.IntFilter<"Release"> | number
   errorCount?: Prisma.IntFilter<"Release"> | number
   traceCount?: Prisma.IntFilter<"Release"> | number
+  commitSha?: Prisma.StringNullableFilter<"Release"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Release"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Release"> | Date | string
   events?: Prisma.EventListRelationFilter
@@ -277,6 +285,7 @@ export type ReleaseOrderByWithRelationInput = {
   eventCount?: Prisma.SortOrder
   errorCount?: Prisma.SortOrder
   traceCount?: Prisma.SortOrder
+  commitSha?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   events?: Prisma.EventOrderByRelationAggregateInput
@@ -296,6 +305,7 @@ export type ReleaseWhereUniqueInput = Prisma.AtLeast<{
   eventCount?: Prisma.IntFilter<"Release"> | number
   errorCount?: Prisma.IntFilter<"Release"> | number
   traceCount?: Prisma.IntFilter<"Release"> | number
+  commitSha?: Prisma.StringNullableFilter<"Release"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Release"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Release"> | Date | string
   events?: Prisma.EventListRelationFilter
@@ -311,6 +321,7 @@ export type ReleaseOrderByWithAggregationInput = {
   eventCount?: Prisma.SortOrder
   errorCount?: Prisma.SortOrder
   traceCount?: Prisma.SortOrder
+  commitSha?: Prisma.SortOrderInput | Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
   _count?: Prisma.ReleaseCountOrderByAggregateInput
@@ -332,6 +343,7 @@ export type ReleaseScalarWhereWithAggregatesInput = {
   eventCount?: Prisma.IntWithAggregatesFilter<"Release"> | number
   errorCount?: Prisma.IntWithAggregatesFilter<"Release"> | number
   traceCount?: Prisma.IntWithAggregatesFilter<"Release"> | number
+  commitSha?: Prisma.StringNullableWithAggregatesFilter<"Release"> | string | null
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"Release"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"Release"> | Date | string
 }
@@ -344,6 +356,7 @@ export type ReleaseCreateInput = {
   eventCount?: number
   errorCount?: number
   traceCount?: number
+  commitSha?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   events?: Prisma.EventCreateNestedManyWithoutReleaseRefInput
@@ -359,6 +372,7 @@ export type ReleaseUncheckedCreateInput = {
   eventCount?: number
   errorCount?: number
   traceCount?: number
+  commitSha?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   events?: Prisma.EventUncheckedCreateNestedManyWithoutReleaseRefInput
@@ -372,6 +386,7 @@ export type ReleaseUpdateInput = {
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
   errorCount?: Prisma.IntFieldUpdateOperationsInput | number
   traceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  commitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   events?: Prisma.EventUpdateManyWithoutReleaseRefNestedInput
@@ -387,6 +402,7 @@ export type ReleaseUncheckedUpdateInput = {
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
   errorCount?: Prisma.IntFieldUpdateOperationsInput | number
   traceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  commitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   events?: Prisma.EventUncheckedUpdateManyWithoutReleaseRefNestedInput
@@ -401,6 +417,7 @@ export type ReleaseCreateManyInput = {
   eventCount?: number
   errorCount?: number
   traceCount?: number
+  commitSha?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -413,6 +430,7 @@ export type ReleaseUpdateManyMutationInput = {
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
   errorCount?: Prisma.IntFieldUpdateOperationsInput | number
   traceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  commitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -426,6 +444,7 @@ export type ReleaseUncheckedUpdateManyInput = {
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
   errorCount?: Prisma.IntFieldUpdateOperationsInput | number
   traceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  commitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -459,6 +478,7 @@ export type ReleaseCountOrderByAggregateInput = {
   eventCount?: Prisma.SortOrder
   errorCount?: Prisma.SortOrder
   traceCount?: Prisma.SortOrder
+  commitSha?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -478,6 +498,7 @@ export type ReleaseMaxOrderByAggregateInput = {
   eventCount?: Prisma.SortOrder
   errorCount?: Prisma.SortOrder
   traceCount?: Prisma.SortOrder
+  commitSha?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -491,6 +512,7 @@ export type ReleaseMinOrderByAggregateInput = {
   eventCount?: Prisma.SortOrder
   errorCount?: Prisma.SortOrder
   traceCount?: Prisma.SortOrder
+  commitSha?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
 }
@@ -575,6 +597,7 @@ export type ReleaseCreateWithoutProjectInput = {
   eventCount?: number
   errorCount?: number
   traceCount?: number
+  commitSha?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   events?: Prisma.EventCreateNestedManyWithoutReleaseRefInput
@@ -588,6 +611,7 @@ export type ReleaseUncheckedCreateWithoutProjectInput = {
   eventCount?: number
   errorCount?: number
   traceCount?: number
+  commitSha?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   events?: Prisma.EventUncheckedCreateNestedManyWithoutReleaseRefInput
@@ -631,6 +655,7 @@ export type ReleaseScalarWhereInput = {
   eventCount?: Prisma.IntFilter<"Release"> | number
   errorCount?: Prisma.IntFilter<"Release"> | number
   traceCount?: Prisma.IntFilter<"Release"> | number
+  commitSha?: Prisma.StringNullableFilter<"Release"> | string | null
   createdAt?: Prisma.DateTimeFilter<"Release"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"Release"> | Date | string
 }
@@ -643,6 +668,7 @@ export type ReleaseCreateWithoutEventsInput = {
   eventCount?: number
   errorCount?: number
   traceCount?: number
+  commitSha?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
   project: Prisma.ProjectCreateNestedOneWithoutReleasesInput
@@ -657,6 +683,7 @@ export type ReleaseUncheckedCreateWithoutEventsInput = {
   eventCount?: number
   errorCount?: number
   traceCount?: number
+  commitSha?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -685,6 +712,7 @@ export type ReleaseUpdateWithoutEventsInput = {
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
   errorCount?: Prisma.IntFieldUpdateOperationsInput | number
   traceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  commitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   project?: Prisma.ProjectUpdateOneRequiredWithoutReleasesNestedInput
@@ -699,6 +727,7 @@ export type ReleaseUncheckedUpdateWithoutEventsInput = {
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
   errorCount?: Prisma.IntFieldUpdateOperationsInput | number
   traceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  commitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -711,6 +740,7 @@ export type ReleaseCreateManyProjectInput = {
   eventCount?: number
   errorCount?: number
   traceCount?: number
+  commitSha?: string | null
   createdAt?: Date | string
   updatedAt?: Date | string
 }
@@ -723,6 +753,7 @@ export type ReleaseUpdateWithoutProjectInput = {
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
   errorCount?: Prisma.IntFieldUpdateOperationsInput | number
   traceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  commitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   events?: Prisma.EventUpdateManyWithoutReleaseRefNestedInput
@@ -736,6 +767,7 @@ export type ReleaseUncheckedUpdateWithoutProjectInput = {
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
   errorCount?: Prisma.IntFieldUpdateOperationsInput | number
   traceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  commitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   events?: Prisma.EventUncheckedUpdateManyWithoutReleaseRefNestedInput
@@ -749,6 +781,7 @@ export type ReleaseUncheckedUpdateManyWithoutProjectInput = {
   eventCount?: Prisma.IntFieldUpdateOperationsInput | number
   errorCount?: Prisma.IntFieldUpdateOperationsInput | number
   traceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  commitSha?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
@@ -793,6 +826,7 @@ export type ReleaseSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   eventCount?: boolean
   errorCount?: boolean
   traceCount?: boolean
+  commitSha?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   events?: boolean | Prisma.Release$eventsArgs<ExtArgs>
@@ -809,6 +843,7 @@ export type ReleaseSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   eventCount?: boolean
   errorCount?: boolean
   traceCount?: boolean
+  commitSha?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -823,6 +858,7 @@ export type ReleaseSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   eventCount?: boolean
   errorCount?: boolean
   traceCount?: boolean
+  commitSha?: boolean
   createdAt?: boolean
   updatedAt?: boolean
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -837,11 +873,12 @@ export type ReleaseSelectScalar = {
   eventCount?: boolean
   errorCount?: boolean
   traceCount?: boolean
+  commitSha?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type ReleaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "version" | "projectId" | "firstSeen" | "lastSeen" | "eventCount" | "errorCount" | "traceCount" | "createdAt" | "updatedAt", ExtArgs["result"]["release"]>
+export type ReleaseOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "version" | "projectId" | "firstSeen" | "lastSeen" | "eventCount" | "errorCount" | "traceCount" | "commitSha" | "createdAt" | "updatedAt", ExtArgs["result"]["release"]>
 export type ReleaseInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   events?: boolean | Prisma.Release$eventsArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
@@ -869,6 +906,7 @@ export type $ReleasePayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     eventCount: number
     errorCount: number
     traceCount: number
+    commitSha: string | null
     createdAt: Date
     updatedAt: Date
   }, ExtArgs["result"]["release"]>
@@ -1304,6 +1342,7 @@ export interface ReleaseFieldRefs {
   readonly eventCount: Prisma.FieldRef<"Release", 'Int'>
   readonly errorCount: Prisma.FieldRef<"Release", 'Int'>
   readonly traceCount: Prisma.FieldRef<"Release", 'Int'>
+  readonly commitSha: Prisma.FieldRef<"Release", 'String'>
   readonly createdAt: Prisma.FieldRef<"Release", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"Release", 'DateTime'>
 }

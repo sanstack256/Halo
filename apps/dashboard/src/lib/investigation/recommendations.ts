@@ -112,17 +112,40 @@ export interface DashboardRecommendation {
     evidenceIds: string[];
 }
 
+export type RecommendationTier = "immediate-mitigation" | "upstream-investigation" | "root-cause-remediation";
+
 export interface DashboardRecommendationPlan {
-    /** Primary fix — always present */
+    /**
+     * Tier 1 — Immediate Mitigation
+     * Addresses the observed downstream symptom (e.g. response handler guard).
+     * Always present when an actionable mitigation exists.
+     */
+    mitigation: DashboardRecommendation | null;
+
+    /**
+     * Tier 2 — Upstream Investigation
+     * Provides actionable steps to instrument the upstream failure and uncover the root cause.
+     * Always present when the exact backend cause is Unknown.
+     */
+    upstreamInvestigation: DashboardRecommendation | null;
+
+    /**
+     * Tier 3 — Root-Cause Remediation
+     * Only generated when server-side evidence identifies the exact backend cause.
+     * NEVER invented from client-side exceptions.
+     */
+    rootCauseRemediation: DashboardRecommendation | null;
+
+    /** Backwards-compatible: primary = mitigation ?? upstreamInvestigation ?? rootCauseRemediation */
     primary: DashboardRecommendation;
 
-    /** Secondary recommendations (evidence gaps, prevention) */
+    /** All additional non-primary recommendations */
     secondary: DashboardRecommendation[];
 
-    /** True when the primary recommendation is actionable (not insufficient-evidence) */
+    /** True when the primary recommendation is actionable */
     isActionable: boolean;
 
-    /** True when a code patch is available */
+    /** True when a code patch is available in the primary recommendation */
     hasCodePatch: boolean;
 }
 
@@ -187,9 +210,7 @@ export interface RecommendationTelemetryContext {
 /* -------------------------------------------------------------------------- */
 
 /**
- * Build the full UI-ready recommendation plan from engine output + interpreter context.
- *
- * Priority: engine recommendations (evidence-grounded) > interpreter-derived fallback.
+ * Build the full UI-ready three-tier recommendation plan from engine output + interpreter context.
  */
 export function buildDashboardRecommendations(
     investigation: Investigation,
@@ -197,33 +218,191 @@ export function buildDashboardRecommendations(
 ): DashboardRecommendationPlan {
     const engineRecs = investigation.recommendations;
 
-    let primary: DashboardRecommendation;
+    let mitigation: DashboardRecommendation | null = null;
+    let upstreamInvestigation: DashboardRecommendation | null = null;
+    let rootCauseRemediation: DashboardRecommendation | null = null;
     const secondary: DashboardRecommendation[] = [];
 
-    if (engineRecs.length > 0) {
-        // Prefer the engine's leading recommendation — it is derived from actual evidence
-        primary = adaptEngineRecommendation(engineRecs[0], telemetry);
+    // Build from interpreter-derived telemetry context first (most accurate for runtime evidence).
+    if (telemetry.isDownstreamResponseHandler && telemetry.failedRequest?.endpoint && telemetry.failedRequest?.status != null) {
+        const { parsedError, failedRequest, isExactRootCauseKnown, sourceResolved, backendServerTrace } = telemetry;
+        const reqLabel = failedRequest.method && failedRequest.endpoint
+            ? `${failedRequest.method} ${failedRequest.endpoint}`
+            : failedRequest.endpoint ?? "the endpoint";
+        const prop = parsedError.targetProperty ?? "response properties";
 
-        // Map remaining as secondary
-        for (const rec of engineRecs.slice(1)) {
-            secondary.push(adaptEngineRecommendation(rec, telemetry));
+        // Tier 1: Immediate Mitigation — guard the response handler against the unexpected response.
+        // This recommendation is scoped to the DOWNSTREAM client symptom, not the backend cause.
+        const codePatch = sourceResolved ? buildResponseHandlerPatch(telemetry) : null;
+        mitigation = {
+            id: `mitigation:response-handler:${telemetry.anchorErrorId ?? "unknown"}`,
+            kind: codePatch ? "exact-code-fix" : "investigation-required",
+            immediateAction:
+                `Mitigation: Guard the ${parsedError.failingFunction ? `\`${parsedError.failingFunction}()\`` : "response handler"} against HTTP ${failedRequest.status} before accessing \`${prop}\`.`,
+            rootCauseExplanation: sourceResolved
+                ? `This is a mitigation for the downstream ${parsedError.errorClass} exception — not a fix for the upstream HTTP ${failedRequest.status}. ` +
+                  `Verified in source code: \`${reqLabel}\` returned HTTP ${failedRequest.status}` +
+                  (failedRequest.durationMs != null ? ` after ${failedRequest.durationMs}ms` : "") +
+                  `. The response handler accessed \`${prop}\` without verifying \`response.ok\` first, causing \`${parsedError.errorMessage}\`. ` +
+                  `Adding the guard prevents the client exception but does not fix the upstream HTTP ${failedRequest.status}.`
+                : `This is a mitigation for the downstream ${parsedError.errorClass} exception — not a fix for the upstream HTTP ${failedRequest.status}. ` +
+                  `Telemetry indicates that \`${reqLabel}\` returned HTTP ${failedRequest.status}` +
+                  (failedRequest.durationMs != null ? ` after ${failedRequest.durationMs}ms` : "") +
+                  `, and the response callback subsequently attempted to access \`${prop}\`, producing \`${parsedError.errorMessage}\`. ` +
+                  `Adding a status check in the response handler mitigates the downstream crash, while the upstream HTTP ${failedRequest.status} requires backend investigation.`,
+            codePatch: codePatch ?? undefined,
+            evidenceChain: [
+                ...(failedRequest.id ? [{ evidenceId: failedRequest.id, evidenceType: failedRequest.type, role: "upstream-failure", excerpt: `${reqLabel} → HTTP ${failedRequest.status}` }] : []),
+                ...(telemetry.anchorErrorId && telemetry.anchorErrorTitle ? [{ evidenceId: telemetry.anchorErrorId, evidenceType: "ERROR", role: "downstream-error", excerpt: telemetry.anchorErrorTitle.slice(0, 120) }] : []),
+            ],
+            verification: {
+                steps: [
+                    `Reproduce the request to \`${failedRequest.endpoint}\` under conditions that produce HTTP ${failedRequest.status}.`,
+                    `Verify the response handler catches the non-2xx status and does not access \`${prop}\`.`,
+                    `Confirm \`${parsedError.errorMessage}\` no longer occurs when the upstream returns HTTP ${failedRequest.status}.`,
+                ],
+                expectedOutcome: `The ${parsedError.errorClass} exception no longer occurs when \`${reqLabel}\` returns HTTP ${failedRequest.status}.`,
+                regressionTest:
+                    `Add a test that mocks \`${reqLabel}\` returning HTTP ${failedRequest.status} and asserts the handler does not throw \`${parsedError.errorMessage}\`.`,
+            },
+            prevention: {
+                items: [
+                    `Use a shared fetch wrapper that enforces \`response.ok\` checks before accessing the response body.`,
+                    `Add integration tests for non-2xx HTTP response handling in all response handlers.`,
+                    parsedError.targetProperty
+                        ? `Enable TypeScript \`strictNullChecks\` to catch unguarded property access at compile time.`
+                        : `Enable TypeScript strict mode.`,
+                ],
+                monitoring: `Configure an alert for \`${failedRequest.endpoint}\` error rate exceeding 1%.`,
+            },
+            confidence: 0.88,
+            evidenceIds: [
+                ...(failedRequest.id ? [failedRequest.id] : []),
+                ...(telemetry.anchorErrorId ? [telemetry.anchorErrorId] : []),
+            ],
+        };
+
+        // Tier 2: Upstream Investigation — instrument the backend to find out WHY it returned HTTP 500.
+        // Only present when exact backend cause is NOT yet known.
+        if (!isExactRootCauseKnown) {
+            upstreamInvestigation = {
+                id: `upstream-investigation:${telemetry.anchorErrorId ?? "unknown"}`,
+                kind: "investigation-required",
+                immediateAction:
+                    `Upstream Investigation: Add server-side error tracking to \`${failedRequest.endpoint}\` ` +
+                    `to capture the internal reason for the HTTP ${failedRequest.status} response.`,
+                rootCauseExplanation:
+                    `\`${reqLabel}\` returned HTTP ${failedRequest.status}, but no server-side exception, ` +
+                    `stack trace, or execution log was captured for this transaction. ` +
+                    `The exact internal backend cause is currently Unknown. ` +
+                    `It could be a dependency failure, runtime exception, validation error, configuration error, or infrastructure issue. ` +
+                    `Server-side instrumentation is required to determine which.`,
+                evidenceChain: [
+                    ...(failedRequest.id ? [{ evidenceId: failedRequest.id, evidenceType: failedRequest.type, role: "upstream-failure", excerpt: `${reqLabel} → HTTP ${failedRequest.status} (internal cause unknown)` }] : []),
+                ],
+                operationalSteps: [
+                    `Instrument the handler for \`${failedRequest.endpoint}\` with the Halo Node.js SDK.`,
+                    `Enable \`captureErrors: true\` in the server-side Halo initialization.`,
+                    `Wrap the route handler with \`halo.withServerErrors()\` or equivalent error boundary middleware.`,
+                    `Reproduce the HTTP ${failedRequest.status} scenario and inspect the server-side telemetry in Halo.`,
+                ],
+                verification: {
+                    steps: [
+                        `Trigger the HTTP ${failedRequest.status} from \`${failedRequest.endpoint}\` and verify a server-side error event appears in Halo linked to the same trace.`,
+                    ],
+                    expectedOutcome:
+                        `A server-side error event with stack trace appears in Halo, identifying the exact backend reason for the HTTP ${failedRequest.status}.`,
+                },
+                prevention: {
+                    items: [
+                        `Instrument all critical API endpoints with server-side error tracking.`,
+                        `Use distributed tracing to link client errors to backend execution spans.`,
+                    ],
+                },
+                insufficientEvidence: {
+                    whatHaloKnows: [
+                        `\`${reqLabel}\` returned HTTP ${failedRequest.status}.`,
+                        `The client received this HTTP ${failedRequest.status} and the response handler produced \`${parsedError.errorMessage}\`.`,
+                    ],
+                    whatIsMissing: [
+                        `Server-side stack trace from the handler that returned HTTP ${failedRequest.status}.`,
+                        `Server-side execution log or exception for the \`${failedRequest.endpoint}\` transaction.`,
+                    ],
+                    requiredEvidence:
+                        `A server-side error event or log captured during the HTTP ${failedRequest.status} response generation.`,
+                    why:
+                        `Without server-side telemetry, Halo cannot determine whether the backend failure ` +
+                        `originated from a code bug, configuration error, dependency failure, or infrastructure issue.`,
+                },
+                confidence: 0.0, // Cannot prescribe a root-cause remediation without knowing the cause
+                evidenceIds: failedRequest.id ? [failedRequest.id] : [],
+            };
+        }
+
+        // Tier 3: Root-Cause Remediation — only when server-side evidence identifies the backend cause.
+        // NEVER invented from the client TypeError message or endpoint name.
+        if (isExactRootCauseKnown && backendServerTrace) {
+            rootCauseRemediation = {
+                id: `root-cause-remediation:${telemetry.anchorErrorId ?? "unknown"}`,
+                kind: "investigation-required",
+                immediateAction:
+                    `Root Cause: Address the server-side failure identified in \`${backendServerTrace.service}\`: "${backendServerTrace.title.slice(0, 100)}".`,
+                rootCauseExplanation:
+                    `Server-side telemetry from \`${backendServerTrace.service}\` identified: "${backendServerTrace.title}". ` +
+                    `This is the root cause that produced the HTTP ${failedRequest.status} response. ` +
+                    `Fixing this server-side failure will eliminate the upstream HTTP ${failedRequest.status} and consequently the downstream \`${parsedError.errorMessage}\`.`,
+                evidenceChain: [
+                    { evidenceId: backendServerTrace.id, evidenceType: "ERROR", role: "root-cause", excerpt: `Server-side: ${backendServerTrace.title.slice(0, 120)}` },
+                    ...(failedRequest.id ? [{ evidenceId: failedRequest.id, evidenceType: failedRequest.type, role: "upstream-failure", excerpt: `${reqLabel} → HTTP ${failedRequest.status}` }] : []),
+                ],
+                verification: {
+                    steps: [
+                        `Fix the server-side failure in \`${backendServerTrace.service}\`.`,
+                        `Verify \`${reqLabel}\` no longer returns HTTP ${failedRequest.status} for the same input.`,
+                    ],
+                    expectedOutcome:
+                        `\`${reqLabel}\` returns a successful response, eliminating both the server-side failure and the downstream \`${parsedError.errorMessage}\`.`,
+                },
+                prevention: {
+                    items: [
+                        `Add server-side error tracking to detect future failures in \`${backendServerTrace.service}\` before they propagate.`,
+                    ],
+                },
+                confidence: 0.85,
+                evidenceIds: [backendServerTrace.id, ...(failedRequest.id ? [failedRequest.id] : [])],
+            };
         }
     } else {
-        // Fallback: derive from interpreter telemetry context when engine produced nothing
-        primary = buildInterpreterDerivedRecommendation(telemetry);
+        // No downstream response handler pattern — try engine recommendations
+        for (const rec of engineRecs) {
+            const adapted = adaptEngineRecommendation(rec, telemetry);
+            if (!mitigation) {
+                mitigation = adapted;
+            } else {
+                secondary.push(adapted);
+            }
+        }
+
+        if (!mitigation) {
+            mitigation = buildFallbackRecommendation(telemetry);
+        }
     }
 
-    // Only attempt a code patch when actual source was resolved from disk.
-    // When sourceResolved is false, buildResponseHandlerPatch would generate a
-    // fabricated file path — which is explicitly forbidden.
-    if (!primary.codePatch && telemetry.isDownstreamResponseHandler && telemetry.failedRequest && telemetry.sourceResolved) {
-        const interpreterPatch = buildResponseHandlerPatch(telemetry);
-        if (interpreterPatch) {
-            primary = { ...primary, codePatch: interpreterPatch };
-        }
+    // Backwards-compatible primary field
+    const primary = mitigation ?? upstreamInvestigation ?? rootCauseRemediation ?? buildFallbackRecommendation(telemetry);
+
+    // Collect all tiers into secondary for the legacy field
+    if (upstreamInvestigation && upstreamInvestigation.id !== primary.id) {
+        secondary.push(upstreamInvestigation);
+    }
+    if (rootCauseRemediation && rootCauseRemediation.id !== primary.id) {
+        secondary.push(rootCauseRemediation);
     }
 
     return {
+        mitigation,
+        upstreamInvestigation,
+        rootCauseRemediation,
         primary,
         secondary,
         isActionable: primary.kind !== "insufficient-evidence",
@@ -295,6 +474,8 @@ function adaptEngineRecommendation(
 /* -------------------------------------------------------------------------- */
 /* Interpreter-derived fallback (when engine produces no recommendations)     */
 /* -------------------------------------------------------------------------- */
+
+const buildFallbackRecommendation = buildInterpreterDerivedRecommendation;
 
 function buildInterpreterDerivedRecommendation(
     telemetry: RecommendationTelemetryContext,
