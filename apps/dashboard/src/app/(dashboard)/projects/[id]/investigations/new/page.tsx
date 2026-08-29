@@ -48,6 +48,9 @@ import { ReplayPlayerClient } from "@/components/replay/replay-player-client";
 import { ReplayStatus } from "@/components/replay/replay-status";
 import { interpretInvestigation, type InterpretedInvestigation } from "@/lib/investigation/interpreter";
 import { RuntimeReconstructionView } from "@/components/investigation/runtime-reconstruction-view";
+import { resolveGitHubSourceContext } from "@/lib/investigation/runtime/github-source-provider";
+import { parseStackTrace } from "@/lib/investigation/runtime/stack-parser";
+import type { SourceContext } from "@/lib/investigation/runtime/types";
 
 export default async function InvestigationPage({
     params,
@@ -70,6 +73,39 @@ export default async function InvestigationPage({
             investigateIssueOccurrence(issueId, id, eventId),
             getReplaySessionForIssue(issueId),
         ]);
+
+        // Attempt async GitHub source resolution for the primary failing frame
+        const allErrors = investigation.evidence.filter((e) => e.type === "ERROR");
+        const anchorError =
+            (incidentAnchorId
+                ? investigation.evidence.find((e) => e.id === incidentAnchorId)
+                : undefined) ??
+            allErrors[allErrors.length - 1] ??
+            allErrors[0] ??
+            investigation.evidence[0];
+
+        let resolvedSourceContext: SourceContext | undefined;
+        if (anchorError) {
+            const rawStack =
+                typeof anchorError.metadata?.stack === "string"
+                    ? anchorError.metadata.stack
+                    : anchorError.description || "";
+            const frames = parseStackTrace(rawStack);
+            const primaryFailingFrame =
+                frames.find((f) => f.isApplication && f.lineNumber) ||
+                frames.find((f) => f.lineNumber) ||
+                frames[0];
+
+            if (primaryFailingFrame) {
+                resolvedSourceContext = await resolveGitHubSourceContext({
+                    projectId: id,
+                    frame: primaryFailingFrame,
+                    releaseVersion: anchorError.release,
+                    commitSha: anchorError.commit,
+                });
+            }
+        }
+
         return (
             <InvestigationView
                 investigation={investigation}
@@ -78,6 +114,7 @@ export default async function InvestigationPage({
                 incidentAnchorId={incidentAnchorId}
                 incidentAnchorTimestamp={incidentAnchorTimestamp}
                 historicalOccurrenceCount={historicalOccurrenceCount}
+                resolvedSourceContext={resolvedSourceContext}
             />
         );
     } catch (error) {
@@ -102,6 +139,7 @@ function InvestigationView({
     incidentAnchorId,
     incidentAnchorTimestamp,
     historicalOccurrenceCount,
+    resolvedSourceContext,
 }: {
     investigation: Investigation;
     replaySession?: any | null;
@@ -109,6 +147,7 @@ function InvestigationView({
     incidentAnchorId?: string;
     incidentAnchorTimestamp?: Date;
     historicalOccurrenceCount?: number;
+    resolvedSourceContext?: SourceContext;
 }) {
     const {
         status,
@@ -123,7 +162,7 @@ function InvestigationView({
         recommendations,
     } = investigation;
 
-    const interpreted = interpretInvestigation(investigation, replaySession, incidentAnchorId);
+    const interpreted = interpretInvestigation(investigation, replaySession, incidentAnchorId, resolvedSourceContext);
 
     const formattedAnchorTime = incidentAnchorTimestamp
         ? new Intl.DateTimeFormat("en-US", {
@@ -546,7 +585,9 @@ function InvestigationView({
             <section className="halo-section space-y-3">
                 <SectionHeading
                     title="User Session Replay"
-                    description="Reconstructed browser DOM interactions, mouse clicks, and network requests correlated directly with this failure."
+                    description={replaySession
+                        ? "Reconstructed browser DOM interactions, mouse clicks, and network requests correlated directly with this failure."
+                        : "Browser session replay recorded for the incident occurrence, when available."}
                 />
 
                 {replaySession ? (
@@ -659,7 +700,7 @@ function RecommendationPlanSection({ plan }: { plan: InterpretedInvestigation["r
                         <div className="rounded-lg bg-[#080b11] border border-white/10 overflow-hidden text-xs font-mono">
                             <div className="px-3 py-1.5 bg-zinc-900/80 border-b border-white/5 text-[11px] text-zinc-400 flex items-center justify-between">
                                 <span>Suggested Patch</span>
-                                <span className="text-[10px] text-emerald-400">Validated against telemetry</span>
+                                <span className="text-[10px] text-zinc-400">Suggested change — not executed or validated</span>
                             </div>
                             <pre className="p-3 text-emerald-300 overflow-x-auto leading-relaxed whitespace-pre font-mono text-xs">
                                 <code>{primary.codePatch.after}</code>
@@ -748,7 +789,7 @@ function RecommendationPlanSection({ plan }: { plan: InterpretedInvestigation["r
                         <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
                             <div className="p-3 rounded-lg bg-[#080b11] border border-white/5 space-y-1.5">
                                 <span className="text-[10px] font-mono uppercase text-emerald-400 font-semibold">
-                                    What Halo Confirmed
+                                    Observed evidence
                                 </span>
                                 <ul className="space-y-1 text-zinc-300">
                                     {primary.insufficientEvidence.whatHaloKnows.map((k, i) => (

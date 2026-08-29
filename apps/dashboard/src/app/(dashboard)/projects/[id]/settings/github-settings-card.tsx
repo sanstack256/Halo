@@ -1,14 +1,16 @@
 "use client";
 
-import { useState, useTransition } from "react";
+import { useEffect, useMemo, useRef, useState, useTransition } from "react";
 import {
     updateProjectGitHubConfig,
     disconnectProjectGitHub,
     testGitHubConnection,
+    getProjectGitHubOwners,
+    revealProjectGitHubToken,
     type SafeGitHubConfig,
     type GitHubConnectionTestResult,
 } from "@/actions/project-github";
-import { GitBranch, GitFork, ShieldCheck, CheckCircle2, XCircle, Loader2, AlertTriangle, Key, ExternalLink } from "lucide-react";
+import { GitBranch, GitFork, ShieldCheck, CheckCircle2, XCircle, Loader2, AlertTriangle, Key, Eye, EyeOff, Plus } from "lucide-react";
 
 interface GitHubSettingsCardProps {
     projectId: string;
@@ -21,12 +23,31 @@ export function GitHubSettingsCard({ projectId, initialConfig }: GitHubSettingsC
     const [repo, setRepo] = useState(initialConfig.repo ?? "");
     const [defaultBranch, setDefaultBranch] = useState(initialConfig.defaultBranch ?? "main");
     const [token, setToken] = useState("");
-    const [showTokenInput, setShowTokenInput] = useState(false);
+    const [owners, setOwners] = useState<string[]>(initialConfig.owner ? [initialConfig.owner] : []);
+    const [isAddingOwner, setIsAddingOwner] = useState(!initialConfig.owner);
+    const [isReplacingToken, setIsReplacingToken] = useState(false);
+    const [revealedToken, setRevealedToken] = useState<string | null>(null);
+    const [showRevealedToken, setShowRevealedToken] = useState(false);
+    const ownerInputRef = useRef<HTMLInputElement>(null);
 
     const [isSaving, startSaving] = useTransition();
     const [isTesting, startTesting] = useTransition();
+    const [isRevealingToken, startRevealingToken] = useTransition();
     const [testResult, setTestResult] = useState<GitHubConnectionTestResult | null>(null);
     const [message, setMessage] = useState<{ type: "success" | "error"; text: string } | null>(null);
+
+    useEffect(() => {
+        void getProjectGitHubOwners(projectId)
+            .then((availableOwners) => setOwners(availableOwners))
+            .catch(() => {
+                // The current owner and manual entry remain usable offline.
+            });
+    }, [projectId]);
+
+    const ownerOptions = useMemo(
+        () => Array.from(new Set([...owners, owner].filter(Boolean))).sort((a, b) => a.localeCompare(b)),
+        [owner, owners],
+    );
 
     const handleSave = () => {
         setMessage(null);
@@ -38,6 +59,8 @@ export function GitHubSettingsCard({ projectId, initialConfig }: GitHubSettingsC
                     defaultBranch,
                     token: token ? token : undefined,
                 });
+                const availableOwners = await getProjectGitHubOwners(projectId);
+                setOwners(availableOwners);
                 setConfig({
                     configured: true,
                     owner,
@@ -46,7 +69,9 @@ export function GitHubSettingsCard({ projectId, initialConfig }: GitHubSettingsC
                     hasCustomToken: Boolean(token) || config.hasCustomToken,
                 });
                 setToken("");
-                setShowTokenInput(false);
+                setIsReplacingToken(false);
+                setRevealedToken(null);
+                setShowRevealedToken(false);
                 setMessage({ type: "success", text: "GitHub repository configuration saved." });
             } catch (err) {
                 setMessage({ type: "error", text: err instanceof Error ? err.message : "Failed to save configuration." });
@@ -72,12 +97,44 @@ export function GitHubSettingsCard({ projectId, initialConfig }: GitHubSettingsC
                 setRepo("");
                 setDefaultBranch("main");
                 setToken("");
+                setOwners([]);
+                setIsAddingOwner(true);
+                setIsReplacingToken(false);
+                setRevealedToken(null);
+                setShowRevealedToken(false);
                 setTestResult(null);
                 setMessage({ type: "success", text: "GitHub repository disconnected." });
             } catch (err) {
                 setMessage({ type: "error", text: err instanceof Error ? err.message : "Failed to disconnect." });
             }
         });
+    };
+
+    const handleRevealToken = () => {
+        if (revealedToken) {
+            setShowRevealedToken((visible) => !visible);
+            return;
+        }
+
+        startRevealingToken(async () => {
+            try {
+                const storedToken = await revealProjectGitHubToken(projectId);
+                if (!storedToken) {
+                    setMessage({ type: "error", text: "This project uses an environment token, which cannot be revealed here." });
+                    return;
+                }
+                setRevealedToken(storedToken);
+                setShowRevealedToken(true);
+            } catch (err) {
+                setMessage({ type: "error", text: err instanceof Error ? err.message : "Failed to reveal token." });
+            }
+        });
+    };
+
+    const handleAddOwner = () => {
+        setOwner("");
+        setIsAddingOwner(true);
+        requestAnimationFrame(() => ownerInputRef.current?.focus());
     };
 
     return (
@@ -98,7 +155,7 @@ export function GitHubSettingsCard({ projectId, initialConfig }: GitHubSettingsC
                 {config.configured && (
                     <span className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-medium bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                         <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-                        Connected
+                        Configured
                     </span>
                 )}
             </div>
@@ -116,14 +173,38 @@ export function GitHubSettingsCard({ projectId, initialConfig }: GitHubSettingsC
 
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-1.5">
-                    <label className="text-xs font-medium text-secondary">Repository Owner / Organization</label>
-                    <input
-                        type="text"
-                        value={owner}
-                        onChange={(e) => setOwner(e.target.value)}
-                        placeholder="e.g. acme-corp"
-                        className="w-full px-3 py-2 text-xs rounded-lg bg-surface-elevated border border-border text-white placeholder:text-muted focus:outline-none focus:border-primary"
-                    />
+                    <div className="flex items-center justify-between">
+                        <label className="text-xs font-medium text-secondary">Repository Owner / Organization</label>
+                        <button
+                            type="button"
+                            onClick={handleAddOwner}
+                            className="halo-btn halo-btn-sm halo-btn-secondary gap-1 px-2 py-1 text-[11px]"
+                        >
+                            <Plus size={12} />
+                            Add owner
+                        </button>
+                    </div>
+                    {isAddingOwner ? (
+                        <input
+                            ref={ownerInputRef}
+                            type="text"
+                            value={owner}
+                            onChange={(e) => setOwner(e.target.value)}
+                            placeholder=""
+                            className="w-full px-3 py-2 text-xs rounded-lg bg-surface-elevated border border-border text-white placeholder:text-muted focus:outline-none focus:border-primary"
+                        />
+                    ) : (
+                        <select
+                            value={owner}
+                            onChange={(e) => setOwner(e.target.value)}
+                            className="w-full px-3 py-2 text-xs rounded-lg bg-surface-elevated border border-border text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/40"
+                        >
+                            <option value="" disabled>Select an owner</option>
+                            {ownerOptions.map((availableOwner) => (
+                                <option key={availableOwner} value={availableOwner}>{availableOwner}</option>
+                            ))}
+                        </select>
+                    )}
                 </div>
 
                 <div className="space-y-1.5">
@@ -152,34 +233,65 @@ export function GitHubSettingsCard({ projectId, initialConfig }: GitHubSettingsC
                 </div>
 
                 <div className="space-y-1.5">
-                    <div className="flex items-center justify-between">
-                        <label className="text-xs font-medium text-secondary">Personal Access Token (Private Repos)</label>
-                        {config.hasCustomToken && !showTokenInput && (
+                    <label className="text-xs font-medium text-secondary">Personal Access Token (Private Repos)</label>
+                    {config.hasCustomToken && !isReplacingToken ? (
+                        <>
+                            <div className="relative">
+                                <Key size={13} className="absolute left-3 top-2.5 text-muted" />
+                                <input
+                                    type={showRevealedToken ? "text" : "password"}
+                                    value={showRevealedToken ? revealedToken ?? "" : "••••••••••••••••••••••••"}
+                                    readOnly
+                                    aria-label="Configured personal access token"
+                                    className="w-full pl-8 pr-10 py-2 text-xs font-mono rounded-lg bg-surface-elevated border border-border text-white focus:outline-none"
+                                />
+                                <button
+                                    type="button"
+                                    onClick={handleRevealToken}
+                                    disabled={isRevealingToken}
+                                    aria-label={showRevealedToken ? "Hide personal access token" : "Reveal personal access token"}
+                                    className="absolute right-2 top-1.5 p-1 text-muted hover:text-white disabled:opacity-50"
+                                >
+                                    {isRevealingToken ? <Loader2 size={15} className="animate-spin" /> : showRevealedToken ? <EyeOff size={15} /> : <Eye size={15} />}
+                                </button>
+                            </div>
                             <button
                                 type="button"
-                                onClick={() => setShowTokenInput(true)}
-                                className="text-[11px] text-primary hover:underline"
+                                onClick={() => {
+                                    setIsReplacingToken(true);
+                                    setToken("");
+                                    setShowRevealedToken(false);
+                                }}
+                                className="halo-btn halo-btn-sm halo-btn-secondary w-fit px-2 py-1 text-[11px]"
                             >
-                                Replace token
+                                Replace personal access token
                             </button>
-                        )}
-                    </div>
-                    {config.hasCustomToken && !showTokenInput ? (
-                        <div className="px-3 py-2 text-xs rounded-lg bg-surface-elevated border border-border text-secondary flex items-center justify-between">
-                            <span className="font-mono">••••••••••••••••••••••••</span>
-                            <span className="text-[10px] text-emerald-400 font-medium">Configured</span>
-                        </div>
+                        </>
                     ) : (
-                        <div className="relative">
-                            <Key size={13} className="absolute left-3 top-2.5 text-muted" />
-                            <input
-                                type="password"
-                                value={token}
-                                onChange={(e) => setToken(e.target.value)}
-                                placeholder="github_pat_... (stored securely server-side)"
-                                className="w-full pl-8 pr-3 py-2 text-xs rounded-lg bg-surface-elevated border border-border text-white placeholder:text-muted focus:outline-none focus:border-primary"
-                            />
-                        </div>
+                        <>
+                            <div className="relative">
+                                <Key size={13} className="absolute left-3 top-2.5 text-muted" />
+                                <input
+                                    type="password"
+                                    value={token}
+                                    onChange={(e) => setToken(e.target.value)}
+                                    placeholder="github_pat_... (stored securely server-side)"
+                                    className="w-full pl-8 pr-3 py-2 text-xs rounded-lg bg-surface-elevated border border-border text-white placeholder:text-muted focus:outline-none focus:border-primary"
+                                />
+                            </div>
+                            {config.hasCustomToken && (
+                                <button
+                                    type="button"
+                                    onClick={() => {
+                                        setIsReplacingToken(false);
+                                        setToken("");
+                                    }}
+                                    className="text-[11px] text-secondary hover:text-white"
+                                >
+                                    Cancel replacement
+                                </button>
+                            )}
+                        </>
                     )}
                 </div>
             </div>

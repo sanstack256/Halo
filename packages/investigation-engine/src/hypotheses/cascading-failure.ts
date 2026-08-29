@@ -16,11 +16,19 @@ export function generateCascadingFailureHypotheses(
         return s.startsWith("5") || s.startsWith("4") || /\b(500|502|503|504)\b/.test(text);
     });
 
-    // Find client-side exceptions
+    // Find client-side exceptions.
+    // Any ERROR event from a browser/frontend service is a potential downstream exception.
+    // Do NOT restrict to TypeError — SyntaxError, ReferenceError, and other runtime
+    // exceptions are equally valid downstream consequences of a failed HTTP request.
     const clientErrors = evidence.filter((e) => {
         if (e.type !== "ERROR") return false;
-        const text = `${e.title} ${e.description || ""} ${e.service || ""}`;
-        return /TypeError|Cannot read properties|NullPointer/i.test(text) || e.service === "browser" || e.service === "frontend-client";
+        const service = (e.service || "").toLowerCase();
+        // Explicit browser/frontend service tag — always eligible
+        if (service === "browser" || service === "frontend-client" || service === "frontend" || service === "client") {
+            return true;
+        }
+        // Catch-all: any runtime error class in the title is eligible
+        return /(?:Error|Exception):/i.test(e.title || "");
     });
 
     for (const req of failedRequests) {
@@ -60,7 +68,8 @@ export function generateCascadingFailureHypotheses(
                 hypotheses.push({
                     id: `cascading-failure:${req.id}:${clientErr.id}`,
                     title: `Upstream Network Failure (${endpoint}) Induced Downstream Client Exception`,
-                    description: `The failed ${endpoint} response returned HTTP ${statusCode}, leaving the response object undefined and causing a downstream client exception.`,
+                    // Description derives from actual error event — never hardcode TypeError semantics.
+                    description: `\`${endpoint}\` returned HTTP ${statusCode}. The downstream client received this non-2xx response and subsequently threw: \`${clientErr.title}\`.`,
                     score: {
                         positive: 3.0,
                         negative: 0,

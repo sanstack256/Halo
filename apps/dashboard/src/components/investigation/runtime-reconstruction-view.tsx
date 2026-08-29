@@ -1,6 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import Link from "next/link";
+import { useParams } from "next/navigation";
 import {
     Activity,
     AlertCircle,
@@ -11,7 +13,9 @@ import {
     Code2,
     Compass,
     Copy,
+    ExternalLink,
     FileCode,
+    GitBranch,
     Globe,
     HelpCircle,
     Info,
@@ -46,6 +50,9 @@ const CORRELATION_BASIS_STYLE: Record<string, string> = {
 };
 
 export function RuntimeReconstructionView({ reconstruction }: Props) {
+    const params = useParams();
+    const projectId = (params?.id as string) || (params?.projectId as string);
+
     if (!reconstruction) {
         return null;
     }
@@ -383,6 +390,19 @@ export function RuntimeReconstructionView({ reconstruction }: Props) {
                                         ? `The file \`${failure.primaryFailingFrame.filePath}\` could not be retrieved. Connect a GitHub repository in Project Settings to enable remote source resolution.`
                                         : "No file path was recorded in the stack frame.")}
                             </p>
+                            <div className="pt-3 flex flex-col items-center gap-2 border-t border-border/40 max-w-md mx-auto">
+                                <p className="text-[11px] text-muted">
+                                    Link your GitHub repository to enable commit-aware source resolution and AST line inspection.
+                                </p>
+                                <Link
+                                    href={projectId ? `/projects/${projectId}/settings` : `/settings/project`}
+                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white text-black hover:bg-white/90 text-xs font-semibold transition-colors shadow-sm"
+                                >
+                                    <GitBranch size={13} />
+                                    <span>Connect your GitHub repository here</span>
+                                    <ExternalLink size={12} className="opacity-70 ml-0.5" />
+                                </Link>
+                            </div>
                         </div>
                     )}
                 </div>

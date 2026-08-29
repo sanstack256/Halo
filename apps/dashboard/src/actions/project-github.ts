@@ -23,6 +23,87 @@ export interface GitHubConnectionTestResult {
 }
 
 /**
+ * Return GitHub accounts that can be used as a repository owner. The stored
+ * owner is always included so a token that cannot list organizations does not
+ * make an existing configuration impossible to edit.
+ */
+export async function getProjectGitHubOwners(projectId: string): Promise<string[]> {
+    const session = await getSession();
+    if (!session) {
+        throw new Error("Unauthorized");
+    }
+
+    const project = await getProject(projectId);
+    if (!project) {
+        throw new Error("Project not found");
+    }
+
+    const githubConfig = await prisma.project.findUnique({
+        where: { id: projectId },
+        select: { githubRepoOwner: true, githubToken: true },
+    });
+
+    const owners = new Set<string>();
+    if (githubConfig?.githubRepoOwner) {
+        owners.add(githubConfig.githubRepoOwner);
+    }
+
+    const token = githubConfig?.githubToken || process.env.GITHUB_TOKEN;
+    if (!token) {
+        return [...owners];
+    }
+
+    const headers = {
+        Accept: "application/vnd.github+json",
+        Authorization: `Bearer ${token}`,
+        "User-Agent": "Halo-Investigation-Engine",
+    };
+
+    try {
+        const [userResponse, organizationsResponse] = await Promise.all([
+            fetch("https://api.github.com/user", { headers, next: { revalidate: 0 } }),
+            fetch("https://api.github.com/user/orgs", { headers, next: { revalidate: 0 } }),
+        ]);
+
+        if (userResponse.ok) {
+            const user = await userResponse.json() as { login?: string };
+            if (user.login) owners.add(user.login);
+        }
+
+        if (organizationsResponse.ok) {
+            const organizations = await organizationsResponse.json() as Array<{ login?: string }>;
+            for (const organization of organizations) {
+                if (organization.login) owners.add(organization.login);
+            }
+        }
+    } catch {
+        // Manual owner entry remains available when GitHub cannot be reached.
+    }
+
+    return [...owners].sort((a, b) => a.localeCompare(b));
+}
+
+/** Return the project's stored PAT to an authorized project member on demand. */
+export async function revealProjectGitHubToken(projectId: string): Promise<string | null> {
+    const session = await getSession();
+    if (!session) {
+        throw new Error("Unauthorized");
+    }
+
+    const project = await getProject(projectId);
+    if (!project) {
+        throw new Error("Project not found");
+    }
+
+    const githubConfig = await prisma.project.findUnique({
+        where: { id: projectId },
+        select: { githubToken: true },
+    });
+
+    return githubConfig?.githubToken ?? null;
+}
+
+/**
  * Retrieve the safe public GitHub configuration for a project.
  * Tokens are NEVER returned to the client.
  */
@@ -164,6 +245,11 @@ export async function testGitHubConnection(
         throw new Error("Unauthorized");
     }
 
+    const authorizedProject = await getProject(projectId);
+    if (!authorizedProject) {
+        throw new Error("Project not found");
+    }
+
     const project = await prisma.project.findUnique({
         where: { id: projectId },
         select: {
@@ -217,6 +303,43 @@ export async function testGitHubConnection(
         }
 
         const data = await res.json();
+
+        // Repository metadata is visible with GitHub's implicit Metadata
+        // permission. Probe Contents separately because source reconstruction
+        // requires it and a metadata-only token must not be shown as verified.
+        if (token) {
+            const contentsUrl = `https://api.github.com/repos/${encodeURIComponent(project.githubRepoOwner)}/${encodeURIComponent(project.githubRepoName)}/contents?ref=${encodeURIComponent(data.default_branch || "main")}`;
+            const contentsRes = await fetch(contentsUrl, { headers, next: { revalidate: 0 } });
+
+            if (!contentsRes.ok) {
+                let githubMessage: string | undefined;
+                try {
+                    const body = await contentsRes.json() as { message?: string };
+                    githubMessage = body.message;
+                } catch {
+                    // The status below remains useful if GitHub sent no JSON body.
+                }
+
+                if (contentsRes.status === 401 || contentsRes.status === 403) {
+                    return {
+                        success: false,
+                        repositoryFullName: data.full_name,
+                        defaultBranch: data.default_branch,
+                        isPrivate: data.private,
+                        errorMessage: `GitHub denied Contents access for this token${githubMessage ? `: ${githubMessage}` : "."} Ensure this fine-grained PAT is granted to ${project.githubRepoOwner}/${project.githubRepoName}, has Repository permissions → Contents → Read-only, and is approved if the organization requires approval.`,
+                    };
+                }
+
+                return {
+                    success: false,
+                    repositoryFullName: data.full_name,
+                    defaultBranch: data.default_branch,
+                    isPrivate: data.private,
+                    errorMessage: `GitHub could not verify Contents access (status ${contentsRes.status}).`,
+                };
+            }
+        }
+
         return {
             success: true,
             repositoryFullName: data.full_name,

@@ -1,4 +1,5 @@
 import type { Evidence } from "@halo/investigation-engine";
+import { extractCommitSha } from "./runtime/github-source-utils";
 
 type EventEnvironment = {
     name: string;
@@ -127,6 +128,10 @@ export function eventToEvidence(
             sourceMetadata.environment,
         );
 
+    // Preserve an event-provided Git commit only when it is a valid SHA. A
+    // release name/version is not commit evidence and must not become a ref.
+    const commit = extractCommitSha(sourceMetadata) ?? extractCommitSha(event.tags);
+
     /*
      * Preserve both the human-readable error details
      * and the original structured context.
@@ -227,6 +232,8 @@ export function eventToEvidence(
         release:
             event.release ??
             undefined,
+
+        commit,
 
         environment:
             environment ??

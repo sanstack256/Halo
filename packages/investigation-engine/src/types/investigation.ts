@@ -13,6 +13,7 @@ import type { EngineTelemetry } from "./telemetry";
 
 export type InvestigationStatus =
     | "INVESTIGATING"
+    | "ANALYSIS_COMPLETE"
     | "CONCLUDED"
     | "UNCERTAIN";
 

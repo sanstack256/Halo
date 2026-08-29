@@ -20,6 +20,7 @@ import {
     Database,
     FileText,
     FileWarning,
+    FolderGit2,
     FolderKanban,
     GitBranch,
     Home,
@@ -209,10 +210,11 @@ const primaryNavigation: PrimarySection[] = [
                 ],
             },
             {
-                label: "Organization",
+                label: "Organization & Projects",
                 collapsible: true,
                 items: [
                     { label: "General Settings", href: "/settings/organization", icon: Settings },
+                    { label: "Project Settings", href: "/settings/project", icon: FolderGit2 },
                     { label: "Teams", href: "/settings/teams", icon: Users },
                     { label: "Members", href: "/settings/members", icon: UserPlus },
                     { label: "Security & Compliance", href: "/settings/privacy", icon: ShieldAlert },

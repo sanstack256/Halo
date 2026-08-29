@@ -103,7 +103,7 @@ export function investigate(
 
     const status =
         rootCause !== null
-            ? "CONCLUDED"
+            ? "ANALYSIS_COMPLETE"
             : "UNCERTAIN";
 
     const executionDurationMs = Date.now() - startTime;

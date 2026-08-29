@@ -186,29 +186,28 @@ function buildCascadingFailureRecommendation(
     }
 
     const immediate = endpoint
-        ? `Guard the response handler for \`${reqLabel}\` against non-2xx HTTP responses before accessing response properties.`
-        : `Add HTTP status validation before accessing response body properties in the failing response handler.`;
+        ? `Guard the response handler for \`${reqLabel}\` against non-2xx HTTP responses before processing the response body.`
+        : `Add HTTP status validation before processing response body in the failing response handler.`;
+
+    const clientErrName = clientError?.title || "client-side exception";
 
     const rootCauseTechnical = endpoint && status != null
-        ? `\`${reqLabel}\` returned HTTP ${status}. The response handler then accessed \`${prop ?? "response properties"}\` ` +
-          `without checking \`response.ok\` first. When the upstream endpoint fails, the response body does not contain ` +
-          `the expected payload, causing the property access to throw.`
-        : `An upstream HTTP request failed and the response handler accessed properties on the failed response body ` +
-          `without validating the HTTP status first.`;
+        ? `\`${reqLabel}\` returned HTTP ${status}. The response handler subsequently encountered \`${clientErrName}\` ` +
+          (prop ? `when attempting to access \`${prop}\` without verifying the response status.` : `when handling the non-2xx response without a status guard.`)
+        : `An upstream HTTP request failed and the downstream response handler threw \`${clientErrName}\` ` +
+          `when handling the unexpected response body.`;
 
     const verification: RecommendationVerification = {
         steps: [
             endpoint
                 ? `Call \`${reqLabel}\` under conditions that reproduce the ${status ?? "error"} response.`
                 : `Reproduce the failing HTTP request.`,
-            `Verify the response handler catches the non-2xx status and does not proceed to access response properties.`,
-            prop
-                ? `Confirm the \`Cannot read properties of undefined (reading '${prop}')\` exception no longer occurs.`
-                : `Confirm the client-side exception no longer occurs.`,
+            `Verify the response handler catches the non-2xx status and does not proceed to process an error response body.`,
+            `Confirm \`${clientErrName}\` no longer occurs when the upstream returns HTTP ${status ?? "non-2xx"}.`,
         ],
-        expectedOutcome: `The application handles the upstream failure gracefully without throwing a client-side exception.`,
+        expectedOutcome: `The application handles the upstream failure gracefully without throwing \`${clientErrName}\`.`,
         regressionTest: endpoint
-            ? `Add a unit test that mocks \`${reqLabel}\` to return HTTP ${status ?? "500"} and asserts the handler does not throw.`
+            ? `Add a unit test that mocks \`${reqLabel}\` to return HTTP ${status ?? "500"} and asserts the handler does not throw \`${clientErrName}\`.`
             : undefined,
     };
 
@@ -513,7 +512,8 @@ function buildRuntimeExceptionRecommendation(
     }
 
     const kind: RecommendationKind = hasLocation ? "exact-code-fix" : "investigation-required";
-    const typeLabel = isTypeError ? "TypeError" : isRefError ? "ReferenceError" : "runtime exception";
+    const classMatch = /^([A-Z][a-zA-Z0-9_]*(?:Error|Exception))/.exec((anchorError?.title ?? "").trim());
+    const typeLabel = classMatch ? classMatch[1] : isTypeError ? "TypeError" : isRefError ? "ReferenceError" : "runtime exception";
 
     return {
         id: `fix:runtime:${normalizeId(hypothesis.id)}`,

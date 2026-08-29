@@ -233,22 +233,26 @@ export function buildDashboardRecommendations(
 
         // Tier 1: Immediate Mitigation — guard the response handler against the unexpected response.
         // This recommendation is scoped to the DOWNSTREAM client symptom, not the backend cause.
-        const codePatch = sourceResolved ? buildResponseHandlerPatch(telemetry) : null;
+        // Source resolution proves what failed; it does not prove an arbitrary
+        // replacement patch is syntactically or semantically correct. Do not
+        // fabricate a diff from a stack frame or telemetry symptom.
+        const codePatch: DashboardCodePatch | null = null;
         mitigation = {
             id: `mitigation:response-handler:${telemetry.anchorErrorId ?? "unknown"}`,
             kind: codePatch ? "exact-code-fix" : "investigation-required",
-            immediateAction:
-                `Mitigation: Guard the ${parsedError.failingFunction ? `\`${parsedError.failingFunction}()\`` : "response handler"} against HTTP ${failedRequest.status} before accessing \`${prop}\`.`,
+            immediateAction: parsedError.targetProperty
+                ? `Mitigation: Guard the ${parsedError.failingFunction ? `\`${parsedError.failingFunction}()\`` : "response handler"} against HTTP ${failedRequest.status} before accessing \`${prop}\`.`
+                : `Mitigation: Guard the ${parsedError.failingFunction ? `\`${parsedError.failingFunction}()\`` : "response handler"} against HTTP ${failedRequest.status} before processing the response body.`,
             rootCauseExplanation: sourceResolved
                 ? `This is a mitigation for the downstream ${parsedError.errorClass} exception — not a fix for the upstream HTTP ${failedRequest.status}. ` +
-                  `Verified in source code: \`${reqLabel}\` returned HTTP ${failedRequest.status}` +
+                  `Telemetry shows \`${reqLabel}\` returned HTTP ${failedRequest.status}` +
                   (failedRequest.durationMs != null ? ` after ${failedRequest.durationMs}ms` : "") +
-                  `. The response handler accessed \`${prop}\` without verifying \`response.ok\` first, causing \`${parsedError.errorMessage}\`. ` +
-                  `Adding the guard prevents the client exception but does not fix the upstream HTTP ${failedRequest.status}.`
+                  `. Verified source identifies the failing expression \`${prop}\`, but does not by itself validate a response-guard edit. ` +
+                  `Review the surrounding handler and add a status guard only where the verified source performs this request. This mitigates the client exception but does not fix the upstream HTTP ${failedRequest.status}.`
                 : `This is a mitigation for the downstream ${parsedError.errorClass} exception — not a fix for the upstream HTTP ${failedRequest.status}. ` +
                   `Telemetry indicates that \`${reqLabel}\` returned HTTP ${failedRequest.status}` +
                   (failedRequest.durationMs != null ? ` after ${failedRequest.durationMs}ms` : "") +
-                  `, and the response callback subsequently attempted to access \`${prop}\`, producing \`${parsedError.errorMessage}\`. ` +
+                  `, and the downstream response callback subsequently encountered \`${parsedError.errorMessage}\`. ` +
                   `Adding a status check in the response handler mitigates the downstream crash, while the upstream HTTP ${failedRequest.status} requires backend investigation.`,
             codePatch: codePatch ?? undefined,
             evidenceChain: [
@@ -258,7 +262,7 @@ export function buildDashboardRecommendations(
             verification: {
                 steps: [
                     `Reproduce the request to \`${failedRequest.endpoint}\` under conditions that produce HTTP ${failedRequest.status}.`,
-                    `Verify the response handler catches the non-2xx status and does not access \`${prop}\`.`,
+                    `Verify the response handler catches the non-2xx status and does not process the body as a successful response.`,
                     `Confirm \`${parsedError.errorMessage}\` no longer occurs when the upstream returns HTTP ${failedRequest.status}.`,
                 ],
                 expectedOutcome: `The ${parsedError.errorClass} exception no longer occurs when \`${reqLabel}\` returns HTTP ${failedRequest.status}.`,
@@ -425,18 +429,11 @@ function adaptEngineRecommendation(
         excerpt: link.excerpt,
     }));
 
-    let codePatch: DashboardCodePatch | undefined;
-    if (rec.codePatch) {
-        codePatch = {
-            filePath: rec.codePatch.filePath,
-            functionOrComponent: rec.codePatch.functionOrComponent,
-            lineRange: rec.codePatch.lineRange,
-            before: rec.codePatch.before,
-            after: rec.codePatch.after,
-            explanation: rec.codePatch.explanation,
-            sideEffects: rec.codePatch.sideEffects,
-        };
-    }
+    // Engine-level patches are derived from telemetry/stack information, not
+    // an applied or syntax-checked edit against the retrieved repository file.
+    // Keep them out of the dashboard until a source-aware patch validator
+    // exists; presenting them as exact code changes would be misleading.
+    const codePatch: DashboardCodePatch | undefined = undefined;
 
     let insufficientEvidence: DashboardInsufficiency | undefined;
     if (rec.unknowns) {
@@ -450,7 +447,7 @@ function adaptEngineRecommendation(
 
     return {
         id: rec.id,
-        kind: rec.kind as DashboardRecommendationKind,
+        kind: rec.kind === "exact-code-fix" ? "investigation-required" : rec.kind as DashboardRecommendationKind,
         immediateAction: rec.immediateAction,
         rootCauseExplanation: rec.rootCauseTechnical,
         codePatch,
@@ -509,24 +506,29 @@ function buildInterpreterDerivedRecommendation(
 
         const prop = parsedError.targetProperty ?? "response properties";
         // Only generate code patch when actual source was resolved
-        const codePatch = telemetry.sourceResolved ? buildResponseHandlerPatch(telemetry) : null;
+        const codePatch: DashboardCodePatch | null = null;
 
         return {
             id: `interpreter-derived:cascading:${anchorErrorId ?? "unknown"}`,
             kind: codePatch ? "exact-code-fix" : "investigation-required",
-            immediateAction: `Guard the response handler for \`${reqLabel}\` against HTTP ${failedRequest.status} before accessing \`${prop}\`.`,
-            rootCauseExplanation:
-                `\`${reqLabel}\` returned HTTP ${failedRequest.status}` +
-                (failedRequest.durationMs != null ? ` after ${failedRequest.durationMs}ms` : "") +
-                `. The response handler then accessed \`${prop}\` without checking \`response.ok\` first. ` +
-                `When the upstream request fails, the response body does not contain the expected payload, ` +
-                `causing the \`${parsedError.errorMessage}\` exception.`,
+            immediateAction: parsedError.targetProperty
+                ? `Guard the response handler for \`${reqLabel}\` against HTTP ${failedRequest.status} before accessing \`${prop}\`.`
+                : `Guard the response handler for \`${reqLabel}\` against HTTP ${failedRequest.status} before processing the response body.`,
+            rootCauseExplanation: telemetry.sourceResolved
+                ? `\`${reqLabel}\` returned HTTP ${failedRequest.status}` +
+                  (failedRequest.durationMs != null ? ` after ${failedRequest.durationMs}ms` : "") +
+                  `. Verified source identifies \`${prop}\` as the failing expression. ` +
+                  `A source-aware code review is required before changing the response handler; no patch was generated or validated automatically.`
+                : `\`${reqLabel}\` returned HTTP ${failedRequest.status}` +
+                  (failedRequest.durationMs != null ? ` after ${failedRequest.durationMs}ms` : "") +
+                  `. The downstream response handler subsequently encountered \`${parsedError.errorMessage}\` ` +
+                  `when processing the non-2xx response. Adding a status check in the response handler mitigates the downstream error.`,
             codePatch: codePatch ?? undefined,
             evidenceChain,
             verification: {
                 steps: [
                     `Reproduce the request to \`${failedRequest.endpoint}\` under conditions that produce HTTP ${failedRequest.status}.`,
-                    `Verify the response handler catches the error status and does not access \`${prop}\`.`,
+                    `Verify the response handler catches the error status and does not process the error response body as valid data.`,
                     `Confirm \`${parsedError.errorMessage}\` no longer occurs.`,
                 ],
                 expectedOutcome: `The application handles the upstream HTTP ${failedRequest.status} response gracefully without throwing a client exception.`,
@@ -599,88 +601,5 @@ function buildInterpreterDerivedRecommendation(
         },
         confidence: 0,
         evidenceIds: anchorErrorId ? [anchorErrorId] : [],
-    };
-}
-
-/* -------------------------------------------------------------------------- */
-/* Response handler code patch builder                                         */
-/* -------------------------------------------------------------------------- */
-
-function buildResponseHandlerPatch(telemetry: RecommendationTelemetryContext): DashboardCodePatch | null {
-    const { parsedError, failedRequest, sourceResolved } = telemetry;
-
-    // Never generate a code patch without actual source provenance.
-    // A fabricated file path is more harmful than no patch at all.
-    if (!sourceResolved) return null;
-    if (!failedRequest?.endpoint || !failedRequest.method) return null;
-    // Require an actual failing file from source resolution
-    if (!parsedError.failingFile) return null;
-
-    const prop = parsedError.targetProperty ?? null;
-    const isHttpError = failedRequest.status != null && String(failedRequest.status).match(/^[45]/);
-
-    const locComment = parsedError.failingFile
-        ? `// In ${parsedError.failingFile.split("/").pop()}${parsedError.failingLine ? `:${parsedError.failingLine}` : ""}\n`
-        : "";
-
-    let before: string;
-    let after: string;
-    let explanation: string;
-
-    if (isHttpError) {
-        before =
-            locComment +
-            `const response = await fetch("${failedRequest.endpoint}", { method: "${failedRequest.method}" });\n` +
-            `const data = await response.json();\n` +
-            (prop ? `// Unguarded: accesses \`${prop}\` on non-2xx response body\nreturn data.${prop};` : `return data;`);
-
-        after =
-            locComment +
-            `const response = await fetch("${failedRequest.endpoint}", { method: "${failedRequest.method}" });\n` +
-            `if (!response.ok) {\n` +
-            `  const errorBody = await response.json().catch(() => ({}));\n` +
-            `  throw new Error(errorBody.message ?? \`Request failed with HTTP \${response.status}\`);\n` +
-            `}\n` +
-            `const data = await response.json();\n` +
-            (prop ? `return data.${prop};` : `return data;`);
-
-        explanation =
-            `The response handler accessed \`${prop ?? "response properties"}\` without verifying that ` +
-            `\`${failedRequest.method} ${failedRequest.endpoint}\` returned a 2xx status. ` +
-            `When the endpoint returns HTTP ${failedRequest.status}, the response body contains error details ` +
-            `rather than the expected schema, causing \`${parsedError.errorMessage}\`.`;
-    } else {
-        // HTTP 200 unexpected payload / null entity
-        const entityName = prop?.split(".")[0] || "entity";
-        before =
-            locComment +
-            (parsedError.failingFunction ? `function ${parsedError.failingFunction}(${entityName}) {\n` : "") +
-            (prop ? `  // Unguarded: assumes \`${entityName}\` is non-null\n  return ${prop};\n` : `  return payload;\n`) +
-            (parsedError.failingFunction ? `}` : "");
-
-        after =
-            locComment +
-            (parsedError.failingFunction ? `function ${parsedError.failingFunction}(${entityName}) {\n` : "") +
-            `  if (!${entityName}) {\n` +
-            `    throw new Error(\`Expected ${entityName} to be defined in response from ${failedRequest.endpoint}\`);\n` +
-            `  }\n` +
-            (prop ? `  return ${prop};\n` : `  return payload;\n`) +
-            (parsedError.failingFunction ? `}` : "");
-
-        explanation =
-            `The function \`${parsedError.failingFunction || "handler"}()\` received an unexpected null or empty ` +
-            `\`${entityName}\` from \`${failedRequest.method} ${failedRequest.endpoint}\`. Adding an explicit validation ` +
-            `prevents attempting to access \`${prop ?? "properties"}\` on null.`;
-    }
-
-    return {
-        filePath: parsedError.failingFile,
-        functionOrComponent: parsedError.failingFunction ?? undefined,
-        lineRange: parsedError.failingLine ? String(parsedError.failingLine) : undefined,
-        before,
-        after,
-        explanation,
-        sideEffects:
-            `Callers must handle the potential thrown error or return value when the upstream payload is invalid.`,
     };
 }

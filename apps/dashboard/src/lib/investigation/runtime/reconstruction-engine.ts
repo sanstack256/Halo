@@ -2,6 +2,7 @@ import type { Evidence } from "@halo/investigation-engine";
 import type {
     FullRuntimeReconstruction,
     RuntimeFailureReconstruction,
+    SourceContext,
 } from "./types";
 import { parseStackTrace } from "./stack-parser";
 import { resolveSourceContext } from "./source-resolver";
@@ -25,7 +26,8 @@ import { collectRuntimeContext } from "./context-collector";
 export function reconstructRuntimeFailure(
     anchorError: Evidence | undefined,
     correlatedEvents: Evidence[] = [],
-    projectRoot?: string
+    projectRoot?: string,
+    resolvedSourceContext?: SourceContext
 ): FullRuntimeReconstruction | undefined {
     if (!anchorError) {
         return undefined;
@@ -47,7 +49,7 @@ export function reconstructRuntimeFailure(
     const primaryFailingFrame = applicationFrame || frames.find((f) => f.lineNumber) || frames[0];
 
     // --- Source resolution ---
-    const sourceContext = resolveSourceContext(
+    const sourceContext = resolvedSourceContext ?? resolveSourceContext(
         primaryFailingFrame,
         projectRoot,
         anchorError.release

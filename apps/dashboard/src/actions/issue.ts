@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/prisma";
 import { EventSeverity } from "@/generated/prisma/client";
+import { isolateOccurrenceEvents } from "@/lib/investigation/occurrence-isolation";
 
 const INVESTIGATION_EVENT_LIMIT = 500;
 
@@ -807,20 +808,15 @@ export async function getInvestigationEventsForOccurrence(
         });
     }
 
-    if (anchorEvent.sessionId) {
-        correlationConditions.push({
-            sessionId: anchorEvent.sessionId,
-        });
-    }
-
     /*
      * --------------------------------------------------
      * Fetch bounded candidate telemetry
      * --------------------------------------------------
      *
-     * Candidates must be within the anchor's temporal
-     * window AND share a direct correlation identifier,
-     * OR be the anchor itself.
+     * Candidates must be within the anchor's temporal window and share an
+     * exact request/trace identifier, or be the anchor itself. A session is
+     * deliberately excluded: one session can contain several independent
+     * requests and errors.
      *
      * Service/resource/release matching is NOT used here
      * as a sole criterion — those are too broad and can
@@ -858,29 +854,7 @@ export async function getInvestigationEventsForOccurrence(
      * getInvestigationEvents, but using only the single
      * anchor as the reference point.
      */
-    const scored = candidates.map((event) => ({
-        event,
-        score: scoreInvestigationRelevance(event, [anchorEvent]),
-    }));
-
-    const anchorId = anchorEvent.id;
-
-    const selected = scored
-        .filter(
-            (item) =>
-                item.event.id === anchorId || item.score > 0,
-        )
-        .sort((a, b) => {
-            if (b.score !== a.score) {
-                return b.score - a.score;
-            }
-            return (
-                b.event.timestamp.getTime() -
-                a.event.timestamp.getTime()
-            );
-        })
-        .slice(0, INVESTIGATION_EVENT_LIMIT)
-        .map((item) => item.event);
+    const selected = isolateOccurrenceEvents(anchorEvent, candidates);
 
     /*
      * Return chronologically ordered evidence so the

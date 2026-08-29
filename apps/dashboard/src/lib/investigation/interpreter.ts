@@ -14,8 +14,12 @@ import {
 import {
     reconstructRuntimeFailure,
 } from "./runtime/reconstruction-engine";
+import {
+    isolateOccurrenceEvents,
+} from "./occurrence-isolation";
 import type {
     FullRuntimeReconstruction,
+    SourceContext,
 } from "./runtime/types";
 
 export type ProvenanceType = "Observed" | "Inferred" | "Unknown";
@@ -88,6 +92,8 @@ export interface ParsedErrorDetails {
     targetProperty?: string;
     databaseModel?: string;
     isTypeError: boolean;
+    isSyntaxError: boolean;
+    isUnhandledRejection: boolean;
     isDatabaseError: boolean;
     isNetworkTimeout: boolean;
     isAuthError: boolean;
@@ -246,10 +252,10 @@ export function interpretInvestigation(
     investigation: Investigation,
     replaySession?: any | null,
     anchorEventId?: string | null,
+    resolvedSourceContext?: SourceContext | null,
 ): InterpretedInvestigation {
     const {
         rootCause,
-        report,
         timeline,
         evidence,
         hypotheses,
@@ -271,7 +277,6 @@ export function interpretInvestigation(
         evidence[0];
 
     const incidentAnchorTime = anchorError?.timestamp ? new Date(anchorError.timestamp) : new Date();
-    const anchorTimeMs = incidentAnchorTime.getTime();
     const incidentSessionId = anchorError?.sessionId || replaySession?.sessionId;
     const incidentTraceId = anchorError?.traceId;
     const incidentRequestId = anchorError?.requestId;
@@ -282,54 +287,15 @@ export function interpretInvestigation(
 
     // Separate active incident telemetry from historical / unrelated occurrences.
     //
-    // Admission rules (identifier-first, strict):
-    //   1. The anchor event itself is always admitted.
-    //   2. Events sharing requestId/traceId/sessionId with the anchor are admitted
-    //      as directly correlated.
-    //   3. Temporal proximity ONLY used as fallback when the anchor event has NO
-    //      identifiers at all (sessionId, traceId, requestId all null).
-    //      These are explicitly tagged as temporal correlations.
-    //
-    // This prevents request B from bleeding into the investigation of request A
-    // merely because they occurred within the same 30s window.
-    const anchorHasIdentifiers =
-        Boolean(incidentSessionId) ||
-        Boolean(incidentTraceId) ||
-        Boolean(incidentRequestId);
-
-    const activeIncidentEvidence: Evidence[] = [];
-    const historicalUnrelatedEvidence: Evidence[] = [];
-
-    for (const ev of evidence) {
-        // Always admit the anchor
-        if (ev.id === anchorError?.id) {
-            activeIncidentEvidence.push(ev);
-            continue;
-        }
-
-        const hasDirectLink =
-            (incidentRequestId && ev.requestId === incidentRequestId) ||
-            (incidentTraceId && ev.traceId === incidentTraceId) ||
-            (incidentSessionId && ev.sessionId === incidentSessionId);
-
-        if (hasDirectLink) {
-            activeIncidentEvidence.push(ev);
-            continue;
-        }
-
-        // Temporal fallback: only when anchor has no identifiers at all
-        if (!anchorHasIdentifiers) {
-            const evTime = new Date(ev.timestamp).getTime();
-            const deltaMs = Math.abs(evTime - anchorTimeMs);
-            if (deltaMs <= 30000) {
-                // Admitted as temporal — mark for UI display
-                activeIncidentEvidence.push(ev);
-                continue;
-            }
-        }
-
-        historicalUnrelatedEvidence.push(ev);
-    }
+    // A browser session is not an occurrence identity: it can contain many
+    // independent actions. Admit cross-event evidence only on exact request or
+    // trace identity; without one, retain the anchor and report missing links.
+    const activeIncidentEvidence = anchorError
+        ? isolateOccurrenceEvents(anchorError, evidence)
+        : [];
+    const historicalUnrelatedEvidence = evidence.filter(
+        (event) => !activeIncidentEvidence.some((active) => active.id === event.id),
+    );
 
     // Sort active evidence chronologically
     const sortedActive = [...activeIncidentEvidence].sort(
@@ -337,11 +303,16 @@ export function interpretInvestigation(
     );
 
     // Compute Runtime Reconstruction immediately from anchor and active evidence
-    const runtimeReconstruction = reconstructRuntimeFailure(anchorError, activeIncidentEvidence);
+    const runtimeReconstruction = reconstructRuntimeFailure(
+        anchorError,
+        activeIncidentEvidence,
+        undefined,
+        resolvedSourceContext ?? undefined
+    );
     const sourceResolved = runtimeReconstruction?.sourceResolved ?? false;
 
     // 2. Parse exact error details from the incident anchor, enriched with real AST source facts
-    const parsedError = parseErrorDetails(anchorError, rootCause, runtimeReconstruction);
+    const parsedError = parseErrorDetails(anchorError, runtimeReconstruction);
 
     // 3. Identify correlated network request within active incident boundary
     const requestEvidence = sortedActive.filter((e) =>
@@ -390,12 +361,14 @@ export function interpretInvestigation(
     const isExactRootCauseKnown = Boolean(backendServerTrace);
 
     // 4. Downstream Response dereferencing check
-    // Only classify as "downstream response handler" when BOTH:
-    //   a) The TypeError exists
-    //   b) A request is correlated (same requestId/traceId — exact match)
-    //   c) The runtime is browser OR the event service matches the request service
+    // Classify as downstream response handler when ALL of:
+    //   a) A client-side runtime exception (TypeError, SyntaxError, UnhandledRejection, etc.)
+    //   b) A failed HTTP request is correlated in the same session/trace/temporal window
+    //   c) The runtime is browser or the error is from a client service
+    // Note: SyntaxError (Unexpected end of JSON input) is a canonical downstream error
+    // when .json() is called on an HTTP error response body.
     const isDownstreamResponseHandler =
-        parsedError.isTypeError &&
+        (parsedError.isTypeError || parsedError.isSyntaxError || parsedError.isUnhandledRejection) &&
         Boolean(failedRequestEvent) &&
         (runtimeOrigin === "browser" ||
             runtimeOrigin === "unknown" ||
@@ -415,17 +388,24 @@ export function interpretInvestigation(
             ? `${requestMethod} ${requestEndpoint}`
             : requestEndpoint ?? requestMethod ?? "HTTP request";
 
+    // propRef: the specific failing expression or property from the error/source.
+    // CRITICAL: Only claim a source-level expression when source is actually resolved
+    // or when the stack parser extracted it from the error message.
+    // Never fabricate a generic placeholder like "expected property" — use
+    // "Source not resolved" to signal the unknown state honestly.
     const propRef: string =
-        runtimeReconstruction?.failure?.failingExpression ??
-        parsedError.targetProperty ??
-        "expected property";
+        sourceResolved
+            ? (runtimeReconstruction?.failure?.failingExpression ??
+                parsedError.targetProperty ??
+                "unknown expression")
+            : (parsedError.targetProperty ?? "Source not resolved");
 
     const funcRef: string =
         runtimeReconstruction?.failure?.sourceContext?.containingFunction
             ? `${runtimeReconstruction.failure.sourceContext.containingFunction}()`
             : parsedError.failingFunction
-            ? `${parsedError.failingFunction}()`
-            : "the application";
+                ? `${parsedError.failingFunction}()`
+                : "the application";
 
     // 5. Causal Classification — strictly evidence-driven with explicit per-claim confidence.
     //
@@ -459,8 +439,8 @@ export function interpretInvestigation(
         upstreamHttpFailureOccurred: failedRequestEvent && isHttpErrorStatus
             ? ("Very High" as const)
             : failedRequestEvent
-            ? ("High" as const)
-            : ("Unknown" as const),
+                ? ("High" as const)
+                : ("Unknown" as const),
 
         /** Confidence that the TypeError is a downstream consequence (backed by chronology + handler context) */
         typeErrorIsDownstream: isDownstreamResponseHandler && failedRequestEvent
@@ -487,7 +467,9 @@ export function interpretInvestigation(
             contributingFactors.push(
                 sourceResolved
                     ? `The ${runtimeLabel} response handler in ${funcRef} accessed \`${propRef}\` without first verifying the HTTP status code was 2xx.`
-                    : `Telemetry indicates the response handler attempted to access \`${propRef}\` following the failed HTTP ${requestStatus} response.`
+                    : parsedError.targetProperty
+                        ? `Telemetry indicates the response handler attempted to access \`${parsedError.targetProperty}\` following the failed HTTP ${requestStatus} response. Source not resolved — the exact access location is unconfirmed.`
+                        : `The response handler encountered \`${parsedError.errorMessage}\` following the failed HTTP ${requestStatus} response. The exact source expression is not resolved.`
             );
             // CRITICAL: rootCauseStatement must NOT promote the TypeError to the backend root cause.
             // The backend cause for the HTTP 500 is unknown unless server evidence is present.
@@ -524,19 +506,31 @@ export function interpretInvestigation(
                 `The upstream reason why the payload structure was unexpected is unknown from available telemetry.`;
             verdict = `${funcRef} threw \`${parsedError.errorClass}\` because the upstream response from \`${reqLabel}\` did not contain the expected data shape for \`${propRef}\`.`;
         }
+    } else if (anchorError) {
+        // The occurrence anchor is authoritative for the runtime failure. A
+        // generated hypothesis may explain it, but must never replace it with
+        // text from another failure mode.
+        headline = `${parsedError.errorClass}: ${parsedError.errorMessage}`;
+        firstObservedUpstreamFailure = parsedError.errorMessage;
+        downstreamSymptom = `Application in ${anchorError.service || "unknown service"} entered an error state`;
+        rootCauseStatement = sourceResolved
+            ? `Halo observed \`${parsedError.errorClass}: ${parsedError.errorMessage}\` at \`${parsedError.failingFile ?? "unknown file"}:${parsedError.failingLine ?? "?"}\`${parsedError.failingFunction ? ` in \`${parsedError.failingFunction}()\`` : ""}. The source expression is \`${propRef}\`. The reason this expression received its failing value is not established by this occurrence's telemetry.`
+            : `Halo observed \`${parsedError.errorClass}: ${parsedError.errorMessage}\`. The underlying cause is not established by this occurrence's telemetry.`;
+        verdict = `The runtime failure is observed; its underlying cause remains unknown without correlated upstream or server-side evidence.`;
+        contributingFactors.push(
+            sourceResolved
+                ? `Verified source location: \`${parsedError.failingFile}:${parsedError.failingLine}\` in ${funcRef}, expression \`${propRef}\`.` : `No request/trace-linked upstream telemetry was captured for this runtime failure.`,
+        );
     } else if (rootCause) {
         headline = rootCause.title;
         firstObservedUpstreamFailure = rootCause.title;
-        downstreamSymptom = `Application in ${anchorError?.service || "unknown service"} entered an error state`;
-        rootCauseStatement =
-            report.rootCause?.explanation ||
-            rootCause.description ||
-            `Halo identified an execution failure in ${anchorError?.service || "the application"}.`;
+        downstreamSymptom = "Application entered an error state";
+        rootCauseStatement = rootCause.description;
         verdict = rootCause.description || rootCause.title;
     } else {
         headline = parsedError.errorMessage || "Unhandled exception";
         firstObservedUpstreamFailure = parsedError.errorMessage || "Unknown";
-        downstreamSymptom = `Application in ${anchorError?.service || "unknown service"} entered an error state`;
+        downstreamSymptom = "Application entered an error state"; 
         rootCauseStatement = "The exact root cause is currently unknown due to missing server-side execution telemetry.";
         verdict = "Inconclusive telemetry signal prevents establishing a single definitive root cause.";
     }
@@ -578,17 +572,17 @@ export function interpretInvestigation(
         isDownstreamResponseHandler && requestEndpoint && requestStatus != null
             ? isHttpErrorStatus
                 ? `At ${timeFormatted}, an incident was captured${pageUrl ? ` on ${pageCtx}` : ""}. ` +
-                  `A request to \`${reqLabel}\` returned HTTP ${requestStatus}${durationPhrase}. ` +
-                  `The ${runtimeLabel} response handler in ${funcRef} then accessed \`${propRef}\` without validating the HTTP status code, producing \`${parsedError.errorMessage}\`. ` +
-                  (replaySession ? `Replay confirms user interaction immediately before the request. ` : "") +
-                  `The exact server-side reason for the HTTP ${requestStatus} is unknown — ` +
-                  (isExactRootCauseKnown
-                      ? `server-side telemetry: "${backendServerTrace?.title}".`
-                      : `no backend exception or server-side execution log was captured for this transaction.`)
+                `A request to \`${reqLabel}\` returned HTTP ${requestStatus}${durationPhrase}. ` +
+                `The ${runtimeLabel} response handler in ${funcRef} then accessed \`${propRef}\` without validating the HTTP status code, producing \`${parsedError.errorMessage}\`. ` +
+                (replaySession ? `Replay confirms user interaction immediately before the request. ` : "") +
+                `The exact server-side reason for the HTTP ${requestStatus} is unknown — ` +
+                (isExactRootCauseKnown
+                    ? `server-side telemetry: "${backendServerTrace?.title}".`
+                    : `no backend exception or server-side execution log was captured for this transaction.`)
                 : `At ${timeFormatted}, an incident was captured${pageUrl ? ` on ${pageCtx}` : ""}. ` +
-                  `A request to \`${reqLabel}\` returned HTTP ${requestStatus}${durationPhrase} with an unexpected payload structure. ` +
-                  `${funcRef} accessed \`${propRef}\` without null-checking, producing \`${parsedError.errorMessage}\`. ` +
-                  `The upstream reason why the payload was unexpected is not established from available telemetry.`
+                `A request to \`${reqLabel}\` returned HTTP ${requestStatus}${durationPhrase} with an unexpected payload structure. ` +
+                `${funcRef} accessed \`${propRef}\` without null-checking, producing \`${parsedError.errorMessage}\`. ` +
+                `The upstream reason why the payload was unexpected is not established from available telemetry.`
             : `At ${timeFormatted}, an incident occurred${pageUrl ? ` on ${pageCtx}` : ""}. ${rootCauseStatement}`;
 
     // 8. Causal Tree Diagram — reflects observed chain, no invented nodes.
@@ -648,14 +642,20 @@ export function interpretInvestigation(
             statement: `The \`${parsedError.errorMessage}\` is a downstream consequence of the HTTP request failure, not the initiating cause.`,
             provenance: "Inferred",
             details: requestDuration != null
-                ? `Supported by chronological ordering: HTTP failure at T+0, client exception at T+${requestDuration} ms, and the dereference occurring inside the response handler.`
-                : `Supported by chronological ordering (HTTP failure precedes client exception) and the dereference occurring inside the response handler.`,
+                ? `Supported by chronological ordering: HTTP failure at T+0, client exception at T+${requestDuration} ms, and the error occurring inside the response handler.`
+                : `Supported by chronological ordering (HTTP failure precedes client exception) and the error occurring inside the response handler.`,
         });
-        strongInferences.push({
-            statement: `The response handler accessed \`${propRef}\` without first checking the HTTP status code.`,
-            provenance: "Inferred",
-            details: `Supported by the unhandled property dereference in ${parsedError.failingFunction ? `\`${parsedError.failingFunction}()\`` : "the response callback"} with no preceding status guard.`,
-        });
+        // Only add source-level access claim when we can actually support it:
+        // either via resolved source code OR via a targetProperty extracted from the stack/error message.
+        if (sourceResolved || parsedError.targetProperty) {
+            strongInferences.push({
+                statement: sourceResolved
+                    ? `The response handler accessed \`${propRef}\` without first checking the HTTP status code.`
+                    : `Telemetry indicates the response handler attempted to access \`${parsedError.targetProperty}\` without an HTTP status check (source not fully resolved).`,
+                provenance: "Inferred",
+                details: `Supported by the unhandled dereference in ${parsedError.failingFunction ? `\`${parsedError.failingFunction}()\`` : "the response callback"} with no preceding status guard.`,
+            });
+        }
     }
 
     const unknowns: EvidenceClaim[] = [];
@@ -739,7 +739,9 @@ export function interpretInvestigation(
                     : `This is the primary error event captured for this occurrence.`,
             causalBasis:
                 isDownstreamResponseHandler && failedRequestEvent
-                    ? `Occurs inside the response callback of the failed HTTP request; accesses \`${propRef}\` without status guard.`
+                    ? sourceResolved && parsedError.targetProperty
+                        ? `Occurs inside the response callback of the failed HTTP request; accesses \`${propRef}\` without status guard.`
+                        : `Occurs inside the response callback of the failed HTTP request; produced \`${parsedError.errorMessage}\` (source not resolved).`
                     : `Direct error event captured in this occurrence's session/trace context.`,
             traceId: anchorError.traceId ?? undefined,
             requestId: anchorError.requestId ?? undefined,
@@ -883,16 +885,16 @@ export function interpretInvestigation(
         hasReplay: Boolean(replaySession),
         whatReplayConfirms: replaySession
             ? [
-                  pageUrl ? `User was on \`${pageUrl}\` during this session.` : `A user session was recorded.`,
-                  `User interaction preceded the incident.`,
-                  `The UI entered an error state following the incident.`,
-              ]
+                pageUrl ? `User was on \`${pageUrl}\` during this session.` : `A user session was recorded.`,
+                `User interaction preceded the incident.`,
+                `The UI entered an error state following the incident.`,
+            ]
             : [],
         whatReplayDoesNotConfirm: replaySession
             ? [
-                  `Server-side state or backend execution during the request.`,
-                  `Network-layer conditions between client and server.`,
-              ]
+                `Server-side state or backend execution during the request.`,
+                `Network-layer conditions between client and server.`,
+            ]
             : [`No session replay was recorded for this occurrence.`],
     };
 
@@ -911,16 +913,16 @@ export function interpretInvestigation(
             parsedError,
             failedRequest: failedRequestEvent
                 ? {
-                      id: failedRequestEvent.id,
-                      type: failedRequestEvent.type,
-                      method: requestMethod,
-                      endpoint: requestEndpoint,
-                      status: requestStatus,
-                      durationMs: requestDuration,
-                      traceId: failedRequestEvent.traceId,
-                      requestId: failedRequestEvent.requestId,
-                      service: failedRequestEvent.service,
-                  }
+                    id: failedRequestEvent.id,
+                    type: failedRequestEvent.type,
+                    method: requestMethod,
+                    endpoint: requestEndpoint,
+                    status: requestStatus,
+                    durationMs: requestDuration,
+                    traceId: failedRequestEvent.traceId,
+                    requestId: failedRequestEvent.requestId,
+                    service: failedRequestEvent.service,
+                }
                 : null,
             isDownstreamResponseHandler,
             anchorErrorId: anchorError?.id,
@@ -932,10 +934,10 @@ export function interpretInvestigation(
             sourceResolved,
             backendServerTrace: backendServerTrace
                 ? {
-                      id: backendServerTrace.id,
-                      title: backendServerTrace.title,
-                      service: backendServerTrace.service ?? "unknown",
-                  }
+                    id: backendServerTrace.id,
+                    title: backendServerTrace.title,
+                    service: backendServerTrace.service ?? "unknown",
+                }
                 : null,
         },
     );
@@ -946,10 +948,10 @@ export function interpretInvestigation(
         const correlationBasis = incidentTraceId
             ? `trace ID (${incidentTraceId.slice(0, 8)}…)`
             : incidentRequestId
-            ? `request ID (${incidentRequestId.slice(0, 8)}…)`
-            : incidentSessionId
-            ? `session ID (${incidentSessionId.slice(0, 8)}…)`
-            : "temporal ordering";
+                ? `request ID (${incidentRequestId.slice(0, 8)}…)`
+                : incidentSessionId
+                    ? `session ID (${incidentSessionId.slice(0, 8)}…)`
+                    : "temporal ordering";
         reasoningPoints.push(
             `\`${reqLabel}\` returned HTTP ${requestStatus} and is correlated to the error event via ${correlationBasis}, establishing chronological precedence.`
         );
@@ -980,8 +982,8 @@ export function interpretInvestigation(
             ? `User interacted on \`${pageUrl}\` immediately before the incident.`
             : `A user session was recorded for this occurrence.`)
         : hasObservedPageUrl
-        ? `Activity was recorded on \`${pageUrl}\` (no session replay captured).`
-        : `No user action event was captured for this occurrence — only the application error event.`;
+            ? `Activity was recorded on \`${pageUrl}\` (no session replay captured).`
+            : `No user action event was captured for this occurrence — only the application error event.`;
 
     // userAction.provenance: Observed only when replay exists, otherwise Inferred from URL metadata
     const userActionProvenance: ProvenanceType = replaySession ? "Observed" : (hasObservedPageUrl ? "Inferred" : "Unknown");
@@ -990,10 +992,10 @@ export function interpretInvestigation(
         parsedError.failingFunction && parsedError.targetProperty
             ? `${parsedError.failingFunction}() → \`${parsedError.targetProperty}\``
             : parsedError.failingFunction
-            ? `${parsedError.failingFunction}()`
-            : parsedError.failingFile
-            ? parsedError.failingFile
-            : "unknown location";
+                ? `${parsedError.failingFunction}()`
+                : parsedError.failingFile
+                    ? parsedError.failingFile
+                    : "unknown location";
 
     const userImpactStr =
         pageUrl
@@ -1006,8 +1008,8 @@ export function interpretInvestigation(
     const hasSharedId = Boolean(incidentSessionId || incidentTraceId || incidentRequestId);
     const confidenceScore =
         failedRequestEvent && anchorError && hasSharedId ? 88
-        : failedRequestEvent && anchorError ? 70
-        : 42;
+            : failedRequestEvent && anchorError ? 70
+                : 42;
     const confidenceLabel = getConfidenceLevel(confidenceScore);
 
     const executiveNarrative =
@@ -1061,13 +1063,13 @@ export function interpretInvestigation(
             failedRequest:
                 failedRequestEvent && requestEndpoint && requestStatus != null
                     ? {
-                          method: requestMethod ?? "REQUEST",
-                          endpoint: requestEndpoint,
-                          status: requestStatus,
-                          durationMs: requestDuration ?? undefined,
-                          traceId: failedRequestEvent.traceId ?? undefined,
-                          provenance: "Observed" as ProvenanceType,
-                      }
+                        method: requestMethod ?? "REQUEST",
+                        endpoint: requestEndpoint,
+                        status: requestStatus,
+                        durationMs: requestDuration ?? undefined,
+                        traceId: failedRequestEvent.traceId ?? undefined,
+                        provenance: "Observed" as ProvenanceType,
+                    }
                     : undefined,
             clientException: {
                 title: parsedError.errorMessage,
@@ -1106,19 +1108,16 @@ export function interpretInvestigation(
 
 function parseErrorDetails(
     primaryError: Evidence | undefined,
-    rootCause: Hypothesis | null,
     runtimeReconstruction?: FullRuntimeReconstruction
 ): ParsedErrorDetails {
+    const stack = typeof primaryError?.metadata?.stack === "string" ? primaryError.metadata.stack : "";
     const fullText = [
         primaryError?.title || "",
         primaryError?.description || "",
-        rootCause?.title || "",
-        rootCause?.description || "",
         typeof primaryError?.metadata?.error === "string" ? primaryError.metadata.error : "",
         typeof primaryError?.metadata?.message === "string" ? primaryError.metadata.message : "",
+        stack,
     ].join(" ");
-
-    const stack = typeof primaryError?.metadata?.stack === "string" ? primaryError.metadata.stack : "";
 
     const stackFrames: { file?: string; func?: string; line?: string | number }[] = [];
     const stackLineRegex = /at\s+(?:([a-zA-Z0-9_$<>.]+)\s+\()?([^:()]+):(\d+):(?:\d+)\)?/g;
@@ -1137,6 +1136,8 @@ function parseErrorDetails(
     let targetProperty = propMatch ? propMatch[1] : undefined;
 
     const isTypeError = /TypeError|ReferenceError|NullPointer|Cannot read properties|undefined is not|is not a function/i.test(fullText);
+    const isSyntaxError = /SyntaxError|Unexpected token|Unexpected end of JSON/i.test(fullText);
+    const isUnhandledRejection = /UnhandledPromiseRejection|unhandled rejection/i.test(fullText);
     const isDatabaseError = /Prisma|Postgres|Sequelize|TypeORM|Deadlock|Unique constraint|P2002|P2024|P2025|connection pool/i.test(fullText);
     const isNetworkTimeout = /ETIMEDOUT|ECONNREFUSED|504|Gateway Timeout|FetchError|AbortError|network timeout/i.test(fullText);
     const isAuthError = /JWT|token|Unauthorized|401|403|Forbidden|CSRF|signature/i.test(fullText);
@@ -1145,8 +1146,20 @@ function parseErrorDetails(
     const dbModelMatch = /prisma\.([a-zA-Z0-9_$]+)\./i.exec(stack + " " + fullText);
     const databaseModel = dbModelMatch ? dbModelMatch[1] : undefined;
 
-    const classMatch = /([A-Z][a-zA-Z0-9_]*(?:Error|Exception))/i.exec(fullText);
-    const errorClass = classMatch ? classMatch[1] : isTypeError ? "TypeError" : "RuntimeError";
+    // Derive errorClass strictly from the error title/text.
+    // Priority: explicit class match from title (e.g. "SyntaxError:", "TypeError:") first,
+    // then known flags, then generic fallback.
+    // NEVER hardcode "TypeError" as a fallback — use the actual class from the event.
+    const classMatch = /^([A-Z][a-zA-Z0-9_]*(?:Error|Exception))/.exec(
+        (primaryError?.title || "").trim()
+    ) ?? /([A-Z][a-zA-Z0-9_]*(?:Error|Exception))/i.exec(fullText);
+    const errorClass = classMatch
+        ? classMatch[1]
+        : isTypeError
+            ? "TypeError"
+            : isSyntaxError
+                ? "SyntaxError"
+                : "RuntimeError";
 
     let failingFile = firstFrame?.file;
     let failingFunction = firstFrame?.func;
@@ -1168,13 +1181,15 @@ function parseErrorDetails(
 
     return {
         errorClass,
-        errorMessage: primaryError?.title || rootCause?.title || "Unhandled Exception",
+        errorMessage: primaryError?.title || "Unhandled Exception",
         failingFile,
         failingFunction,
         failingLine,
         targetProperty,
         databaseModel,
         isTypeError,
+        isSyntaxError,
+        isUnhandledRejection,
         isDatabaseError,
         isNetworkTimeout,
         isAuthError,

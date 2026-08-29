@@ -1,6 +1,8 @@
 import { getOverviewData } from "@/actions/overview";
 import { getProject } from "@/actions/project";
+import { getProjectGitHubConfig } from "@/actions/project-github";
 import { ProjectSettingsForm } from "./project-settings-form";
+import { GitHubSettingsCard } from "@/app/(dashboard)/projects/[id]/settings/github-settings-card";
 
 export default async function ProjectSettingsPage() {
     const overview = await getOverviewData();
@@ -19,12 +21,14 @@ export default async function ProjectSettingsPage() {
 
     if (!projectData) return null;
 
+    const githubConfig = await getProjectGitHubConfig(activeProject.id);
+
     return (
-        <div className="space-y-8 pb-16">
+        <div className="space-y-8 pb-16 max-w-5xl">
             <div className="halo-page-header">
                 <h1 className="halo-page-title">Project Settings</h1>
                 <p className="halo-page-description">
-                    Configure project identifiers, spike protection, auto-resolve rules, and security options for <span className="font-semibold text-white">{projectData.name}</span>.
+                    Configure project identifiers, spike protection, auto-resolve rules, and source control for <span className="font-semibold text-white">{projectData.name}</span>.
                 </p>
             </div>
 
@@ -36,6 +40,9 @@ export default async function ProjectSettingsPage() {
                     description: projectData.description,
                 }}
             />
+
+            <GitHubSettingsCard projectId={projectData.id} initialConfig={githubConfig} />
         </div>
     );
 }
+
