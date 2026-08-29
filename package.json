@@ -6,7 +6,13 @@
   "packageManager": "pnpm@11.11.0",
   "scripts": {
     "dashboard": "pnpm --filter dashboard",
-    "dashboard:dev": "pnpm --filter dashboard dev"
+    "dashboard:dev": "pnpm --filter dashboard dev",
+    "db:generate": "prisma generate",
+    "db:migrate": "prisma migrate dev",
+    "db:deploy": "prisma migrate deploy",
+    "db:status": "prisma migrate status",
+    "db:studio": "prisma studio",
+    "db:studio:neon": "DATABASE_URL=\"$NEON_DATABASE_URL\" prisma studio"
   },
   "devDependencies": {
     "@types/node": "^26.1.1",
