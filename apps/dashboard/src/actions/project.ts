@@ -2,8 +2,9 @@
 
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
-import { getOrganization } from "@/lib/organization";
+import { getOrganization, ensureOrganization } from "@/lib/organization";
 import { slugify } from "@/lib/slug";
+import { revalidatePath } from "next/cache";
 
 export async function createProject(
   name: string,
@@ -12,16 +13,20 @@ export async function createProject(
   const session = await getSession();
 
   if (!session) {
-    throw new Error("Unauthorized");
+    throw new Error("You must be logged in to create a project.");
   }
 
-  const organization = await getOrganization(session.user.id);
+  let organization = await getOrganization(session.user.id);
 
   if (!organization) {
-    throw new Error("Organization not found");
+    organization = await ensureOrganization(session.user.id);
   }
 
-  const baseSlug = slugify(name);
+  if (!organization) {
+    throw new Error("Organization could not be initialized.");
+  }
+
+  const baseSlug = slugify(name) || "project";
 
   let slug = baseSlug;
   let count = 1;
@@ -37,11 +42,11 @@ export async function createProject(
     slug = `${baseSlug}-${count++}`;
   }
 
-  return prisma.$transaction(async (tx) => {
-    const project = await tx.project.create({
+  const project = await prisma.$transaction(async (tx) => {
+    const p = await tx.project.create({
       data: {
-        name,
-        description,
+        name: name.trim(),
+        description: description?.trim() || null,
         slug,
         organizationId: organization.id,
       },
@@ -50,12 +55,17 @@ export async function createProject(
     await tx.environment.create({
       data: {
         name: "Production",
-        projectId: project.id,
+        projectId: p.id,
       },
     });
 
-    return project;
+    return p;
   });
+
+  revalidatePath("/projects");
+  revalidatePath("/overview");
+
+  return project;
 }
 
 export async function getProjects() {
