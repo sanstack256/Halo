@@ -62,7 +62,7 @@ export async function getProjects() {
   const session = await getSession();
 
   if (!session) {
-    throw new Error("Unauthorized");
+    return [];
   }
 
   const organization = await getOrganization(session.user.id);
@@ -71,60 +71,65 @@ export async function getProjects() {
     return [];
   }
 
-  const projects = await prisma.project.findMany({
-    where: {
-      organizationId: organization.id,
-    },
-    orderBy: {
-      createdAt: "desc",
-    },
-    include: {
-      _count: {
-        select: {
-          events: true,
-          issues: true,
+  try {
+    const projects = await prisma.project.findMany({
+      where: {
+        organizationId: organization.id,
+      },
+      orderBy: {
+        createdAt: "desc",
+      },
+      include: {
+        _count: {
+          select: {
+            events: true,
+            issues: true,
+          },
+        },
+
+        events: {
+          orderBy: {
+            timestamp: "desc",
+          },
+          take: 1,
+          select: {
+            timestamp: true,
+          },
+        },
+
+        issues: {
+          where: {
+            status: "OPEN",
+          },
+          select: {
+            id: true,
+          },
         },
       },
+    });
 
-      events: {
-        orderBy: {
-          timestamp: "desc",
-        },
-        take: 1,
-        select: {
-          timestamp: true,
-        },
-      },
+    return projects.map((project) => ({
+      id: project.id,
 
-      issues: {
-        where: {
-          status: "OPEN",
-        },
-        select: {
-          id: true,
-        },
-      },
-    },
-  });
+      name: project.name,
 
-  return projects.map((project) => ({
-    id: project.id,
+      description: project.description,
 
-    name: project.name,
+      createdAt: project.createdAt,
 
-    description: project.description,
+      eventCount: project._count.events,
 
-    createdAt: project.createdAt,
+      openIssueCount: project.issues.length,
 
-    eventCount: project._count.events,
-
-    openIssueCount: project.issues.length,
-
-    lastEventAt:
-      project.events.length > 0
-        ? project.events[0].timestamp
-        : null,
-  }));
+      lastEventAt:
+        project.events.length > 0
+          ? project.events[0].timestamp
+          : null,
+    }));
+  } catch (err) {
+    console.error("Error loading projects:", err);
+    return [];
+  }
 }
 
 export async function getProject(projectId: string) {

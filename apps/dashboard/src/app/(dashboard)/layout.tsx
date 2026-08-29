@@ -15,7 +15,11 @@ export default async function DashboardLayout({
         redirect("/sign-in");
     }
 
-    await ensureOrganization(session.user.id);
+    try {
+        await ensureOrganization(session.user.id);
+    } catch {
+        redirect("/sign-in");
+    }
 
     return (
         <div className="flex h-screen overflow-hidden bg-background">

@@ -7,7 +7,12 @@ import ProjectsGrid from "@/components/projects/projects-grid";
 import { PageHeader } from "@/components/ui/page-header";
 
 export default async function ProjectsPage() {
-    const projects = await getProjects();
+    let projects: Awaited<ReturnType<typeof getProjects>> = [];
+    try {
+        projects = await getProjects();
+    } catch {
+        projects = [];
+    }
 
     return (
         <div className="space-y-10">
