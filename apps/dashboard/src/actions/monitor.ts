@@ -435,6 +435,73 @@ export async function toggleMonitorStatus(id: string, status: MonitorStatus): Pr
     return true;
 }
 
+export async function updateMonitor(id: string, data: Partial<CreateMonitorInput>): Promise<OrgMonitor> {
+    const session = await getSession();
+    if (!session) throw new Error("Unauthorized");
+
+    const organization = await getOrganization(session.user.id);
+    if (!organization) throw new Error("Unauthorized");
+
+    const existing = await prisma.monitor.findFirst({
+        where: {
+            id,
+            project: { organizationId: organization.id },
+        },
+    });
+
+    if (!existing) throw new Error("Monitor not found.");
+
+    const updated = await prisma.monitor.update({
+        where: { id },
+        data: {
+            name: data.name !== undefined ? data.name.trim() : undefined,
+            description: data.description !== undefined ? data.description.trim() || null : undefined,
+            type: data.type,
+            severity: data.severity,
+            projectId: data.projectId,
+            environmentId: data.environmentId,
+            thresholdValue: data.thresholdValue,
+            thresholdWindow: data.thresholdWindow,
+            query: data.query !== undefined ? data.query.trim() || null : undefined,
+            cronSchedule: data.cronSchedule !== undefined ? data.cronSchedule.trim() || null : undefined,
+            endpointUrl: data.endpointUrl !== undefined ? data.endpointUrl.trim() || null : undefined,
+            alertConfig: data.alertConfig,
+            updatedAt: new Date(),
+        },
+        include: {
+            project: { select: { id: true, name: true, slug: true } },
+            creator: { select: { id: true, name: true, email: true } },
+        },
+    });
+
+    revalidatePath("/monitors");
+    revalidatePath(`/monitors/${id}`);
+    return {
+        id: updated.id,
+        name: updated.name,
+        description: updated.description,
+        type: updated.type,
+        status: updated.status,
+        severity: updated.severity,
+        projectId: updated.projectId,
+        projectName: updated.project.name,
+        environmentId: updated.environmentId,
+        creatorId: updated.creatorId,
+        creatorName: updated.creator?.name || null,
+        thresholdValue: updated.thresholdValue,
+        thresholdWindow: updated.thresholdWindow,
+        query: updated.query,
+        cronSchedule: updated.cronSchedule,
+        endpointUrl: updated.endpointUrl,
+        lastTriggeredAt: updated.lastTriggeredAt,
+        lastEvaluatedAt: updated.lastEvaluatedAt,
+        incidentCount: updated.incidentCount,
+        alertConfig: updated.alertConfig,
+        createdAt: updated.createdAt,
+        updatedAt: updated.updatedAt,
+    };
+}
+
 export async function deleteMonitor(id: string): Promise<boolean> {
     const session = await getSession();
     if (!session) throw new Error("Unauthorized");

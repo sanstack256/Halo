@@ -66,6 +66,13 @@ export default async function MonitorDetailPage({ params }: MonitorDetailPagePro
 
                     <div className="flex items-center gap-2.5">
                         <Link
+                            href={`/monitors/${monitor.id}/edit`}
+                            className="halo-btn halo-btn-secondary halo-btn-sm"
+                        >
+                            <span>Edit Monitor</span>
+                        </Link>
+
+                        <Link
                             href={`/projects/${monitor.projectId}/investigations/new`}
                             className="halo-btn halo-btn-primary halo-btn-sm"
                         >
