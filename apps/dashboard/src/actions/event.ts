@@ -413,7 +413,13 @@ export async function getEvents(
         where: {
             projectId,
         },
-
+        include: {
+            environment: {
+                select: {
+                    name: true,
+                },
+            },
+        },
         orderBy: {
             timestamp: "desc",
         },
@@ -427,9 +433,13 @@ export async function getEvent(
         where: {
             id: eventId,
         },
-
         include: {
             issue: true,
+            environment: {
+                select: {
+                    name: true,
+                },
+            },
         },
     });
 }

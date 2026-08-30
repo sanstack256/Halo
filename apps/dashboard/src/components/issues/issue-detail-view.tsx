@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { BackButton } from "@/components/ui/back-button";
@@ -16,6 +16,7 @@ import {
     ExternalLink,
     Filter,
     GitBranch,
+    History,
     Layers,
     Play,
     Send,
@@ -38,18 +39,21 @@ type EventItem = {
     timestamp: Date;
     message: string | null;
     sdkName?: string | null;
+    sdkVersion?: string | null;
     service?: string | null;
     requestId?: string | null;
     traceId?: string | null;
     resource?: string | null;
     release?: string | null;
     environment?: { name: string } | null;
+    stack?: string | null;
 };
 
 type IssueDetailProps = {
     issue: {
         id: string;
         title: string;
+        fingerprint?: string;
         status: string;
         severity: string;
         eventCount: number;
@@ -66,20 +70,30 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
     const [status, setStatus] = useState(issue.status);
     const [assignee, setAssignee] = useState("Unassigned");
     const [priority, setPriority] = useState("High");
-    const [selectedTab, setSelectedTab] = useState<"tags" | "contexts" | "breadcrumbs">("tags");
-    const [selectedEnvironment, setSelectedEnvironment] = useState<string>("all");
+    const [selectedEventId, setSelectedEventId] = useState<string>(issue.events[0]?.id || "");
     const [copiedStack, setCopiedStack] = useState(false);
     const [commentText, setCommentText] = useState("");
     const [comments, setComments] = useState<Array<{ id: string; text: string; date: Date }>>([
         {
             id: "1",
-            text: "Initial triage completed. Correlated with release v1.4.2 deployment.",
+            text: "Initial triage completed. Correlated with production telemetry events.",
             date: issue.firstSeen,
         },
     ]);
 
-    const latestEvent = issue.events[0];
-    const envName = latestEvent?.environment?.name || "Production";
+    const activeEvent = issue.events.find((e) => e.id === selectedEventId) || issue.events[0];
+    const envName = activeEvent?.environment?.name || "Production";
+
+    // Extract unique affected services and environments
+    const affectedServices = Array.from(
+        new Set(issue.events.map((e) => e.service || "web-client"))
+    );
+    const affectedEnvs = Array.from(
+        new Set(issue.events.map((e) => e.environment?.name || "production"))
+    );
+    const affectedReleases = Array.from(
+        new Set(issue.events.map((e) => e.release).filter(Boolean))
+    );
 
     function handleAddComment(e: React.FormEvent) {
         e.preventDefault();
@@ -92,304 +106,313 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
     }
 
     function copyStackTrace() {
-        const text = `Error: ${issue.title}\n  at handleRequest (app/api/route.ts:42:12)\n  at processTicksAndRejections (node:internal/process/task_queues:95:5)`;
+        const text = activeEvent?.stack || `Error: ${issue.title}`;
         navigator.clipboard.writeText(text);
         setCopiedStack(true);
         setTimeout(() => setCopiedStack(false), 2000);
     }
 
     return (
-        <div className="space-y-8 pb-16">
-            {/* Header & Back Button */}
-            <div className="space-y-4">
-                <BackButton fallbackHref="/issues" label="Back to Issues" />
+        <div className="space-y-6 pb-16">
+            {/* Header & Back Navigation */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
+                <div className="space-y-2">
+                    <BackButton fallbackHref={`/projects/${issue.projectId}/issues`} label="Back to Issues" />
 
-                {/* Title & Toolbar */}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div className="space-y-2">
-                        <div className="flex items-center gap-2.5 flex-wrap">
-                            <span className="halo-severity halo-severity-fatal">
-                                {issue.severity}
-                            </span>
-                            <span className="halo-metric-pill">
-                                {status}
-                            </span>
-                            <span className="text-xs font-mono text-muted">
-                                ID: {issue.id.slice(0, 8)}
-                            </span>
-                        </div>
-                        <h1 className="text-2xl sm:text-3xl font-semibold text-white tracking-tight">
-                            {issue.title}
-                        </h1>
+                    <div className="flex items-center gap-2.5 flex-wrap pt-1">
+                        <span className={`text-xs font-mono font-bold px-2.5 py-1 rounded-lg border ${
+                            status === "RESOLVED"
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : status === "IGNORED"
+                                ? "bg-zinc-800 text-zinc-400 border-zinc-700"
+                                : "bg-red-500/10 text-red-400 border-red-500/20"
+                        }`}>
+                            {status}
+                        </span>
+                        <span className="halo-severity halo-severity-fatal">
+                            {issue.severity}
+                        </span>
+                        <span className="text-xs font-mono text-zinc-500">
+                            Fingerprint: <code className="text-zinc-300">{issue.fingerprint || issue.id.slice(0, 12)}</code>
+                        </span>
                     </div>
 
-                    {/* Action Bar */}
-                    <div className="flex items-center gap-2 flex-wrap">
-                        <button
-                            type="button"
-                            onClick={() => setStatus(status === "RESOLVED" ? "OPEN" : "RESOLVED")}
-                            className={`halo-btn halo-btn-sm ${
-                                status === "RESOLVED" ? "halo-btn-secondary" : "halo-btn-primary"
-                            }`}
-                        >
-                            <Check size={14} />
-                            {status === "RESOLVED" ? "Reopen Issue" : "Resolve"}
-                        </button>
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                        {issue.title}
+                    </h1>
 
-                        <button
-                            type="button"
-                            onClick={() => setStatus("IGNORED")}
-                            className="halo-btn halo-btn-sm halo-btn-secondary"
-                        >
-                            <Archive size={14} />
-                            Archive / Ignore
-                        </button>
-
-                        <Link
-                            href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}${latestEvent ? `&eventId=${latestEvent.id}` : ""}`}
-                            className="halo-btn halo-btn-sm halo-btn-primary"
-                        >
-                            <Activity size={14} />
-                            Investigate Root Cause
-                        </Link>
+                    <div className="flex items-center gap-3 text-xs font-mono text-secondary flex-wrap">
+                        <span>First seen: {new Date(issue.firstSeen).toLocaleDateString()}</span>
+                        <span className="text-zinc-600">•</span>
+                        <span>Last seen: <RelativeTime date={issue.lastSeen} /></span>
+                        <span className="text-zinc-600">•</span>
+                        <span className="text-white font-bold">{issue.eventCount} total occurrences</span>
                     </div>
+                </div>
+
+                {/* Top Action Bar */}
+                <div className="flex items-center gap-2 flex-wrap">
+                    <button
+                        type="button"
+                        onClick={() => setStatus(status === "RESOLVED" ? "OPEN" : "RESOLVED")}
+                        className={`halo-btn halo-btn-sm ${
+                            status === "RESOLVED" ? "halo-btn-secondary" : "halo-btn-primary"
+                        }`}
+                    >
+                        <Check size={14} />
+                        <span>{status === "RESOLVED" ? "Reopen" : "Resolve"}</span>
+                    </button>
+
+                    <button
+                        type="button"
+                        onClick={() => setStatus(status === "IGNORED" ? "OPEN" : "IGNORED")}
+                        className="halo-btn halo-btn-sm halo-btn-secondary"
+                    >
+                        <Archive size={14} />
+                        <span>{status === "IGNORED" ? "Unignore" : "Ignore"}</span>
+                    </button>
+
+                    <Link
+                        href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}${activeEvent ? `&eventId=${activeEvent.id}` : ""}`}
+                        className="halo-btn halo-btn-sm halo-btn-primary flex items-center gap-1.5 shadow-lg shadow-accent/20"
+                    >
+                        <Sparkles size={14} />
+                        <span>Investigate Occurrence</span>
+                    </Link>
                 </div>
             </div>
 
-            {/* Main Content Grid */}
-            <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-8">
-                {/* Left Primary Column */}
-                <div className="space-y-8 min-w-0">
-                    {/* Time Range & Event Selector Bar */}
-                    <div className="halo-card p-4 flex flex-wrap items-center justify-between gap-4 text-xs">
-                        <div className="flex items-center gap-3">
-                            <span className="text-muted">Environment:</span>
-                            <span className="font-semibold text-white bg-surface-elevated px-2.5 py-1 rounded border border-border">
-                                {envName}
+            {/* Quick Aggregate Stats Grid */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Total Occurrences</span>
+                    <span className="text-base font-bold text-white block">{issue.eventCount}</span>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Affected Services</span>
+                    <span className="text-accent font-bold truncate block">
+                        {affectedServices.join(", ") || "web-client"}
+                    </span>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Environments</span>
+                    <span className="text-zinc-300 truncate block">
+                        {affectedEnvs.join(", ") || "production"}
+                    </span>
+                </div>
+
+                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Releases Affected</span>
+                    <span className="text-indigo-400 truncate block">
+                        {affectedReleases.length > 0 ? affectedReleases.join(", ") : "Unspecified"}
+                    </span>
+                </div>
+            </div>
+
+            {/* Main Content Layout */}
+            <div className="grid grid-cols-1 lg:grid-cols-[1fr_320px] gap-6">
+                {/* Left Column: Occurrences & Stack Trace */}
+                <div className="space-y-6 min-w-0">
+                    {/* Occurrences / Representative Events Table */}
+                    <div className="p-5 rounded-2xl bg-[#080b11] border border-border space-y-4 shadow-xl">
+                        <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                            <div className="flex items-center gap-2">
+                                <History className="w-4 h-4 text-accent" />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                    Captured Occurrences ({issue.events.length})
+                                </h3>
+                            </div>
+                            <span className="text-[11px] font-mono text-zinc-400">
+                                Select occurrence to investigate
                             </span>
-                            <span className="text-muted">Total Events:</span>
-                            <span className="font-mono text-white font-semibold">{issue.eventCount}</span>
                         </div>
 
-                        <div className="flex items-center gap-2">
-                            <span className="text-muted">Priority:</span>
-                            <select
-                                value={priority}
-                                onChange={(e) => setPriority(e.target.value)}
-                                className="bg-surface-elevated border border-border text-white text-xs px-2.5 py-1 rounded focus:outline-none"
-                            >
-                                <option value="Fatal">Fatal</option>
-                                <option value="High">High</option>
-                                <option value="Medium">Medium</option>
-                                <option value="Low">Low</option>
-                            </select>
-                        </div>
-                    </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-left text-xs border-collapse font-mono">
+                                <thead>
+                                    <tr className="border-b border-white/10 text-muted uppercase text-[10px]">
+                                        <th className="py-2.5 px-3">Occurrence Time</th>
+                                        <th className="py-2.5 px-3">Service</th>
+                                        <th className="py-2.5 px-3">Environment</th>
+                                        <th className="py-2.5 px-3">Trace ID</th>
+                                        <th className="py-2.5 px-3 text-right">Action</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-white/5">
+                                    {issue.events.map((ev) => {
+                                        const isSelected = activeEvent?.id === ev.id;
 
-                    {/* Tag Distribution Breakdown Bars (Image 5 style) */}
-                    <div className="halo-card p-5 space-y-3">
-                        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted border-b border-border pb-2">
-                            Telemetry Tag Distribution
-                        </h3>
-                        <div className="space-y-2 text-xs">
-                            <div className="flex items-center justify-between">
-                                <span className="text-secondary font-mono">browser</span>
-                                <span className="text-white font-mono">100% Chrome 120.0</span>
-                            </div>
-                            <div className="w-full bg-surface-elevated h-1.5 rounded-full overflow-hidden">
-                                <div className="bg-accent h-full w-full" />
-                            </div>
-
-                            <div className="flex items-center justify-between pt-1">
-                                <span className="text-secondary font-mono">environment</span>
-                                <span className="text-white font-mono">100% {envName.toLowerCase()}</span>
-                            </div>
-                            <div className="w-full bg-surface-elevated h-1.5 rounded-full overflow-hidden">
-                                <div className="bg-emerald-400 h-full w-full" />
-                            </div>
-                        </div>
-                    </div>
-
-                    {/* Real Session Replay Player or Status */}
-                    {!hasReplayAccess ? (
-                        <ReplayStatus status="PLAN_REQUIRED" projectId={issue.projectId} />
-                    ) : replaySession ? (
-                        <ReplayPlayerClient
-                            replaySession={replaySession}
-                            issueTitle={issue.title}
-                        />
-                    ) : (
-                        <ReplayStatus status="NO_REPLAY" projectId={issue.projectId} />
-                    )}
-
-                    {/* Highlights Card (Image 5 style) */}
-                    <div className="halo-card p-5 space-y-3">
-                        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted border-b border-border pb-2">
-                            Event Highlights
-                        </h3>
-
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 text-xs">
-                            <div>
-                                <span className="text-muted block">Handled</span>
-                                <span className="text-white font-mono font-medium">no</span>
-                            </div>
-                            <div>
-                                <span className="text-muted block">Level</span>
-                                <span className="text-error font-mono font-semibold">error</span>
-                            </div>
-                            <div>
-                                <span className="text-muted block">Transaction</span>
-                                <span className="text-white font-mono font-medium">/api/checkout</span>
-                            </div>
-                            <div>
-                                <span className="text-muted block">Trace ID</span>
-                                <span className="text-accent font-mono font-medium truncate block">
-                                    {latestEvent?.traceId || "7db79a69faa643"}
-                                </span>
-                            </div>
+                                        return (
+                                            <tr
+                                                key={ev.id}
+                                                onClick={() => setSelectedEventId(ev.id)}
+                                                className={`cursor-pointer transition-colors ${
+                                                    isSelected
+                                                        ? "bg-accent/15 text-white"
+                                                        : "hover:bg-surface/50 text-zinc-300"
+                                                }`}
+                                            >
+                                                <td className="py-2.5 px-3 whitespace-nowrap">
+                                                    <span className="font-semibold">{new Date(ev.timestamp).toLocaleTimeString()}</span>
+                                                    <span className="text-[10px] text-zinc-500 ml-2">
+                                                        ({new Date(ev.timestamp).toLocaleDateString()})
+                                                    </span>
+                                                </td>
+                                                <td className="py-2.5 px-3 text-accent truncate">
+                                                    {ev.service || "web-client"}
+                                                </td>
+                                                <td className="py-2.5 px-3 text-zinc-400">
+                                                    {ev.environment?.name || "production"}
+                                                </td>
+                                                <td className="py-2.5 px-3 text-zinc-500 truncate max-w-[120px]">
+                                                    {ev.traceId ? `${ev.traceId.slice(0, 10)}…` : "—"}
+                                                </td>
+                                                <td className="py-2.5 px-3 text-right">
+                                                    <Link
+                                                        href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}&eventId=${ev.id}`}
+                                                        className="px-2.5 py-1 rounded bg-accent/20 hover:bg-accent text-white border border-accent text-[11px] font-bold inline-flex items-center gap-1 transition-colors"
+                                                    >
+                                                        <Sparkles size={11} />
+                                                        <span>Investigate</span>
+                                                    </Link>
+                                                </td>
+                                            </tr>
+                                        );
+                                    })}
+                                </tbody>
+                            </table>
                         </div>
                     </div>
 
-                    {/* Stack Trace Section (Image 5 style) */}
-                    <div className="halo-card p-5 space-y-4">
+                    {/* Stack Trace for Selected Occurrence */}
+                    <div className="p-5 rounded-2xl bg-surface border border-border space-y-4">
                         <div className="flex items-center justify-between border-b border-border pb-3">
-                            <h3 className="text-xs font-semibold uppercase tracking-wider text-muted">
-                                Stack Trace
-                            </h3>
+                            <div>
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                    Occurrence Stack Trace
+                                </h3>
+                                <p className="text-[11px] text-zinc-400 font-mono mt-0.5">
+                                    Event ID: <code className="text-accent">{activeEvent?.id}</code>
+                                </p>
+                            </div>
 
                             <button
                                 type="button"
                                 onClick={copyStackTrace}
-                                className="halo-btn halo-btn-sm halo-btn-ghost text-xs"
+                                className="halo-btn halo-btn-xs halo-btn-secondary"
                             >
-                                {copiedStack ? <Check size={13} /> : <Copy size={13} />}
-                                {copiedStack ? "Copied" : "Copy Stack"}
+                                {copiedStack ? <Check size={12} className="text-emerald-400" /> : <Copy size={12} />}
+                                <span>{copiedStack ? "Copied" : "Copy Stack"}</span>
                             </button>
                         </div>
 
-                        <div className="p-4 rounded-xl bg-black/60 border border-border font-mono text-xs text-red-300/90 leading-relaxed overflow-x-auto space-y-1">
-                            <div className="text-white font-bold mb-2">Error: {issue.title}</div>
-                            <div>&nbsp;&nbsp;at handleCheckout (app/api/checkout/route.ts:48:19)</div>
-                            <div>&nbsp;&nbsp;at processTicksAndRejections (node:internal/process/task_queues:95:5)</div>
-                            <div>&nbsp;&nbsp;at async POST (app/api/checkout/route.ts:24:5)</div>
-                        </div>
+                        {activeEvent?.stack ? (
+                            <pre className="p-4 rounded-xl bg-[#080b11] border border-white/10 font-mono text-xs text-red-300 overflow-x-auto leading-relaxed whitespace-pre-wrap">
+                                {activeEvent.stack}
+                            </pre>
+                        ) : (
+                            <div className="p-4 rounded-xl bg-[#080b11] border border-white/10 font-mono text-xs text-zinc-400 space-y-1">
+                                <div className="text-white font-bold">Error: {issue.title}</div>
+                                <div>&nbsp;&nbsp;at handleCheckout (app/api/checkout/route.ts:48:19)</div>
+                                <div>&nbsp;&nbsp;at processTicksAndRejections (node:internal/process/task_queues:95:5)</div>
+                            </div>
+                        )}
 
-                        {/* Git Provider Integration Banner */}
-                        <div className="p-4 rounded-xl border border-accent/20 bg-accent/5 flex items-center justify-between gap-4">
+                        {/* Git Provider Inline Link */}
+                        <div className="p-3.5 rounded-xl border border-accent/20 bg-accent/5 flex items-center justify-between gap-4">
                             <div className="flex items-center gap-3">
-                                <GitBranch className="text-accent" size={18} />
+                                <GitBranch className="text-accent shrink-0" size={16} />
                                 <div className="text-xs">
-                                    <p className="font-semibold text-white">Connect with Git Providers</p>
-                                    <p className="text-secondary">Link GitHub or GitLab to see source code inline with stack traces.</p>
+                                    <p className="font-semibold text-white">Connect Git Provider</p>
+                                    <p className="text-secondary text-[11px]">Link GitHub or GitLab to see source code inline with stack traces.</p>
                                 </div>
                             </div>
-                            <Link href={`/projects/${issue.projectId}/settings`} className="halo-btn halo-btn-sm halo-btn-secondary">
+                            <Link href={`/projects/${issue.projectId}/settings`} className="halo-btn halo-btn-xs halo-btn-secondary shrink-0">
                                 Connect Git
                             </Link>
                         </div>
                     </div>
 
-                    {/* Breadcrumbs Timeline */}
-                    <div className="halo-card p-5 space-y-4">
-                        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted border-b border-border pb-3">
-                            Breadcrumbs Timeline
-                        </h3>
-
-                        <div className="space-y-3 text-xs font-mono">
-                            <div className="p-3 rounded-lg bg-surface-elevated border border-border flex items-start justify-between">
-                                <div>
-                                    <span className="text-error font-bold">[Exception]</span>
-                                    <p className="text-white mt-1">{issue.title}</p>
-                                </div>
-                                <span className="text-muted text-[11px]"><RelativeTime date={issue.lastSeen} /></span>
-                            </div>
-
-                            <div className="p-3 rounded-lg bg-surface-elevated border border-border flex items-start justify-between">
-                                <div>
-                                    <span className="text-accent font-bold">[Navigation]</span>
-                                    <p className="text-secondary mt-1">from: /cart to: /checkout</p>
-                                </div>
-                                <span className="text-muted text-[11px]"><RelativeTime date={issue.firstSeen} /></span>
-                            </div>
+                    {/* Session Replay */}
+                    {replaySession ? (
+                        <div className="p-5 rounded-2xl bg-surface border border-border space-y-4">
+                            <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                Correlated User Session Replay
+                            </h3>
+                            <ReplayPlayerClient
+                                replaySession={replaySession}
+                                issueTitle={issue.title}
+                            />
                         </div>
-                    </div>
+                    ) : (
+                        <ReplayStatus status="NO_REPLAY" projectId={issue.projectId} />
+                    )}
                 </div>
 
-                {/* Right Sidebar Column */}
+                {/* Right Column: Investigation Launchpad & Metadata */}
                 <div className="space-y-6">
-                    {/* Halo Root Cause & Causal Engine Card */}
-                    <div className="halo-card p-5 border-accent/30 bg-accent/5 space-y-4">
-                        <div className="flex items-center gap-2 text-accent font-semibold text-sm">
-                            <Activity size={16} />
-                            Halo Causal Investigation
+                    {/* Launchpad Card */}
+                    <div className="p-5 rounded-2xl bg-accent/10 border border-accent/30 space-y-4 shadow-xl shadow-accent/5">
+                        <div className="flex items-center gap-2 text-accent font-bold text-sm">
+                            <Sparkles size={16} />
+                            <span>Halo Causal Investigation</span>
                         </div>
-
                         <p className="text-xs text-secondary leading-relaxed">
-                            Halo evaluates telemetry and causal evidence to pinpoint the root cause and reconstruct the incident cascade.
+                            Evaluate active telemetry, stack frames, upstream requests, and Git regressions to pinpoint the exact root cause.
                         </p>
-
                         <Link
-                            href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}${latestEvent ? `&eventId=${latestEvent.id}` : ""}`}
-                            className="halo-btn halo-btn-primary w-full justify-center"
+                            href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}${activeEvent ? `&eventId=${activeEvent.id}` : ""}`}
+                            className="halo-btn halo-btn-primary w-full justify-center shadow-lg shadow-accent/20"
                         >
-                            Investigate Root Cause
+                            <Sparkles size={14} />
+                            <span>Investigate Issue</span>
                         </Link>
                     </div>
 
-                    {/* Issue Metadata Sidebar */}
-                    <div className="halo-card p-5 space-y-4 text-xs">
-                        <h3 className="font-semibold uppercase tracking-wider text-muted border-b border-border pb-2">
+                    {/* Issue Metadata Drawer */}
+                    <div className="p-5 rounded-2xl bg-surface border border-border space-y-4 text-xs font-mono">
+                        <h3 className="font-bold uppercase tracking-wider text-zinc-400 border-b border-border pb-2">
                             Overview Metadata
                         </h3>
 
                         <div className="space-y-3">
                             <div>
-                                <span className="text-muted block">First Seen</span>
-                                <span className="text-white"><RelativeTime date={issue.firstSeen} /></span>
+                                <span className="text-[10px] text-zinc-500 uppercase block font-sans">First Occurrence</span>
+                                <span className="text-white font-semibold">{new Date(issue.firstSeen).toLocaleString()}</span>
                             </div>
-
                             <div>
-                                <span className="text-muted block">Last Seen</span>
-                                <span className="text-white"><RelativeTime date={issue.lastSeen} /></span>
+                                <span className="text-[10px] text-zinc-500 uppercase block font-sans">Last Occurrence</span>
+                                <span className="text-white font-semibold">{new Date(issue.lastSeen).toLocaleString()}</span>
                             </div>
-
                             <div>
-                                <span className="text-muted block">Assignee</span>
+                                <span className="text-[10px] text-zinc-500 uppercase block font-sans">Triage Assignee</span>
                                 <select
                                     value={assignee}
                                     onChange={(e) => setAssignee(e.target.value)}
-                                    className="mt-1 w-full bg-surface-elevated border border-border text-white text-xs px-2.5 py-1.5 rounded focus:outline-none"
+                                    className="mt-1 w-full bg-[#080b11] border border-white/10 text-white text-xs px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-accent"
                                 >
                                     <option value="Unassigned">Unassigned</option>
                                     <option value="Sanjeev (Me)">Sanjeev (Me)</option>
                                     <option value="Backend Team">Backend Team</option>
+                                    <option value="Frontend Team">Frontend Team</option>
                                 </select>
                             </div>
                         </div>
                     </div>
 
-                    {/* External Links Card */}
-                    <div className="halo-card p-5 space-y-3 text-xs">
-                        <h3 className="font-semibold uppercase tracking-wider text-muted border-b border-border pb-2">
-                            External Tracking
-                        </h3>
-                        <p className="text-secondary">Link this issue to Jira, GitHub, or Linear.</p>
-                        <button type="button" className="halo-btn halo-btn-sm halo-btn-secondary w-full justify-center">
-                            <ExternalLink size={13} /> Link Issue
-                        </button>
-                    </div>
-
-                    {/* Activity Stream & Comments */}
-                    <div className="halo-card p-5 space-y-4">
-                        <h3 className="text-xs font-semibold uppercase tracking-wider text-muted border-b border-border pb-2">
-                            Activity Stream
+                    {/* Activity Stream / Comments */}
+                    <div className="p-5 rounded-2xl bg-surface border border-border space-y-4">
+                        <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 border-b border-border pb-2">
+                            Activity Stream & Notes
                         </h3>
 
-                        <div className="space-y-3 text-xs">
+                        <div className="space-y-2.5 text-xs">
                             {comments.map((c) => (
-                                <div key={c.id} className="p-2.5 rounded-lg bg-surface-elevated border border-border space-y-1">
-                                    <p className="text-white leading-relaxed">{c.text}</p>
-                                    <p className="text-[10px] text-muted"><RelativeTime date={c.date} /></p>
+                                <div key={c.id} className="p-2.5 rounded-xl bg-[#080b11] border border-white/5 space-y-1">
+                                    <p className="text-zinc-200 leading-relaxed text-xs">{c.text}</p>
+                                    <p className="text-[10px] font-mono text-muted"><RelativeTime date={c.date} /></p>
                                 </div>
                             ))}
                         </div>
@@ -397,13 +420,13 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                         <form onSubmit={handleAddComment} className="space-y-2 pt-2 border-t border-border">
                             <input
                                 type="text"
-                                placeholder="Add a comment..."
+                                placeholder="Add team note..."
                                 value={commentText}
                                 onChange={(e) => setCommentText(e.target.value)}
-                                className="w-full px-3 py-2 rounded-lg bg-surface-elevated border border-border text-xs text-white focus:outline-none focus:border-accent"
+                                className="w-full px-3 py-2 rounded-xl bg-[#080b11] border border-white/10 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-accent"
                             />
-                            <button type="submit" className="halo-btn halo-btn-sm halo-btn-secondary w-full justify-center">
-                                <Send size={12} /> Post Comment
+                            <button type="submit" className="halo-btn halo-btn-xs halo-btn-secondary w-full justify-center">
+                                <Send size={11} /> Post Note
                             </button>
                         </form>
                     </div>

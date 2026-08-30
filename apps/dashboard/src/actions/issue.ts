@@ -54,7 +54,26 @@ export async function getIssues(
         where: {
             projectId,
         },
-
+        include: {
+            events: {
+                select: {
+                    id: true,
+                    timestamp: true,
+                    service: true,
+                    severity: true,
+                    sdkName: true,
+                    sdkVersion: true,
+                    environment: {
+                        select: {
+                            name: true,
+                        },
+                    },
+                },
+                orderBy: {
+                    timestamp: "asc",
+                },
+            },
+        },
         orderBy: {
             lastSeen: "desc",
         },

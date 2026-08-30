@@ -38,6 +38,7 @@ export default async function IssuePage({ params }: Props) {
             issue={{
                 id: issue.id,
                 title: issue.title,
+                fingerprint: issue.fingerprint,
                 status: issue.status,
                 severity: issue.severity,
                 eventCount: issue.eventCount,
@@ -58,6 +59,7 @@ export default async function IssuePage({ params }: Props) {
                     resource: e.resource,
                     release: e.release,
                     environment: e.environment,
+                    stack: e.stack,
                 })),
             }}
             replaySession={replaySession}
