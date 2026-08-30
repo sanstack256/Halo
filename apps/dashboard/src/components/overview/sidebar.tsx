@@ -180,7 +180,7 @@ const primaryNavigation: PrimarySection[] = [
             {
                 items: [
                     { label: "All Monitors", href: "/monitors", icon: BellRing },
-                    { label: "My Monitors", href: "/monitors?filter=mine", icon: User },
+                    { label: "My Monitors", href: "/monitors/mine", icon: User },
                 ],
             },
             {
@@ -299,6 +299,9 @@ function getActiveSection(pathname: string) {
 function isItemActive(pathname: string, href: string, fullPath?: string) {
     if (href.includes("?")) {
         return fullPath === href;
+    }
+    if (href === "/monitors/mine") {
+        return pathname === "/monitors/mine";
     }
     if (href === "/monitors") {
         return pathname === "/monitors" && (!fullPath || !fullPath.includes("?"));

@@ -11,6 +11,7 @@ import {
     ChevronLeft,
     ChevronRight,
     Clock,
+    Edit3,
     Filter,
     FolderKanban,
     Globe,
@@ -22,6 +23,7 @@ import {
     ShieldAlert,
     Smartphone,
     Trash2,
+    User,
     Volume2,
     VolumeX,
     X,
@@ -38,6 +40,9 @@ interface ProjectOption {
 }
 
 interface MonitorsClientProps {
+    title?: string;
+    description?: string;
+    isMineView?: boolean;
     initialMonitors: OrgMonitor[];
     projects: ProjectOption[];
     totalCount: number;
@@ -92,6 +97,9 @@ const TYPE_CONFIG: Record<
 };
 
 export function MonitorsClient({
+    title = "Monitors",
+    description = "Continuous anomaly detection, threshold alerts, and synthetic endpoint monitors.",
+    isMineView = false,
     initialMonitors,
     projects,
     totalCount,
@@ -111,7 +119,7 @@ export function MonitorsClient({
     const [selectedType, setSelectedType] = useState(initialTypeFilter || "ALL");
     const [selectedStatus, setSelectedStatus] = useState(initialStatusFilter || "ALL");
     const [sortBy, setSortBy] = useState<"lastEvaluatedAt" | "name" | "type" | "status">("lastEvaluatedAt");
-    const [onlyMine, setOnlyMine] = useState(Boolean(initialMineFilter));
+    const [onlyMine, setOnlyMine] = useState(Boolean(initialMineFilter || isMineView));
 
     // Client-side pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -166,14 +174,14 @@ export function MonitorsClient({
         selectedProject !== "ALL" ||
         selectedType !== "ALL" ||
         selectedStatus !== "ALL" ||
-        onlyMine ||
+        (!isMineView && onlyMine) ||
         searchQuery.trim().length > 0;
 
     const clearFilters = () => {
         setSelectedProject("ALL");
         setSelectedType("ALL");
         setSelectedStatus("ALL");
-        setOnlyMine(false);
+        if (!isMineView) setOnlyMine(false);
         setSearchQuery("");
         setCurrentPage(1);
     };
@@ -219,13 +227,13 @@ export function MonitorsClient({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="halo-page-header mb-0">
                     <div className="flex items-center gap-3">
-                        <h1 className="halo-page-title mb-0">Monitors</h1>
+                        <h1 className="halo-page-title mb-0">{title}</h1>
                         <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs font-mono font-medium text-zinc-300">
                             {filteredMonitors.length} {filteredMonitors.length === 1 ? "monitor" : "monitors"}
                         </span>
                     </div>
                     <p className="halo-page-description mt-1">
-                        Continuous anomaly detection, threshold alerts, and synthetic endpoint monitors.
+                        {description}
                     </p>
                 </div>
 
@@ -345,11 +353,17 @@ export function MonitorsClient({
                     </div>
                     <div>
                         <h3 className="text-sm font-bold text-white uppercase tracking-wider font-sans">
-                            {hasActiveFilters ? "No matching monitors found" : "No monitors configured yet"}
+                            {hasActiveFilters
+                                ? "No matching monitors found"
+                                : isMineView
+                                ? "No monitors created by you yet"
+                                : "No monitors configured yet"}
                         </h3>
                         <p className="text-xs text-zinc-400 font-sans max-w-md mx-auto mt-1">
                             {hasActiveFilters
                                 ? "No monitors match your current search and filter combination. Try adjusting or clearing filters."
+                                : isMineView
+                                ? "Monitors created by your account will appear here for dedicated ownership, quick edits, and alert management."
                                 : "Monitors continuously track error surges, latency thresholds, scheduled cron jobs, and endpoint uptime."}
                         </p>
                     </div>
@@ -379,7 +393,7 @@ export function MonitorsClient({
             ) : (
                 <div className="halo-table">
                     {/* Header */}
-                    <div className="halo-table-header grid-cols-[1fr_160px_130px_110px_140px_130px_120px]">
+                    <div className="halo-table-header grid-cols-[1fr_150px_120px_110px_130px_120px_130px]">
                         <div className="halo-table-col-label">Monitor Target</div>
                         <div className="halo-table-col-label">Type</div>
                         <div className="halo-table-col-label">Project</div>
@@ -393,19 +407,25 @@ export function MonitorsClient({
                     {paginatedMonitors.map((m) => {
                         const typeInfo = TYPE_CONFIG[m.type] || TYPE_CONFIG.ERROR;
                         const TypeIcon = typeInfo.icon;
+                        const isOwner = Boolean(currentUserId && m.creatorId === currentUserId);
 
                         return (
                             <div
                                 key={m.id}
                                 onClick={() => router.push(`/monitors/${m.id}`)}
-                                className="halo-table-row grid-cols-[1fr_160px_130px_110px_140px_130px_120px] cursor-pointer hover:bg-white/[0.03] transition-colors"
+                                className="halo-table-row grid-cols-[1fr_150px_120px_110px_130px_120px_130px] cursor-pointer hover:bg-white/[0.03] transition-colors"
                             >
-                                {/* Name and Description */}
+                                {/* Name and Description / Owner */}
                                 <div className="min-w-0 pr-2">
                                     <div className="flex items-center gap-2">
                                         <span className="font-semibold text-white text-xs truncate">
                                             {m.name}
                                         </span>
+                                        {isOwner && (
+                                            <span className="px-1.5 py-0.2 text-[9px] font-mono rounded bg-accent/10 border border-accent/20 text-accent">
+                                                Owner
+                                            </span>
+                                        )}
                                     </div>
                                     {m.description ? (
                                         <p className="text-[11px] text-zinc-400 font-sans truncate mt-0.5">
@@ -496,6 +516,15 @@ export function MonitorsClient({
 
                                 {/* Row Actions */}
                                 <div className="flex items-center justify-end gap-1.5">
+                                    <Link
+                                        href={`/monitors/${m.id}/edit`}
+                                        onClick={(e) => e.stopPropagation()}
+                                        title="Edit Monitor"
+                                        className="p-1.5 rounded-lg border border-white/5 bg-white/5 text-zinc-400 hover:text-white hover:border-white/20 transition-colors"
+                                    >
+                                        <Edit3 size={13} />
+                                    </Link>
+
                                     <button
                                         type="button"
                                         title={m.status === "MUTED" ? "Unmute Monitor" : "Mute Monitor"}
