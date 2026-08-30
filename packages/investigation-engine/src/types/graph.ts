@@ -87,6 +87,79 @@ export interface EvidenceGraph {
     edges: EvidenceEdge[];
 }
 
+export type EntityNodeType =
+    | "EVENT"
+    | "EXCEPTION"
+    | "STACK_FRAME"
+    | "FUNCTION"
+    | "SOURCE_FILE"
+    | "REQUEST"
+    | "TRACE"
+    | "SPAN"
+    | "LOG"
+    | "DATABASE_OPERATION"
+    | "DEPLOYMENT"
+    | "COMMIT"
+    | "RELEASE"
+    | "USER_SESSION"
+    | "SERVICE"
+    | "FEATURE_FLAG";
+
+export type EntityRelationshipType =
+    | "CAUSED"
+    | "CALLED"
+    | "PRECEDED"
+    | "FOLLOWED"
+    | "DEPLOYED_WITH"
+    | "CHANGED_BY"
+    | "DEPENDS_ON"
+    | "CORRELATED_WITH"
+    | "REPRODUCED_BY";
+
+export interface InvestigationEntityNode {
+    id: string;
+    type: EntityNodeType;
+    label: string;
+    subtitle?: string;
+    service?: string;
+    timestamp?: string | Date;
+    location?: string;
+    telemetryId?: string;
+    provenance: string;
+    status?: string | number;
+    metadata?: Record<string, unknown>;
+    isAnchor?: boolean;
+    isRootCauseCandidate?: boolean;
+}
+
+export interface InvestigationEntityEdge {
+    id: string;
+    from: string;
+    to: string;
+    relationship: EntityRelationshipType;
+    label: string;
+    classification: CausalClassification;
+    strength: number;
+    explanation: string;
+    supportingEvidence: string[];
+    correlationKeys: string[];
+    timestamps?: { from?: string | Date; to?: string | Date; deltaMs?: number };
+    provenance: string;
+}
+
+export interface ComprehensiveEvidenceGraph {
+    nodes: InvestigationEntityNode[];
+    edges: InvestigationEntityEdge[];
+    anchorNodeId?: string;
+    summary: {
+        totalNodes: number;
+        totalEdges: number;
+        observedCount: number;
+        inferredCount: number;
+        correlatedCount: number;
+    };
+}
+
 export interface CausalChainStep {
     evidenceId: string;
     service: string;

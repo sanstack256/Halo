@@ -1,13 +1,16 @@
-import type {
-    Investigation,
-    Hypothesis,
-    Evidence,
-    Finding,
-    Change,
-    Impact,
-    Recommendation,
-    CausalChain,
-    EvidenceEdge,
+import {
+    type Investigation,
+    type Hypothesis,
+    type Evidence,
+    type Finding,
+    type Change,
+    type Impact,
+    type Recommendation,
+    type CausalChain,
+    type EvidenceEdge,
+    type ComprehensiveEvidenceGraph,
+    type RegressionAnalysisResult,
+    buildComprehensiveEvidenceGraph,
 } from "@halo/investigation-engine";
 import {
     buildDashboardRecommendations,
@@ -254,6 +257,16 @@ export interface InterpretedInvestigation {
      * Raw Causal Evidence Graph Edges
      */
     rawEdges?: EvidenceEdge[];
+
+    /**
+     * Comprehensive Interactive Evidence Graph (Entities & Relationships)
+     */
+    comprehensiveGraph: ComprehensiveEvidenceGraph;
+
+    /**
+     * Automatic Regression Analysis & Git/Deployment Correlation
+     */
+    regressionAnalysis?: RegressionAnalysisResult | null;
 }
 
 /**
@@ -265,6 +278,7 @@ export function interpretInvestigation(
     replaySession?: any | null,
     anchorEventId?: string | null,
     resolvedSourceContext?: SourceContext | null,
+    regressionAnalysis?: RegressionAnalysisResult | null,
 ): InterpretedInvestigation {
     const {
         rootCause,
@@ -1052,7 +1066,36 @@ export function interpretInvestigation(
         (pageUrl ? ` on \`${pageUrl}\`` : ` in ${anchorError?.service ?? "the application"}`) +
         `. Halo correlated ${activeIncidentEvidence.length} telemetry point${activeIncidentEvidence.length !== 1 ? "s" : ""} to reconstruct the causal sequence.`;
 
-    // Verification and prevention are now carried inside the recommendations plan.
+    const primaryFrame = runtimeReconstruction?.failure?.primaryFailingFrame;
+    const failingLocation = primaryFrame ? {
+        filePath: primaryFrame.filePath,
+        lineNumber: primaryFrame.lineNumber,
+        functionName: primaryFrame.functionName,
+    } : undefined;
+
+    const parsedStackFrames = runtimeReconstruction?.failure?.frames?.map((f: any) => ({
+        functionName: f.functionName,
+        filePath: f.filePath,
+        lineNumber: f.lineNumber,
+        isApplication: f.isApplication,
+    })) || [];
+
+    const comprehensiveGraph = buildComprehensiveEvidenceGraph({
+        evidence: activeIncidentEvidence.length > 0 ? activeIncidentEvidence : evidence,
+        incidentAnchorId: anchorError?.id,
+        sessionId: incidentSessionId,
+        traceId: incidentTraceId,
+        requestId: incidentRequestId,
+        releaseVersion: anchorError?.release,
+        commitSha: anchorError?.commit,
+        failingLocation: failingLocation ? {
+            filePath: failingLocation.filePath,
+            lineNumber: failingLocation.lineNumber,
+            functionName: failingLocation.functionName,
+        } : undefined,
+        replaySessionId: replaySession?.id,
+        parsedStackFrames,
+    });
 
     return {
         headline,
@@ -1072,12 +1115,10 @@ export function interpretInvestigation(
             firstObservedUpstreamFailure,
             downstreamSymptom,
             contributingFactors,
-            // Overall qualitative confidence label (blended, for summary display)
             confidenceLabel,
             confidenceScore,
             reasoning: reasoningPoints,
             isClientDownstream: isDownstreamResponseHandler,
-            // Per-claim confidence — each claim is independently grounded in evidence
             claimConfidence,
         },
         causalStory,
@@ -1087,9 +1128,6 @@ export function interpretInvestigation(
             pageUrl: pageUrl ?? "",
             userAction: {
                 description: userActionDescription,
-                // Provenance is Observed only when a session replay event exists.
-                // Inferred when only page URL from event metadata is available.
-                // Unknown when neither replay nor URL is present.
                 provenance: userActionProvenance,
                 replayEvidence: replaySession
                     ? `Session replay was recorded for this occurrence.`
@@ -1119,8 +1157,8 @@ export function interpretInvestigation(
                 isDownstreamResponseHandler && requestEndpoint && requestStatus != null
                     ? `\`${parsedError.errorMessage}\` alone does not explain the incident. \`${reqLabel}\` returned HTTP ${requestStatus} first — the client exception is a consequence of the failed response body, not an independent bug.`
                     : parsedError.isTypeError && !failedRequestEvent
-                        ? `Observed ${parsedError.errorClass} occurred while accessing \`${parsedError.targetProperty ?? "property"}\` on an undefined object. The immediate failure site is established, but the upstream origin of why the value was undefined remains Unknown (no correlated upstream request or database telemetry was captured).`
-                        : `Available telemetry establishes: ${rootCauseStatement}`,
+                    ? `Observed ${parsedError.errorClass} occurred while accessing \`${parsedError.targetProperty ?? "property"}\` on an undefined object. The immediate failure site is established, but the upstream origin of why the value was undefined remains Unknown (no correlated upstream request or database telemetry was captured).`
+                    : `Available telemetry establishes: ${rootCauseStatement}`,
             treeDiagram,
             provenPoints: reasoningPoints,
         },
@@ -1138,6 +1176,8 @@ export function interpretInvestigation(
         runtimeReconstruction,
         causalChains: investigation.causalChains || [],
         rawEdges: investigation.graph?.edges || [],
+        comprehensiveGraph,
+        regressionAnalysis: regressionAnalysis ?? null,
     };
 }
 

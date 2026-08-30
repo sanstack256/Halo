@@ -49,6 +49,11 @@ import { ReplayStatus } from "@/components/replay/replay-status";
 import { interpretInvestigation, type InterpretedInvestigation } from "@/lib/investigation/interpreter";
 import { RuntimeReconstructionView } from "@/components/investigation/runtime-reconstruction-view";
 import { CausalChainView } from "@/components/investigation/causal-chain-view";
+import { EvidenceGraphView } from "@/components/investigation/evidence-graph-view";
+import { RegressionDetectionView } from "@/components/investigation/regression-detection-view";
+import { detectAutomaticRegression } from "@/lib/investigation/regression/regression-detector";
+import { InvestigationStickyNav } from "@/components/investigation/sticky-nav";
+import { RecommendationPlanView } from "@/components/investigation/recommendation-plan-view";
 import { resolveGitHubSourceContext } from "@/lib/investigation/runtime/github-source-provider";
 import { parseStackTrace } from "@/lib/investigation/runtime/stack-parser";
 import type { SourceContext } from "@/lib/investigation/runtime/types";
@@ -86,13 +91,14 @@ export default async function InvestigationPage({
             investigation.evidence[0];
 
         let resolvedSourceContext: SourceContext | undefined;
+        let primaryFailingFrame: any;
         if (anchorError) {
             const rawStack =
                 typeof anchorError.metadata?.stack === "string"
                     ? anchorError.metadata.stack
                     : anchorError.description || "";
             const frames = parseStackTrace(rawStack);
-            const primaryFailingFrame =
+            primaryFailingFrame =
                 frames.find((f) => f.isApplication && f.lineNumber) ||
                 frames.find((f) => f.lineNumber) ||
                 frames[0];
@@ -107,6 +113,20 @@ export default async function InvestigationPage({
             }
         }
 
+        // Run Automatic Regression Detection
+        const regressionAnalysis = await detectAutomaticRegression({
+            projectId: id,
+            issueId,
+            incidentFirstSeen: incidentAnchorTimestamp ? new Date(incidentAnchorTimestamp) : new Date(),
+            failingLocation: primaryFailingFrame ? {
+                filePath: primaryFailingFrame.filePath,
+                lineNumber: primaryFailingFrame.lineNumber,
+                functionName: primaryFailingFrame.functionName,
+            } : undefined,
+            releaseVersion: anchorError?.release,
+            commitSha: anchorError?.commit,
+        });
+
         return (
             <InvestigationView
                 investigation={investigation}
@@ -117,6 +137,7 @@ export default async function InvestigationPage({
                 historicalOccurrenceCount={historicalOccurrenceCount}
                 resolvedSourceContext={resolvedSourceContext}
                 anchorError={anchorError}
+                regressionAnalysis={regressionAnalysis}
             />
         );
     } catch (error) {
@@ -143,6 +164,7 @@ function InvestigationView({
     historicalOccurrenceCount,
     resolvedSourceContext,
     anchorError,
+    regressionAnalysis,
 }: {
     investigation: Investigation;
     resolvedReplay: ResolvedOccurrenceReplay;
@@ -152,6 +174,7 @@ function InvestigationView({
     historicalOccurrenceCount?: number;
     resolvedSourceContext?: SourceContext;
     anchorError?: any;
+    regressionAnalysis?: any;
 }) {
     const {
         status,
@@ -167,7 +190,13 @@ function InvestigationView({
     } = investigation;
 
     const replaySession = resolvedReplay?.replaySession;
-    const interpreted = interpretInvestigation(investigation, replaySession, incidentAnchorId, resolvedSourceContext);
+    const interpreted = interpretInvestigation(
+        investigation,
+        replaySession,
+        incidentAnchorId,
+        resolvedSourceContext,
+        regressionAnalysis
+    );
 
     const formattedAnchorTime = incidentAnchorTimestamp
         ? new Intl.DateTimeFormat("en-US", {
@@ -188,9 +217,15 @@ function InvestigationView({
 
     return (
         <div className="halo-investigation max-w-5xl mx-auto space-y-8 pb-16">
-            <div className="mb-4">
-                <BackButton fallbackHref="/overview" label="Back to Overview" />
+            <div className="mb-4 flex items-center justify-between">
+                <BackButton fallbackHref="/overview" label="Back to Issues" />
+                <div className="text-xs font-mono text-zinc-500">
+                    Issue: <span className="text-zinc-300 font-semibold">{rootCause?.title || "Active Incident"}</span>
+                </div>
             </div>
+
+            {/* Sticky Section Navigation */}
+            <InvestigationStickyNav />
 
             {/* Header */}
             <header className="halo-investigation-header space-y-3">
@@ -213,8 +248,60 @@ function InvestigationView({
                 </h1>
 
                 <p className="text-sm text-secondary">
-                    Reconstructed transaction cascade across browser client and backend APIs for this specific occurrence.
+                    Reconstructed transaction cascade across client interactions and backend APIs for this specific occurrence.
                 </p>
+
+                {/* Compact Horizontal Investigation Summary Bar */}
+                <div className="p-3.5 rounded-xl bg-surface border border-border grid grid-cols-2 sm:grid-cols-4 md:grid-cols-7 gap-3 text-xs font-mono">
+                    <div className="space-y-0.5">
+                        <span className="text-[10px] text-zinc-500 uppercase block font-sans">Error</span>
+                        <span className="text-white font-bold truncate block">{anchorError?.metadata?.errorType || (anchorError?.title?.includes(":") ? anchorError.title.split(":")[0] : "Application Error")}</span>
+                    </div>
+                    <div className="space-y-0.5">
+                        <span className="text-[10px] text-zinc-500 uppercase block font-sans">Service</span>
+                        <span className="text-accent truncate block">{anchorError?.service || "web-client"}</span>
+                    </div>
+                    <div className="space-y-0.5">
+                        <span className="text-[10px] text-zinc-500 uppercase block font-sans">Environment</span>
+                        <span className="text-zinc-300 truncate block">{anchorError?.environment || "production"}</span>
+                    </div>
+                    <div className="space-y-0.5">
+                        <span className="text-[10px] text-zinc-500 uppercase block font-sans">First Seen</span>
+                        <span className="text-zinc-300 truncate block">{formattedAnchorTime?.split(",")[0] || "Just now"}</span>
+                    </div>
+                    <div className="space-y-0.5">
+                        <span className="text-[10px] text-zinc-500 uppercase block font-sans">Occurrences</span>
+                        <span className="text-zinc-300 font-semibold block">{historicalOccurrenceCount ? historicalOccurrenceCount + 1 : 1}</span>
+                    </div>
+                    <div className="space-y-0.5">
+                        <span className="text-[10px] text-zinc-500 uppercase block font-sans">Investigation Confidence</span>
+                        <span className="text-emerald-400 font-bold block">{interpreted.rootCauseSummary.confidenceLabel}</span>
+                    </div>
+                    <div className="space-y-0.5">
+                        <span className="text-[10px] text-zinc-500 uppercase block font-sans">Root Cause Status</span>
+                        <span className="text-zinc-200 truncate block">{interpreted.rootCauseSummary.isClientDownstream ? "Downstream Symptom" : interpreted.rootCauseSummary.isExactRootCauseKnown ? "Established" : "Unknown"}</span>
+                    </div>
+                </div>
+
+                {/* Core Four Questions Briefing Block */}
+                <div className="p-4 rounded-xl bg-[#080b11] border border-white/10 grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-4 text-xs">
+                    <div className="space-y-1 border-b sm:border-b-0 sm:border-r border-white/10 pb-2 sm:pb-0 sm:pr-3">
+                        <span className="text-[10px] uppercase font-mono font-bold text-red-400 block">1. What Failed?</span>
+                        <p className="text-zinc-200 font-medium truncate" title={interpreted.headline}>{interpreted.headline}</p>
+                    </div>
+                    <div className="space-y-1 border-b sm:border-b-0 sm:border-r border-white/10 pb-2 sm:pb-0 sm:pr-3">
+                        <span className="text-[10px] uppercase font-mono font-bold text-emerald-400 block">2. What Do We Know?</span>
+                        <p className="text-zinc-200 font-medium">{interpreted.evidenceIntegrity.confirmedFacts.length} verified facts observed</p>
+                    </div>
+                    <div className="space-y-1 border-b sm:border-b-0 md:border-r border-white/10 pb-2 sm:pb-0 sm:pr-3">
+                        <span className="text-[10px] uppercase font-mono font-bold text-amber-400 block">3. What is the Likely Cause?</span>
+                        <p className="text-zinc-200 font-medium truncate">{interpreted.rootCauseSummary.isClientDownstream ? "Upstream network failure" : interpreted.rootCauseSummary.rootCauseStatement}</p>
+                    </div>
+                    <div className="space-y-1">
+                        <span className="text-[10px] uppercase font-mono font-bold text-accent block">4. What Should I Do?</span>
+                        <p className="text-zinc-200 font-medium truncate" title={interpreted.recommendations.primary.immediateAction}>{interpreted.recommendations.primary.immediateAction}</p>
+                    </div>
+                </div>
 
                 {/* Strict Boundary Context Callout */}
                 {typeof historicalOccurrenceCount === "number" && historicalOccurrenceCount > 0 && (
@@ -230,7 +317,7 @@ function InvestigationView({
             </header>
 
             {/* A. INCIDENT SUMMARY */}
-            <section className="halo-card p-6 border-border space-y-4">
+            <section id="section-summary" className="halo-card p-6 border-border space-y-4 scroll-mt-24">
                 <div className="flex items-center justify-between border-b border-border pb-3">
                     <div className="flex items-center gap-2">
                         <ShieldAlert className="w-4 h-4 text-accent" />
@@ -239,7 +326,7 @@ function InvestigationView({
                         </h2>
                     </div>
                     <div className="flex items-center gap-2">
-                        <span className="text-xs text-muted font-mono">Confidence:</span>
+                        <span className="text-xs text-muted font-mono">Investigation confidence:</span>
                         <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                             {interpreted.rootCauseSummary.confidenceLabel}
                         </span>
@@ -281,7 +368,7 @@ function InvestigationView({
             </section>
 
             {/* B. EARLIEST OBSERVED FAILURE */}
-            <section className="halo-card p-6 border-border space-y-4">
+            <section id="section-earliest-failure" className="halo-card p-6 border-border space-y-4 scroll-mt-24">
                 <div className="flex items-center justify-between border-b border-border pb-3">
                     <div className="flex items-center gap-2">
                         <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
@@ -290,6 +377,7 @@ function InvestigationView({
                         </h2>
                     </div>
                     <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted font-mono">Relationship confidence:</span>
                         <span className="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                             {interpreted.rootCauseSummary.confidenceLabel}
                         </span>
@@ -323,14 +411,31 @@ function InvestigationView({
             </section>
 
             {/* C. CAUSAL CHAIN (INSPECTABLE) */}
-            <CausalChainView
-                causalChains={interpreted.causalChains}
-                hypotheses={investigation.hypotheses}
-                rawEdges={interpreted.rawEdges}
-            />
+            <div id="section-causal-chain" className="scroll-mt-24">
+                <CausalChainView
+                    causalChains={interpreted.causalChains}
+                    hypotheses={investigation.hypotheses}
+                    rawEdges={interpreted.rawEdges}
+                />
+            </div>
+
+            {/* C2. INTERACTIVE EVIDENCE GRAPH */}
+            <div id="section-evidence-graph" className="scroll-mt-24">
+                <EvidenceGraphView
+                    graph={interpreted.comprehensiveGraph}
+                />
+            </div>
+
+            {/* C3. AUTOMATIC REGRESSION DETECTION */}
+            <div id="section-regression" className="scroll-mt-24">
+                <RegressionDetectionView
+                    regression={interpreted.regressionAnalysis}
+                    projectId={projectId}
+                />
+            </div>
 
             {/* D. WHAT HAPPENED (CHRONOLOGICAL) */}
-            <section className="halo-card p-6 border-border space-y-5">
+            <section id="section-what-happened" className="halo-card p-6 border-border space-y-5 scroll-mt-24">
                 <div className="border-b border-border pb-3 flex items-center justify-between">
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
                         What happened
@@ -448,7 +553,7 @@ function InvestigationView({
             </section>
 
             {/* E. KNOWN VS UNKNOWN */}
-            <section className="halo-card p-6 border-border space-y-5">
+            <section id="section-known-unknown" className="halo-card p-6 border-border space-y-5 scroll-mt-24">
                 <div className="border-b border-border pb-3 flex items-center justify-between">
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
                         What is known vs unknown
@@ -499,7 +604,7 @@ function InvestigationView({
             </section>
 
             {/* F. EVIDENCE (EVALUATED EVIDENCE RECORDS) */}
-            <section className="halo-card p-6 border-border space-y-4 overflow-hidden">
+            <section id="section-evidence-records" className="halo-card p-6 border-border space-y-4 overflow-hidden scroll-mt-24">
                 <div className="border-b border-border pb-3 flex items-center justify-between">
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
                         Evaluated Evidence Records
@@ -564,7 +669,7 @@ function InvestigationView({
             </section>
 
             {/* G. SESSION REPLAY */}
-            <section className="halo-section space-y-3">
+            <section id="section-replay" className="halo-section space-y-3 scroll-mt-24">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                     <SectionHeading
                         title="User Session Replay"
@@ -606,11 +711,13 @@ function InvestigationView({
             </section>
 
             {/* H. RUNTIME FAILURE & STACK TRACE */}
-            <RuntimeReconstructionView reconstruction={interpreted.runtimeReconstruction} />
+            <div id="section-runtime-stack" className="scroll-mt-24">
+                <RuntimeReconstructionView reconstruction={interpreted.runtimeReconstruction} />
+            </div>
 
             {/* I. RELATED TELEMETRY */}
             {(relatedTraces.length > 0 || relatedLogs.length > 0 || relatedMetrics.length > 0 || relatedThirdParty.length > 0) && (
-                <section className="halo-card p-6 border-border space-y-4">
+                <section id="section-telemetry" className="halo-card p-6 border-border space-y-4 scroll-mt-24">
                     <div className="border-b border-border pb-3 flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             <Layers className="w-4 h-4 text-accent" />
@@ -677,284 +784,8 @@ function InvestigationView({
             )}
 
             {/* K. RECOMMENDATIONS */}
-            <RecommendationPlanSection plan={interpreted.recommendations} />
+            <RecommendationPlanView plan={interpreted.recommendations} />
         </div>
-    );
-}
-
-/* -------------------------------------------------------------------------- */
-/* Recommendation Engine UI Components                                        */
-/* -------------------------------------------------------------------------- */
-
-function RecommendationPlanSection({ plan }: { plan: InterpretedInvestigation["recommendations"] }) {
-    const { primary, secondary } = plan;
-
-    const getKindBadge = (kind: string) => {
-        switch (kind) {
-            case "exact-code-fix":
-                return { label: "Exact Code Fix", bg: "bg-blue-500/10", text: "text-blue-400", border: "border-blue-500/20" };
-            case "rollback":
-                return { label: "Deployment Rollback", bg: "bg-red-500/10", text: "text-red-400", border: "border-red-500/20" };
-            case "config-fix":
-                return { label: "Configuration Fix", bg: "bg-amber-500/10", text: "text-amber-400", border: "border-amber-500/20" };
-            case "operational-fix":
-                return { label: "Operational Remediation", bg: "bg-purple-500/10", text: "text-purple-400", border: "border-purple-500/20" };
-            case "dependency-fix":
-                return { label: "Dependency Remediation", bg: "bg-cyan-500/10", text: "text-cyan-400", border: "border-cyan-500/20" };
-            case "insufficient-evidence":
-                return { label: "Telemetry Required", bg: "bg-zinc-800", text: "text-zinc-400", border: "border-zinc-700" };
-            default:
-                return { label: "Targeted Investigation", bg: "bg-amber-500/10", text: "text-amber-400", border: "border-amber-500/20" };
-        }
-    };
-
-    const badge = getKindBadge(primary.kind);
-
-    return (
-        <section className="halo-card p-6 border-border space-y-6">
-            <div className="border-b border-border pb-3 flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                    <Zap className="w-4 h-4 text-accent" />
-                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
-                        What Halo recommends
-                    </h2>
-                </div>
-                <div className="flex items-center gap-2">
-                    <span className={`text-[11px] font-mono px-2 py-0.5 rounded ${badge.bg} ${badge.text} border ${badge.border} font-semibold`}>
-                        {badge.label}
-                    </span>
-                </div>
-            </div>
-
-            <div className="space-y-6">
-                {/* 1. Primary Action Box */}
-                <div className="p-5 rounded-xl bg-surface border border-accent/30 space-y-3 shadow-lg shadow-accent/5">
-                    <div className="flex items-center justify-between">
-                        <span className="text-[10px] font-mono uppercase tracking-wider text-accent font-bold">
-                            Immediate Resolution
-                        </span>
-                        {primary.confidence > 0 && (
-                            <span className="text-xs font-mono text-secondary">
-                                Confidence: {primary.confidence >= 0.85 || primary.confidence >= 85 ? "Very High" : primary.confidence >= 0.65 || primary.confidence >= 65 ? "High" : primary.confidence >= 0.4 || primary.confidence >= 40 ? "Medium" : "Low"}
-                            </span>
-                        )}
-                    </div>
-
-                    <p className="text-base font-bold text-white leading-snug">
-                        {primary.immediateAction}
-                    </p>
-
-                    <p className="text-xs text-secondary leading-relaxed border-t border-border/60 pt-2.5">
-                        {primary.rootCauseExplanation}
-                    </p>
-                </div>
-
-                {/* 2. Code Patch Diff (if available) */}
-                {primary.codePatch && (
-                    <div className="p-4 rounded-xl bg-surface border border-blue-500/20 space-y-3">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-blue-400">
-                                <Code2 size={15} />
-                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
-                                    Recommended Code Patch
-                                </h3>
-                            </div>
-                            <span className="text-[11px] font-mono text-zinc-400">
-                                {primary.codePatch.filePath}
-                                {primary.codePatch.lineRange ? `:${primary.codePatch.lineRange}` : ""}
-                            </span>
-                        </div>
-
-                        {primary.codePatch.functionOrComponent && (
-                            <div className="text-xs text-secondary font-mono">
-                                Component/Function: <code className="text-accent bg-surface-hover px-1.5 py-0.5 rounded">{primary.codePatch.functionOrComponent}()</code>
-                            </div>
-                        )}
-
-                        <div className="rounded-lg bg-[#080b11] border border-white/10 overflow-hidden text-xs font-mono">
-                            <div className="px-3 py-1.5 bg-zinc-900/80 border-b border-white/5 text-[11px] text-zinc-400 flex items-center justify-between">
-                                <span>Suggested Patch</span>
-                                <span className="text-[10px] text-zinc-400">Suggested change — not executed or validated</span>
-                            </div>
-                            <pre className="p-3 text-emerald-300 overflow-x-auto leading-relaxed whitespace-pre font-mono text-xs">
-                                <code>{primary.codePatch.after}</code>
-                            </pre>
-                        </div>
-
-                        <p className="text-xs text-secondary leading-relaxed">
-                            {primary.codePatch.explanation}
-                        </p>
-
-                        {primary.codePatch.sideEffects && (
-                            <div className="p-2.5 rounded bg-amber-500/5 border border-amber-500/20 text-xs text-amber-300 flex items-start gap-2">
-                                <Info size={14} className="shrink-0 mt-0.5 text-amber-400" />
-                                <span>{primary.codePatch.sideEffects}</span>
-                            </div>
-                        )}
-                    </div>
-                )}
-
-                {/* 3. Operational Steps (if present) */}
-                {primary.operationalSteps && primary.operationalSteps.length > 0 && (
-                    <div className="p-4 rounded-xl bg-surface border border-purple-500/20 space-y-3">
-                        <div className="flex items-center gap-2 text-purple-400">
-                            <Terminal size={15} />
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-white">
-                                Operational Action Steps
-                            </h3>
-                        </div>
-                        <ol className="space-y-2 pt-1 text-xs text-zinc-300">
-                            {primary.operationalSteps.map((step, idx) => (
-                                <li key={idx} className="flex items-start gap-2.5 p-2 rounded bg-[#080b11] border border-white/5">
-                                    <span className="w-4 h-4 rounded-full bg-purple-500/10 text-purple-400 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">
-                                        {idx + 1}
-                                    </span>
-                                    <span className="leading-relaxed">{step}</span>
-                                </li>
-                            ))}
-                        </ol>
-                    </div>
-                )}
-
-                {/* 4. Evidence Traceability Chain */}
-                {primary.evidenceChain && primary.evidenceChain.length > 0 && (
-                    <div className="p-4 rounded-xl bg-surface/60 border border-border/80 space-y-2.5">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-zinc-400">
-                                <Layers size={14} />
-                                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-300">
-                                    Evidence Provenance
-                                </h3>
-                            </div>
-                            <span className="text-[10px] font-mono text-muted">
-                                {primary.evidenceChain.length} supporting signals
-                            </span>
-                        </div>
-                        <div className="divide-y divide-border/60 rounded-lg bg-[#080b11] border border-white/5 overflow-hidden">
-                            {primary.evidenceChain.map((link, idx) => (
-                                <div key={idx} className="p-2.5 flex items-center justify-between gap-3 text-xs font-mono">
-                                    <div className="flex items-center gap-2 min-w-0">
-                                        <span className="text-[10px] px-1.5 py-0.5 rounded bg-surface border border-border text-zinc-400 shrink-0">
-                                            {link.role}
-                                        </span>
-                                        <span className="text-zinc-300 truncate text-[11px]">
-                                            {link.excerpt}
-                                        </span>
-                                    </div>
-                                    <span className="text-[10px] text-muted shrink-0">
-                                        {link.evidenceId.slice(0, 10)}…
-                                    </span>
-                                </div>
-                            ))}
-                        </div>
-                    </div>
-                )}
-
-                {/* 5. Insufficient Evidence Diagnostics (if telemetry is missing) */}
-                {primary.insufficientEvidence && (
-                    <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-3">
-                        <div className="flex items-center gap-2 text-amber-400">
-                            <HelpCircle size={15} />
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-amber-300">
-                                Telemetry Gaps & Unknowns
-                            </h3>
-                        </div>
-
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-xs">
-                            <div className="p-3 rounded-lg bg-[#080b11] border border-white/5 space-y-1.5">
-                                <span className="text-[10px] font-mono uppercase text-emerald-400 font-semibold">
-                                    Observed evidence
-                                </span>
-                                <ul className="space-y-1 text-zinc-300">
-                                    {primary.insufficientEvidence.whatHaloKnows.map((k, i) => (
-                                        <li key={i} className="flex items-start gap-1.5">
-                                            <span className="text-emerald-400 font-bold">&bull;</span>
-                                            <span>{k}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-
-                            <div className="p-3 rounded-lg bg-[#080b11] border border-white/5 space-y-1.5">
-                                <span className="text-[10px] font-mono uppercase text-amber-400 font-semibold">
-                                    Missing Telemetry
-                                </span>
-                                <ul className="space-y-1 text-zinc-300">
-                                    {primary.insufficientEvidence.whatIsMissing.map((m, i) => (
-                                        <li key={i} className="flex items-start gap-1.5">
-                                            <span className="text-amber-400 font-bold">&bull;</span>
-                                            <span>{m}</span>
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        </div>
-
-                        <p className="text-[11px] text-amber-300/80 italic border-t border-amber-500/20 pt-2">
-                            <strong>Required:</strong> {primary.insufficientEvidence.requiredEvidence} &mdash; {primary.insufficientEvidence.why}
-                        </p>
-                    </div>
-                )}
-
-                {/* 6. Verification Steps */}
-                <div className="p-4 rounded-xl bg-surface border border-emerald-500/20 space-y-3">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2 text-emerald-400">
-                            <CheckCircle2 size={15} />
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-white">
-                                Verification Procedure
-                            </h3>
-                        </div>
-                        <span className="text-[10px] font-mono text-emerald-400">
-                            Expected: {primary.verification.expectedOutcome}
-                        </span>
-                    </div>
-
-                    <ol className="space-y-1.5 pt-1 text-xs text-zinc-300">
-                        {primary.verification.steps.map((step, idx) => (
-                            <li key={idx} className="flex items-start gap-2">
-                                <span className="w-4 h-4 rounded-full bg-emerald-500/10 text-emerald-400 font-bold flex items-center justify-center text-[10px] shrink-0 mt-0.5">
-                                    {idx + 1}
-                                </span>
-                                <span>{step}</span>
-                            </li>
-                        ))}
-                    </ol>
-
-                    {primary.verification.regressionTest && (
-                        <div className="p-2.5 rounded bg-[#080b11] border border-emerald-500/20 text-xs text-zinc-300 font-mono flex items-start gap-2">
-                            <span className="text-emerald-400 font-bold text-[10px] uppercase">Test:</span>
-                            <span className="text-[11px]">{primary.verification.regressionTest}</span>
-                        </div>
-                    )}
-                </div>
-
-                {/* 7. Prevention Guardrails */}
-                {primary.prevention && primary.prevention.items.length > 0 && (
-                    <div className="p-4 rounded-xl bg-surface border border-border space-y-3">
-                        <div className="flex items-center gap-2 text-zinc-400">
-                            <ShieldAlert size={15} />
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-white">
-                                Prevention Guardrails
-                            </h3>
-                        </div>
-                        <ul className="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs text-secondary">
-                            {primary.prevention.items.map((item, idx) => (
-                                <li key={idx} className="p-2.5 rounded bg-[#080b11] border border-white/5 flex items-start gap-2">
-                                    <span className="text-accent font-bold">&bull;</span>
-                                    <span>{item}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        {primary.prevention.monitoring && (
-                            <p className="text-[11px] font-mono text-accent pt-1">
-                                Alert Rule: {primary.prevention.monitoring}
-                            </p>
-                        )}
-                    </div>
-                )}
-            </div>
-        </section>
     );
 }
 

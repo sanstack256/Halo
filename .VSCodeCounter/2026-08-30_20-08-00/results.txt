@@ -1,0 +1,582 @@
+Date : 2026-08-30 20:08:00
+Directory : /Users/nssanjeev/Development/Halo
+Total : 372 files,  68476 codes, 13560 comments, 10804 blanks, all 92840 lines
+
+Languages
++--------------------+------------+------------+------------+------------+------------+
+| language           | files      | code       | comment    | blank      | total      |
++--------------------+------------+------------+------------+------------+------------+
+| TypeScript         |        182 |     43,583 |     12,985 |      6,524 |     63,092 |
+| TypeScript JSX     |        146 |     13,624 |        283 |      1,861 |     15,768 |
+| YAML               |          2 |      6,460 |          0 |      1,658 |      8,118 |
+| JavaScript         |          6 |      2,024 |         58 |         27 |      2,109 |
+| PostCSS            |          1 |      1,922 |        126 |        495 |      2,543 |
+| Markdown           |          3 |        298 |          0 |        123 |        421 |
+| MS SQL             |         15 |        263 |        108 |        102 |        473 |
+| JSON               |          8 |        216 |          0 |          5 |        221 |
+| JSON with Comments |          4 |         81 |          0 |          9 |         90 |
+| XML                |          5 |          5 |          0 |          0 |          5 |
++--------------------+------------+------------+------------+------------+------------+
+
+Directories
++---------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                                      | files      | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                                         |        372 |     68,476 |     13,560 |     10,804 |     92,840 |
+| . (Files)                                                                                                                 |          6 |      6,501 |          2 |      1,662 |      8,165 |
+| apps                                                                                                                      |        227 |     41,184 |     11,864 |      5,886 |     58,934 |
+| apps/dashboard                                                                                                            |        227 |     41,184 |     11,864 |      5,886 |     58,934 |
+| apps/dashboard (Files)                                                                                                    |          8 |        156 |          3 |         26 |        185 |
+| apps/dashboard/public                                                                                                     |          5 |          5 |          0 |          0 |          5 |
+| apps/dashboard/src                                                                                                        |        214 |     41,023 |     11,861 |      5,860 |     58,744 |
+| apps/dashboard/src/actions                                                                                                |         13 |      2,802 |        328 |        519 |      3,649 |
+| apps/dashboard/src/app                                                                                                    |        105 |      9,362 |        277 |      1,508 |     11,147 |
+| apps/dashboard/src/app (Files)                                                                                            |          3 |      1,955 |        126 |        501 |      2,582 |
+| apps/dashboard/src/app/(auth)                                                                                             |          3 |         60 |          0 |         10 |         70 |
+| apps/dashboard/src/app/(auth) (Files)                                                                                     |          1 |         14 |          0 |          4 |         18 |
+| apps/dashboard/src/app/(auth)/sign-in                                                                                     |          1 |         23 |          0 |          3 |         26 |
+| apps/dashboard/src/app/(auth)/sign-up                                                                                     |          1 |         23 |          0 |          3 |         26 |
+| apps/dashboard/src/app/(dashboard)                                                                                        |         90 |      6,633 |        129 |        898 |      7,660 |
+| apps/dashboard/src/app/(dashboard) (Files)                                                                                |          2 |         72 |          2 |         13 |         87 |
+| apps/dashboard/src/app/(dashboard)/dashboards                                                                             |          5 |        318 |          8 |         38 |        364 |
+| apps/dashboard/src/app/(dashboard)/dashboards (Files)                                                                     |          2 |         52 |          0 |          8 |         60 |
+| apps/dashboard/src/app/(dashboard)/dashboards/services                                                                    |          1 |         42 |          0 |          5 |         47 |
+| apps/dashboard/src/app/(dashboard)/dashboards/slo                                                                         |          1 |         94 |          5 |         12 |        111 |
+| apps/dashboard/src/app/(dashboard)/dashboards/system                                                                      |          1 |        130 |          3 |         13 |        146 |
+| apps/dashboard/src/app/(dashboard)/explore                                                                                |         10 |        473 |          5 |         57 |        535 |
+| apps/dashboard/src/app/(dashboard)/explore (Files)                                                                        |          3 |        219 |          5 |         25 |        249 |
+| apps/dashboard/src/app/(dashboard)/explore/database                                                                       |          1 |         18 |          0 |          3 |         21 |
+| apps/dashboard/src/app/(dashboard)/explore/errors                                                                         |          1 |         48 |          0 |          5 |         53 |
+| apps/dashboard/src/app/(dashboard)/explore/infrastructure                                                                 |          1 |         18 |          0 |          3 |         21 |
+| apps/dashboard/src/app/(dashboard)/explore/logs                                                                           |          1 |         48 |          0 |          5 |         53 |
+| apps/dashboard/src/app/(dashboard)/explore/metrics                                                                        |          1 |         30 |          0 |          6 |         36 |
+| apps/dashboard/src/app/(dashboard)/explore/requests                                                                       |          1 |         46 |          0 |          5 |         51 |
+| apps/dashboard/src/app/(dashboard)/explore/traces                                                                         |          1 |         46 |          0 |          5 |         51 |
+| apps/dashboard/src/app/(dashboard)/incidents                                                                              |          1 |          7 |          0 |          0 |          7 |
+| apps/dashboard/src/app/(dashboard)/investigate                                                                            |          7 |        362 |          1 |         51 |        414 |
+| apps/dashboard/src/app/(dashboard)/investigate (Files)                                                                    |          2 |         87 |          1 |         12 |        100 |
+| apps/dashboard/src/app/(dashboard)/investigate/active                                                                     |          1 |         62 |          0 |          9 |         71 |
+| apps/dashboard/src/app/(dashboard)/investigate/mine                                                                       |          1 |         64 |          0 |          9 |         73 |
+| apps/dashboard/src/app/(dashboard)/investigate/recent                                                                     |          1 |         61 |          0 |          9 |         70 |
+| apps/dashboard/src/app/(dashboard)/investigate/saved                                                                      |          1 |         24 |          0 |          3 |         27 |
+| apps/dashboard/src/app/(dashboard)/investigate/team                                                                       |          1 |         64 |          0 |          9 |         73 |
+| apps/dashboard/src/app/(dashboard)/issues                                                                                 |          9 |        531 |          5 |         55 |        591 |
+| apps/dashboard/src/app/(dashboard)/issues (Files)                                                                         |          3 |        201 |          5 |         25 |        231 |
+| apps/dashboard/src/app/(dashboard)/issues/errors                                                                          |          1 |         57 |          0 |          5 |         62 |
+| apps/dashboard/src/app/(dashboard)/issues/ignored                                                                         |          1 |         51 |          0 |          5 |         56 |
+| apps/dashboard/src/app/(dashboard)/issues/recurring                                                                       |          1 |         57 |          0 |          5 |         62 |
+| apps/dashboard/src/app/(dashboard)/issues/regressions                                                                     |          1 |         57 |          0 |          5 |         62 |
+| apps/dashboard/src/app/(dashboard)/issues/resolved                                                                        |          1 |         51 |          0 |          5 |         56 |
+| apps/dashboard/src/app/(dashboard)/issues/warnings                                                                        |          1 |         57 |          0 |          5 |         62 |
+| apps/dashboard/src/app/(dashboard)/monitors                                                                               |          5 |        213 |          0 |         26 |        239 |
+| apps/dashboard/src/app/(dashboard)/monitors (Files)                                                                       |          2 |         84 |          0 |         13 |         97 |
+| apps/dashboard/src/app/(dashboard)/monitors/firing                                                                        |          1 |         61 |          0 |          5 |         66 |
+| apps/dashboard/src/app/(dashboard)/monitors/healthy                                                                       |          1 |         52 |          0 |          5 |         57 |
+| apps/dashboard/src/app/(dashboard)/monitors/slos                                                                          |          1 |         16 |          0 |          3 |         19 |
+| apps/dashboard/src/app/(dashboard)/overview                                                                               |          1 |        328 |          7 |         35 |        370 |
+| apps/dashboard/src/app/(dashboard)/projects                                                                               |         14 |      2,524 |         78 |        393 |      2,995 |
+| apps/dashboard/src/app/(dashboard)/projects (Files)                                                                       |          1 |         51 |          1 |         28 |         80 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]                                                                          |         13 |      2,473 |         77 |        365 |      2,915 |
+| apps/dashboard/src/app/(dashboard)/projects/[id] (Files)                                                                  |          2 |        179 |          8 |         47 |        234 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/api-keys                                                                 |          1 |         12 |          0 |          1 |         13 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/events                                                                   |          2 |        539 |         17 |        124 |        680 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/events (Files)                                                           |          1 |        204 |          5 |         41 |        250 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/events/[eventId]                                                         |          1 |        335 |         12 |         83 |        430 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/investigations                                                           |          2 |        957 |         40 |         83 |      1,080 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/investigations/new                                                       |          2 |        957 |         40 |         83 |      1,080 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/issues                                                                   |          2 |        135 |          1 |         40 |        176 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/issues (Files)                                                           |          1 |         75 |          1 |         33 |        109 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/issues/[issueId]                                                         |          1 |         60 |          0 |          7 |         67 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/sdk                                                                      |          2 |        257 |          8 |         37 |        302 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/settings                                                                 |          2 |        394 |          3 |         33 |        430 |
+| apps/dashboard/src/app/(dashboard)/sdk                                                                                    |          1 |         12 |          0 |          3 |         15 |
+| apps/dashboard/src/app/(dashboard)/services                                                                               |          6 |        257 |          0 |         27 |        284 |
+| apps/dashboard/src/app/(dashboard)/services (Files)                                                                       |          2 |         68 |          0 |          7 |         75 |
+| apps/dashboard/src/app/(dashboard)/services/critical                                                                      |          1 |         48 |          0 |          5 |         53 |
+| apps/dashboard/src/app/(dashboard)/services/degraded                                                                      |          1 |         48 |          0 |          5 |         53 |
+| apps/dashboard/src/app/(dashboard)/services/dependencies                                                                  |          1 |         45 |          0 |          5 |         50 |
+| apps/dashboard/src/app/(dashboard)/services/healthy                                                                       |          1 |         48 |          0 |          5 |         53 |
+| apps/dashboard/src/app/(dashboard)/settings                                                                               |         29 |      1,536 |         23 |        200 |      1,759 |
+| apps/dashboard/src/app/(dashboard)/settings (Files)                                                                       |          2 |        227 |          7 |         23 |        257 |
+| apps/dashboard/src/app/(dashboard)/settings/alerts                                                                        |          1 |         44 |          0 |          5 |         49 |
+| apps/dashboard/src/app/(dashboard)/settings/audit                                                                         |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/autofix                                                                       |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/billing                                                                       |          1 |         89 |          2 |          8 |         99 |
+| apps/dashboard/src/app/(dashboard)/settings/close                                                                         |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/custom                                                                        |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/emails                                                                        |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/engine                                                                        |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/filters                                                                       |          1 |         38 |          0 |          5 |         43 |
+| apps/dashboard/src/app/(dashboard)/settings/integrations                                                                  |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/keys                                                                          |          2 |        169 |          3 |         21 |        193 |
+| apps/dashboard/src/app/(dashboard)/settings/legal                                                                         |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/mcp                                                                           |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/members                                                                       |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/oauth                                                                         |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/organization                                                                  |          2 |        186 |          4 |         22 |        212 |
+| apps/dashboard/src/app/(dashboard)/settings/privacy                                                                       |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/project                                                                       |          2 |        337 |          6 |         35 |        378 |
+| apps/dashboard/src/app/(dashboard)/settings/repos                                                                         |          1 |         37 |          0 |          8 |         45 |
+| apps/dashboard/src/app/(dashboard)/settings/security                                                                      |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/teams                                                                         |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/tokens                                                                        |          2 |         42 |          0 |          8 |         50 |
+| apps/dashboard/src/app/(dashboard)/settings/tokens/org                                                                    |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/tokens/personal                                                               |          1 |         21 |          0 |          4 |         25 |
+| apps/dashboard/src/app/(dashboard)/settings/usage                                                                         |          1 |         73 |          1 |          9 |         83 |
+| apps/dashboard/src/app/api                                                                                                |          4 |        312 |         10 |         47 |        369 |
+| apps/dashboard/src/app/api/auth                                                                                           |          1 |          3 |          0 |          2 |          5 |
+| apps/dashboard/src/app/api/auth/[...all]                                                                                  |          1 |          3 |          0 |          2 |          5 |
+| apps/dashboard/src/app/api/ingest                                                                                         |          2 |        303 |         10 |         43 |        356 |
+| apps/dashboard/src/app/api/ingest/events                                                                                  |          1 |        106 |          2 |         21 |        129 |
+| apps/dashboard/src/app/api/ingest/replay                                                                                  |          1 |        197 |          8 |         22 |        227 |
+| apps/dashboard/src/app/api/test-key                                                                                       |          1 |          6 |          0 |          2 |          8 |
+| apps/dashboard/src/app/forgot-password                                                                                    |          1 |         20 |          0 |          4 |         24 |
+| apps/dashboard/src/app/pricing                                                                                            |          2 |        241 |         12 |         24 |        277 |
+| apps/dashboard/src/app/reset-password                                                                                     |          2 |        141 |          0 |         24 |        165 |
+| apps/dashboard/src/components                                                                                             |         45 |      6,496 |        142 |        894 |      7,532 |
+| apps/dashboard/src/components/auth                                                                                        |          7 |        593 |          3 |         78 |        674 |
+| apps/dashboard/src/components/events                                                                                      |          4 |        179 |          0 |         33 |        212 |
+| apps/dashboard/src/components/investigation                                                                               |          2 |      1,134 |         28 |         66 |      1,228 |
+| apps/dashboard/src/components/issues                                                                                      |          2 |        442 |         21 |         54 |        517 |
+| apps/dashboard/src/components/overview                                                                                    |          3 |        708 |          8 |         57 |        773 |
+| apps/dashboard/src/components/projects                                                                                    |         11 |      1,724 |         21 |        390 |      2,135 |
+| apps/dashboard/src/components/replay                                                                                      |          3 |        899 |         36 |        100 |      1,035 |
+| apps/dashboard/src/components/ui                                                                                          |         13 |        817 |         25 |        116 |        958 |
+| apps/dashboard/src/generated                                                                                              |         22 |     18,041 |     10,141 |      2,249 |     30,431 |
+| apps/dashboard/src/generated/prisma                                                                                       |         22 |     18,041 |     10,141 |      2,249 |     30,431 |
+| apps/dashboard/src/generated/prisma (Files)                                                                               |          5 |        744 |        177 |         95 |      1,016 |
+| apps/dashboard/src/generated/prisma/internal                                                                              |          3 |      2,006 |        540 |        348 |      2,894 |
+| apps/dashboard/src/generated/prisma/models                                                                                |         14 |     15,291 |      9,424 |      1,806 |     26,521 |
+| apps/dashboard/src/lib                                                                                                    |         28 |      4,293 |        973 |        682 |      5,948 |
+| apps/dashboard/src/lib (Files)                                                                                            |         12 |        637 |         92 |         92 |        821 |
+| apps/dashboard/src/lib/investigation                                                                                      |         16 |      3,656 |        881 |        590 |      5,127 |
+| apps/dashboard/src/lib/investigation (Files)                                                                              |          5 |      1,878 |        473 |        289 |      2,640 |
+| apps/dashboard/src/lib/investigation/runtime                                                                              |         11 |      1,778 |        408 |        301 |      2,487 |
+| apps/dashboard/src/schemas                                                                                                |          1 |         29 |          0 |          8 |         37 |
+| packages                                                                                                                  |        124 |     20,528 |      1,586 |      3,154 |     25,268 |
+| packages/config                                                                                                           |          1 |          5 |          0 |          2 |          7 |
+| packages/investigation-engine                                                                                             |         93 |     16,139 |      1,044 |      2,622 |     19,805 |
+| packages/investigation-engine (Files)                                                                                     |          2 |         38 |          0 |          7 |         45 |
+| packages/investigation-engine/src                                                                                         |         83 |     11,605 |      1,020 |      2,030 |     14,655 |
+| packages/investigation-engine/src (Files)                                                                                 |          2 |        241 |          1 |         42 |        284 |
+| packages/investigation-engine/src/detection                                                                               |          8 |        523 |         10 |         79 |        612 |
+| packages/investigation-engine/src/detection/deterministic                                                                 |          2 |        196 |          2 |         16 |        214 |
+| packages/investigation-engine/src/detection/statistical                                                                   |          4 |        211 |          5 |         40 |        256 |
+| packages/investigation-engine/src/detection/temporal                                                                      |          2 |        116 |          3 |         23 |        142 |
+| packages/investigation-engine/src/graph                                                                                   |          2 |        164 |          2 |         37 |        203 |
+| packages/investigation-engine/src/hypotheses                                                                              |          9 |        956 |         22 |        127 |      1,105 |
+| packages/investigation-engine/src/normalization                                                                           |          3 |        290 |         36 |         52 |        378 |
+| packages/investigation-engine/src/novelty                                                                                 |          2 |        142 |         17 |         33 |        192 |
+| packages/investigation-engine/src/pipeline                                                                                |         14 |      6,469 |        650 |        949 |      8,068 |
+| packages/investigation-engine/src/rules                                                                                   |         18 |      1,392 |         47 |        356 |      1,795 |
+| packages/investigation-engine/src/rules (Files)                                                                           |         15 |      1,382 |         47 |        351 |      1,780 |
+| packages/investigation-engine/src/rules/scoring                                                                           |          3 |         10 |          0 |          5 |         15 |
+| packages/investigation-engine/src/runtime                                                                                 |          6 |        805 |        141 |        140 |      1,086 |
+| packages/investigation-engine/src/suppression                                                                             |          2 |         63 |          4 |         17 |         84 |
+| packages/investigation-engine/src/types                                                                                   |         17 |        560 |         90 |        198 |        848 |
+| packages/investigation-engine/test                                                                                        |          8 |      4,496 |         24 |        585 |      5,105 |
+| packages/replay                                                                                                           |         13 |      1,334 |        218 |         92 |      1,644 |
+| packages/replay (Files)                                                                                                   |          3 |         67 |          0 |          4 |         71 |
+| packages/replay/dist                                                                                                      |          4 |        847 |        140 |         18 |      1,005 |
+| packages/replay/src                                                                                                       |          6 |        420 |         78 |         70 |        568 |
+| packages/sdk                                                                                                              |         17 |      3,050 |        324 |        438 |      3,812 |
+| packages/sdk (Files)                                                                                                      |          4 |        341 |          0 |        108 |        449 |
+| packages/sdk/dist                                                                                                         |          4 |      1,479 |        112 |         18 |      1,609 |
+| packages/sdk/src                                                                                                          |          9 |      1,230 |        212 |        312 |      1,754 |
+| prisma                                                                                                                    |         15 |        263 |        108 |        102 |        473 |
+| prisma/migrations                                                                                                         |         15 |        263 |        108 |        102 |        473 |
+| prisma/migrations/20260803080531_initial                                                                                  |          1 |        113 |         28 |         37 |        178 |
+| prisma/migrations/20260803085017_add_project_description                                                                  |          1 |          1 |          1 |          1 |          3 |
+| prisma/migrations/20260804094716_add_api_key_prefix                                                                       |          1 |          1 |          7 |          1 |          9 |
+| prisma/migrations/20260804154403_improve_event_model                                                                      |          1 |          6 |          8 |          2 |         16 |
+| prisma/migrations/20260805074545_add_issue_model                                                                          |          1 |         18 |          6 |          7 |         31 |
+| prisma/migrations/20260805115639_improve_issue_model                                                                      |          1 |          4 |          8 |          2 |         14 |
+| prisma/migrations/20260807105620_add_event_context                                                                        |          1 |          5 |          2 |          2 |          9 |
+| prisma/migrations/20260808081855_add_event_user                                                                           |          1 |          1 |          1 |          1 |          3 |
+| prisma/migrations/20260811083815_add_project_telemetry                                                                    |          1 |         30 |         13 |         14 |         57 |
+| prisma/migrations/20260811101729_add_releases                                                                             |          1 |         22 |         10 |         11 |         43 |
+| prisma/migrations/20260811133328_add_http_correlation                                                                     |          1 |          2 |          1 |          1 |          4 |
+| prisma/migrations/20260811134655_add_http_correlation                                                                     |          1 |          2 |          2 |          2 |          6 |
+| prisma/migrations/20260822165541_add_org_plan                                                                             |          1 |          2 |          2 |          2 |          6 |
+| prisma/migrations/20260822175221_add_session_replay                                                                       |          1 |         51 |         15 |         17 |         83 |
+| prisma/migrations/20260830_add_github_integration_to_project                                                              |          1 |          5 |          4 |          2 |         11 |
++---------------------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++---------------------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| filename                                                                                                                  | language           | code       | comment    | blank      | total      |
++---------------------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
+| /Users/nssanjeev/Development/Halo/README.md                                                                               | Markdown           |          3 |          0 |          2 |          5 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/README.md                                                                | Markdown           |         23 |          0 |         14 |         37 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/components.json                                                          | JSON               |         25 |          0 |          1 |         26 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/eslint.config.mjs                                                        | JavaScript         |         14 |          2 |          3 |         19 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/layout.tsx                                                               | TypeScript JSX     |          0 |          0 |          1 |          1 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/next.config.ts                                                           | TypeScript         |          4 |          1 |          3 |          8 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/package.json                                                             | JSON               |         50 |          0 |          1 |         51 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/postcss.config.mjs                                                       | JavaScript         |          6 |          0 |          2 |          8 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/public/file.svg                                                          | XML                |          1 |          0 |          0 |          1 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/public/globe.svg                                                         | XML                |          1 |          0 |          0 |          1 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/public/next.svg                                                          | XML                |          1 |          0 |          0 |          1 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/public/vercel.svg                                                        | XML                |          1 |          0 |          0 |          1 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/public/window.svg                                                        | XML                |          1 |          0 |          0 |          1 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/api-key.ts                                                   | TypeScript         |         72 |          0 |         23 |         95 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/event.ts                                                     | TypeScript         |        295 |         54 |         86 |        435 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/explore.ts                                                   | TypeScript         |        107 |          0 |         26 |        133 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/issue.ts                                                     | TypeScript         |        589 |        188 |         97 |        874 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/overview.ts                                                  | TypeScript         |        376 |         14 |         46 |        436 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/project-github.ts                                            | TypeScript         |        280 |         25 |         51 |        356 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/project-metrics.ts                                           | TypeScript         |        258 |         26 |         49 |        333 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/project.ts                                                   | TypeScript         |        157 |          0 |         38 |        195 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/release.ts                                                   | TypeScript         |         89 |          0 |         17 |        106 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/replay.ts                                                    | TypeScript         |        310 |         15 |         37 |        362 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/search.ts                                                    | TypeScript         |         95 |          6 |         16 |        117 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/services.ts                                                  | TypeScript         |        101 |          0 |         16 |        117 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/settings.ts                                                  | TypeScript         |         73 |          0 |         17 |         90 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(auth)/layout.tsx                                                | TypeScript JSX     |         14 |          0 |          4 |         18 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(auth)/sign-in/page.tsx                                          | TypeScript JSX     |         23 |          0 |          3 |         26 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(auth)/sign-up/page.tsx                                          | TypeScript JSX     |         23 |          0 |          3 |         26 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/dashboards/layout.tsx                                | TypeScript JSX     |         12 |          0 |          2 |         14 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/dashboards/page.tsx                                  | TypeScript JSX     |         40 |          0 |          6 |         46 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/dashboards/services/page.tsx                         | TypeScript JSX     |         42 |          0 |          5 |         47 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/dashboards/slo/page.tsx                              | TypeScript JSX     |         94 |          5 |         12 |        111 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/dashboards/system/page.tsx                           | TypeScript JSX     |        130 |          3 |         13 |        146 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/error.tsx                                            | TypeScript JSX     |         38 |          0 |          4 |         42 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/explore/database/page.tsx                            | TypeScript JSX     |         18 |          0 |          3 |         21 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/explore/errors/page.tsx                              | TypeScript JSX     |         48 |          0 |          5 |         53 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/explore/infrastructure/page.tsx                      | TypeScript JSX     |         18 |          0 |          3 |         21 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/explore/layout.tsx                                   | TypeScript JSX     |         12 |          0 |          2 |         14 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/explore/logs/page.tsx                                | TypeScript JSX     |         48 |          0 |          5 |         53 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/explore/metrics/page.tsx                             | TypeScript JSX     |         30 |          0 |          6 |         36 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/explore/page.tsx                                     | TypeScript JSX     |         77 |          2 |         10 |         89 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/explore/requests/page.tsx                            | TypeScript JSX     |         46 |          0 |          5 |         51 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/explore/traces/page.tsx                              | TypeScript JSX     |         46 |          0 |          5 |         51 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/explore/universal-search-client.tsx                  | TypeScript JSX     |        130 |          3 |         13 |        146 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/incidents/page.tsx                                   | TypeScript JSX     |          7 |          0 |          0 |          7 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/investigate/active/page.tsx                          | TypeScript JSX     |         62 |          0 |          9 |         71 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/investigate/layout.tsx                               | TypeScript JSX     |         11 |          0 |          1 |         12 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/investigate/mine/page.tsx                            | TypeScript JSX     |         64 |          0 |          9 |         73 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/investigate/page.tsx                                 | TypeScript JSX     |         76 |          1 |         11 |         88 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/investigate/recent/page.tsx                          | TypeScript JSX     |         61 |          0 |          9 |         70 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/investigate/saved/page.tsx                           | TypeScript JSX     |         24 |          0 |          3 |         27 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/investigate/team/page.tsx                            | TypeScript JSX     |         64 |          0 |          9 |         73 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/issues/errors/page.tsx                               | TypeScript JSX     |         57 |          0 |          5 |         62 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/issues/ignored/page.tsx                              | TypeScript JSX     |         51 |          0 |          5 |         56 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/issues/issues-list-client.tsx                        | TypeScript JSX     |        173 |          5 |         19 |        197 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/issues/layout.tsx                                    | TypeScript JSX     |         12 |          0 |          2 |         14 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/issues/page.tsx                                      | TypeScript JSX     |         16 |          0 |          4 |         20 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/issues/recurring/page.tsx                            | TypeScript JSX     |         57 |          0 |          5 |         62 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/issues/regressions/page.tsx                          | TypeScript JSX     |         57 |          0 |          5 |         62 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/issues/resolved/page.tsx                             | TypeScript JSX     |         51 |          0 |          5 |         56 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/issues/warnings/page.tsx                             | TypeScript JSX     |         57 |          0 |          5 |         62 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/layout.tsx                                           | TypeScript JSX     |         34 |          2 |          9 |         45 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/monitors/firing/page.tsx                             | TypeScript JSX     |         61 |          0 |          5 |         66 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/monitors/healthy/page.tsx                            | TypeScript JSX     |         52 |          0 |          5 |         57 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/monitors/layout.tsx                                  | TypeScript JSX     |         12 |          0 |          2 |         14 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/monitors/page.tsx                                    | TypeScript JSX     |         72 |          0 |         11 |         83 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/monitors/slos/page.tsx                               | TypeScript JSX     |         16 |          0 |          3 |         19 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/overview/page.tsx                                    | TypeScript JSX     |        328 |          7 |         35 |        370 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/api-keys/page.tsx                      | TypeScript JSX     |         12 |          0 |          1 |         13 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/events/[eventId]/page.tsx              | TypeScript JSX     |        335 |         12 |         83 |        430 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/events/page.tsx                        | TypeScript JSX     |        204 |          5 |         41 |        250 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/investigations/new/no-events-modal.tsx | TypeScript JSX     |         61 |          3 |          9 |         73 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/investigations/new/page.tsx            | TypeScript JSX     |        896 |         37 |         74 |      1,007 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/issues/[issueId]/page.tsx              | TypeScript JSX     |         60 |          0 |          7 |         67 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/issues/page.tsx                        | TypeScript JSX     |         75 |          1 |         33 |        109 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/layout.tsx                             | TypeScript JSX     |         90 |          4 |         24 |        118 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/page.tsx                               | TypeScript JSX     |         89 |          4 |         23 |        116 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/sdk/code-snippet.tsx                   | TypeScript JSX     |         40 |          0 |          6 |         46 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/sdk/page.tsx                           | TypeScript JSX     |        217 |          8 |         31 |        256 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/settings/github-settings-card.tsx      | TypeScript JSX     |        333 |          1 |         24 |        358 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/settings/page.tsx                      | TypeScript JSX     |         61 |          2 |          9 |         72 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/page.tsx                                    | TypeScript JSX     |         51 |          1 |         28 |         80 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/sdk/page.tsx                                         | TypeScript JSX     |         12 |          0 |          3 |         15 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/services/critical/page.tsx                           | TypeScript JSX     |         48 |          0 |          5 |         53 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/services/degraded/page.tsx                           | TypeScript JSX     |         48 |          0 |          5 |         53 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/services/dependencies/page.tsx                       | TypeScript JSX     |         45 |          0 |          5 |         50 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/services/healthy/page.tsx                            | TypeScript JSX     |         48 |          0 |          5 |         53 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/services/layout.tsx                                  | TypeScript JSX     |         12 |          0 |          2 |         14 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/services/page.tsx                                    | TypeScript JSX     |         56 |          0 |          5 |         61 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/account-details-client.tsx                  | TypeScript JSX     |        199 |          7 |         18 |        224 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/alerts/page.tsx                             | TypeScript JSX     |         44 |          0 |          5 |         49 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/audit/page.tsx                              | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/autofix/page.tsx                            | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/billing/page.tsx                            | TypeScript JSX     |         89 |          2 |          8 |         99 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/close/page.tsx                              | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/custom/page.tsx                             | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/emails/page.tsx                             | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/engine/page.tsx                             | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/filters/page.tsx                            | TypeScript JSX     |         38 |          0 |          5 |         43 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/integrations/page.tsx                       | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/keys/client-keys-manager.tsx                | TypeScript JSX     |        142 |          3 |         15 |        160 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/keys/page.tsx                               | TypeScript JSX     |         27 |          0 |          6 |         33 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/legal/page.tsx                              | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/mcp/page.tsx                                | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/members/page.tsx                            | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/oauth/page.tsx                              | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/organization/organization-settings-form.tsx | TypeScript JSX     |        151 |          4 |         16 |        171 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/organization/page.tsx                       | TypeScript JSX     |         35 |          0 |          6 |         41 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/page.tsx                                    | TypeScript JSX     |         28 |          0 |          5 |         33 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/privacy/page.tsx                            | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/project/page.tsx                            | TypeScript JSX     |         39 |          0 |         10 |         49 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/project/project-settings-form.tsx           | TypeScript JSX     |        298 |          6 |         25 |        329 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/repos/page.tsx                              | TypeScript JSX     |         37 |          0 |          8 |         45 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/security/page.tsx                           | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/teams/page.tsx                              | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/tokens/org/page.tsx                         | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/tokens/personal/page.tsx                    | TypeScript JSX     |         21 |          0 |          4 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/settings/usage/page.tsx                              | TypeScript JSX     |         73 |          1 |          9 |         83 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/api/auth/[...all]/route.ts                                       | TypeScript         |          3 |          0 |          2 |          5 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/api/ingest/events/route.ts                                       | TypeScript         |        106 |          2 |         21 |        129 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/api/ingest/replay/route.ts                                       | TypeScript         |        197 |          8 |         22 |        227 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/api/test-key/route.ts                                            | TypeScript         |          6 |          0 |          2 |          8 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/forgot-password/page.tsx                                         | TypeScript JSX     |         20 |          0 |          4 |         24 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/globals.css                                                      | PostCSS            |      1,922 |        126 |        495 |      2,543 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/layout.tsx                                                       | TypeScript JSX     |         29 |          0 |          5 |         34 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/page.tsx                                                         | TypeScript JSX     |          4 |          0 |          1 |          5 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/pricing/page.tsx                                                 | TypeScript JSX     |         49 |          2 |          5 |         56 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/pricing/pricing-grid.tsx                                         | TypeScript JSX     |        192 |         10 |         19 |        221 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/reset-password/page.tsx                                          | TypeScript JSX     |          9 |          0 |          2 |         11 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/reset-password/reset-password-form.tsx                           | TypeScript JSX     |        132 |          0 |         22 |        154 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/auth-card.tsx                                        | TypeScript JSX     |         23 |          3 |          8 |         34 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/auth-footer.tsx                                      | TypeScript JSX     |         23 |          0 |          2 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/auth-header.tsx                                      | TypeScript JSX     |         19 |          0 |          2 |         21 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/auth-layout.tsx                                      | TypeScript JSX     |         11 |          0 |          2 |         13 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/forgot-password-form.tsx                             | TypeScript JSX     |         95 |          0 |         14 |        109 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/sign-in-form.tsx                                     | TypeScript JSX     |        219 |          0 |         26 |        245 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/auth/sign-up-form.tsx                                     | TypeScript JSX     |        203 |          0 |         24 |        227 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/events/breadcrumbs.tsx                                    | TypeScript JSX     |         56 |          0 |         12 |         68 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/events/stack-trace.tsx                                    | TypeScript JSX     |         19 |          0 |          2 |         21 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/events/tags.tsx                                           | TypeScript JSX     |         38 |          0 |          6 |         44 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/events/user.tsx                                           | TypeScript JSX     |         66 |          0 |         13 |         79 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/investigation/causal-chain-view.tsx                       | TypeScript JSX     |        621 |         16 |         33 |        670 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/investigation/runtime-reconstruction-view.tsx             | TypeScript JSX     |        513 |         12 |         33 |        558 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/issues/issue-card.tsx                                     | TypeScript JSX     |         82 |          4 |         16 |        102 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/issues/issue-detail-view.tsx                              | TypeScript JSX     |        360 |         17 |         38 |        415 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/overview/sidebar.tsx                                      | TypeScript JSX     |        433 |          2 |         30 |        465 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/overview/topbar.tsx                                       | TypeScript JSX     |        155 |          3 |         12 |        170 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/overview/user-profile-menu.tsx                            | TypeScript JSX     |        120 |          3 |         15 |        138 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/api-keys-section.tsx                             | TypeScript JSX     |        122 |          4 |         41 |        167 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/create-api-key-dialog.tsx                        | TypeScript JSX     |        141 |          0 |         15 |        156 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/create-project-dialog.tsx                        | TypeScript JSX     |        131 |          0 |         16 |        147 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/empty-state.tsx                                  | TypeScript JSX     |          0 |          0 |          1 |          1 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/project-card.tsx                                 | TypeScript JSX     |        112 |          0 |         41 |        153 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/project-header.tsx                               | TypeScript JSX     |         48 |          0 |         11 |         59 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/project-navigation.tsx                           | TypeScript JSX     |        121 |          0 |         11 |        132 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/project-overview.tsx                             | TypeScript JSX     |        761 |         13 |        192 |        966 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/project-quick-start.tsx                          | TypeScript JSX     |        164 |          4 |         31 |        199 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/project-stat-card.tsx                            | TypeScript JSX     |         42 |          0 |          5 |         47 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/projects/projects-grid.tsx                                | TypeScript JSX     |         82 |          0 |         26 |        108 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/replay/replay-player-client.tsx                           | TypeScript JSX     |        723 |         36 |         82 |        841 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/replay/replay-status.tsx                                  | TypeScript JSX     |        139 |          0 |         10 |        149 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/replay/replay-view.tsx                                    | TypeScript JSX     |         37 |          0 |          8 |         45 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/back-button.tsx                                        | TypeScript JSX     |         35 |          0 |          6 |         41 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/badge.tsx                                              | TypeScript JSX     |         42 |          0 |          8 |         50 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/button.tsx                                             | TypeScript JSX     |         59 |          0 |         18 |         77 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/card.tsx                                               | TypeScript JSX     |         63 |          0 |          7 |         70 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/dialog.tsx                                             | TypeScript JSX     |        128 |          0 |         14 |        142 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/feature-gate.tsx                                       | TypeScript JSX     |        102 |         20 |         14 |        136 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/input.tsx                                              | TypeScript JSX     |         17 |          0 |          4 |         21 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/label.tsx                                              | TypeScript JSX     |         16 |          0 |          5 |         21 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/page-header.tsx                                        | TypeScript JSX     |         38 |          0 |          7 |         45 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/relative-time.tsx                                      | TypeScript JSX     |         21 |          0 |          2 |         23 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/select.tsx                                             | TypeScript JSX     |        188 |          0 |         14 |        202 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/severity-badge.tsx                                     | TypeScript JSX     |         53 |          0 |          8 |         61 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/ui/usage-bar.tsx                                          | TypeScript JSX     |         55 |          5 |          9 |         69 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/browser.ts                                          | TypeScript         |         18 |         69 |          3 |         90 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/client.ts                                           | TypeScript         |         27 |         81 |          6 |        114 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/commonInputTypes.ts                                 | TypeScript         |        649 |          9 |         69 |        727 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/enums.ts                                            | TypeScript         |         35 |          9 |         16 |         60 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/class.ts                                   | TypeScript         |         82 |        210 |         43 |        335 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/prismaNamespace.ts                         | TypeScript         |      1,655 |        297 |        229 |      2,181 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/prismaNamespaceBrowser.ts                  | TypeScript         |        269 |         33 |         76 |        378 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models.ts                                           | TypeScript         |         15 |          9 |          1 |         25 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Account.ts                                   | TypeScript         |        880 |        643 |        103 |      1,626 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/ApiKey.ts                                    | TypeScript         |        872 |        643 |        119 |      1,634 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Environment.ts                               | TypeScript         |        894 |        697 |        142 |      1,733 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Event.ts                                     | TypeScript         |      2,412 |        689 |        175 |      3,276 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Issue.ts                                     | TypeScript         |      1,130 |        692 |        138 |      1,960 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Organization.ts                              | TypeScript         |        695 |        673 |        115 |      1,483 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Project.ts                                   | TypeScript         |      1,875 |        757 |        187 |      2,819 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Release.ts                                   | TypeScript         |        985 |        677 |        127 |      1,789 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/ReplayChunk.ts                               | TypeScript         |        779 |        653 |        110 |      1,542 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/ReplaySession.ts                             | TypeScript         |      1,671 |        689 |        142 |      2,502 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Session.ts                                   | TypeScript         |        705 |        643 |        103 |      1,451 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/TelemetrySession.ts                          | TypeScript         |      1,033 |        667 |        134 |      1,834 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/User.ts                                      | TypeScript         |        874 |        694 |        126 |      1,694 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Verification.ts                              | TypeScript         |        486 |        607 |         85 |      1,178 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/api-key.ts                                                       | TypeScript         |         13 |          0 |          5 |         18 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/auth-client.ts                                                   | TypeScript         |          2 |          0 |          1 |          3 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/auth.ts                                                          | TypeScript         |        115 |          0 |         14 |        129 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/cors.ts                                                          | TypeScript         |         71 |          9 |         12 |         92 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/email.ts                                                         | TypeScript         |         36 |          0 |          4 |         40 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/entitlements.ts                                                  | TypeScript         |         81 |         34 |         24 |        139 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/evidence.ts                                        | TypeScript         |        285 |         42 |         87 |        414 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/interpreter.ts                                     | TypeScript         |      1,040 |        174 |        112 |      1,326 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/occurrence-isolation.ts                            | TypeScript         |         27 |         12 |          5 |         44 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/recommendations.ts                                 | TypeScript         |        433 |        106 |         67 |        606 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/run.ts                                             | TypeScript         |         93 |        139 |         18 |        250 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/runtime/ast-resolver.ts                            | TypeScript         |        197 |         39 |         36 |        272 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/runtime/call-chain.ts                              | TypeScript         |        115 |         35 |         22 |        172 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/runtime/context-collector.ts                       | TypeScript         |        397 |         48 |         56 |        501 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/runtime/github-source-provider.ts                  | TypeScript         |        215 |         48 |         40 |        303 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/runtime/github-source-utils.ts                     | TypeScript         |        101 |         13 |         20 |        134 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/runtime/reconstruction-engine.ts                   | TypeScript         |        122 |         32 |         21 |        175 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/runtime/redaction.ts                               | TypeScript         |         60 |         21 |         17 |         98 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/runtime/source-resolver.ts                         | TypeScript         |        118 |         49 |         23 |        190 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/runtime/stack-parser.ts                            | TypeScript         |        180 |         56 |         38 |        274 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/runtime/telemetry-gaps.ts                          | TypeScript         |        121 |         24 |         11 |        156 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/runtime/types.ts                                   | TypeScript         |        152 |         43 |         17 |        212 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/organization.ts                                                  | TypeScript         |         68 |          2 |         13 |         83 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/plans.ts                                                         | TypeScript         |        201 |         46 |         11 |        258 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/prisma.ts                                                        | TypeScript         |         22 |          1 |          6 |         29 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/session.ts                                                       | TypeScript         |         15 |          0 |          1 |         16 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/slug.ts                                                          | TypeScript         |          8 |          0 |          0 |          8 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/utils.ts                                                         | TypeScript         |          5 |          0 |          1 |          6 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/schemas/auth.ts                                                      | TypeScript         |         29 |          0 |          8 |         37 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/tsconfig.json                                                            | JSON with Comments |         34 |          0 |          1 |         35 |
+| /Users/nssanjeev/Development/Halo/package.json                                                                            | JSON               |         23 |          0 |          0 |         23 |
+| /Users/nssanjeev/Development/Halo/packages/config/package.json                                                            | JSON               |          5 |          0 |          2 |          7 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/package.json                                              | JSON               |         21 |          0 |          0 |         21 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/detection/deterministic/patterns.ts                   | TypeScript         |        137 |          0 |          8 |        145 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/detection/deterministic/security.ts                   | TypeScript         |         59 |          2 |          8 |         69 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/detection/statistical/baselines.ts                    | TypeScript         |         49 |          0 |         11 |         60 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/detection/statistical/distribution.ts                 | TypeScript         |         48 |          1 |          9 |         58 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/detection/statistical/latency.ts                      | TypeScript         |         50 |          1 |          8 |         59 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/detection/statistical/rate-burst.ts                   | TypeScript         |         64 |          3 |         12 |         79 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/detection/temporal/cascade.ts                         | TypeScript         |         62 |          1 |         13 |         76 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/detection/temporal/sequences.ts                       | TypeScript         |         54 |          2 |         10 |         66 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/engine.ts                                             | TypeScript         |        217 |          1 |         41 |        259 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/graph/builder.ts                                      | TypeScript         |         10 |          0 |          2 |         12 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/graph/propagation.ts                                  | TypeScript         |        154 |          2 |         35 |        191 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/hypotheses/cascading-failure.ts                       | TypeScript         |        118 |          3 |         19 |        140 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/hypotheses/database-failure.ts                        | TypeScript         |        132 |          1 |         14 |        147 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/hypotheses/deployment-regression.ts                   | TypeScript         |          6 |          0 |          4 |         10 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/hypotheses/deployment.ts                              | TypeScript         |        202 |         10 |         27 |        239 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/hypotheses/dynamic-anomaly.ts                         | TypeScript         |         57 |          4 |          9 |         70 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/hypotheses/network-protocol.ts                        | TypeScript         |        179 |          0 |         16 |        195 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/hypotheses/resource-saturation.ts                     | TypeScript         |         45 |          0 |          7 |         52 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/hypotheses/runtime-exception.ts                       | TypeScript         |        174 |          4 |         25 |        203 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/hypotheses/security-incident.ts                       | TypeScript         |         43 |          0 |          6 |         49 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/index.ts                                              | TypeScript         |         24 |          0 |          1 |         25 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/normalization/clock.ts                                | TypeScript         |         38 |          8 |          6 |         52 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/normalization/parser.ts                               | TypeScript         |        198 |         10 |         33 |        241 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/normalization/scrubber.ts                             | TypeScript         |         54 |         18 |         13 |         85 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/novelty/novelty-detector.ts                           | TypeScript         |         68 |          1 |         11 |         80 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/novelty/template-miner.ts                             | TypeScript         |         74 |         16 |         22 |        112 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/anomalies.ts                                 | TypeScript         |          0 |          0 |          1 |          1 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/build-context.ts                             | TypeScript         |        183 |          1 |         34 |        218 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/changes.ts                                   | TypeScript         |         50 |          0 |          5 |         55 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/correlate.ts                                 | TypeScript         |        973 |         17 |        134 |      1,124 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/evaluate.ts                                  | TypeScript         |        866 |        187 |        153 |      1,206 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/hypotheses.ts                                | TypeScript         |        903 |          0 |        175 |      1,078 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/impact.ts                                    | TypeScript         |        148 |          0 |         20 |        168 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/normalize.ts                                 | TypeScript         |        208 |          1 |         49 |        258 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/rank.ts                                      | TypeScript         |        341 |        151 |         50 |        542 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/recommend.ts                                 | TypeScript         |      1,350 |         81 |        124 |      1,555 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/report.ts                                    | TypeScript         |        323 |          0 |         42 |        365 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/root-cause.ts                                | TypeScript         |        174 |          0 |         31 |        205 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/timeline.ts                                  | TypeScript         |         65 |          0 |         13 |         78 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/pipeline/validate.ts                                  | TypeScript         |        885 |        212 |        118 |      1,215 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/commit-attribution.ts                           | TypeScript         |         68 |          0 |         21 |         89 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/cross-service.ts                                | TypeScript         |         51 |          0 |         16 |         67 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/deployment-before-error.ts                      | TypeScript         |         49 |          0 |          7 |         56 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/different-service.ts                            | TypeScript         |         45 |          0 |          8 |         53 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/distributed-trace.ts                            | TypeScript         |         72 |          0 |         11 |         83 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/evidence-signals.ts                             | TypeScript         |        339 |         34 |        111 |        484 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/index.ts                                        | TypeScript         |         33 |          0 |          4 |         37 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/infrastructure-failure.ts                       | TypeScript         |        122 |          0 |         26 |        148 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/multiple-errors.ts                              | TypeScript         |        135 |         13 |         53 |        201 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/pre-existing-error.ts                           | TypeScript         |         61 |          0 |          9 |         70 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/recovery.ts                                     | TypeScript         |        136 |          0 |         35 |        171 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/same-service.ts                                 | TypeScript         |         45 |          0 |          8 |         53 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/scoring/deploymment.ts                          | TypeScript         |          0 |          0 |          1 |          1 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/scoring/release.ts                              | TypeScript         |         10 |          0 |          3 |         13 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/scoring/service.ts                              | TypeScript         |          0 |          0 |          1 |          1 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/service.ts                                      | TypeScript         |          9 |          0 |          3 |         12 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/shared-dependency.ts                            | TypeScript         |        151 |          0 |         28 |        179 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/rules/time-window.ts                                  | TypeScript         |         66 |          0 |         11 |         77 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/runtime/ast-resolver.ts                               | TypeScript         |        197 |         39 |         36 |        272 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/runtime/call-chain.ts                                 | TypeScript         |        115 |         35 |         22 |        172 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/runtime/redaction.ts                                  | TypeScript         |         60 |          0 |         12 |         72 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/runtime/source-resolver.ts                            | TypeScript         |         97 |          8 |         15 |        120 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/runtime/stack-parser.ts                               | TypeScript         |        180 |         56 |         38 |        274 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/runtime/types.ts                                      | TypeScript         |        156 |          3 |         17 |        176 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/suppression/health-checks.ts                          | TypeScript         |         33 |          2 |         10 |         45 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/suppression/retry-storms.ts                           | TypeScript         |         30 |          2 |          7 |         39 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/anomaly.ts                                      | TypeScript         |         43 |          0 |          5 |         48 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/change.ts                                       | TypeScript         |         16 |          0 |          6 |         22 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/confidence.ts                                   | TypeScript         |         22 |          0 |          5 |         27 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/context.ts                                      | TypeScript         |         32 |          0 |         24 |         56 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/evidence-score.ts                               | TypeScript         |          5 |          0 |          2 |          7 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/evidence.ts                                     | TypeScript         |         49 |          0 |         32 |         81 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/finding.ts                                      | TypeScript         |         28 |          0 |         10 |         38 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/graph.ts                                        | TypeScript         |        101 |          0 |         10 |        111 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/hypothesis.ts                                   | TypeScript         |         55 |          0 |         29 |         84 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/impact.ts                                       | TypeScript         |         11 |          0 |          4 |         15 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/investigation.ts                                | TypeScript         |         62 |          0 |         22 |         84 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/reason.ts                                       | TypeScript         |         13 |          0 |          7 |         20 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/recommendation.ts                               | TypeScript         |         70 |         90 |         30 |        190 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/rule-result.ts                                  | TypeScript         |          5 |          0 |          2 |          7 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/telemetry.ts                                    | TypeScript         |         13 |          0 |          1 |         14 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/template.ts                                     | TypeScript         |         18 |          0 |          2 |         20 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/src/types/timeline.ts                                     | TypeScript         |         17 |          0 |          7 |         24 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/test/causal-chains-and-hypotheses.test.ts                 | TypeScript         |        626 |          9 |         67 |        702 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/test/engine.test.ts                                       | TypeScript         |      3,273 |          0 |        397 |      3,670 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/test/github-source-utils.test.ts                          | TypeScript         |         74 |          0 |         13 |         87 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/test/investigation-bugs.test.ts                           | TypeScript         |         90 |          4 |         11 |        105 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/test/investigation.ts                                     | TypeScript         |         53 |          0 |         28 |         81 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/test/occurrence-isolation.test.ts                         | TypeScript         |         33 |          0 |          5 |         38 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/test/runtime-reconstruction-scenarios.test.ts             | TypeScript         |        111 |          0 |         13 |        124 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/test/runtime-reconstruction.test.ts                       | TypeScript         |        236 |         11 |         51 |        298 |
+| /Users/nssanjeev/Development/Halo/packages/investigation-engine/tsconfig.json                                             | JSON with Comments |         17 |          0 |          7 |         24 |
+| /Users/nssanjeev/Development/Halo/packages/replay/dist/index.cjs                                                          | JavaScript         |        365 |         11 |          6 |        382 |
+| /Users/nssanjeev/Development/Halo/packages/replay/dist/index.d.cts                                                        | TypeScript         |         70 |         60 |          4 |        134 |
+| /Users/nssanjeev/Development/Halo/packages/replay/dist/index.d.ts                                                         | TypeScript         |         70 |         60 |          4 |        134 |
+| /Users/nssanjeev/Development/Halo/packages/replay/dist/index.js                                                           | JavaScript         |        342 |          9 |          4 |        355 |
+| /Users/nssanjeev/Development/Halo/packages/replay/package.json                                                            | JSON               |         42 |          0 |          1 |         43 |
+| /Users/nssanjeev/Development/Halo/packages/replay/src/index.ts                                                            | TypeScript         |          2 |          0 |          1 |          3 |
+| /Users/nssanjeev/Development/Halo/packages/replay/src/masker.ts                                                           | TypeScript         |         90 |          0 |         11 |        101 |
+| /Users/nssanjeev/Development/Halo/packages/replay/src/recorder.ts                                                         | TypeScript         |        146 |         12 |         27 |        185 |
+| /Users/nssanjeev/Development/Halo/packages/replay/src/ring-buffer.ts                                                      | TypeScript         |         43 |          3 |         11 |         57 |
+| /Users/nssanjeev/Development/Halo/packages/replay/src/types.ts                                                            | TypeScript         |         41 |         57 |          4 |        102 |
+| /Users/nssanjeev/Development/Halo/packages/replay/src/uploader.ts                                                         | TypeScript         |         98 |          6 |         16 |        120 |
+| /Users/nssanjeev/Development/Halo/packages/replay/tsconfig.json                                                           | JSON with Comments |         16 |          0 |          1 |         17 |
+| /Users/nssanjeev/Development/Halo/packages/replay/tsup.config.ts                                                          | TypeScript         |          9 |          0 |          2 |         11 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/README.md                                                                  | Markdown           |        272 |          0 |        107 |        379 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/dist/index.cjs                                                             | JavaScript         |        660 |         19 |          7 |        686 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/dist/index.d.cts                                                           | TypeScript         |         91 |         38 |          3 |        132 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/dist/index.d.ts                                                            | TypeScript         |         91 |         38 |          3 |        132 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/dist/index.js                                                              | JavaScript         |        637 |         17 |          5 |        659 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/package.json                                                               | JSON               |         46 |          0 |          0 |         46 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/capture.ts                                                             | TypeScript         |         62 |         10 |          8 |         80 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/client.ts                                                              | TypeScript         |         34 |          0 |          6 |         40 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/halo.ts                                                                | TypeScript         |        364 |         26 |        112 |        502 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/http.ts                                                                | TypeScript         |        386 |         80 |         87 |        553 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/index.ts                                                               | TypeScript         |          9 |          0 |          1 |         10 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/queue.ts                                                               | TypeScript         |         45 |          4 |         13 |         62 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/request-context.ts                                                     | TypeScript         |         58 |          0 |         17 |         75 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/test-checkout-scenario.ts                                              | TypeScript         |        207 |         57 |         31 |        295 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/types.ts                                                               | TypeScript         |         65 |         35 |         37 |        137 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/tsconfig.json                                                              | JSON with Comments |         14 |          0 |          0 |         14 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/tsup.config.ts                                                             | TypeScript         |          9 |          0 |          1 |         10 |
+| /Users/nssanjeev/Development/Halo/pnpm-lock.yaml                                                                          | YAML               |      6,448 |          0 |      1,655 |      8,103 |
+| /Users/nssanjeev/Development/Halo/pnpm-workspace.yaml                                                                     | YAML               |         12 |          0 |          3 |         15 |
+| /Users/nssanjeev/Development/Halo/prisma.config.ts                                                                        | TypeScript         |         11 |          2 |          2 |         15 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260803080531_initial/migration.sql                                  | MS SQL             |        113 |         28 |         37 |        178 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260803085017_add_project_description/migration.sql                  | MS SQL             |          1 |          1 |          1 |          3 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260804094716_add_api_key_prefix/migration.sql                       | MS SQL             |          1 |          7 |          1 |          9 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260804154403_improve_event_model/migration.sql                      | MS SQL             |          6 |          8 |          2 |         16 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260805074545_add_issue_model/migration.sql                          | MS SQL             |         18 |          6 |          7 |         31 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260805115639_improve_issue_model/migration.sql                      | MS SQL             |          4 |          8 |          2 |         14 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260807105620_add_event_context/migration.sql                        | MS SQL             |          5 |          2 |          2 |          9 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260808081855_add_event_user/migration.sql                           | MS SQL             |          1 |          1 |          1 |          3 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260811083815_add_project_telemetry/migration.sql                    | MS SQL             |         30 |         13 |         14 |         57 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260811101729_add_releases/migration.sql                             | MS SQL             |         22 |         10 |         11 |         43 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260811133328_add_http_correlation/migration.sql                     | MS SQL             |          2 |          1 |          1 |          4 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260811134655_add_http_correlation/migration.sql                     | MS SQL             |          2 |          2 |          2 |          6 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260822165541_add_org_plan/migration.sql                             | MS SQL             |          2 |          2 |          2 |          6 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260822175221_add_session_replay/migration.sql                       | MS SQL             |         51 |         15 |         17 |         83 |
+| /Users/nssanjeev/Development/Halo/prisma/migrations/20260830_add_github_integration_to_project/migration.sql              | MS SQL             |          5 |          4 |          2 |         11 |
+| /Users/nssanjeev/Development/Halo/turbo.json                                                                              | JSON               |          4 |          0 |          0 |          4 |
+| Total                                                                                                                     |                    |     68,476 |     13,560 |     10,804 |     92,840 |
++---------------------------------------------------------------------------------------------------------------------------+--------------------+------------+------------+------------+------------+
