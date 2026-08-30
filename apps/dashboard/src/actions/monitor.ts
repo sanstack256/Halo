@@ -521,3 +521,304 @@ export async function deleteMonitor(id: string): Promise<boolean> {
     revalidatePath("/monitors");
     return true;
 }
+
+export type RelatedIssueSummary = {
+    id: string;
+    title: string;
+    fingerprint: string;
+    severity: string;
+    status: string;
+    eventCount: number;
+    lastSeen: Date;
+};
+
+export type RelatedReleaseSummary = {
+    id: string;
+    version: string;
+    errorCount: number;
+    eventCount: number;
+    lastSeen: Date;
+};
+
+export type MonitorTimelineEvent = {
+    id: string;
+    type: "CREATED" | "ALERT_TRIGGERED" | "ALERT_ACKNOWLEDGED" | "ALERT_RESOLVED" | "EVALUATED";
+    timestamp: Date;
+    title: string;
+    description: string;
+    alertId?: string;
+    status?: string;
+};
+
+export type MonitorFullDetails = {
+    monitor: OrgMonitor;
+    alerts: Array<{
+        id: string;
+        monitorId: string;
+        status: "OPEN" | "ACKNOWLEDGED" | "RESOLVED";
+        triggeredAt: Date;
+        acknowledgedAt: Date | null;
+        resolvedAt: Date | null;
+        conditionSummary: string;
+        observedValue: number | null;
+        thresholdValue: number | null;
+        notes: string | null;
+        createdAt: Date;
+        updatedAt: Date;
+        notificationCount: number;
+        deliveredCount: number;
+        failedCount: number;
+    }>;
+    stats: {
+        totalAlerts: number;
+        openAlerts: number;
+        acknowledgedAlerts: number;
+        resolvedAlerts: number;
+        lastTriggeredAt: Date | null;
+        lastResolvedAt: Date | null;
+        lastEvaluatedAt: Date | null;
+    };
+    relatedIssues: RelatedIssueSummary[];
+    relatedReleases: RelatedReleaseSummary[];
+    timelineEvents: MonitorTimelineEvent[];
+};
+
+export async function getMonitorFullDetails(id: string): Promise<MonitorFullDetails | null> {
+    const session = await getSession();
+    if (!session) return null;
+
+    const organization = await getOrganization(session.user.id);
+    if (!organization) return null;
+
+    const m = await prisma.monitor.findFirst({
+        where: {
+            id,
+            project: {
+                organizationId: organization.id,
+            },
+        },
+        include: {
+            project: {
+                select: {
+                    id: true,
+                    name: true,
+                    slug: true,
+                },
+            },
+            creator: {
+                select: {
+                    id: true,
+                    name: true,
+                    email: true,
+                },
+            },
+            alerts: {
+                orderBy: {
+                    triggeredAt: "desc",
+                },
+                include: {
+                    notifications: {
+                        select: {
+                            id: true,
+                            channel: true,
+                            outcome: true,
+                        },
+                    },
+                },
+            },
+        },
+    });
+
+    if (!m) return null;
+
+    const monitor: OrgMonitor = {
+        id: m.id,
+        name: m.name,
+        description: m.description,
+        type: m.type,
+        status: m.status,
+        severity: m.severity,
+        projectId: m.projectId,
+        projectName: m.project.name,
+        environmentId: m.environmentId,
+        creatorId: m.creatorId,
+        creatorName: m.creator?.name || null,
+        thresholdValue: m.thresholdValue,
+        thresholdWindow: m.thresholdWindow,
+        query: m.query,
+        cronSchedule: m.cronSchedule,
+        endpointUrl: m.endpointUrl,
+        lastTriggeredAt: m.lastTriggeredAt,
+        lastEvaluatedAt: m.lastEvaluatedAt,
+        incidentCount: m.incidentCount,
+        alertConfig: m.alertConfig,
+        createdAt: m.createdAt,
+        updatedAt: m.updatedAt,
+    };
+
+    const alerts = m.alerts.map((a) => ({
+        id: a.id,
+        monitorId: a.monitorId,
+        status: a.status,
+        triggeredAt: a.triggeredAt,
+        acknowledgedAt: a.acknowledgedAt,
+        resolvedAt: a.resolvedAt,
+        conditionSummary: a.conditionSummary,
+        observedValue: a.observedValue,
+        thresholdValue: a.thresholdValue,
+        notes: a.notes,
+        createdAt: a.createdAt,
+        updatedAt: a.updatedAt,
+        notificationCount: a.notifications.length,
+        deliveredCount: a.notifications.filter((n) => n.outcome === "DELIVERED").length,
+        failedCount: a.notifications.filter((n) => n.outcome === "FAILED").length,
+    }));
+
+    // Calculate stats from actual persisted alert records
+    const openAlerts = alerts.filter((a) => a.status === "OPEN").length;
+    const acknowledgedAlerts = alerts.filter((a) => a.status === "ACKNOWLEDGED").length;
+    const resolvedAlerts = alerts.filter((a) => a.status === "RESOLVED").length;
+    const resolvedDates = alerts.map((a) => a.resolvedAt).filter((d): d is Date => d !== null);
+    const lastResolvedAt = resolvedDates.length > 0 ? resolvedDates[0] : null;
+
+    // Fetch related issues from the same project
+    let issueWhere: any = { projectId: m.projectId };
+    if (m.query && m.query.trim()) {
+        issueWhere = {
+            projectId: m.projectId,
+            OR: [
+                { title: { contains: m.query.trim(), mode: "insensitive" } },
+                { fingerprint: { contains: m.query.trim(), mode: "insensitive" } },
+            ],
+        };
+    }
+
+    const rawIssues = await prisma.issue.findMany({
+        where: issueWhere,
+        take: 5,
+        orderBy: { lastSeen: "desc" },
+        select: {
+            id: true,
+            title: true,
+            fingerprint: true,
+            severity: true,
+            status: true,
+            eventCount: true,
+            lastSeen: true,
+        },
+    });
+
+    const relatedIssues: RelatedIssueSummary[] = rawIssues.map((i) => ({
+        id: i.id,
+        title: i.title,
+        fingerprint: i.fingerprint,
+        severity: i.severity,
+        status: i.status,
+        eventCount: i.eventCount,
+        lastSeen: i.lastSeen,
+    }));
+
+    // Fetch recent releases from this project
+    const rawReleases = await prisma.release.findMany({
+        where: { projectId: m.projectId },
+        take: 5,
+        orderBy: { lastSeen: "desc" },
+        select: {
+            id: true,
+            version: true,
+            errorCount: true,
+            eventCount: true,
+            lastSeen: true,
+        },
+    });
+
+    const relatedReleases: RelatedReleaseSummary[] = rawReleases.map((r) => ({
+        id: r.id,
+        version: r.version,
+        errorCount: r.errorCount,
+        eventCount: r.eventCount,
+        lastSeen: r.lastSeen,
+    }));
+
+    // Build chronological lifecycle timeline
+    const timelineEvents: MonitorTimelineEvent[] = [];
+
+    // 1. Creation event
+    timelineEvents.push({
+        id: `created-${m.id}`,
+        type: "CREATED",
+        timestamp: m.createdAt,
+        title: "Monitor Created",
+        description: `Configured as ${m.type} monitor${m.creator?.name ? ` by ${m.creator.name}` : ""}`,
+    });
+
+    // 2. Alert events
+    for (const a of alerts) {
+        timelineEvents.push({
+            id: `alert-trig-${a.id}`,
+            type: "ALERT_TRIGGERED",
+            timestamp: a.triggeredAt,
+            title: `Alert Triggered`,
+            description: a.conditionSummary,
+            alertId: a.id,
+            status: a.status,
+        });
+
+        if (a.acknowledgedAt) {
+            timelineEvents.push({
+                id: `alert-ack-${a.id}`,
+                type: "ALERT_ACKNOWLEDGED",
+                timestamp: a.acknowledgedAt,
+                title: "Alert Acknowledged",
+                description: a.notes ? `Acknowledged with notes: "${a.notes}"` : "Alert acknowledged by operator",
+                alertId: a.id,
+                status: "ACKNOWLEDGED",
+            });
+        }
+
+        if (a.resolvedAt) {
+            timelineEvents.push({
+                id: `alert-res-${a.id}`,
+                type: "ALERT_RESOLVED",
+                timestamp: a.resolvedAt,
+                title: "Alert Resolved",
+                description: "Issue resolved and monitor condition returned to normal",
+                alertId: a.id,
+                status: "RESOLVED",
+            });
+        }
+    }
+
+    // 3. Evaluation event if available and no recent alert at exact time
+    if (m.lastEvaluatedAt) {
+        timelineEvents.push({
+            id: `eval-${m.id}`,
+            type: "EVALUATED",
+            timestamp: m.lastEvaluatedAt,
+            title: "Last Evaluation",
+            description: `Evaluated status: ${m.status}`,
+            status: m.status,
+        });
+    }
+
+    // Sort timeline descending
+    timelineEvents.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
+
+    return {
+        monitor,
+        alerts,
+        stats: {
+            totalAlerts: alerts.length,
+            openAlerts,
+            acknowledgedAlerts,
+            resolvedAlerts,
+            lastTriggeredAt: m.lastTriggeredAt || (alerts.length > 0 ? alerts[0].triggeredAt : null),
+            lastResolvedAt,
+            lastEvaluatedAt: m.lastEvaluatedAt,
+        },
+        relatedIssues,
+        relatedReleases,
+        timelineEvents,
+    };
+}
+
