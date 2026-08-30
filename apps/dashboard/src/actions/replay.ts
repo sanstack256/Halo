@@ -20,27 +20,70 @@ const REPLAY_SESSION_INCLUDE = {
     },
 };
 
-export async function getReplaySessionForIssue(issueId: string, eventId?: string) {
-    if (!issueId) return null;
+export type ReplayCorrelationMethod =
+    | "EXACT_OCCURRENCE_SESSION"
+    | "EXACT_SESSION_ID"
+    | "TRACE_REQUEST_MATCH"
+    | "TEMPORAL_URL_FALLBACK"
+    | "NONE";
 
-    // 1. Direct Issue Association
-    let replay = await prisma.replaySession.findFirst({
-        where: {
-            issueId,
-            status: { in: ["AVAILABLE", "RECORDING", "PROCESSING"] },
-        },
-        include: REPLAY_SESSION_INCLUDE,
-        orderBy: {
-            createdAt: "desc",
-        },
-    });
+export type ReplayCorrelationStrength =
+    | "EXACT"
+    | "STRONG"
+    | "RELATED_UNVERIFIED"
+    | "NONE";
 
-    if (replay) return replay;
+export interface ResolvedOccurrenceReplay {
+    replaySession: any | null;
+    replaySessionId: string | null;
+    occurrenceId: string | null;
+    correlationMethod: ReplayCorrelationMethod;
+    correlationStrength: ReplayCorrelationStrength;
+    isExact: boolean;
+    reason?: string;
+}
 
-    // 2. Specific Event Association (if eventId is provided)
-    if (eventId) {
-        const anchorEvent = await prisma.event.findUnique({
-            where: { id: eventId },
+/**
+ * Retrieve the replay session specifically correlated to the exact occurrence being investigated.
+ * 
+ * Strict Correlation Order:
+ * 1. Occurrence / event specific session ID matching ReplaySession.sessionId (EXACT)
+ * 2. Replay sessionId explicitly associated with the occurrence / metadata (EXACT)
+ * 3. traceId / requestId when available (STRONG)
+ * 4. Only use timestamp + URL fallback within the same project when no stronger identifier exists (RELATED_UNVERIFIED)
+ */
+export async function getReplaySessionForOccurrence(
+    issueId: string,
+    occurrenceId?: string,
+    projectId?: string,
+): Promise<ResolvedOccurrenceReplay> {
+    if (!issueId && !occurrenceId) {
+        return {
+            replaySession: null,
+            replaySessionId: null,
+            occurrenceId: occurrenceId ?? null,
+            correlationMethod: "NONE",
+            correlationStrength: "NONE",
+            isExact: false,
+            reason: "No issue or occurrence identifier provided.",
+        };
+    }
+
+    // Step 1: Identify the exact occurrence event if provided or find the latest anchor event for the issue
+    let targetOccurrence: {
+        id: string;
+        sessionId: string | null;
+        traceId: string | null;
+        requestId: string | null;
+        timestamp: Date;
+        projectId: string;
+        resource?: string | null;
+        metadata?: any;
+    } | null = null;
+
+    if (occurrenceId) {
+        targetOccurrence = await prisma.event.findUnique({
+            where: { id: occurrenceId },
             select: {
                 id: true,
                 sessionId: true,
@@ -48,152 +91,182 @@ export async function getReplaySessionForIssue(issueId: string, eventId?: string
                 requestId: true,
                 timestamp: true,
                 projectId: true,
+                resource: true,
+                metadata: true,
             },
         });
-
-        if (anchorEvent) {
-            // 2a. Match by anchor event's session/trace/request IDs
-            const orConditions: any[] = [];
-            if (anchorEvent.sessionId) orConditions.push({ sessionId: anchorEvent.sessionId });
-            if (anchorEvent.traceId) orConditions.push({ traceId: anchorEvent.traceId });
-            if (anchorEvent.requestId) orConditions.push({ requestId: anchorEvent.requestId });
-
-            if (orConditions.length > 0) {
-                replay = await prisma.replaySession.findFirst({
-                    where: {
-                        projectId: anchorEvent.projectId,
-                        OR: orConditions,
-                        status: { in: ["AVAILABLE", "RECORDING", "PROCESSING"] },
-                    },
-                    include: REPLAY_SESSION_INCLUDE,
-                    orderBy: { createdAt: "desc" },
-                });
-            }
-
-            // 2b. Temporal Proximity in the same project
-            if (!replay) {
-                const eventTime = anchorEvent.timestamp;
-                replay = await prisma.replaySession.findFirst({
-                    where: {
-                        projectId: anchorEvent.projectId,
-                        status: { in: ["AVAILABLE", "RECORDING", "PROCESSING"] },
-                        OR: [
-                            {
-                                startedAt: {
-                                    gte: new Date(eventTime.getTime() - 10 * 60000),
-                                    lte: new Date(eventTime.getTime() + 2 * 60000),
-                                },
-                            },
-                            {
-                                errorAt: {
-                                    gte: new Date(eventTime.getTime() - 5 * 60000),
-                                    lte: new Date(eventTime.getTime() + 5 * 60000),
-                                },
-                            },
-                        ],
-                    },
-                    include: REPLAY_SESSION_INCLUDE,
-                    orderBy: { createdAt: "desc" },
-                });
-            }
-        }
     }
 
-    // 3. Issue Events Correlation (match by any event in the issue)
-    if (!replay) {
-        const issue = await prisma.issue.findUnique({
-            where: { id: issueId },
-            include: {
-                events: {
-                    select: {
-                        sessionId: true,
-                        traceId: true,
-                        requestId: true,
-                        timestamp: true,
-                    },
-                    take: 50,
-                    orderBy: { timestamp: "desc" },
-                },
+    if (!targetOccurrence && issueId) {
+        targetOccurrence = await prisma.event.findFirst({
+            where: { issueId, type: "ERROR" },
+            orderBy: { timestamp: "desc" },
+            select: {
+                id: true,
+                sessionId: true,
+                traceId: true,
+                requestId: true,
+                timestamp: true,
+                projectId: true,
+                resource: true,
+                metadata: true,
             },
         });
+    }
 
-        if (issue) {
-            const sessionIds = issue.events
-                .map((e) => e.sessionId)
-                .filter((s): s is string => Boolean(s));
+    const effectiveProjectId = targetOccurrence?.projectId ?? projectId;
 
-            const traceIds = issue.events
-                .map((e) => e.traceId)
-                .filter((t): t is string => Boolean(t));
+    // Scope check: Project ID must be known to prevent cross-tenant replay exposure
+    if (!effectiveProjectId) {
+        return {
+            replaySession: null,
+            replaySessionId: null,
+            occurrenceId: targetOccurrence?.id ?? occurrenceId ?? null,
+            correlationMethod: "NONE",
+            correlationStrength: "NONE",
+            isExact: false,
+            reason: "Project scope could not be verified.",
+        };
+    }
 
-            const requestIds = issue.events
-                .map((e) => e.requestId)
-                .filter((r): r is string => Boolean(r));
+    // Tier 1: Exact Occurrence Session ID Matching
+    if (targetOccurrence?.sessionId) {
+        const replay = await prisma.replaySession.findFirst({
+            where: {
+                projectId: effectiveProjectId,
+                sessionId: targetOccurrence.sessionId,
+                status: { in: ["AVAILABLE", "RECORDING", "PROCESSING"] },
+            },
+            include: REPLAY_SESSION_INCLUDE,
+        });
 
-            const orConditions: any[] = [];
-            if (sessionIds.length > 0) orConditions.push({ sessionId: { in: sessionIds } });
-            if (traceIds.length > 0) orConditions.push({ traceId: { in: traceIds } });
-            if (requestIds.length > 0) orConditions.push({ requestId: { in: requestIds } });
-
-            if (orConditions.length > 0) {
-                replay = await prisma.replaySession.findFirst({
-                    where: {
-                        projectId: issue.projectId,
-                        OR: orConditions,
-                        status: { in: ["AVAILABLE", "RECORDING", "PROCESSING"] },
-                    },
-                    include: REPLAY_SESSION_INCLUDE,
-                    orderBy: {
-                        createdAt: "desc",
-                    },
-                });
-            }
-
-            // 4. Project-scoped temporal fallback matching the issue's activity window
-            if (!replay && issue.events.length > 0) {
-                const latestTime = issue.lastSeen || issue.events[0].timestamp;
-                const earliestTime = issue.firstSeen || issue.events[issue.events.length - 1].timestamp;
-
-                replay = await prisma.replaySession.findFirst({
-                    where: {
-                        projectId: issue.projectId,
-                        status: { in: ["AVAILABLE", "RECORDING", "PROCESSING"] },
-                        OR: [
-                            {
-                                startedAt: {
-                                    gte: new Date(earliestTime.getTime() - 10 * 60000),
-                                    lte: new Date(latestTime.getTime() + 5 * 60000),
-                                },
-                            },
-                            {
-                                errorAt: {
-                                    gte: new Date(earliestTime.getTime() - 5 * 60000),
-                                    lte: new Date(latestTime.getTime() + 5 * 60000),
-                                },
-                            },
-                        ],
-                    },
-                    include: REPLAY_SESSION_INCLUDE,
-                    orderBy: { createdAt: "desc" },
-                });
-            }
+        if (replay) {
+            return {
+                replaySession: replay,
+                replaySessionId: replay.id,
+                occurrenceId: targetOccurrence.id,
+                correlationMethod: "EXACT_OCCURRENCE_SESSION",
+                correlationStrength: "EXACT",
+                isExact: true,
+                reason: `Directly correlated via session identifier (${targetOccurrence.sessionId}).`,
+            };
         }
     }
 
-    // If an unlinked replay was correlated, link it to the issue for future instant retrieval
-    if (replay && !replay.issueId) {
-        try {
-            await prisma.replaySession.update({
-                where: { id: replay.id },
-                data: { issueId },
-            });
-            replay.issueId = issueId;
-        } catch {
-            // ignore concurrent update
+    // Tier 2: Explicit Replay Session ID in Occurrence Metadata or Direct issueId link on Session
+    const metaReplayId = targetOccurrence?.metadata && typeof targetOccurrence.metadata === "object"
+        ? (targetOccurrence.metadata as any).replaySessionId || (targetOccurrence.metadata as any).replayId
+        : undefined;
+
+    if (metaReplayId) {
+        const replay = await prisma.replaySession.findFirst({
+            where: {
+                id: metaReplayId,
+                projectId: effectiveProjectId,
+                status: { in: ["AVAILABLE", "RECORDING", "PROCESSING"] },
+            },
+            include: REPLAY_SESSION_INCLUDE,
+        });
+
+        if (replay) {
+            return {
+                replaySession: replay,
+                replaySessionId: replay.id,
+                occurrenceId: targetOccurrence?.id ?? occurrenceId ?? null,
+                correlationMethod: "EXACT_SESSION_ID",
+                correlationStrength: "EXACT",
+                isExact: true,
+                reason: `Explicitly linked via occurrence metadata (${metaReplayId}).`,
+            };
         }
     }
 
-    return replay;
+    // Tier 3: Trace ID or Request ID Correlated Match
+    if (targetOccurrence && (targetOccurrence.traceId || targetOccurrence.requestId)) {
+        const orConditions: any[] = [];
+        if (targetOccurrence.traceId) orConditions.push({ traceId: targetOccurrence.traceId });
+        if (targetOccurrence.requestId) orConditions.push({ requestId: targetOccurrence.requestId });
+
+        const replay = await prisma.replaySession.findFirst({
+            where: {
+                projectId: effectiveProjectId,
+                OR: orConditions,
+                status: { in: ["AVAILABLE", "RECORDING", "PROCESSING"] },
+            },
+            include: REPLAY_SESSION_INCLUDE,
+            orderBy: { createdAt: "desc" },
+        });
+
+        if (replay) {
+            const matchedKey = replay.traceId === targetOccurrence.traceId ? `trace ${targetOccurrence.traceId}` : `request ${targetOccurrence.requestId}`;
+            return {
+                replaySession: replay,
+                replaySessionId: replay.id,
+                occurrenceId: targetOccurrence.id,
+                correlationMethod: "TRACE_REQUEST_MATCH",
+                correlationStrength: "STRONG",
+                isExact: true,
+                reason: `Correlated via distributed telemetry (${matchedKey}).`,
+            };
+        }
+    }
+
+    // Tier 4: Fallback: Timestamp + URL Proximity (Marked as Related / Unverified)
+    if (targetOccurrence) {
+        const eventTime = targetOccurrence.timestamp;
+        const targetUrl = targetOccurrence.resource ?? (targetOccurrence.metadata as any)?.url;
+
+        const replay = await prisma.replaySession.findFirst({
+            where: {
+                projectId: effectiveProjectId,
+                status: { in: ["AVAILABLE", "RECORDING", "PROCESSING"] },
+                OR: [
+                    {
+                        startedAt: {
+                            gte: new Date(eventTime.getTime() - 5 * 60000),
+                            lte: new Date(eventTime.getTime() + 2 * 60000),
+                        },
+                    },
+                    {
+                        errorAt: {
+                            gte: new Date(eventTime.getTime() - 2 * 60000),
+                            lte: new Date(eventTime.getTime() + 2 * 60000),
+                        },
+                    },
+                ],
+                ...(targetUrl ? { url: { contains: targetUrl } } : {}),
+            },
+            include: REPLAY_SESSION_INCLUDE,
+            orderBy: { createdAt: "desc" },
+        });
+
+        if (replay) {
+            return {
+                replaySession: replay,
+                replaySessionId: replay.id,
+                occurrenceId: targetOccurrence.id,
+                correlationMethod: "TEMPORAL_URL_FALLBACK",
+                correlationStrength: "RELATED_UNVERIFIED",
+                isExact: false,
+                reason: "Correlated via temporal window and URL proximity. Exact occurrence session link unverified.",
+            };
+        }
+    }
+
+    return {
+        replaySession: null,
+        replaySessionId: null,
+        occurrenceId: targetOccurrence?.id ?? occurrenceId ?? null,
+        correlationMethod: "NONE",
+        correlationStrength: "NONE",
+        isExact: false,
+        reason: "No session replay was captured or correlated with this specific occurrence.",
+    };
+}
+
+export async function getReplaySessionForIssue(issueId: string, eventId?: string) {
+    const resolved = await getReplaySessionForOccurrence(issueId, eventId);
+    return resolved.replaySession;
 }
 
 export async function getReplaySession(replaySessionId: string) {

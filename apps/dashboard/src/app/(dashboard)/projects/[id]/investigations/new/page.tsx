@@ -43,7 +43,7 @@ type Props = {
 };
 
 import { NoEventsInvestigationModal } from "./no-events-modal";
-import { getReplaySessionForIssue } from "@/actions/replay";
+import { getReplaySessionForOccurrence, type ResolvedOccurrenceReplay } from "@/actions/replay";
 import { ReplayPlayerClient } from "@/components/replay/replay-player-client";
 import { ReplayStatus } from "@/components/replay/replay-status";
 import { interpretInvestigation, type InterpretedInvestigation } from "@/lib/investigation/interpreter";
@@ -70,9 +70,9 @@ export default async function InvestigationPage({
     }
 
     try {
-        const [{ investigation, incidentAnchorId, incidentAnchorTimestamp, historicalOccurrenceCount }, replaySession] = await Promise.all([
+        const [{ investigation, incidentAnchorId, incidentAnchorTimestamp, historicalOccurrenceCount }, resolvedReplay] = await Promise.all([
             investigateIssueOccurrence(issueId, id, eventId),
-            getReplaySessionForIssue(issueId, eventId),
+            getReplaySessionForOccurrence(issueId, eventId, id),
         ]);
 
         // Attempt async GitHub source resolution for the primary failing frame
@@ -110,12 +110,13 @@ export default async function InvestigationPage({
         return (
             <InvestigationView
                 investigation={investigation}
-                replaySession={replaySession}
+                resolvedReplay={resolvedReplay}
                 projectId={id}
                 incidentAnchorId={incidentAnchorId}
                 incidentAnchorTimestamp={incidentAnchorTimestamp}
                 historicalOccurrenceCount={historicalOccurrenceCount}
                 resolvedSourceContext={resolvedSourceContext}
+                anchorError={anchorError}
             />
         );
     } catch (error) {
@@ -135,20 +136,22 @@ export default async function InvestigationPage({
 
 function InvestigationView({
     investigation,
-    replaySession,
+    resolvedReplay,
     projectId,
     incidentAnchorId,
     incidentAnchorTimestamp,
     historicalOccurrenceCount,
     resolvedSourceContext,
+    anchorError,
 }: {
     investigation: Investigation;
-    replaySession?: any | null;
+    resolvedReplay: ResolvedOccurrenceReplay;
     projectId: string;
     incidentAnchorId?: string;
     incidentAnchorTimestamp?: Date;
     historicalOccurrenceCount?: number;
     resolvedSourceContext?: SourceContext;
+    anchorError?: any;
 }) {
     const {
         status,
@@ -163,6 +166,7 @@ function InvestigationView({
         recommendations,
     } = investigation;
 
+    const replaySession = resolvedReplay?.replaySession;
     const interpreted = interpretInvestigation(investigation, replaySession, incidentAnchorId, resolvedSourceContext);
 
     const formattedAnchorTime = incidentAnchorTimestamp
@@ -175,6 +179,12 @@ function InvestigationView({
               hour12: true,
           }).format(new Date(incidentAnchorTimestamp))
         : null;
+
+    // Categorize related telemetry for section I
+    const relatedTraces = evidence.filter((e) => e.type === "TRACE");
+    const relatedLogs = evidence.filter((e) => e.type === "LOG");
+    const relatedMetrics = evidence.filter((e) => e.type === "METRIC");
+    const relatedThirdParty = evidence.filter((e) => e.type === "THIRD_PARTY" || e.type === "INFRASTRUCTURE");
 
     return (
         <div className="halo-investigation max-w-5xl mx-auto space-y-8 pb-16">
@@ -219,17 +229,67 @@ function InvestigationView({
                 )}
             </header>
 
-            {/* 1. Root Cause Section */}
-            <section className="halo-card p-6 border-border space-y-5">
+            {/* A. INCIDENT SUMMARY */}
+            <section className="halo-card p-6 border-border space-y-4">
                 <div className="flex items-center justify-between border-b border-border pb-3">
                     <div className="flex items-center gap-2">
-                        <span className={`w-2.5 h-2.5 rounded-full ${interpreted.rootCauseSummary.isExactRootCauseKnown ? "bg-accent animate-pulse" : "bg-amber-400"}`} />
+                        <ShieldAlert className="w-4 h-4 text-accent" />
                         <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
-                            {interpreted.rootCauseSummary.isExactRootCauseKnown ? "Root Cause" : "Earliest Observed Failure"}
+                            Incident Summary
                         </h2>
                     </div>
-                    <div className="flex items-center gap-2 flex-wrap justify-end">
-                        <span className="text-xs text-muted font-mono">Causal Confidence:</span>
+                    <div className="flex items-center gap-2">
+                        <span className="text-xs text-muted font-mono">Confidence:</span>
+                        <span className="text-xs font-bold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                            {interpreted.rootCauseSummary.confidenceLabel}
+                        </span>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-xs font-mono">
+                    <div className="p-3 rounded-lg bg-surface border border-border space-y-1">
+                        <span className="text-[10px] text-zinc-500 uppercase block">Error Type</span>
+                        <span className="text-white font-semibold truncate block">
+                            {anchorError?.metadata?.errorType || (anchorError?.title?.includes(":") ? anchorError.title.split(":")[0] : "Application Error")}
+                        </span>
+                    </div>
+                    <div className="p-3 rounded-lg bg-surface border border-border space-y-1">
+                        <span className="text-[10px] text-zinc-500 uppercase block">Occurrence Time</span>
+                        <span className="text-zinc-200 truncate block">{formattedAnchorTime || "Recorded Timestamp"}</span>
+                    </div>
+                    <div className="p-3 rounded-lg bg-surface border border-border space-y-1">
+                        <span className="text-[10px] text-zinc-500 uppercase block">Service / Runtime</span>
+                        <span className="text-accent truncate block">{anchorError?.service || "web-client (Browser)"}</span>
+                    </div>
+                    <div className="p-3 rounded-lg bg-surface border border-border space-y-1">
+                        <span className="text-[10px] text-zinc-500 uppercase block">Environment</span>
+                        <span className="text-zinc-300 truncate block">{anchorError?.environment || "production"}</span>
+                    </div>
+                    <div className="col-span-2 p-3 rounded-lg bg-surface border border-border space-y-1">
+                        <span className="text-[10px] text-zinc-500 uppercase block">Error Message</span>
+                        <span className="text-red-400 truncate block font-sans text-xs">
+                            {anchorError?.title || "Unhandled Exception"}
+                        </span>
+                    </div>
+                    <div className="col-span-2 p-3 rounded-lg bg-surface border border-border space-y-1">
+                        <span className="text-[10px] text-zinc-500 uppercase block">Occurrence Identifier</span>
+                        <span className="text-zinc-400 truncate block">
+                            {incidentAnchorId || anchorError?.id || "N/A"}
+                        </span>
+                    </div>
+                </div>
+            </section>
+
+            {/* B. EARLIEST OBSERVED FAILURE */}
+            <section className="halo-card p-6 border-border space-y-4">
+                <div className="flex items-center justify-between border-b border-border pb-3">
+                    <div className="flex items-center gap-2">
+                        <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-pulse" />
+                        <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
+                            Earliest Observed Failure
+                        </h2>
+                    </div>
+                    <div className="flex items-center gap-2">
                         <span className="text-xs font-semibold px-2 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                             {interpreted.rootCauseSummary.confidenceLabel}
                         </span>
@@ -241,12 +301,12 @@ function InvestigationView({
                     </div>
                 </div>
 
-                <div className="space-y-4">
+                <div className="space-y-3">
                     <p className="text-base text-zinc-200 leading-relaxed font-medium">
                         {interpreted.rootCauseSummary.rootCauseStatement}
                     </p>
 
-                    {/* Visual Causal Flowchart Box */}
+                    {/* Visual Flowchart Box */}
                     <div className="rounded-xl bg-[#080b11] border border-white/10 p-4 font-mono text-xs text-zinc-300 overflow-x-auto space-y-1">
                         <div className="text-[10px] text-zinc-500 uppercase tracking-wider font-sans font-semibold mb-2">
                             The evidence directly establishes the sequence:
@@ -262,7 +322,14 @@ function InvestigationView({
                 </div>
             </section>
 
-            {/* 2. What Happened Section */}
+            {/* C. CAUSAL CHAIN (INSPECTABLE) */}
+            <CausalChainView
+                causalChains={interpreted.causalChains}
+                hypotheses={investigation.hypotheses}
+                rawEdges={interpreted.rawEdges}
+            />
+
+            {/* D. WHAT HAPPENED (CHRONOLOGICAL) */}
             <section className="halo-card p-6 border-border space-y-5">
                 <div className="border-b border-border pb-3 flex items-center justify-between">
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
@@ -380,29 +447,7 @@ function InvestigationView({
                 </div>
             </section>
 
-            {/* 3. Why this is the root cause chain */}
-            <section className="halo-card p-6 border-border space-y-4">
-                <div className="border-b border-border pb-3">
-                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
-                        Why this is the root cause chain
-                    </h2>
-                </div>
-
-                <p className="text-sm text-zinc-300 leading-relaxed">
-                    {interpreted.whyThisConclusion.narrative}
-                </p>
-
-                <div className="p-4 rounded-xl bg-[#080b11] border border-white/10 space-y-2">
-                    <span className="text-[10px] text-zinc-500 font-mono uppercase tracking-wider font-semibold">
-                        Causal relationship
-                    </span>
-                    <pre className="font-mono text-xs text-zinc-300 leading-relaxed">
-                        {interpreted.whyThisConclusion.treeDiagram}
-                    </pre>
-                </div>
-            </section>
-
-            {/* 4. What is known vs unknown */}
+            {/* E. KNOWN VS UNKNOWN */}
             <section className="halo-card p-6 border-border space-y-5">
                 <div className="border-b border-border pb-3 flex items-center justify-between">
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
@@ -417,7 +462,7 @@ function InvestigationView({
                         <div className="flex items-center gap-2 text-emerald-400">
                             <CheckCircle2 size={15} />
                             <h3 className="text-xs font-bold uppercase tracking-wider">
-                                Confirmed
+                                Confirmed Facts (Observed)
                             </h3>
                         </div>
                         <ul className="space-y-2 text-xs text-zinc-300">
@@ -435,7 +480,7 @@ function InvestigationView({
                         <div className="flex items-center gap-2 text-amber-400">
                             <HelpCircle size={15} />
                             <h3 className="text-xs font-bold uppercase tracking-wider">
-                                Unknown
+                                Unknown (Missing Telemetry)
                             </h3>
                         </div>
                         <ul className="space-y-2 text-xs text-zinc-300">
@@ -447,32 +492,17 @@ function InvestigationView({
                             ))}
                         </ul>
                         <p className="text-[11px] text-amber-300/80 italic pt-1 border-t border-amber-500/20">
-                            Halo should never invent the missing backend cause just because a TypeError is available.
+                            Halo does not guess missing backend causes without correlated telemetry.
                         </p>
                     </div>
                 </div>
             </section>
 
-            {/* 5. Historical / Unrelated Evidence Filter */}
-            {interpreted.historicalObservations.hasUnrelatedEvents && (
-                <section className="p-4 rounded-xl bg-surface border border-border space-y-2">
-                    <div className="flex items-center gap-2 text-secondary">
-                        <Info size={14} className="text-accent" />
-                        <h3 className="text-xs font-semibold uppercase tracking-wider text-white">
-                            Historical / Unrelated Evidence
-                        </h3>
-                    </div>
-                    <blockquote className="text-xs text-secondary italic border-l-2 border-accent/40 pl-3 py-1">
-                        {interpreted.historicalObservations.explanation}
-                    </blockquote>
-                </section>
-            )}
-
-            {/* 6. Evidence Matrix Table */}
+            {/* F. EVIDENCE (EVALUATED EVIDENCE RECORDS) */}
             <section className="halo-card p-6 border-border space-y-4 overflow-hidden">
                 <div className="border-b border-border pb-3 flex items-center justify-between">
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
-                        Evidence
+                        Evaluated Evidence Records
                     </h2>
                     <span className="text-xs font-mono text-secondary">
                         {interpreted.causalEvidenceGraph.length} signals evaluated
@@ -533,70 +563,31 @@ function InvestigationView({
                 </div>
             </section>
 
-            {/* 7. Qualitative Confidence Breakdown */}
-            <section className="halo-card p-6 border-border space-y-4">
-                <div className="border-b border-border pb-3 flex items-center justify-between">
-                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
-                        Confidence
-                    </h2>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Root Cause Confidence */}
-                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-xs font-semibold text-white">
-                                Root-cause confidence:
-                            </h3>
-                            <span className="text-xs font-bold text-emerald-400">
-                                {interpreted.rootCauseSummary.confidenceLabel}
-                            </span>
-                        </div>
-                        <ul className="space-y-1.5 text-xs text-secondary pt-1">
-                            {interpreted.rootCauseSummary.reasoning.map((r, idx) => (
-                                <li key={idx} className="flex items-start gap-1.5">
-                                    <span className="text-accent font-bold">&bull;</span>
-                                    <span>{r}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Exact Backend Cause Confidence */}
-                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
-                        <div className="flex items-center justify-between">
-                            <h3 className="text-xs font-semibold text-white">
-                                Exact backend cause:
-                            </h3>
-                            <span className="text-xs font-bold text-amber-400">
-                                Unknown
-                            </span>
-                        </div>
-                        <p className="text-xs text-secondary pt-1">
-                            Because Halo lacks server-side evidence explaining the 500.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* 8. Reconstructed Causal Chains & Competing Hypotheses */}
-            <CausalChainView
-                causalChains={interpreted.causalChains}
-                hypotheses={investigation.hypotheses}
-                rawEdges={interpreted.rawEdges}
-            />
-
-            {/* 9. Exact Runtime Failure & Context Reconstruction (Features 1 & 2) */}
-            <RuntimeReconstructionView reconstruction={interpreted.runtimeReconstruction} />
-
-            {/* 9. User Session Replay */}
+            {/* G. SESSION REPLAY */}
             <section className="halo-section space-y-3">
-                <SectionHeading
-                    title="User Session Replay"
-                    description={replaySession
-                        ? "Reconstructed browser DOM interactions, mouse clicks, and network requests correlated directly with this failure."
-                        : "Browser session replay recorded for the incident occurrence, when available."}
-                />
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                    <SectionHeading
+                        title="User Session Replay"
+                        description={replaySession
+                            ? "Reconstructed browser DOM interactions, mouse clicks, and network requests correlated directly with this failure."
+                            : "Browser session replay recorded for the incident occurrence, when available."}
+                    />
+                    {replaySession && (
+                        <span className={`text-[10px] font-mono px-2.5 py-1 rounded-full border font-semibold ${
+                            resolvedReplay.correlationStrength === "EXACT"
+                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                : resolvedReplay.correlationStrength === "STRONG"
+                                ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                                : "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                        }`}>
+                            {resolvedReplay.correlationStrength === "EXACT"
+                                ? "✓ EXACT OCCURRENCE REPLAY"
+                                : resolvedReplay.correlationStrength === "STRONG"
+                                ? "✓ TRACE / REQUEST CORRELATED"
+                                : "⚠ RELATED (UNVERIFIED)"}
+                        </span>
+                    )}
+                </div>
 
                 {replaySession ? (
                     <div className="space-y-4">
@@ -606,11 +597,86 @@ function InvestigationView({
                         />
                     </div>
                 ) : (
-                    <ReplayStatus status="NO_REPLAY" projectId={projectId} />
+                    <ReplayStatus
+                        status="NO_REPLAY"
+                        message={resolvedReplay?.reason || "Session replay was not captured for this occurrence."}
+                        projectId={projectId}
+                    />
                 )}
             </section>
 
-            {/* 10. What Halo recommends */}
+            {/* H. RUNTIME FAILURE & STACK TRACE */}
+            <RuntimeReconstructionView reconstruction={interpreted.runtimeReconstruction} />
+
+            {/* I. RELATED TELEMETRY */}
+            {(relatedTraces.length > 0 || relatedLogs.length > 0 || relatedMetrics.length > 0 || relatedThirdParty.length > 0) && (
+                <section className="halo-card p-6 border-border space-y-4">
+                    <div className="border-b border-border pb-3 flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                            <Layers className="w-4 h-4 text-accent" />
+                            <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
+                                Related Telemetry Signals
+                            </h2>
+                        </div>
+                        <span className="text-xs font-mono text-secondary">
+                            {relatedTraces.length + relatedLogs.length + relatedMetrics.length + relatedThirdParty.length} items
+                        </span>
+                    </div>
+
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
+                        {relatedTraces.length > 0 && (
+                            <div className="p-3 rounded-lg bg-surface border border-border space-y-2">
+                                <span className="text-[10px] text-zinc-500 uppercase block font-bold">Distributed Traces & Spans ({relatedTraces.length})</span>
+                                <ul className="space-y-1 text-zinc-300">
+                                    {relatedTraces.map((t, i) => (
+                                        <li key={i} className="truncate">
+                                            <span className="text-blue-400">{t.service}</span>: {t.title}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        {relatedLogs.length > 0 && (
+                            <div className="p-3 rounded-lg bg-surface border border-border space-y-2">
+                                <span className="text-[10px] text-zinc-500 uppercase block font-bold">Logs ({relatedLogs.length})</span>
+                                <ul className="space-y-1 text-zinc-300">
+                                    {relatedLogs.map((l, i) => (
+                                        <li key={i} className="truncate text-zinc-400">
+                                            {l.title}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        {relatedMetrics.length > 0 && (
+                            <div className="p-3 rounded-lg bg-surface border border-border space-y-2">
+                                <span className="text-[10px] text-zinc-500 uppercase block font-bold">Metrics ({relatedMetrics.length})</span>
+                                <ul className="space-y-1 text-zinc-300">
+                                    {relatedMetrics.map((m, i) => (
+                                        <li key={i} className="truncate text-zinc-400">
+                                            {m.title}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                        {relatedThirdParty.length > 0 && (
+                            <div className="p-3 rounded-lg bg-surface border border-border space-y-2">
+                                <span className="text-[10px] text-zinc-500 uppercase block font-bold">Infrastructure & Third Party ({relatedThirdParty.length})</span>
+                                <ul className="space-y-1 text-zinc-300">
+                                    {relatedThirdParty.map((tp, i) => (
+                                        <li key={i} className="truncate text-zinc-400">
+                                            {tp.title}
+                                        </li>
+                                    ))}
+                                </ul>
+                            </div>
+                        )}
+                    </div>
+                </section>
+            )}
+
+            {/* K. RECOMMENDATIONS */}
             <RecommendationPlanSection plan={interpreted.recommendations} />
         </div>
     );

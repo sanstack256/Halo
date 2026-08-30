@@ -78,9 +78,9 @@ export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges =
     const [expandedHypothesisId, setExpandedHypothesisId] = useState<string>(
         hypotheses.length > 0 ? hypotheses[0].id : ""
     );
+    const [inspectedEdge, setInspectedEdge] = useState<EvidenceEdge | null>(null);
 
     const activeChain = causalChains.find((c) => c.id === selectedChainId) || causalChains[0];
-
     const directEdges = rawEdges.filter((e) => e.relationship !== "TEMPORALLY_PRECEDES");
 
     return (
@@ -95,7 +95,7 @@ export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges =
                         </h2>
                     </div>
                     <span className="text-xs font-mono text-secondary">
-                        {directEdges.length} supported relationship{directEdges.length === 1 ? "" : "s"}
+                        {directEdges.length} supported relationship{directEdges.length === 1 ? "" : "s"} · click to inspect
                     </span>
                 </div>
 
@@ -109,10 +109,17 @@ export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges =
                     <div className="space-y-3">
                         {directEdges.map((edge, idx) => {
                             const classificationInfo = edge.classification ? CLASSIFICATION_BADGES[edge.classification] : undefined;
+                            const isSelected = inspectedEdge === edge;
+
                             return (
                                 <div
                                     key={`${edge.from}-${edge.to}-${edge.relationship}-${idx}`}
-                                    className="p-3.5 rounded-xl bg-surface border border-border/80 space-y-2 text-xs"
+                                    onClick={() => setInspectedEdge(isSelected ? null : edge)}
+                                    className={`p-3.5 rounded-xl border transition-all cursor-pointer space-y-2 text-xs ${
+                                        isSelected
+                                            ? "bg-accent/10 border-accent text-white ring-1 ring-accent/40 shadow-sm"
+                                            : "bg-surface border-border/80 hover:border-accent/40 hover:bg-surface-hover/50"
+                                    }`}
                                 >
                                     <div className="flex items-center justify-between flex-wrap gap-2">
                                         <div className="flex items-center gap-2 font-mono">
@@ -143,6 +150,9 @@ export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges =
                                                     {edge.temporal}
                                                 </span>
                                             )}
+                                            <span className="text-[10px] text-muted font-mono">
+                                                Inspect ↗
+                                            </span>
                                         </div>
                                     </div>
                                     {edge.explanation && (
@@ -162,6 +172,14 @@ export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges =
                             );
                         })}
                     </div>
+                )}
+
+                {/* Inspectable Causal Edge Telemetry Drawer */}
+                {inspectedEdge && (
+                    <CausalEdgeInspector
+                        edge={inspectedEdge}
+                        onClose={() => setInspectedEdge(null)}
+                    />
                 )}
             </section>
 
@@ -547,6 +565,105 @@ export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges =
                     </div>
                 )}
             </section>
+        </div>
+    );
+}
+
+function CausalEdgeInspector({
+    edge,
+    onClose,
+}: {
+    edge: EvidenceEdge;
+    onClose: () => void;
+}) {
+    const classificationInfo = edge.classification ? CLASSIFICATION_BADGES[edge.classification] : undefined;
+
+    return (
+        <div className="p-4 rounded-xl bg-[#080b11] border border-white/10 space-y-4 text-xs">
+            <div className="flex items-center justify-between border-b border-white/10 pb-3">
+                <div className="flex items-center gap-2">
+                    <Network size={14} className="text-accent" />
+                    <span className="font-semibold text-white">Causal Relationship Telemetry</span>
+                    {edge.classification && (
+                        <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${classificationInfo?.bg} ${classificationInfo?.text} ${classificationInfo?.border}`}>
+                            {edge.classification}
+                        </span>
+                    )}
+                </div>
+                <button
+                    type="button"
+                    onClick={onClose}
+                    className="text-zinc-500 hover:text-white transition-colors p-1"
+                    title="Close inspector"
+                >
+                    ✕
+                </button>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-6 gap-y-3 font-mono">
+                <div>
+                    <span className="text-[10px] text-zinc-500 uppercase block">Source Event (From)</span>
+                    <span className="text-zinc-200 font-semibold">{edge.from}</span>
+                </div>
+                <div>
+                    <span className="text-[10px] text-zinc-500 uppercase block">Target Event (To)</span>
+                    <span className="text-zinc-200 font-semibold">{edge.to}</span>
+                </div>
+                <div>
+                    <span className="text-[10px] text-zinc-500 uppercase block">Relationship Type</span>
+                    <span className="text-accent font-semibold">{edge.relationship}</span>
+                </div>
+                <div>
+                    <span className="text-[10px] text-zinc-500 uppercase block">Temporal Relationship</span>
+                    <span className="text-zinc-300">{edge.temporal || "NOT_EXPLICIT"}</span>
+                </div>
+                <div>
+                    <span className="text-[10px] text-zinc-500 uppercase block">Relationship Strength</span>
+                    <span className="text-emerald-400 font-bold">{Math.round((edge.strength ?? edge.confidence) * 100)}%</span>
+                </div>
+                <div>
+                    <span className="text-[10px] text-zinc-500 uppercase block">Evidence Provenance</span>
+                    <span className="text-blue-400">{edge.provenance || "sdk"}</span>
+                </div>
+            </div>
+
+            {edge.explanation && (
+                <div className="space-y-1">
+                    <span className="text-[10px] text-zinc-500 font-mono uppercase block">Causal Explanation</span>
+                    <p className="text-xs text-zinc-300 bg-surface/40 p-2.5 rounded-lg border border-border/50 leading-relaxed font-sans">
+                        {edge.explanation}
+                    </p>
+                </div>
+            )}
+
+            {edge.strengthFactors && edge.strengthFactors.length > 0 && (
+                <div className="space-y-1.5">
+                    <span className="text-[10px] text-zinc-500 font-mono uppercase block">Evidence Factor Breakdown</span>
+                    <ul className="space-y-1 bg-surface/30 p-2 rounded-lg border border-border/40 text-[11px] text-zinc-300 font-mono">
+                        {edge.strengthFactors.map((f, i) => (
+                            <li key={i} className="flex items-center justify-between">
+                                <span>{f.factor}:</span>
+                                <span className="text-accent">+{Math.round(f.contribution * 100)}%</span>
+                            </li>
+                        ))}
+                    </ul>
+                </div>
+            )}
+
+            {edge.structural && edge.structural.relationType !== "NONE" && (
+                <div className="p-3 rounded-lg bg-blue-950/20 border border-blue-500/20 text-xs font-mono text-zinc-300 space-y-1">
+                    <div className="flex items-center gap-1.5 text-blue-400 font-semibold">
+                        <Code2 size={13} />
+                        <span>Code Call Frame / Structural Relation</span>
+                    </div>
+                    {edge.structural.functionName && (
+                        <div>Function: <span className="text-white font-semibold">{edge.structural.functionName}()</span></div>
+                    )}
+                    {edge.structural.filePath && (
+                        <div>File: <span className="text-zinc-400">{edge.structural.filePath}:{edge.structural.lineNumber || 0}</span></div>
+                    )}
+                </div>
+            )}
         </div>
     );
 }

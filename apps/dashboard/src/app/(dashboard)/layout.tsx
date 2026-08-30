@@ -4,6 +4,8 @@ import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { ensureOrganization } from "@/lib/organization";
 
+export const dynamic = "force-dynamic";
+
 export default async function DashboardLayout({
     children,
 }: {

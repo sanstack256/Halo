@@ -283,7 +283,7 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                                     <p className="text-secondary">Link GitHub or GitLab to see source code inline with stack traces.</p>
                                 </div>
                             </div>
-                            <Link href="/settings" className="halo-btn halo-btn-sm halo-btn-secondary">
+                            <Link href={`/projects/${issue.projectId}/settings`} className="halo-btn halo-btn-sm halo-btn-secondary">
                                 Connect Git
                             </Link>
                         </div>

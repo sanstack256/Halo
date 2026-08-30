@@ -1259,7 +1259,19 @@ function buildInsufficientEvidenceRecommendation(
     context: InvestigationContext,
     evidenceIds: string[],
 ): Recommendation {
-    const errors = context.errors.filter(e => evidenceIds.includes(e.id));
+    const totalEvaluatedCount = context.evidence?.length ?? (
+        context.errors.length +
+        context.traces.length +
+        context.deployments.length +
+        context.logs.length +
+        context.metrics.length
+    );
+
+    const resolvedEvidenceIds = evidenceIds.length > 0
+        ? evidenceIds
+        : (context.evidence?.map(e => e.id) ?? context.errors.map(e => e.id));
+
+    const errors = context.errors.filter(e => resolvedEvidenceIds.includes(e.id));
     const firstError = errors[0] ?? context.errors[0];
 
     const evidenceChain: RecommendationEvidenceLink[] = firstError ? [{
@@ -1275,7 +1287,7 @@ function buildInsufficientEvidenceRecommendation(
         description: "The available telemetry is insufficient to prescribe a specific fix. See the unknowns block for what additional information is needed.",
         priority: "HIGH",
         confidence: 0,
-        evidenceIds,
+        evidenceIds: resolvedEvidenceIds,
         kind: "insufficient-evidence",
         immediateAction: "Collect the missing telemetry listed below, then re-run the investigation.",
         rootCauseTechnical: firstError
@@ -1298,7 +1310,7 @@ function buildInsufficientEvidenceRecommendation(
         },
         unknowns: {
             whatHaloKnows: firstError
-                ? [`An error was captured: "${firstError.title.slice(0, 80)}"`, `${evidenceIds.length} evidence event(s) were evaluated.`]
+                ? [`An error was captured: "${firstError.title.slice(0, 80)}"`, `${totalEvaluatedCount} evidence event(s) were evaluated.`]
                 : [`No error events were found in the evidence set.`],
             whatIsMissing: [
                 `Server-side error logs or stack traces for the failing request.`,
