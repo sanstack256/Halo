@@ -411,7 +411,9 @@ export const ModelName = {
   Verification: 'Verification',
   ReplaySession: 'ReplaySession',
   ReplayChunk: 'ReplayChunk',
-  Monitor: 'Monitor'
+  Monitor: 'Monitor',
+  MonitorAlert: 'MonitorAlert',
+  MonitorAlertNotification: 'MonitorAlertNotification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -427,7 +429,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "replayChunk" | "monitor"
+    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1541,6 +1543,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    MonitorAlert: {
+      payload: Prisma.$MonitorAlertPayload<ExtArgs>
+      fields: Prisma.MonitorAlertFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MonitorAlertFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MonitorAlertFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertPayload>
+        }
+        findFirst: {
+          args: Prisma.MonitorAlertFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MonitorAlertFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertPayload>
+        }
+        findMany: {
+          args: Prisma.MonitorAlertFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertPayload>[]
+        }
+        create: {
+          args: Prisma.MonitorAlertCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertPayload>
+        }
+        createMany: {
+          args: Prisma.MonitorAlertCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MonitorAlertCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertPayload>[]
+        }
+        delete: {
+          args: Prisma.MonitorAlertDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertPayload>
+        }
+        update: {
+          args: Prisma.MonitorAlertUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertPayload>
+        }
+        deleteMany: {
+          args: Prisma.MonitorAlertDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MonitorAlertUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MonitorAlertUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertPayload>[]
+        }
+        upsert: {
+          args: Prisma.MonitorAlertUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertPayload>
+        }
+        aggregate: {
+          args: Prisma.MonitorAlertAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMonitorAlert>
+        }
+        groupBy: {
+          args: Prisma.MonitorAlertGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MonitorAlertGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MonitorAlertCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MonitorAlertCountAggregateOutputType> | number
+        }
+      }
+    }
+    MonitorAlertNotification: {
+      payload: Prisma.$MonitorAlertNotificationPayload<ExtArgs>
+      fields: Prisma.MonitorAlertNotificationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MonitorAlertNotificationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertNotificationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MonitorAlertNotificationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertNotificationPayload>
+        }
+        findFirst: {
+          args: Prisma.MonitorAlertNotificationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertNotificationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MonitorAlertNotificationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertNotificationPayload>
+        }
+        findMany: {
+          args: Prisma.MonitorAlertNotificationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertNotificationPayload>[]
+        }
+        create: {
+          args: Prisma.MonitorAlertNotificationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertNotificationPayload>
+        }
+        createMany: {
+          args: Prisma.MonitorAlertNotificationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MonitorAlertNotificationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertNotificationPayload>[]
+        }
+        delete: {
+          args: Prisma.MonitorAlertNotificationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertNotificationPayload>
+        }
+        update: {
+          args: Prisma.MonitorAlertNotificationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertNotificationPayload>
+        }
+        deleteMany: {
+          args: Prisma.MonitorAlertNotificationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MonitorAlertNotificationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MonitorAlertNotificationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertNotificationPayload>[]
+        }
+        upsert: {
+          args: Prisma.MonitorAlertNotificationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorAlertNotificationPayload>
+        }
+        aggregate: {
+          args: Prisma.MonitorAlertNotificationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMonitorAlertNotification>
+        }
+        groupBy: {
+          args: Prisma.MonitorAlertNotificationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MonitorAlertNotificationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MonitorAlertNotificationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MonitorAlertNotificationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1851,6 +2001,37 @@ export const MonitorScalarFieldEnum = {
 export type MonitorScalarFieldEnum = (typeof MonitorScalarFieldEnum)[keyof typeof MonitorScalarFieldEnum]
 
 
+export const MonitorAlertScalarFieldEnum = {
+  id: 'id',
+  monitorId: 'monitorId',
+  status: 'status',
+  triggeredAt: 'triggeredAt',
+  acknowledgedAt: 'acknowledgedAt',
+  resolvedAt: 'resolvedAt',
+  conditionSummary: 'conditionSummary',
+  observedValue: 'observedValue',
+  thresholdValue: 'thresholdValue',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MonitorAlertScalarFieldEnum = (typeof MonitorAlertScalarFieldEnum)[keyof typeof MonitorAlertScalarFieldEnum]
+
+
+export const MonitorAlertNotificationScalarFieldEnum = {
+  id: 'id',
+  alertId: 'alertId',
+  channel: 'channel',
+  destination: 'destination',
+  outcome: 'outcome',
+  failReason: 'failReason',
+  attemptedAt: 'attemptedAt'
+} as const
+
+export type MonitorAlertNotificationScalarFieldEnum = (typeof MonitorAlertNotificationScalarFieldEnum)[keyof typeof MonitorAlertNotificationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2093,6 +2274,48 @@ export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, '
 export type ListFloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float[]'>
     
 
+
+/**
+ * Reference to a field of type 'MonitorAlertStatus'
+ */
+export type EnumMonitorAlertStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonitorAlertStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'MonitorAlertStatus[]'
+ */
+export type ListEnumMonitorAlertStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonitorAlertStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'NotificationChannel'
+ */
+export type EnumNotificationChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationChannel'>
+    
+
+
+/**
+ * Reference to a field of type 'NotificationChannel[]'
+ */
+export type ListEnumNotificationChannelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationChannel[]'>
+    
+
+
+/**
+ * Reference to a field of type 'NotificationOutcome'
+ */
+export type EnumNotificationOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationOutcome'>
+    
+
+
+/**
+ * Reference to a field of type 'NotificationOutcome[]'
+ */
+export type ListEnumNotificationOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationOutcome[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -2259,6 +2482,8 @@ export type GlobalOmitConfig = {
   replaySession?: Prisma.ReplaySessionOmit
   replayChunk?: Prisma.ReplayChunkOmit
   monitor?: Prisma.MonitorOmit
+  monitorAlert?: Prisma.MonitorAlertOmit
+  monitorAlertNotification?: Prisma.MonitorAlertNotificationOmit
 }
 
 /* Types for Logging */

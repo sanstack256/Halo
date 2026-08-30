@@ -116,3 +116,13 @@ export type ReplayChunk = Prisma.ReplayChunkModel
  * 
  */
 export type Monitor = Prisma.MonitorModel
+/**
+ * Model MonitorAlert
+ * 
+ */
+export type MonitorAlert = Prisma.MonitorAlertModel
+/**
+ * Model MonitorAlertNotification
+ * 
+ */
+export type MonitorAlertNotification = Prisma.MonitorAlertNotificationModel

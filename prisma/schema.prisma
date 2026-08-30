@@ -375,9 +375,65 @@ model Monitor {
 
   project         Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
   creator         User?           @relation(fields: [creatorId], references: [id])
+  alerts          MonitorAlert[]
 
   @@index([projectId, type])
   @@index([projectId, status])
   @@index([status])
 }
 
+enum MonitorAlertStatus {
+  OPEN
+  ACKNOWLEDGED
+  RESOLVED
+}
+
+model MonitorAlert {
+  id              String               @id @default(cuid())
+  monitorId       String
+  status          MonitorAlertStatus   @default(OPEN)
+  triggeredAt     DateTime             @default(now())
+  acknowledgedAt  DateTime?
+  resolvedAt      DateTime?
+  // The condition that was met when the alert fired
+  conditionSummary String             // human-readable e.g. "Error count 14 >= threshold 5 in 10m"
+  observedValue   Float?              // raw observed value at trigger time
+  thresholdValue  Float?              // configured threshold at trigger time
+  notes           String?             // optional operator notes
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  monitor         Monitor             @relation(fields: [monitorId], references: [id], onDelete: Cascade)
+  notifications   MonitorAlertNotification[]
+
+  @@index([monitorId])
+  @@index([status])
+  @@index([triggeredAt])
+}
+
+enum NotificationChannel {
+  EMAIL
+  WEBHOOK
+  IN_APP
+}
+
+enum NotificationOutcome {
+  PENDING
+  DELIVERED
+  FAILED
+  SKIPPED
+}
+
+model MonitorAlertNotification {
+  id          String              @id @default(cuid())
+  alertId     String
+  channel     NotificationChannel @default(EMAIL)
+  destination String?             // email address, webhook URL, etc.
+  outcome     NotificationOutcome @default(PENDING)
+  failReason  String?
+  attemptedAt DateTime            @default(now())
+
+  alert       MonitorAlert        @relation(fields: [alertId], references: [id], onDelete: Cascade)
+
+  @@index([alertId])
+}

@@ -196,7 +196,7 @@ const primaryNavigation: PrimarySection[] = [
             },
             {
                 items: [
-                    { label: "Alerts", href: "/monitors?status=FIRING", icon: ShieldAlert },
+                    { label: "Alerts", href: "/monitors/alerts", icon: ShieldAlert },
                 ],
             },
         ],
@@ -302,6 +302,9 @@ function isItemActive(pathname: string, href: string, fullPath?: string) {
     }
     if (href === "/monitors/mine") {
         return pathname === "/monitors/mine";
+    }
+    if (href === "/monitors/alerts") {
+        return pathname === "/monitors/alerts" || pathname.startsWith("/monitors/alerts/");
     }
     if (href === "/monitors") {
         return pathname === "/monitors" && (!fullPath || !fullPath.includes("?"));

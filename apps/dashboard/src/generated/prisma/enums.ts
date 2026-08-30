@@ -88,3 +88,31 @@ export const MonitorSeverity = {
 } as const
 
 export type MonitorSeverity = (typeof MonitorSeverity)[keyof typeof MonitorSeverity]
+
+
+export const MonitorAlertStatus = {
+  OPEN: 'OPEN',
+  ACKNOWLEDGED: 'ACKNOWLEDGED',
+  RESOLVED: 'RESOLVED'
+} as const
+
+export type MonitorAlertStatus = (typeof MonitorAlertStatus)[keyof typeof MonitorAlertStatus]
+
+
+export const NotificationChannel = {
+  EMAIL: 'EMAIL',
+  WEBHOOK: 'WEBHOOK',
+  IN_APP: 'IN_APP'
+} as const
+
+export type NotificationChannel = (typeof NotificationChannel)[keyof typeof NotificationChannel]
+
+
+export const NotificationOutcome = {
+  PENDING: 'PENDING',
+  DELIVERED: 'DELIVERED',
+  FAILED: 'FAILED',
+  SKIPPED: 'SKIPPED'
+} as const
+
+export type NotificationOutcome = (typeof NotificationOutcome)[keyof typeof NotificationOutcome]

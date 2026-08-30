@@ -1,4 +1,5 @@
 import { getMonitorById } from "@/actions/monitor";
+import { getOrgAlerts } from "@/actions/alert";
 import { notFound } from "next/navigation";
 import Link from "next/link";
 import {
@@ -34,6 +35,13 @@ export default async function MonitorDetailPage({ params }: MonitorDetailPagePro
     if (!monitor) {
         notFound();
     }
+
+    const { alerts: recentAlerts } = await getOrgAlerts({
+        monitorId: id,
+        sortBy: "triggeredAt",
+        sortOrder: "desc",
+        pageSize: 5,
+    });
 
     return (
         <div className="space-y-8 pb-16">
@@ -246,6 +254,64 @@ export default async function MonitorDetailPage({ params }: MonitorDetailPagePro
                         </div>
                     </div>
                 </div>
+            </div>
+            {/* Recent Alerts */}
+            <div>
+                <div className="flex items-center justify-between mb-3">
+                    <h2 className="text-sm font-semibold text-white">Recent Alerts</h2>
+                    <Link
+                        href={`/monitors/alerts?monitor=${monitor.id}`}
+                        className="text-xs text-[var(--accent)] hover:underline font-mono"
+                    >
+                        View all →
+                    </Link>
+                </div>
+                {recentAlerts.length === 0 ? (
+                    <div className="p-5 rounded-xl border border-border bg-surface-elevated text-center">
+                        <p className="text-xs text-zinc-500">No alerts recorded for this monitor yet.</p>
+                    </div>
+                ) : (
+                    <div className="border border-border rounded-xl overflow-hidden">
+                        <table className="w-full text-xs font-mono">
+                            <thead>
+                                <tr className="border-b border-border bg-surface-elevated">
+                                    <th className="text-left px-4 py-2.5 text-zinc-500 font-medium">Status</th>
+                                    <th className="text-left px-4 py-2.5 text-zinc-500 font-medium">Condition</th>
+                                    <th className="text-left px-4 py-2.5 text-zinc-500 font-medium">Triggered</th>
+                                    <th className="text-right px-4 py-2.5 text-zinc-500 font-medium"></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {recentAlerts.map((a) => {
+                                    const dotColor = a.status === "OPEN" ? "bg-red-400" : a.status === "ACKNOWLEDGED" ? "bg-amber-400" : "bg-emerald-400";
+                                    const badgeColor = a.status === "OPEN" ? "text-red-400 bg-red-500/10 border-red-500/20" : a.status === "ACKNOWLEDGED" ? "text-amber-400 bg-amber-500/10 border-amber-500/20" : "text-emerald-400 bg-emerald-500/10 border-emerald-500/20";
+                                    return (
+                                        <tr key={a.id} className="border-b border-border/60">
+                                            <td className="px-4 py-3">
+                                                <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium border ${badgeColor}`}>
+                                                    <span className={`w-1.5 h-1.5 rounded-full ${dotColor}`} />
+                                                    {a.status.charAt(0) + a.status.slice(1).toLowerCase()}
+                                                </span>
+                                            </td>
+                                            <td className="px-4 py-3 text-zinc-400 truncate max-w-[260px]">{a.conditionSummary}</td>
+                                            <td className="px-4 py-3">
+                                                <RelativeTime date={a.triggeredAt} />
+                                            </td>
+                                            <td className="px-4 py-3 text-right">
+                                                <Link
+                                                    href={`/monitors/alerts/${a.id}`}
+                                                    className="text-xs text-zinc-500 hover:text-white transition-colors"
+                                                >
+                                                    View →
+                                                </Link>
+                                            </td>
+                                        </tr>
+                                    );
+                                })}
+                            </tbody>
+                        </table>
+                    </div>
+                )}
             </div>
         </div>
     );

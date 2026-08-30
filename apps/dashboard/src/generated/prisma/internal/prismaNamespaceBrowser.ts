@@ -65,7 +65,9 @@ export const ModelName = {
   Verification: 'Verification',
   ReplaySession: 'ReplaySession',
   ReplayChunk: 'ReplayChunk',
-  Monitor: 'Monitor'
+  Monitor: 'Monitor',
+  MonitorAlert: 'MonitorAlert',
+  MonitorAlertNotification: 'MonitorAlertNotification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -353,6 +355,37 @@ export const MonitorScalarFieldEnum = {
 } as const
 
 export type MonitorScalarFieldEnum = (typeof MonitorScalarFieldEnum)[keyof typeof MonitorScalarFieldEnum]
+
+
+export const MonitorAlertScalarFieldEnum = {
+  id: 'id',
+  monitorId: 'monitorId',
+  status: 'status',
+  triggeredAt: 'triggeredAt',
+  acknowledgedAt: 'acknowledgedAt',
+  resolvedAt: 'resolvedAt',
+  conditionSummary: 'conditionSummary',
+  observedValue: 'observedValue',
+  thresholdValue: 'thresholdValue',
+  notes: 'notes',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MonitorAlertScalarFieldEnum = (typeof MonitorAlertScalarFieldEnum)[keyof typeof MonitorAlertScalarFieldEnum]
+
+
+export const MonitorAlertNotificationScalarFieldEnum = {
+  id: 'id',
+  alertId: 'alertId',
+  channel: 'channel',
+  destination: 'destination',
+  outcome: 'outcome',
+  failReason: 'failReason',
+  attemptedAt: 'attemptedAt'
+} as const
+
+export type MonitorAlertNotificationScalarFieldEnum = (typeof MonitorAlertNotificationScalarFieldEnum)[keyof typeof MonitorAlertNotificationScalarFieldEnum]
 
 
 export const SortOrder = {
