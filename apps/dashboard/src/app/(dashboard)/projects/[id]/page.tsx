@@ -7,7 +7,6 @@ import { getProjectMetrics } from "@/actions/project-metrics";
 
 import ProjectOverview from "@/components/projects/project-overview";
 import ProjectQuickStart from "@/components/projects/project-quick-start";
-import ApiKeysSection from "@/components/projects/api-keys-section";
 import { getReleaseCount } from "@/actions/release";
 
 type Props = {
@@ -68,9 +67,7 @@ export default async function ProjectPage({
 
     return (
         <div className="space-y-8">
-
             {/* Main overview + Quick Start */}
-
             <div
                 className="
                     grid
@@ -80,9 +77,7 @@ export default async function ProjectPage({
                     lg:items-start
                 "
             >
-
                 {/* Main content */}
-
                 <ProjectOverview
                     projectId={project.id}
                     eventCount={events.length}
@@ -95,22 +90,12 @@ export default async function ProjectPage({
                 />
 
                 {/* Secondary project setup */}
-
                 <ProjectQuickStart
                     projectId={project.id}
                     hasApiKey={hasApiKey}
                     hasEvents={hasEvents}
                 />
-
             </div>
-
-            {/* API Keys */}
-
-            <ApiKeysSection
-                projectId={project.id}
-                apiKeys={apiKeys}
-            />
-
         </div>
     );
 }

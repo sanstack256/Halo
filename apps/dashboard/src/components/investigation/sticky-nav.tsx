@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState, useEffect, useCallback, useMemo } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import {
     Activity,
     FileText,
@@ -71,7 +71,6 @@ const CATEGORIES: CategoryNavItem[] = [
 export function InvestigationStickyNav() {
     const [activeCategoryId, setActiveCategoryId] = useState<string>("summary");
     const [scrollPercent, setScrollPercent] = useState<number>(0);
-    const [isSticky, setIsSticky] = useState<boolean>(false);
 
     const updateActiveCategory = useCallback(() => {
         const main = document.querySelector("main");
@@ -83,7 +82,6 @@ export function InvestigationStickyNav() {
         const maxScroll = scrollHeight - containerHeight;
         const progress = maxScroll > 0 ? Math.min(100, Math.max(0, (scrollY / maxScroll) * 100)) : 0;
         setScrollPercent(progress);
-        setIsSticky(scrollY > 60);
 
         // If at the bottom of the page, automatically activate the last category (Actions)
         if (scrollY + containerHeight >= scrollHeight - 50) {
@@ -147,16 +145,11 @@ export function InvestigationStickyNav() {
     };
 
     return (
-        <div
-            className={`sticky top-0 z-30 transition-all duration-200 backdrop-blur-md border-b ${
-                isSticky
-                    ? "bg-[#080b11]/92 border-border shadow-xl"
-                    : "bg-[#080b11]/60 border-border/40"
-            }`}
-        >
-            <div className="max-w-5xl mx-auto px-2 sm:px-4">
-                {/* 6 Category Navigation Items */}
-                <div className="grid grid-cols-6 gap-1 sm:gap-2 py-2">
+        <div className="sticky top-0 z-30 w-full max-w-5xl mx-auto my-2">
+            {/* Elevated, solid persistent navigation container */}
+            <div className="halo-sticky-nav-container">
+                {/* 6 Category Navigation Items on a single horizontal row */}
+                <div className="flex items-center justify-between gap-1 overflow-x-auto no-scrollbar flex-nowrap">
                     {CATEGORIES.map((cat) => {
                         const Icon = cat.icon;
                         const isActive = activeCategoryId === cat.id;
@@ -167,21 +160,19 @@ export function InvestigationStickyNav() {
                                 type="button"
                                 onClick={() => scrollToCategory(cat.targetSectionId, cat.id)}
                                 aria-current={isActive ? "true" : undefined}
-                                className={`flex items-center justify-center gap-1.5 sm:gap-2 py-2 px-1 sm:px-3 rounded-lg text-xs font-mono transition-all duration-150 select-none focus:outline-none focus-visible:ring-2 focus-visible:ring-accent ${
-                                    isActive
-                                        ? "bg-accent text-white font-bold shadow-md shadow-accent/20 ring-1 ring-white/15"
-                                        : "text-zinc-400 hover:text-zinc-100 hover:bg-surface/70"
+                                className={`halo-sticky-nav-item flex-1 ${
+                                    isActive ? "halo-sticky-nav-item-active" : ""
                                 }`}
                             >
-                                <Icon size={14} className="shrink-0" />
-                                <span className="truncate tracking-wide">{cat.label}</span>
+                                <Icon size={13} className="shrink-0" />
+                                <span className="tracking-wide">{cat.label}</span>
                             </button>
                         );
                     })}
                 </div>
 
-                {/* Subtle Scroll Progress Indicator */}
-                <div className="w-full h-[2px] bg-white/5 rounded-full overflow-hidden">
+                {/* Subtle Scroll Progress Indicator at bottom boundary */}
+                <div className="w-full h-[2px] bg-white/5 rounded-full overflow-hidden mt-1.5">
                     <div
                         className="h-full bg-accent transition-all duration-75 ease-out rounded-full"
                         style={{ width: `${scrollPercent}%` }}

@@ -419,6 +419,13 @@ export async function getEvents(
                     name: true,
                 },
             },
+            issue: {
+                select: {
+                    id: true,
+                    title: true,
+                    fingerprint: true,
+                },
+            },
         },
         orderBy: {
             timestamp: "desc",

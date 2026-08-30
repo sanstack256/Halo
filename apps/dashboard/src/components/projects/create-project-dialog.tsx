@@ -13,7 +13,11 @@ import {
     DialogTitle,
 } from "@/components/ui/dialog";
 
-export default function CreateProjectDialog() {
+interface CreateProjectDialogProps {
+    trigger?: React.ReactNode;
+}
+
+export default function CreateProjectDialog({ trigger }: CreateProjectDialogProps = {}) {
     const router = useRouter();
     const [open, setOpen] = useState(false);
     const [projectName, setProjectName] = useState("");
@@ -49,17 +53,37 @@ export default function CreateProjectDialog() {
 
     return (
         <>
-            <button
-                type="button"
-                onClick={() => {
-                    setErrorMessage(null);
-                    setOpen(true);
-                }}
-                className="halo-btn halo-btn-primary"
-            >
-                <Plus size={15} />
-                New Project
-            </button>
+            {trigger ? (
+                <div
+                    onClick={() => {
+                        setErrorMessage(null);
+                        setOpen(true);
+                    }}
+                    role="button"
+                    tabIndex={0}
+                    onKeyDown={(e) => {
+                        if (e.key === "Enter" || e.key === " ") {
+                            e.preventDefault();
+                            setErrorMessage(null);
+                            setOpen(true);
+                        }
+                    }}
+                >
+                    {trigger}
+                </div>
+            ) : (
+                <button
+                    type="button"
+                    onClick={() => {
+                        setErrorMessage(null);
+                        setOpen(true);
+                    }}
+                    className="halo-btn halo-btn-primary"
+                >
+                    <Plus size={15} />
+                    New Project
+                </button>
+            )}
 
             <Dialog open={open} onOpenChange={(val) => {
                 setOpen(val);

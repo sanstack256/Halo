@@ -3,6 +3,7 @@ import Topbar from "@/components/overview/topbar";
 import { getSession } from "@/lib/session";
 import { redirect } from "next/navigation";
 import { ensureOrganization } from "@/lib/organization";
+import { getProjects } from "@/actions/project";
 
 export const dynamic = "force-dynamic";
 
@@ -23,14 +24,23 @@ export default async function DashboardLayout({
         redirect("/sign-in");
     }
 
+    let projects: Array<{ id: string; name: string }> = [];
+    try {
+        const dbProjects = await getProjects();
+        projects = dbProjects.map((p) => ({
+            id: p.id,
+            name: p.name,
+        }));
+    } catch {
+        projects = [];
+    }
+
     return (
         <div className="flex h-screen overflow-hidden bg-background">
             {/* Global navigation */}
-
-            <Sidebar />
+            <Sidebar initialProjects={projects} />
 
             {/* Application */}
-
             <div className="flex min-w-0 flex-1 flex-col">
                 <Topbar />
 

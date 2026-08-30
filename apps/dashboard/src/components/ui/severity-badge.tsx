@@ -1,61 +1,47 @@
-import {
-    AlertCircle,
-    AlertTriangle,
-    Circle,
-    Flame,
-} from "lucide-react";
-
+import React from "react";
 import { EventSeverity } from "@/generated/prisma/client";
-import { Badge } from "@/components/ui/badge";
 
 type Props = {
-    severity: EventSeverity;
+    severity: EventSeverity | string;
+    className?: string;
 };
 
-const styles = {
-    INFO: {
-        icon: Circle,
-        className:
-            "bg-[#5bb8ff]/10 text-[#7bc8ff] border-[#5bb8ff]/10",
-    },
-
-    WARNING: {
-        icon: AlertTriangle,
-        className:
-            "bg-[#f59e0b]/10 text-[#fbbf24] border-[#f59e0b]/10",
-    },
-
-    ERROR: {
-        icon: AlertCircle,
-        className:
-            "bg-[#ef4444]/10 text-[#ff8b8b] border-[#ef4444]/10",
-    },
-
+const severityStyles: Record<string, { className: string; label: string }> = {
     FATAL: {
-        icon: Flame,
-        className:
-            "bg-[#dc2626]/12 text-[#ff9b9b] border-[#dc2626]/12",
+        className: "bg-red-500/15 text-red-400 border-red-500/30 font-semibold",
+        label: "FATAL",
     },
-} satisfies Record<
-    EventSeverity,
-    {
-        icon: React.ElementType;
-        className: string;
-    }
->;
+    ERROR: {
+        className: "bg-red-500/10 text-red-400 border-red-500/20",
+        label: "ERROR",
+    },
+    WARN: {
+        className: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+        label: "WARN",
+    },
+    WARNING: {
+        className: "bg-amber-500/10 text-amber-400 border-amber-500/20",
+        label: "WARNING",
+    },
+    INFO: {
+        className: "bg-blue-500/10 text-blue-400 border-blue-500/20",
+        label: "INFO",
+    },
+    DEBUG: {
+        className: "bg-zinc-800 text-zinc-400 border-zinc-700",
+        label: "DEBUG",
+    },
+};
 
-export function SeverityBadge({
-    severity,
-}: Props) {
-    const { icon: Icon, className } =
-        styles[severity];
+export function SeverityBadge({ severity, className = "" }: Props) {
+    const s = String(severity || "INFO").toUpperCase();
+    const style = severityStyles[s] || severityStyles.INFO;
 
     return (
-        <Badge
-            className={className}
+        <span
+            className={`inline-flex items-center px-2 py-0.5 rounded text-[10px] font-mono font-medium border ${style.className} ${className}`}
         >
-            <Icon className="mr-1.5 h-3.5 w-3.5" />
-            {severity}
-        </Badge>
+            {style.label}
+        </span>
     );
 }

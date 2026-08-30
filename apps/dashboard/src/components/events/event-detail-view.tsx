@@ -6,12 +6,14 @@ import {
     Activity,
     AlertCircle,
     ArrowLeft,
+    ArrowUpRight,
     Check,
     Clock,
     Code2,
     Copy,
     ExternalLink,
     FileCode,
+    Filter,
     Layers,
     Play,
     Server,
@@ -24,22 +26,58 @@ import {
     Zap,
 } from "lucide-react";
 import { RelativeTime } from "@/components/ui/relative-time";
-import { Badge } from "@/components/ui/badge";
 import { SeverityBadge } from "@/components/ui/severity-badge";
+import { EventTypeBadge } from "@/components/events/event-type-badge";
 import { BackButton } from "@/components/ui/back-button";
+import { formatDeterministicDateTime } from "@/lib/date-format";
 import StackTrace from "@/components/events/stack-trace";
 import Breadcrumbs from "@/components/events/breadcrumbs";
 import Tags from "@/components/events/tags";
 import User from "@/components/events/user";
 
+export interface TelemetryDetailEvent {
+    id: string;
+    type: string;
+    severity: string;
+    title: string;
+    message: string | null;
+    timestamp: Date;
+    service?: string | null;
+    environmentId?: string | null;
+    environment?: { name: string } | null;
+    sdkName?: string | null;
+    sdkVersion?: string | null;
+    release?: string | null;
+    requestId?: string | null;
+    traceId?: string | null;
+    durationMs?: number | null;
+    operation?: string | null;
+    resource?: string | null;
+    status?: string | number | null;
+    sessionId?: string | null;
+    fingerprint?: string | null;
+    stack?: string | null;
+    breadcrumbs?: any;
+    tags?: any;
+    user?: any;
+    metadata?: any;
+    issueId?: string | null;
+    issue?: {
+        id: string;
+        title: string;
+        fingerprint?: string | null;
+    } | null;
+}
+
 interface Props {
     projectId: string;
-    event: any;
+    event: TelemetryDetailEvent;
 }
 
 export function EventDetailView({ projectId, event }: Props) {
     const [copiedJson, setCopiedJson] = useState(false);
-    const [activeTab, setActiveTab] = useState<"overview" | "request" | "breadcrumbs" | "tags" | "raw">("overview");
+    const [copiedId, setCopiedId] = useState(false);
+    const [activeTab, setActiveTab] = useState<"overview" | "stack" | "request" | "breadcrumbs" | "tags" | "raw">("overview");
 
     const copyRawJson = () => {
         navigator.clipboard.writeText(JSON.stringify(event, null, 2));
@@ -47,284 +85,404 @@ export function EventDetailView({ projectId, event }: Props) {
         setTimeout(() => setCopiedJson(false), 2000);
     };
 
+    const copyEventId = () => {
+        navigator.clipboard.writeText(event.id);
+        setCopiedId(true);
+        setTimeout(() => setCopiedId(false), 2000);
+    };
+
     const hasRequestInfo = Boolean(
-        event.operation || event.resource || event.status || event.durationMs || event.requestId || event.traceId
+        event.operation || event.resource || event.status || event.durationMs !== null || event.requestId || event.traceId
+    );
+    const hasStack = Boolean(event.stack);
+    const hasBreadcrumbs = Boolean(Array.isArray(event.breadcrumbs) && event.breadcrumbs.length > 0);
+    const hasTagsOrUser = Boolean(
+        (event.tags && typeof event.tags === "object" && Object.keys(event.tags).length > 0) ||
+        (event.user && typeof event.user === "object" && Object.keys(event.user).length > 0) ||
+        event.metadata
     );
 
     return (
         <div className="space-y-6 pb-16">
-            {/* Header / Breadcrumb */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-5">
-                <div className="space-y-2">
-                    <BackButton fallbackHref={`/projects/${projectId}/events`} label="Back to Events" />
+            {/* 2. TOP AREA / HEADER */}
+            <div className="flex flex-col md:flex-row md:items-start justify-between gap-4 border-b border-border pb-5">
+                <div className="space-y-2 max-w-3xl">
+                    <BackButton fallbackHref={`/projects/${projectId}/events`} label="Events" />
 
-                    <div className="flex items-center gap-2.5 flex-wrap pt-1">
-                        <span className="text-xs font-mono font-bold px-2.5 py-1 rounded-lg border bg-surface border-border text-accent">
-                            {event.type}
-                        </span>
+                    <div className="flex items-center gap-2 pt-1 flex-wrap">
+                        <EventTypeBadge type={event.type} />
+                        <span className="text-zinc-600">·</span>
                         <SeverityBadge severity={event.severity} />
-                        <span className="text-xs font-mono text-zinc-500">
-                            ID: <code className="text-zinc-300">{event.id}</code>
-                        </span>
                     </div>
 
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
+                    <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight leading-tight">
                         {event.title}
                     </h1>
 
-                    <div className="flex items-center gap-3 text-xs font-mono text-secondary flex-wrap">
-                        <span>{new Date(event.timestamp).toLocaleString()}</span>
-                        <span className="text-zinc-600">•</span>
-                        <RelativeTime date={event.timestamp} />
-                        <span className="text-zinc-600">•</span>
-                        <span className="text-zinc-300">{event.service || "web-client"}</span>
-                        {event.release && (
-                            <>
-                                <span className="text-zinc-600">•</span>
-                                <span className="text-indigo-400">Release: {event.release}</span>
-                            </>
+                    {event.message && event.message !== event.title && (
+                        <p className="text-xs font-mono text-zinc-400 leading-relaxed">
+                            {event.message}
+                        </p>
+                    )}
+                </div>
+
+                {/* Right Header Actions & Identifiers */}
+                <div className="flex flex-col md:items-end gap-2 shrink-0">
+                    <div className="flex items-center gap-2 flex-wrap">
+                        {event.issueId && (
+                            <Link
+                                href={`/projects/${projectId}/investigations/new?issueId=${event.issueId}&eventId=${event.id}`}
+                                className="halo-btn halo-btn-sm halo-btn-primary inline-flex items-center gap-1.5 shadow-lg shadow-accent/20"
+                            >
+                                <Sparkles size={14} />
+                                <span>Investigate Event</span>
+                            </Link>
+                        )}
+                        {(event.issue?.id || event.issueId) && (
+                            <Link
+                                href={`/projects/${projectId}/issues/${event.issue?.id || event.issueId}`}
+                                className="halo-btn halo-btn-sm halo-btn-secondary inline-flex items-center gap-1.5"
+                            >
+                                <span>View Issue</span>
+                                <ArrowUpRight size={13} />
+                            </Link>
                         )}
                     </div>
-                </div>
 
-                {/* Top Action Bar */}
-                <div className="flex items-center gap-2 flex-wrap">
-                    {event.issueId && (
-                        <Link
-                            href={`/projects/${projectId}/investigations/new?issueId=${event.issueId}&eventId=${event.id}`}
-                            className="halo-btn halo-btn-sm halo-btn-primary flex items-center gap-1.5 shadow-lg shadow-accent/20"
+                    {/* Timestamp & ID */}
+                    <div className="flex items-center gap-2 text-xs font-mono text-secondary pt-1 flex-wrap">
+                        <span title={formatDeterministicDateTime(event.timestamp)}>
+                            {formatDeterministicDateTime(event.timestamp)}
+                        </span>
+                        <span className="text-zinc-600">·</span>
+                        <RelativeTime date={event.timestamp} />
+                        <span className="text-zinc-600">·</span>
+                        <button
+                            type="button"
+                            onClick={copyEventId}
+                            className="text-zinc-400 hover:text-white inline-flex items-center gap-1 cursor-pointer"
+                            title="Copy Event ID"
                         >
-                            <Sparkles size={14} />
-                            <span>Investigate Event</span>
-                        </Link>
-                    )}
-                    <button
-                        type="button"
-                        onClick={copyRawJson}
-                        className="halo-btn halo-btn-sm halo-btn-secondary flex items-center gap-1.5"
-                    >
-                        {copiedJson ? <Check size={13} className="text-emerald-400" /> : <Copy size={13} />}
-                        <span>{copiedJson ? "JSON Copied" : "Copy Payload"}</span>
-                    </button>
+                            <span>ID: <code className="text-zinc-300">{event.id}</code></span>
+                            {copiedId ? <Check size={11} className="text-emerald-400" /> : <Copy size={11} />}
+                        </button>
+                    </div>
                 </div>
             </div>
 
-            {/* Quick Context Summary Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 md:grid-cols-6 gap-3 text-xs font-mono">
-                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Service</span>
-                    <span className="text-accent font-bold truncate block">{event.service || "web-client"}</span>
+            {/* 3. EVENT SUMMARY METADATA GRID */}
+            <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-6 gap-3 text-xs font-mono">
+                <div className="p-3 rounded-xl bg-surface border border-border space-y-0.5">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">Service</span>
+                    <span className="text-zinc-200 font-semibold truncate block">{event.service || "—"}</span>
                 </div>
-                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Environment</span>
-                    <span className="text-zinc-300 truncate block">{event.environment?.name || "production"}</span>
+
+                <div className="p-3 rounded-xl bg-surface border border-border space-y-0.5">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">Environment</span>
+                    <span className="text-zinc-200 font-semibold truncate block">{event.environment?.name || "production"}</span>
                 </div>
-                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">SDK Runtime</span>
-                    <span className="text-zinc-300 truncate block">
-                        {event.sdkName ? `${event.sdkName}${event.sdkVersion ? ` v${event.sdkVersion}` : ""}` : "Not captured"}
+
+                <div className="p-3 rounded-xl bg-surface border border-border space-y-0.5">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">SDK Runtime</span>
+                    <span className="text-zinc-200 truncate block">
+                        {event.sdkName ? `${event.sdkName}${event.sdkVersion ? ` v${event.sdkVersion}` : ""}` : "—"}
                     </span>
                 </div>
-                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Session ID</span>
-                    <span className="text-zinc-400 truncate block">
-                        {event.sessionId ? `${event.sessionId.slice(0, 10)}…` : "Not captured"}
+
+                <div className="p-3 rounded-xl bg-surface border border-border space-y-0.5">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">Release</span>
+                    <span className="text-zinc-200 truncate block">{event.release || "—"}</span>
+                </div>
+
+                <div className="p-3 rounded-xl bg-surface border border-border space-y-0.5">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">Trace ID</span>
+                    <span className="text-zinc-300 font-mono truncate block" title={event.traceId || ""}>
+                        {event.traceId ? `${event.traceId.slice(0, 10)}…` : "—"}
                     </span>
                 </div>
-                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Trace ID</span>
-                    <span className="text-zinc-400 truncate block">
-                        {event.traceId ? `${event.traceId.slice(0, 10)}…` : "Not captured"}
-                    </span>
-                </div>
-                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Request ID</span>
-                    <span className="text-zinc-400 truncate block">
-                        {event.requestId ? `${event.requestId.slice(0, 10)}…` : "Not captured"}
+
+                <div className="p-3 rounded-xl bg-surface border border-border space-y-0.5">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">Request ID</span>
+                    <span className="text-zinc-300 font-mono truncate block" title={event.requestId || ""}>
+                        {event.requestId ? `${event.requestId.slice(0, 10)}…` : "—"}
                     </span>
                 </div>
             </div>
 
-            {/* Navigation Tabs */}
-            <div className="flex items-center gap-1 border-b border-border pb-1">
+            {/* 4. DETAIL NAVIGATION TABS */}
+            <div className="flex items-center gap-1 border-b border-border text-xs font-mono overflow-x-auto">
                 <button
                     type="button"
                     onClick={() => setActiveTab("overview")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
+                    className={`px-3.5 py-2.5 border-b-2 font-medium transition-colors ${
                         activeTab === "overview"
-                            ? "bg-accent text-white font-bold"
-                            : "text-zinc-400 hover:text-white hover:bg-surface/50"
+                            ? "border-accent text-white"
+                            : "border-transparent text-zinc-400 hover:text-zinc-200"
                     }`}
                 >
-                    Overview & Stack
+                    Overview
                 </button>
 
-                {hasRequestInfo && (
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab("request")}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
-                            activeTab === "request"
-                                ? "bg-accent text-white font-bold"
-                                : "text-zinc-400 hover:text-white hover:bg-surface/50"
-                        }`}
-                    >
-                        Request Context
-                    </button>
-                )}
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("stack")}
+                    className={`px-3.5 py-2.5 border-b-2 font-medium transition-colors ${
+                        activeTab === "stack"
+                            ? "border-accent text-white"
+                            : "border-transparent text-zinc-400 hover:text-zinc-200"
+                    }`}
+                >
+                    Stack Trace {hasStack ? "" : "(None)"}
+                </button>
 
-                {Array.isArray(event.breadcrumbs) && event.breadcrumbs.length > 0 && (
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab("breadcrumbs")}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
-                            activeTab === "breadcrumbs"
-                                ? "bg-accent text-white font-bold"
-                                : "text-zinc-400 hover:text-white hover:bg-surface/50"
-                        }`}
-                    >
-                        Breadcrumbs ({event.breadcrumbs.length})
-                    </button>
-                )}
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("request")}
+                    className={`px-3.5 py-2.5 border-b-2 font-medium transition-colors ${
+                        activeTab === "request"
+                            ? "border-accent text-white"
+                            : "border-transparent text-zinc-400 hover:text-zinc-200"
+                    }`}
+                >
+                    Request Context
+                </button>
 
-                {event.tags && typeof event.tags === "object" && Object.keys(event.tags).length > 0 && (
-                    <button
-                        type="button"
-                        onClick={() => setActiveTab("tags")}
-                        className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
-                            activeTab === "tags"
-                                ? "bg-accent text-white font-bold"
-                                : "text-zinc-400 hover:text-white hover:bg-surface/50"
-                        }`}
-                    >
-                        Tags & Attributes
-                    </button>
-                )}
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("breadcrumbs")}
+                    className={`px-3.5 py-2.5 border-b-2 font-medium transition-colors ${
+                        activeTab === "breadcrumbs"
+                            ? "border-accent text-white"
+                            : "border-transparent text-zinc-400 hover:text-zinc-200"
+                    }`}
+                >
+                    Breadcrumbs {hasBreadcrumbs ? `(${event.breadcrumbs.length})` : "(0)"}
+                </button>
+
+                <button
+                    type="button"
+                    onClick={() => setActiveTab("tags")}
+                    className={`px-3.5 py-2.5 border-b-2 font-medium transition-colors ${
+                        activeTab === "tags"
+                            ? "border-accent text-white"
+                            : "border-transparent text-zinc-400 hover:text-zinc-200"
+                    }`}
+                >
+                    Tags & User
+                </button>
 
                 <button
                     type="button"
                     onClick={() => setActiveTab("raw")}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-mono transition-colors ${
+                    className={`px-3.5 py-2.5 border-b-2 font-medium transition-colors ${
                         activeTab === "raw"
-                            ? "bg-accent text-white font-bold"
-                            : "text-zinc-400 hover:text-white hover:bg-surface/50"
+                            ? "border-accent text-white"
+                            : "border-transparent text-zinc-400 hover:text-zinc-200"
                     }`}
                 >
-                    Raw Payload JSON
+                    Raw JSON
                 </button>
             </div>
 
-            {/* Tab Contents */}
+            {/* TAB CONTENTS */}
             <div className="space-y-6">
+                {/* 5. OVERVIEW SECTION */}
                 {activeTab === "overview" && (
                     <div className="space-y-6">
-                        {/* Event Message */}
-                        <div className="p-5 rounded-2xl bg-surface border border-border space-y-2">
-                            <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono">
-                                Event Message
-                            </h3>
-                            <pre className="p-4 rounded-xl bg-[#080b11] border border-white/10 font-mono text-xs text-zinc-200 overflow-x-auto whitespace-pre-wrap leading-relaxed">
+                        {/* Primary Message Box */}
+                        <div className="p-5 rounded-xl bg-surface border border-border space-y-2">
+                            <span className="text-[10px] text-zinc-500 uppercase font-sans tracking-wider block">
+                                Ingested Event Payload / Message
+                            </span>
+                            <pre className="p-4 rounded-lg bg-[#04060a] border border-white/5 font-mono text-xs text-zinc-200 overflow-x-auto whitespace-pre-wrap leading-relaxed">
                                 {event.message || event.title || "No textual message recorded."}
                             </pre>
                         </div>
 
-                        {/* Stack Trace */}
-                        {event.stack ? (
+                        {/* Correlated Issue & Investigation Link Card */}
+                        {(event.issueId || event.issue) && (
+                            <div className="p-4 rounded-xl bg-surface border border-border space-y-3 text-xs font-mono">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-[10px] text-zinc-500 uppercase font-sans tracking-wider">
+                                        Correlated Grouped Issue
+                                    </span>
+                                    <Link
+                                        href={`/projects/${projectId}/issues/${event.issue?.id || event.issueId}`}
+                                        className="text-accent hover:underline inline-flex items-center gap-1 font-medium"
+                                    >
+                                        <span>Open Issue Triage</span>
+                                        <ArrowUpRight size={12} />
+                                    </Link>
+                                </div>
+                                <p className="text-sm font-semibold text-white">
+                                    {event.issue?.title || event.title}
+                                </p>
+                                {event.fingerprint && (
+                                    <p className="text-zinc-500 text-[11px] truncate">
+                                        fingerprint: <code className="text-zinc-400">{event.fingerprint}</code>
+                                    </p>
+                                )}
+                            </div>
+                        )}
+
+                        {/* Stack Trace Preview */}
+                        {hasStack ? (
                             <div className="space-y-2">
-                                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono">
-                                    Captured Stack Trace
-                                </h3>
-                                <StackTrace stack={event.stack} />
+                                <div className="flex items-center justify-between text-xs font-mono">
+                                    <span className="text-[10px] text-zinc-500 uppercase font-sans tracking-wider">
+                                        Stack Trace Preview
+                                    </span>
+                                    <button
+                                        type="button"
+                                        onClick={() => setActiveTab("stack")}
+                                        className="text-accent hover:underline text-[11px]"
+                                    >
+                                        View Full Stack
+                                    </button>
+                                </div>
+                                <StackTrace stack={event.stack!} />
+                            </div>
+                        ) : null}
+                    </div>
+                )}
+
+                {/* 6. STACK TRACE SECTION */}
+                {activeTab === "stack" && (
+                    <div className="space-y-4">
+                        {hasStack ? (
+                            <div className="space-y-2">
+                                <StackTrace stack={event.stack!} />
                             </div>
                         ) : (
-                            <div className="p-4 rounded-xl bg-surface/50 border border-border text-xs text-zinc-500 font-mono">
-                                No stack trace was captured for this event type.
-                            </div>
-                        )}
-
-                        {/* User & Session */}
-                        {event.user && typeof event.user === "object" && (
-                            <div className="space-y-2">
-                                <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 font-mono">
-                                    User & Identity Context
-                                </h3>
-                                <User user={event.user as any} />
+                            <div className="p-8 text-center rounded-xl bg-surface/30 border border-border text-xs font-mono text-zinc-500">
+                                No stack trace was captured for this event record.
                             </div>
                         )}
                     </div>
                 )}
 
-                {activeTab === "request" && hasRequestInfo && (
-                    <div className="p-5 rounded-2xl bg-surface border border-border space-y-4 text-xs font-mono">
-                        <h3 className="text-xs font-bold uppercase tracking-wider text-white">
-                            Network & Distributed Trace Context
-                        </h3>
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                            {event.operation && (
-                                <div className="p-3 rounded-xl bg-[#080b11] border border-white/10 space-y-1">
-                                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Operation</span>
-                                    <span className="text-emerald-400 font-bold">{event.operation}</span>
+                {/* 7. REQUEST CONTEXT SECTION */}
+                {activeTab === "request" && (
+                    <div className="space-y-4">
+                        {hasRequestInfo ? (
+                            <div className="p-5 rounded-xl bg-surface border border-border space-y-4 text-xs font-mono">
+                                <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">
+                                    Request / Operation Context
+                                </span>
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                    {event.operation && (
+                                        <div className="p-3 rounded-lg bg-[#04060a] border border-white/5 space-y-1">
+                                            <span className="text-[10px] text-zinc-500 uppercase block font-sans">Operation</span>
+                                            <span className="text-emerald-400 font-semibold">{event.operation}</span>
+                                        </div>
+                                    )}
+                                    {event.resource && (
+                                        <div className="p-3 rounded-lg bg-[#04060a] border border-white/5 space-y-1">
+                                            <span className="text-[10px] text-zinc-500 uppercase block font-sans">Resource Endpoint</span>
+                                            <span className="text-white truncate block">{event.resource}</span>
+                                        </div>
+                                    )}
+                                    {event.status !== null && event.status !== undefined && (
+                                        <div className="p-3 rounded-lg bg-[#04060a] border border-white/5 space-y-1">
+                                            <span className="text-[10px] text-zinc-500 uppercase block font-sans">HTTP Status</span>
+                                            <span className={`font-bold ${Number(event.status) >= 400 ? "text-red-400" : "text-emerald-400"}`}>
+                                                {event.status}
+                                            </span>
+                                        </div>
+                                    )}
+                                    {event.durationMs !== null && event.durationMs !== undefined && (
+                                        <div className="p-3 rounded-lg bg-[#04060a] border border-white/5 space-y-1">
+                                            <span className="text-[10px] text-zinc-500 uppercase block font-sans">Duration</span>
+                                            <span className="text-zinc-200 font-semibold">{event.durationMs}ms</span>
+                                        </div>
+                                    )}
+                                    {event.requestId && (
+                                        <div className="p-3 rounded-lg bg-[#04060a] border border-white/5 space-y-1">
+                                            <span className="text-[10px] text-zinc-500 uppercase block font-sans">Request ID</span>
+                                            <span className="text-zinc-300 font-mono text-[11px] truncate block">{event.requestId}</span>
+                                        </div>
+                                    )}
+                                    {event.traceId && (
+                                        <div className="p-3 rounded-lg bg-[#04060a] border border-white/5 space-y-1">
+                                            <span className="text-[10px] text-zinc-500 uppercase block font-sans">Distributed Trace ID</span>
+                                            <span className="text-purple-400 font-mono text-[11px] truncate block">{event.traceId}</span>
+                                        </div>
+                                    )}
+                                    {event.sessionId && (
+                                        <div className="p-3 rounded-lg bg-[#04060a] border border-white/5 space-y-1">
+                                            <span className="text-[10px] text-zinc-500 uppercase block font-sans">Session ID</span>
+                                            <span className="text-zinc-300 font-mono text-[11px] truncate block">{event.sessionId}</span>
+                                        </div>
+                                    )}
                                 </div>
-                            )}
-                            {event.resource && (
-                                <div className="p-3 rounded-xl bg-[#080b11] border border-white/10 space-y-1">
-                                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Resource Endpoint</span>
-                                    <span className="text-white truncate block">{event.resource}</span>
-                                </div>
-                            )}
-                            {event.status != null && (
-                                <div className="p-3 rounded-xl bg-[#080b11] border border-white/10 space-y-1">
-                                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">HTTP / Return Status</span>
-                                    <span className={`font-bold ${Number(event.status) >= 400 ? "text-red-400" : "text-emerald-400"}`}>
-                                        {event.status}
-                                    </span>
-                                </div>
-                            )}
-                            {event.durationMs != null && (
-                                <div className="p-3 rounded-xl bg-[#080b11] border border-white/10 space-y-1">
-                                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Latency / Duration</span>
-                                    <span className="text-zinc-200 font-bold">{event.durationMs} ms</span>
-                                </div>
-                            )}
-                            {event.traceId && (
-                                <div className="p-3 rounded-xl bg-[#080b11] border border-white/10 space-y-1 col-span-2">
-                                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Distributed Trace ID</span>
-                                    <span className="text-purple-400 truncate block">{event.traceId}</span>
-                                </div>
-                            )}
-                        </div>
+                            </div>
+                        ) : (
+                            <div className="p-8 text-center rounded-xl bg-surface/30 border border-border text-xs font-mono text-zinc-500">
+                                No HTTP request or network operation telemetry was attached to this event.
+                            </div>
+                        )}
                     </div>
                 )}
 
-                {activeTab === "breadcrumbs" && Array.isArray(event.breadcrumbs) && (
-                    <div className="space-y-2">
-                        <Breadcrumbs breadcrumbs={event.breadcrumbs as any} />
+                {/* 8. BREADCRUMBS SECTION */}
+                {activeTab === "breadcrumbs" && (
+                    <div className="space-y-4">
+                        {hasBreadcrumbs ? (
+                            <Breadcrumbs breadcrumbs={event.breadcrumbs} />
+                        ) : (
+                            <div className="p-8 text-center rounded-xl bg-surface/30 border border-border text-xs font-mono text-zinc-500">
+                                No pre-failure breadcrumbs were captured for this event.
+                            </div>
+                        )}
                     </div>
                 )}
 
-                {activeTab === "tags" && event.tags && typeof event.tags === "object" && (
-                    <div className="space-y-2">
-                        <Tags tags={event.tags as any} />
+                {/* 9. TAGS & USER SECTION */}
+                {activeTab === "tags" && (
+                    <div className="space-y-4">
+                        {event.tags && <Tags tags={event.tags} />}
+                        {event.user && <User user={event.user} />}
+                        {event.metadata && (
+                            <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
+                                <span className="text-xs font-mono font-medium text-white">Metadata Context</span>
+                                <pre className="p-3 rounded-lg bg-[#04060a] border border-white/5 text-xs font-mono text-zinc-300 overflow-x-auto">
+                                    {JSON.stringify(event.metadata, null, 2)}
+                                </pre>
+                            </div>
+                        )}
+                        {!hasTagsOrUser && (
+                            <div className="p-8 text-center rounded-xl bg-surface/30 border border-border text-xs font-mono text-zinc-500">
+                                No custom tags or user identity context were attached to this event.
+                            </div>
+                        )}
                     </div>
                 )}
 
+                {/* 10. RAW JSON SECTION */}
                 {activeTab === "raw" && (
-                    <div className="p-5 rounded-2xl bg-[#080b11] border border-white/10 space-y-3">
+                    <div className="p-5 rounded-xl bg-surface border border-border space-y-3">
                         <div className="flex items-center justify-between">
-                            <span className="text-xs font-mono uppercase text-zinc-400 font-bold">
-                                Complete Ingested Telemetry JSON
-                            </span>
+                            <span className="text-xs font-mono text-zinc-400">Complete Telemetry JSON Payload</span>
                             <button
                                 type="button"
                                 onClick={copyRawJson}
-                                className="halo-btn halo-btn-xs halo-btn-secondary flex items-center gap-1"
+                                className="halo-btn halo-btn-xs halo-btn-secondary inline-flex items-center gap-1.5"
                             >
-                                <Copy size={12} />
-                                <span>Copy JSON</span>
+                                {copiedJson ? (
+                                    <>
+                                        <Check size={12} className="text-emerald-400" />
+                                        <span>Copied</span>
+                                    </>
+                                ) : (
+                                    <>
+                                        <Copy size={12} />
+                                        <span>Copy JSON</span>
+                                    </>
+                                )}
                             </button>
                         </div>
-                        <pre className="p-4 rounded-xl bg-surface/50 border border-border/80 text-xs font-mono text-emerald-300 overflow-x-auto leading-relaxed">
-                            <code>{JSON.stringify(event, null, 2)}</code>
+                        <pre className="p-4 rounded-lg bg-[#04060a] border border-white/5 text-xs font-mono text-zinc-300 overflow-x-auto max-h-[600px] leading-relaxed">
+                            {JSON.stringify(event, null, 2)}
                         </pre>
                     </div>
                 )}

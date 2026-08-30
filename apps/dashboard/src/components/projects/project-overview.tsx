@@ -1,3 +1,6 @@
+"use client";
+
+import React, { useState } from "react";
 import Link from "next/link";
 
 import {
@@ -12,6 +15,7 @@ import {
     Zap,
 } from "lucide-react";
 import type { ProjectMetrics } from "@/actions/project-metrics";
+import { HaloSelect } from "@/components/ui/halo-select";
 
 type RecentEvent = {
     id: string;
@@ -137,22 +141,33 @@ export default function ProjectOverview({
 
     const StatusIcon = status.icon;
 
+    const [selectedEnv, setSelectedEnv] = useState("all");
+    const [selectedWindow, setSelectedWindow] = useState("14d");
+
     return (
         <div className="space-y-8">
             {/* Environment & Time Window Controls (Image 2 feature) */}
             <div className="flex flex-wrap items-center justify-between gap-4 p-4 rounded-xl border border-border bg-surface">
                 <div className="flex items-center gap-3">
-                    <select className="px-3 py-1.5 rounded-lg border border-border bg-surface-elevated text-xs font-medium text-white focus:outline-none">
-                        <option value="all">All Envs</option>
-                        <option value="production">Production</option>
-                        <option value="staging">Staging</option>
-                    </select>
+                    <HaloSelect
+                        value={selectedEnv}
+                        onChange={(val) => setSelectedEnv(val)}
+                        options={[
+                            { value: "all", label: "All Envs" },
+                            { value: "production", label: "Production" },
+                            { value: "staging", label: "Staging" },
+                        ]}
+                    />
 
-                    <select className="px-3 py-1.5 rounded-lg border border-border bg-surface-elevated text-xs font-medium text-white focus:outline-none">
-                        <option value="14d">14D</option>
-                        <option value="7d">7D</option>
-                        <option value="24h">24H</option>
-                    </select>
+                    <HaloSelect
+                        value={selectedWindow}
+                        onChange={(val) => setSelectedWindow(val)}
+                        options={[
+                            { value: "14d", label: "14D" },
+                            { value: "7d", label: "7D" },
+                            { value: "24h", label: "24H" },
+                        ]}
+                    />
                 </div>
 
                 <div className="flex-1 max-w-md">

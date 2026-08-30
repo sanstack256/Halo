@@ -29,6 +29,7 @@ import {
     LayoutDashboard,
     ListFilter,
     Network,
+    Plus,
     PlusCircle,
     Radio,
     Search,
@@ -44,6 +45,7 @@ import {
 } from "lucide-react";
 import { useState } from "react";
 import { UserProfileMenu } from "./user-profile-menu";
+import CreateProjectDialog from "@/components/projects/create-project-dialog";
 
 type NavItem = {
     label: string;
@@ -290,7 +292,15 @@ function isItemActive(pathname: string, href: string) {
     return pathname === href || pathname.startsWith(`${href}/`);
 }
 
-export default function Sidebar() {
+interface SidebarProps {
+    initialProjects?: Array<{
+        id: string;
+        name: string;
+        slug?: string | null;
+    }>;
+}
+
+export default function Sidebar({ initialProjects = [] }: SidebarProps) {
     const pathname = usePathname();
 
     const [hoveredSection, setHoveredSection] = useState<string | null>(null);
@@ -306,6 +316,9 @@ export default function Sidebar() {
     function toggleCollapse() {
         setIsCollapsed((prev) => !prev);
     }
+
+    // Recent projects: limited to first 5 real projects from initial data
+    const recentProjects = initialProjects.slice(0, 5);
 
     return (
         <aside className="halo-sidebar-shell">
@@ -410,50 +423,121 @@ export default function Sidebar() {
                 </div>
 
                 <nav className="halo-sidebar-secondary-nav">
-                    {activeSection.sections.map((section, sectionIndex) => (
-                        <div
-                            key={`${activeSection.id}-${sectionIndex}`}
-                            className="halo-sidebar-secondary-section"
-                        >
-                            {section.label && (
-                                <div className="halo-sidebar-secondary-section-label">
-                                    {section.label}
+                    {activeSection.id === "projects" ? (
+                        /* Dedicated Projects Secondary Information Architecture */
+                        <div className="halo-sidebar-secondary-section">
+                            {/* 1. All Projects (Primary Destination) */}
+                            <div className="halo-sidebar-secondary-items">
+                                <Link
+                                    href="/projects"
+                                    className={
+                                        pathname === "/projects"
+                                            ? "halo-sidebar-secondary-link is-active"
+                                            : "halo-sidebar-secondary-link"
+                                    }
+                                >
+                                    <FolderKanban size={16} strokeWidth={1.9} />
+                                    <span>All Projects</span>
+                                </Link>
+                            </div>
 
-                                    {section.collapsible && (
-                                        <ChevronDown size={14} />
-                                    )}
-                                </div>
+                            {/* 2. RECENT section (Only rendered when reliable real project data exists) */}
+                            {recentProjects.length > 0 && (
+                                <>
+                                    <div className="halo-sidebar-secondary-divider" />
+
+                                    <div className="halo-sidebar-secondary-section-label">
+                                        <span>RECENT</span>
+                                    </div>
+
+                                    <div className="halo-sidebar-secondary-items">
+                                        {recentProjects.map((proj) => {
+                                            const active =
+                                                pathname === `/projects/${proj.id}` ||
+                                                pathname.startsWith(`/projects/${proj.id}/`);
+
+                                            return (
+                                                <Link
+                                                    key={proj.id}
+                                                    href={`/projects/${proj.id}`}
+                                                    className={
+                                                        active
+                                                            ? "halo-sidebar-secondary-link is-active"
+                                                            : "halo-sidebar-secondary-link"
+                                                    }
+                                                    title={proj.name}
+                                                >
+                                                    <FolderGit2 size={15} strokeWidth={1.8} />
+                                                    <span className="truncate">{proj.name}</span>
+                                                </Link>
+                                            );
+                                        })}
+                                    </div>
+                                </>
                             )}
 
-                            <div className="halo-sidebar-secondary-items">
-                                {section.items.map((item) => {
-                                    const Icon = item.icon;
-                                    const active = isItemActive(pathname, item.href);
+                            {/* 3. + Create Project Action */}
+                            <div className="halo-sidebar-secondary-divider" />
 
-                                    return (
-                                        <Link
-                                            key={item.href}
-                                            href={item.href}
-                                            className={
-                                                active
-                                                    ? "halo-sidebar-secondary-link is-active"
-                                                    : "halo-sidebar-secondary-link"
-                                            }
-                                        >
-                                            {Icon && (
-                                                <Icon
-                                                    size={16}
-                                                    strokeWidth={1.9}
-                                                />
-                                            )}
-
-                                            <span>{item.label}</span>
-                                        </Link>
-                                    );
-                                })}
-                            </div>
+                            <CreateProjectDialog
+                                trigger={
+                                    <button
+                                        type="button"
+                                        className="halo-sidebar-secondary-action"
+                                    >
+                                        <Plus size={15} strokeWidth={2} />
+                                        <span>Create Project</span>
+                                    </button>
+                                }
+                            />
                         </div>
-                    ))}
+                    ) : (
+                        /* Generic Multi-section Secondary Navigation for other areas */
+                        activeSection.sections.map((section, sectionIndex) => (
+                            <div
+                                key={`${activeSection.id}-${sectionIndex}`}
+                                className="halo-sidebar-secondary-section"
+                            >
+                                {section.label && (
+                                    <div className="halo-sidebar-secondary-section-label">
+                                        {section.label}
+
+                                        {section.collapsible && (
+                                            <ChevronDown size={14} />
+                                        )}
+                                    </div>
+                                )}
+
+                                <div className="halo-sidebar-secondary-items">
+                                    {section.items.map((item) => {
+                                        const Icon = item.icon;
+                                        const active = isItemActive(pathname, item.href);
+
+                                        return (
+                                            <Link
+                                                key={item.href}
+                                                href={item.href}
+                                                className={
+                                                    active
+                                                        ? "halo-sidebar-secondary-link is-active"
+                                                        : "halo-sidebar-secondary-link"
+                                                }
+                                            >
+                                                {Icon && (
+                                                    <Icon
+                                                        size={16}
+                                                        strokeWidth={1.9}
+                                                    />
+                                                )}
+
+                                                <span>{item.label}</span>
+                                            </Link>
+                                        );
+                                    })}
+                                </div>
+                            </div>
+                        ))
+                    )}
                 </nav>
 
                 <div className="halo-sidebar-secondary-footer">

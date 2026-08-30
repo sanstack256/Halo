@@ -1,20 +1,18 @@
 /**
  * Canonical Data-Driven Activity & Frequency Trend Calculator for Halo Issues.
  *
- * Implements dynamic temporal bucketing and trend classification strictly
- * derived from the issue's real occurrence timestamps.
+ * All states and temporal buckets are strictly derived from real occurrence timestamps.
+ * Standard states: ACTIVE, DORMANT, INCREASING, DECREASING, RESOLVED.
  */
+
+import { formatDeterministicDateTime } from "@/lib/date-format";
 
 export type ActivityState =
     | "ACTIVE"
+    | "DORMANT"
     | "INCREASING"
     | "DECREASING"
-    | "BURST"
-    | "RECURRING"
-    | "DORMANT"
-    | "RESOLVED"
-    | "REGRESSED"
-    | "INSUFFICIENT_DATA";
+    | "RESOLVED";
 
 export interface TimeBucket {
     index: number;
@@ -41,40 +39,20 @@ export interface ActivityResult {
 }
 
 /**
- * Determine dynamic bucket count K based on observation span and occurrence count.
+ * Determine dynamic bucket count K based on observation span.
  */
-function getOptimalBucketCount(spanMs: number, eventCount: number): number {
-    const MIN_BUCKETS = 5;
-    const MAX_BUCKETS = 12;
-
+function getOptimalBucketCount(spanMs: number): number {
     const oneHour = 60 * 60 * 1000;
     const oneDay = 24 * oneHour;
     const oneWeek = 7 * oneDay;
     const oneMonth = 30 * oneDay;
 
-    if (spanMs <= 5 * 60 * 1000) {
-        // Less than 5 minutes: 5 buckets (1 min each)
-        return 5;
-    }
-    if (spanMs <= oneHour) {
-        // Up to 1 hour: 6 buckets (10 min each)
-        return 6;
-    }
-    if (spanMs <= oneDay) {
-        // Up to 24 hours: 8 buckets (3 hours each)
-        return 8;
-    }
-    if (spanMs <= oneWeek) {
-        // Up to 7 days: 7 buckets (1 day each)
-        return 7;
-    }
-    if (spanMs <= oneMonth) {
-        // Up to 30 days: 10 buckets (3 days each)
-        return 10;
-    }
-
-    // Greater than a month: 12 buckets
-    return MAX_BUCKETS;
+    if (spanMs <= 10 * 60 * 1000) return 4;
+    if (spanMs <= oneHour) return 6;
+    if (spanMs <= oneDay) return 8;
+    if (spanMs <= oneWeek) return 7;
+    if (spanMs <= oneMonth) return 10;
+    return 12;
 }
 
 export function calculateIssueActivity(
@@ -98,86 +76,83 @@ export function calculateIssueActivity(
 
     const observationSpanMs = Math.max(0, lastMs - firstMs);
     const msSinceLast = Math.max(0, now - lastMs);
+    const isDormant = msSinceLast > 72 * 60 * 60 * 1000;
 
-    // 1. Status Check: Resolved
+    // 1. Canonical State Derivation
+    let state: ActivityState = "ACTIVE";
+    let label = "Active";
+    let badgeClass = "bg-blue-500/10 text-blue-400 border-blue-500/20";
+    let description = "Active occurrences within the observation window.";
+
     if (status === "RESOLVED") {
-        return {
-            state: "RESOLVED",
-            label: "Resolved",
-            description: "Issue has been resolved and is not actively firing.",
-            badgeClass: "bg-emerald-500/10 text-emerald-400 border-emerald-500/20",
-            totalOccurrences,
-            observationSpanMs,
-            firstSeen,
-            lastSeen,
-            hasSparkline: false,
-            buckets: [],
-            maxBucketCount: 0,
-            bucketDurationMs: 0,
-        };
+        state = "RESOLVED";
+        label = "Resolved";
+        badgeClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+        description = "Issue marked resolved.";
+    } else if (isDormant) {
+        state = "DORMANT";
+        label = "Dormant";
+        badgeClass = "bg-zinc-800 text-zinc-400 border-zinc-700";
+        description = "No occurrences in the last 72 hours.";
     }
 
-    // 2. Insufficient History: 0 or 1 occurrence
+    // 2. Frequency Buckets for Single Occurrence
     if (totalOccurrences <= 1) {
-        const isOld = msSinceLast > 72 * 60 * 60 * 1000;
+        const singleBucket: TimeBucket = {
+            index: 0,
+            startTime: firstSeen,
+            endTime: lastSeen,
+            count: totalOccurrences,
+            heightPercent: 100,
+            isNewest: true,
+        };
+
         return {
-            state: "INSUFFICIENT_DATA",
-            label: totalOccurrences === 1 ? "1 Occurrence" : "No Events",
-            description: "Single occurrence recorded. Insufficient historical data for frequency trend.",
-            badgeClass: isOld
-                ? "bg-zinc-800 text-zinc-400 border-zinc-700"
-                : "bg-surface text-zinc-300 border-border",
+            state,
+            label,
+            description,
+            badgeClass,
             totalOccurrences,
-            observationSpanMs,
+            observationSpanMs: 0,
             firstSeen,
             lastSeen,
-            hasSparkline: false,
-            buckets: [],
+            hasSparkline: true,
+            buckets: [singleBucket],
             maxBucketCount: totalOccurrences,
             bucketDurationMs: 0,
         };
     }
 
-    // 3. Clustered Burst: Multiple occurrences in a short window (<= 2 minutes)
-    if (observationSpanMs <= 2 * 60 * 1000 && totalOccurrences >= 3) {
-        return {
-            state: "BURST",
-            label: "Failure Burst",
-            description: `${totalOccurrences} occurrences clustered within ${Math.round(observationSpanMs / 1000)} seconds.`,
-            badgeClass: "bg-amber-500/10 text-amber-400 border-amber-500/20",
-            totalOccurrences,
-            observationSpanMs,
-            firstSeen,
-            lastSeen,
-            hasSparkline: false,
-            buckets: [],
-            maxBucketCount: totalOccurrences,
-            bucketDurationMs: observationSpanMs,
-        };
-    }
-
-    // 4. If span is 0 ms (all events happened at the exact same millisecond)
+    // 3. Frequency Buckets for Simultaneous occurrences (span = 0)
     if (observationSpanMs === 0) {
+        const singleBucket: TimeBucket = {
+            index: 0,
+            startTime: firstSeen,
+            endTime: lastSeen,
+            count: totalOccurrences,
+            heightPercent: 100,
+            isNewest: true,
+        };
+
         return {
-            state: "INSUFFICIENT_DATA",
-            label: `${totalOccurrences} Events (Simultaneous)`,
-            description: `${totalOccurrences} events occurred at the same timestamp.`,
-            badgeClass: "bg-surface text-zinc-300 border-border",
+            state,
+            label,
+            description,
+            badgeClass,
             totalOccurrences,
-            observationSpanMs,
+            observationSpanMs: 0,
             firstSeen,
             lastSeen,
-            hasSparkline: false,
-            buckets: [],
+            hasSparkline: true,
+            buckets: [singleBucket],
             maxBucketCount: totalOccurrences,
             bucketDurationMs: 0,
         };
     }
 
-    // 5. Build Dynamic Time Buckets
-    const numBuckets = getOptimalBucketCount(observationSpanMs, totalOccurrences);
+    // 4. Multi-occurrence Dynamic Bucketing across [firstMs, lastMs]
+    const numBuckets = getOptimalBucketCount(observationSpanMs);
     const bucketDurationMs = Math.max(1, Math.ceil(observationSpanMs / numBuckets));
-
     const bucketCounts = new Array(numBuckets).fill(0);
 
     for (const t of timestamps) {
@@ -192,7 +167,7 @@ export function calculateIssueActivity(
     const buckets: TimeBucket[] = bucketCounts.map((count, idx) => {
         const bStart = new Date(firstMs + idx * bucketDurationMs);
         const bEnd = new Date(Math.min(lastMs, firstMs + (idx + 1) * bucketDurationMs));
-        const heightPercent = count > 0 ? Math.max(18, Math.round((count / maxBucketCount) * 100)) : 4;
+        const heightPercent = count > 0 ? Math.max(20, Math.round((count / maxBucketCount) * 100)) : 0;
 
         return {
             index: idx,
@@ -204,39 +179,23 @@ export function calculateIssueActivity(
         };
     });
 
-    // 6. Calculate Trend: Compare 1st half of observation period to 2nd half
-    const half = Math.floor(numBuckets / 2);
-    const firstHalfSum = bucketCounts.slice(0, half).reduce((a, b) => a + b, 0);
-    const secondHalfSum = bucketCounts.slice(half).reduce((a, b) => a + b, 0);
+    // 5. Trend Classification (only when unresolved, non-dormant, and >= 3 occurrences)
+    if (state === "ACTIVE" && totalOccurrences >= 3) {
+        const half = Math.floor(numBuckets / 2);
+        const firstHalfSum = bucketCounts.slice(0, half).reduce((a, b) => a + b, 0);
+        const secondHalfSum = bucketCounts.slice(half).reduce((a, b) => a + b, 0);
 
-    // Recency threshold: Dormant if no occurrence in > 72 hours
-    const isDormant = msSinceLast > 72 * 60 * 60 * 1000;
-
-    let state: ActivityState = "ACTIVE";
-    let label = "Active";
-    let badgeClass = "bg-blue-500/10 text-blue-400 border-blue-500/20";
-    let description = "Regular occurrences across the observation interval.";
-
-    if (isDormant) {
-        state = "DORMANT";
-        label = "Dormant";
-        badgeClass = "bg-zinc-800/60 text-zinc-400 border-zinc-700";
-        description = `No occurrences in the last ${Math.round(msSinceLast / (1000 * 60 * 60))} hours.`;
-    } else if (totalOccurrences >= 4 && secondHalfSum >= firstHalfSum * 1.6 && secondHalfSum >= 3) {
-        state = "INCREASING";
-        label = "Increasing";
-        badgeClass = "bg-red-500/10 text-red-400 border-red-500/20";
-        description = `Occurrence frequency is increasing (${secondHalfSum} in 2nd half vs ${firstHalfSum} in 1st half).`;
-    } else if (totalOccurrences >= 4 && secondHalfSum <= firstHalfSum * 0.4 && firstHalfSum >= 3) {
-        state = "DECREASING";
-        label = "Decreasing";
-        badgeClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
-        description = `Occurrence frequency is declining (${secondHalfSum} in 2nd half vs ${firstHalfSum} in 1st half).`;
-    } else if (totalOccurrences >= 10) {
-        state = "RECURRING";
-        label = "Recurring";
-        badgeClass = "bg-amber-500/10 text-amber-400 border-amber-500/20";
-        description = `High recurrence volume (${totalOccurrences} total occurrences).`;
+        if (secondHalfSum >= firstHalfSum * 1.6 && secondHalfSum >= 2) {
+            state = "INCREASING";
+            label = "Increasing";
+            badgeClass = "bg-red-500/10 text-red-400 border-red-500/20";
+            description = `Occurrence rate is increasing (${secondHalfSum} recently vs ${firstHalfSum} earlier).`;
+        } else if (secondHalfSum <= firstHalfSum * 0.4 && firstHalfSum >= 2) {
+            state = "DECREASING";
+            label = "Decreasing";
+            badgeClass = "bg-emerald-500/10 text-emerald-400 border-emerald-500/20";
+            description = `Occurrence rate is decreasing (${secondHalfSum} recently vs ${firstHalfSum} earlier).`;
+        }
     }
 
     return {

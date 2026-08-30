@@ -6,6 +6,7 @@ import { ArrowUpRight, Check, Filter, Search, ShieldAlert } from "lucide-react";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { updateIssueStatus } from "@/actions/issue";
 import { useRouter } from "next/navigation";
+import { HaloSelect } from "@/components/ui/halo-select";
 
 export type OrgIssue = {
     id: string;
@@ -66,44 +67,40 @@ export function IssuesListClient({ issues }: { issues: OrgIssue[] }) {
 
                 <div className="flex items-center gap-2.5 flex-wrap">
                     {/* Severity */}
-                    <select
+                    <HaloSelect
                         value={severityFilter}
-                        onChange={(e) => setSeverityFilter(e.target.value)}
-                        className="px-3 py-2 rounded-xl border border-border-strong bg-surface-elevated text-xs text-white outline-none focus:border-accent"
-                    >
-                        <option value="ALL">All Severities</option>
-                        <option value="FATAL">Fatal</option>
-                        <option value="ERROR">Error</option>
-                        <option value="WARNING">Warning</option>
-                        <option value="INFO">Info</option>
-                    </select>
+                        onChange={(val) => setSeverityFilter(val)}
+                        options={[
+                            { value: "ALL", label: "All Severities" },
+                            { value: "FATAL", label: "Fatal" },
+                            { value: "ERROR", label: "Error" },
+                            { value: "WARNING", label: "Warning" },
+                            { value: "INFO", label: "Info" },
+                        ]}
+                    />
 
                     {/* Status */}
-                    <select
+                    <HaloSelect
                         value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="px-3 py-2 rounded-xl border border-border-strong bg-surface-elevated text-xs text-white outline-none focus:border-accent"
-                    >
-                        <option value="ALL">All Statuses</option>
-                        <option value="OPEN">Open</option>
-                        <option value="RESOLVED">Resolved</option>
-                        <option value="IGNORED">Ignored</option>
-                    </select>
+                        onChange={(val) => setStatusFilter(val)}
+                        options={[
+                            { value: "ALL", label: "All Statuses" },
+                            { value: "OPEN", label: "Open" },
+                            { value: "RESOLVED", label: "Resolved" },
+                            { value: "IGNORED", label: "Ignored" },
+                        ]}
+                    />
 
                     {/* Projects */}
                     {projectNames.length > 1 && (
-                        <select
+                        <HaloSelect
                             value={projectFilter}
-                            onChange={(e) => setProjectFilter(e.target.value)}
-                            className="px-3 py-2 rounded-xl border border-border-strong bg-surface-elevated text-xs text-white outline-none focus:border-accent"
-                        >
-                            <option value="ALL">All Projects</option>
-                            {projectNames.map((p) => (
-                                <option key={p} value={p}>
-                                    {p}
-                                </option>
-                            ))}
-                        </select>
+                            onChange={(val) => setProjectFilter(val)}
+                            options={[
+                                { value: "ALL", label: "All Projects" },
+                                ...projectNames.map((p) => ({ value: p, label: p })),
+                            ]}
+                        />
                     )}
                 </div>
             </div>

@@ -3,28 +3,16 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import {
-    Activity,
-    AlertCircle,
-    Archive,
-    ArrowRight,
-    Check,
-    Clock,
-    Filter,
-    Layers,
     RotateCcw,
     Search,
-    Server,
-    ShieldAlert,
-    Sparkles,
-    TrendingDown,
-    TrendingUp,
     X,
 } from "lucide-react";
 import { RelativeTime } from "@/components/ui/relative-time";
-import { Badge } from "@/components/ui/badge";
 import { SeverityBadge } from "@/components/ui/severity-badge";
-import { calculateIssueActivity, ActivityResult } from "@/lib/issues/activity-calculator";
+import { calculateIssueActivity } from "@/lib/issues/activity-calculator";
 import { IssueFrequencySparkline } from "@/components/issues/issue-frequency-sparkline";
+import { HaloSelect } from "@/components/ui/halo-select";
+import { formatDeterministicDate } from "@/lib/date-format";
 
 export type IssueOccurrenceEvent = {
     id: string;
@@ -207,60 +195,69 @@ export function IssueInventoryView({ projectId, issues }: Props) {
 
     return (
         <div className="space-y-5">
-            {/* 4. Tightened Page Header (Left Aligned, No redundant pill) */}
-            <div className="border-b border-border pb-3">
-                <h1 className="text-2xl font-bold text-white tracking-tight">
-                    Issues
-                </h1>
-                <p className="text-xs text-secondary mt-0.5">
-                    Production issues grouped by fingerprint.
-                </p>
+            {/* 1. PAGE HEADER: Title & Muted Subtitle on Left, Issue Count on Right, Subtle Divider below */}
+            <div className="space-y-3">
+                <div className="flex items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold text-white tracking-tight">
+                            Issues
+                        </h1>
+                        <p className="text-xs text-secondary mt-0.5">
+                            Production issues grouped by fingerprint.
+                        </p>
+                    </div>
+
+                    <div className="px-3 py-1 rounded-lg bg-surface border border-border text-xs font-mono text-zinc-300 font-semibold">
+                        {issues.length} Issues
+                    </div>
+                </div>
+                <div className="border-b border-border" />
             </div>
 
-            {/* 1 & 2. Four Quiet, Compact Summary Metric Cards (Neutral Borders, No Blue Outlines) */}
+            {/* 2. ISSUE SUMMARY STRIP: 4 Equal-width neutral cards */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-                <div className="p-3 px-4 rounded-xl border border-border bg-surface/30 space-y-0.5">
+                <div className="p-3.5 px-4 rounded-xl border border-border bg-surface/30 space-y-0.5">
                     <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">
                         Total Issues
                     </span>
-                    <span className="text-lg font-bold text-white block font-mono">
+                    <span className="text-xl font-bold text-white block font-mono">
                         {statusCounts.total}
                     </span>
                 </div>
 
-                <div className="p-3 px-4 rounded-xl border border-border bg-surface/30 space-y-0.5">
+                <div className="p-3.5 px-4 rounded-xl border border-border bg-surface/30 space-y-0.5">
                     <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">
                         Open Issues
                     </span>
-                    <span className="text-lg font-bold text-red-400 block font-mono">
+                    <span className="text-xl font-bold text-red-400 block font-mono">
                         {statusCounts.open}
                     </span>
                 </div>
 
-                <div className="p-3 px-4 rounded-xl border border-border bg-surface/30 space-y-0.5">
+                <div className="p-3.5 px-4 rounded-xl border border-border bg-surface/30 space-y-0.5">
                     <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">
-                        Regressed (7D)
+                        Regressed
                     </span>
-                    <span className="text-lg font-bold text-amber-400 block font-mono">
+                    <span className="text-xl font-bold text-amber-400 block font-mono">
                         {statusCounts.regressed}
                     </span>
                 </div>
 
-                <div className="p-3 px-4 rounded-xl border border-border bg-surface/30 space-y-0.5">
+                <div className="p-3.5 px-4 rounded-xl border border-border bg-surface/30 space-y-0.5">
                     <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">
                         Resolved
                     </span>
-                    <span className="text-lg font-bold text-emerald-400 block font-mono">
+                    <span className="text-xl font-bold text-emerald-400 block font-mono">
                         {statusCounts.resolved}
                     </span>
                 </div>
             </div>
 
-            {/* 5. Filter Toolbar: Search → Status → Severity → Service → Environment → Time → Sort */}
+            {/* 3. FILTER TOOLBAR: [ Search ] [ Status ] [ Severity ] [ Service ] [ Environment ] [ Time ] [ Sort ] */}
             <div className="p-2.5 rounded-xl bg-surface/60 border border-border space-y-2">
                 <div className="flex items-center gap-2 flex-wrap">
-                    {/* 1. Search (Flexible width) */}
-                    <div className="relative flex-1 min-w-[200px]">
+                    {/* Search (Flexible largest portion) */}
+                    <div className="relative flex-1 min-w-[220px]">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={13} />
                         <input
                             type="text"
@@ -280,82 +277,78 @@ export function IssueInventoryView({ projectId, issues }: Props) {
                         )}
                     </div>
 
-                    {/* 2. Status */}
-                    <select
+                    {/* Status */}
+                    <HaloSelect
                         value={selectedStatus}
-                        onChange={(e) => setSelectedStatus(e.target.value)}
-                        className="h-8.5 px-2.5 rounded-lg bg-[#080b11] border border-white/10 text-xs font-mono text-zinc-300 focus:outline-none focus:border-accent cursor-pointer"
-                    >
-                        <option value="ALL">All Statuses</option>
-                        <option value="OPEN">Open</option>
-                        <option value="RESOLVED">Resolved</option>
-                        <option value="IGNORED">Ignored</option>
-                    </select>
+                        onChange={(val) => setSelectedStatus(val)}
+                        options={[
+                            { value: "ALL", label: "All Statuses" },
+                            { value: "OPEN", label: "Open" },
+                            { value: "RESOLVED", label: "Resolved" },
+                            { value: "IGNORED", label: "Ignored" },
+                        ]}
+                    />
 
-                    {/* 3. Severity */}
-                    <select
+                    {/* Severity */}
+                    <HaloSelect
                         value={selectedSeverity}
-                        onChange={(e) => setSelectedSeverity(e.target.value)}
-                        className="h-8.5 px-2.5 rounded-lg bg-[#080b11] border border-white/10 text-xs font-mono text-zinc-300 focus:outline-none focus:border-accent cursor-pointer"
-                    >
-                        <option value="ALL">All Severities</option>
-                        <option value="FATAL">FATAL</option>
-                        <option value="ERROR">ERROR</option>
-                        <option value="WARNING">WARNING</option>
-                        <option value="INFO">INFO</option>
-                    </select>
+                        onChange={(val) => setSelectedSeverity(val)}
+                        options={[
+                            { value: "ALL", label: "All Severities" },
+                            { value: "FATAL", label: "FATAL" },
+                            { value: "ERROR", label: "ERROR" },
+                            { value: "WARNING", label: "WARNING" },
+                            { value: "INFO", label: "INFO" },
+                        ]}
+                    />
 
-                    {/* 4. Service */}
+                    {/* Service */}
                     {allServices.length > 0 && (
-                        <select
+                        <HaloSelect
                             value={selectedService}
-                            onChange={(e) => setSelectedService(e.target.value)}
-                            className="h-8.5 px-2.5 rounded-lg bg-[#080b11] border border-white/10 text-xs font-mono text-zinc-300 focus:outline-none focus:border-accent cursor-pointer"
-                        >
-                            <option value="ALL">All Services</option>
-                            {allServices.map((s) => (
-                                <option key={s} value={s}>{s}</option>
-                            ))}
-                        </select>
+                            onChange={(val) => setSelectedService(val)}
+                            options={[
+                                { value: "ALL", label: "All Services" },
+                                ...allServices.map((s) => ({ value: s, label: s })),
+                            ]}
+                        />
                     )}
 
-                    {/* 5. Environment */}
+                    {/* Environment */}
                     {allEnvironments.length > 0 && (
-                        <select
+                        <HaloSelect
                             value={selectedEnv}
-                            onChange={(e) => setSelectedEnv(e.target.value)}
-                            className="h-8.5 px-2.5 rounded-lg bg-[#080b11] border border-white/10 text-xs font-mono text-zinc-300 focus:outline-none focus:border-accent cursor-pointer"
-                        >
-                            <option value="ALL">All Environments</option>
-                            {allEnvironments.map((env) => (
-                                <option key={env} value={env}>{env}</option>
-                            ))}
-                        </select>
+                            onChange={(val) => setSelectedEnv(val)}
+                            options={[
+                                { value: "ALL", label: "All Environments" },
+                                ...allEnvironments.map((env) => ({ value: env, label: env })),
+                            ]}
+                        />
                     )}
 
-                    {/* 6. Time Range */}
-                    <select
+                    {/* Time Range */}
+                    <HaloSelect
                         value={selectedTimeRange}
-                        onChange={(e) => setSelectedTimeRange(e.target.value)}
-                        className="h-8.5 px-2.5 rounded-lg bg-[#080b11] border border-white/10 text-xs font-mono text-zinc-300 focus:outline-none focus:border-accent cursor-pointer"
-                    >
-                        <option value="ALL">All Time</option>
-                        <option value="15m">Last 15m</option>
-                        <option value="1h">Last 1h</option>
-                        <option value="24h">Last 24h</option>
-                        <option value="7d">Last 7d</option>
-                    </select>
+                        onChange={(val) => setSelectedTimeRange(val)}
+                        options={[
+                            { value: "ALL", label: "All Time" },
+                            { value: "15m", label: "Last 15m" },
+                            { value: "1h", label: "Last 1h" },
+                            { value: "24h", label: "Last 24h" },
+                            { value: "7d", label: "Last 7d" },
+                        ]}
+                    />
 
-                    {/* 7. Sort (Final control on the right) */}
-                    <select
+                    {/* Sort (Final control on right) */}
+                    <HaloSelect
                         value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value as any)}
-                        className="h-8.5 px-2.5 rounded-lg bg-[#080b11] border border-white/10 text-xs font-mono text-zinc-300 focus:outline-none focus:border-accent cursor-pointer"
-                    >
-                        <option value="lastSeen">Sort: Last Seen</option>
-                        <option value="firstSeen">Sort: First Seen</option>
-                        <option value="events">Sort: Occurrences</option>
-                    </select>
+                        onChange={(val) => setSortBy(val as any)}
+                        options={[
+                            { value: "lastSeen", label: "Sort: Last Seen" },
+                            { value: "firstSeen", label: "Sort: First Seen" },
+                            { value: "events", label: "Sort: Occurrences" },
+                        ]}
+                    />
 
                     {/* Clear Filters Button */}
                     {hasActiveFilters && (
@@ -371,7 +364,7 @@ export function IssueInventoryView({ projectId, issues }: Props) {
                 </div>
             </div>
 
-            {/* 6. Primary Surface: Grouped Issue List */}
+            {/* 4 & 5. ISSUE LIST: Single table container with exact columns and hierarchy */}
             {filteredIssues.length === 0 ? (
                 <div className="p-12 text-center rounded-xl bg-surface/30 border border-border space-y-2.5">
                     <p className="text-sm font-medium text-white">No issues match your current filters</p>
@@ -391,8 +384,8 @@ export function IssueInventoryView({ projectId, issues }: Props) {
                 </div>
             ) : (
                 <div className="rounded-xl border border-border bg-[#080b11] overflow-hidden shadow-lg">
-                    {/* Header Bar */}
-                    <div className="grid grid-cols-[minmax(0,1fr)_100px_120px_120px_150px] items-center gap-4 px-5 py-2.5 bg-surface/50 border-b border-border text-[10px] font-mono uppercase tracking-wider text-muted select-none">
+                    {/* Header Row */}
+                    <div className="grid grid-cols-[minmax(0,1fr)_100px_120px_120px_160px] items-center gap-4 px-5 py-2.5 bg-surface/50 border-b border-border text-[10px] font-mono uppercase tracking-wider text-muted select-none">
                         <span>Grouped Problem</span>
                         <span className="text-center">Occurrences</span>
                         <span>First Seen</span>
@@ -400,7 +393,7 @@ export function IssueInventoryView({ projectId, issues }: Props) {
                         <span className="text-right">Activity</span>
                     </div>
 
-                    {/* Problem Inventory Rows */}
+                    {/* Issue Rows */}
                     <div className="divide-y divide-white/5">
                         {filteredIssues.map((issue) => {
                             // Extract actual services and environments from underlying events
@@ -423,11 +416,11 @@ export function IssueInventoryView({ projectId, issues }: Props) {
                                 <Link
                                     key={issue.id}
                                     href={`/projects/${projectId}/issues/${issue.id}`}
-                                    className="grid grid-cols-[minmax(0,1fr)_100px_120px_120px_150px] items-center gap-4 px-5 py-3.5 hover:bg-surface/35 transition-colors group cursor-pointer"
+                                    className="grid grid-cols-[minmax(0,1fr)_100px_120px_120px_160px] items-center gap-4 px-5 py-3.5 hover:bg-surface/35 transition-colors group cursor-pointer"
                                 >
-                                    {/* 7. Problem Details Hierarchy: Title > Status/Severity > Fingerprint > Service·Env */}
+                                    {/* GROUPED PROBLEM Column */}
                                     <div className="min-w-0 pr-3 space-y-1">
-                                        {/* Status & Severity */}
+                                        {/* Line 1: [STATUS BADGE] [SEVERITY BADGE] */}
                                         <div className="flex items-center gap-1.5 flex-wrap">
                                             <span className={`text-[10px] font-mono font-medium px-1.5 py-0.5 rounded border ${
                                                 issue.status === "RESOLVED"
@@ -441,17 +434,17 @@ export function IssueInventoryView({ projectId, issues }: Props) {
                                             <SeverityBadge severity={issue.severity as any} />
                                         </div>
 
-                                        {/* 1. Primary Dominant Issue Title */}
+                                        {/* Line 2: Issue Title (Strongest text) */}
                                         <h3 className="text-sm font-semibold text-white group-hover:text-accent transition-colors truncate leading-snug">
                                             {issue.title}
                                         </h3>
 
-                                        {/* Fingerprint (Quieter) */}
+                                        {/* Line 3: fingerprint: <fingerprint> (Muted monospace) */}
                                         <p className="text-[11px] font-mono text-zinc-500 truncate">
                                             fingerprint: <code className="text-zinc-400">{issue.fingerprint}</code>
                                         </p>
 
-                                        {/* 9. Actual Service & Environment */}
+                                        {/* Line 4: <Service> · <Environment> */}
                                         <div className="flex items-center gap-1.5 text-xs font-mono text-zinc-400 flex-wrap">
                                             <span className="text-zinc-300 font-medium truncate max-w-[180px]">
                                                 {issueServices.join(", ") || "web-client"}
@@ -463,45 +456,37 @@ export function IssueInventoryView({ projectId, issues }: Props) {
                                         </div>
                                     </div>
 
-                                    {/* 10. Occurrences Count */}
+                                    {/* OCCURRENCES Column */}
                                     <div className="font-mono text-center space-y-0.5">
                                         <span className="text-sm font-bold text-white block">
                                             {issue.eventCount}
                                         </span>
                                         <span className="text-[10px] text-zinc-500 block">
-                                            occurrence{issue.eventCount !== 1 ? "s" : ""}
+                                            occurrences
                                         </span>
                                     </div>
 
-                                    {/* 11. First Seen */}
+                                    {/* FIRST SEEN Column (Deterministic Date + Relative Time) */}
                                     <div className="font-mono text-xs space-y-0.5">
                                         <span className="text-zinc-300 block text-[11px] truncate">
-                                            {new Date(issue.firstSeen).toLocaleDateString([], {
-                                                month: "short",
-                                                day: "numeric",
-                                                year: "numeric",
-                                            })}
+                                            {formatDeterministicDate(issue.firstSeen)}
                                         </span>
                                         <span className="text-[10px] text-zinc-500 block truncate">
                                             <RelativeTime date={issue.firstSeen} />
                                         </span>
                                     </div>
 
-                                    {/* 11. Last Seen */}
+                                    {/* LAST SEEN Column (Deterministic Date + Relative Time) */}
                                     <div className="font-mono text-xs space-y-0.5">
                                         <span className="text-zinc-300 block text-[11px] truncate">
-                                            {new Date(issue.lastSeen).toLocaleDateString([], {
-                                                month: "short",
-                                                day: "numeric",
-                                                year: "numeric",
-                                            })}
+                                            {formatDeterministicDate(issue.lastSeen)}
                                         </span>
                                         <span className="text-[10px] text-zinc-500 block truncate">
                                             <RelativeTime date={issue.lastSeen} />
                                         </span>
                                     </div>
 
-                                    {/* 12 & 13. Activity & Cohesive Frequency Sparkline */}
+                                    {/* ACTIVITY Column: Activity state badge + real frequency sparkline */}
                                     <div className="flex justify-end">
                                         <IssueFrequencySparkline activity={activity} />
                                     </div>

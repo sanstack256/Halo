@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { BackButton } from "@/components/ui/back-button";
+import { HaloSelect } from "@/components/ui/halo-select";
 import {
     Activity,
     AlertCircle,
@@ -387,17 +388,18 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                                 <span className="text-white font-semibold">{new Date(issue.lastSeen).toLocaleString()}</span>
                             </div>
                             <div>
-                                <span className="text-[10px] text-zinc-500 uppercase block font-sans">Triage Assignee</span>
-                                <select
+                                <span className="text-[10px] text-zinc-500 uppercase block font-sans mb-1">Triage Assignee</span>
+                                <HaloSelect
                                     value={assignee}
-                                    onChange={(e) => setAssignee(e.target.value)}
-                                    className="mt-1 w-full bg-[#080b11] border border-white/10 text-white text-xs px-2.5 py-1.5 rounded-lg focus:outline-none focus:border-accent"
-                                >
-                                    <option value="Unassigned">Unassigned</option>
-                                    <option value="Sanjeev (Me)">Sanjeev (Me)</option>
-                                    <option value="Backend Team">Backend Team</option>
-                                    <option value="Frontend Team">Frontend Team</option>
-                                </select>
+                                    onChange={(val) => setAssignee(val)}
+                                    className="w-full"
+                                    options={[
+                                        { value: "Unassigned", label: "Unassigned" },
+                                        { value: "Sanjeev (Me)", label: "Sanjeev (Me)" },
+                                        { value: "Backend Team", label: "Backend Team" },
+                                        { value: "Frontend Team", label: "Frontend Team" },
+                                    ]}
+                                />
                             </div>
                         </div>
                     </div>

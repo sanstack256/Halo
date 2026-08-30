@@ -84,50 +84,60 @@ export function UserProfileMenu() {
 
             {/* Dropdown Menu */}
             {isOpen && (
-                <div className="absolute bottom-full left-0 right-0 mb-2 p-1.5 rounded-xl bg-surface border border-border-strong shadow-2xl space-y-1 z-50 animate-in fade-in slide-in-from-bottom-2 duration-150">
+                <div className="absolute bottom-full left-0 right-0 mb-2 halo-dropdown-menu space-y-1 z-50 animate-in fade-in slide-in-from-bottom-2 duration-150">
                     {/* Header info */}
                     <div className="px-3 py-2 border-b border-border text-xs">
                         <p className="font-medium text-white truncate">{name}</p>
                         <p className="text-[11px] text-muted truncate">{email}</p>
                     </div>
 
-                    <div className="py-1">
+                    <div className="py-0.5 space-y-0.5">
                         <Link
                             href="/settings"
                             onClick={() => setIsOpen(false)}
-                            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-secondary hover:text-white hover:bg-surface-elevated transition-colors"
+                            className="halo-dropdown-item"
                         >
-                            <User size={14} />
-                            Account Profile
+                            <div className="flex items-center gap-2.5">
+                                <User size={14} />
+                                <span>Account Profile</span>
+                            </div>
                         </Link>
 
                         <Link
                             href="/settings/organization"
                             onClick={() => setIsOpen(false)}
-                            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-secondary hover:text-white hover:bg-surface-elevated transition-colors"
+                            className="halo-dropdown-item"
                         >
-                            <Building2 size={14} />
-                            Workspace Settings
+                            <div className="flex items-center gap-2.5">
+                                <Building2 size={14} />
+                                <span>Workspace Settings</span>
+                            </div>
                         </Link>
 
                         <Link
                             href="/settings"
                             onClick={() => setIsOpen(false)}
-                            className="flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-secondary hover:text-white hover:bg-surface-elevated transition-colors"
+                            className="halo-dropdown-item"
                         >
-                            <CreditCard size={14} />
-                            Plan & Billing
+                            <div className="flex items-center gap-2.5">
+                                <CreditCard size={14} />
+                                <span>Plan & Billing</span>
+                            </div>
                         </Link>
                     </div>
 
-                    <div className="pt-1 border-t border-border">
+                    <div className="halo-dropdown-separator" />
+
+                    <div>
                         <button
                             type="button"
                             onClick={handleLogout}
-                            className="w-full flex items-center gap-2.5 px-3 py-2 rounded-lg text-xs font-medium text-error hover:bg-error/10 transition-colors text-left"
+                            className="halo-dropdown-item text-red-400 hover:text-red-300 hover:bg-red-500/10"
                         >
-                            <LogOut size={14} />
-                            Sign Out
+                            <div className="flex items-center gap-2.5">
+                                <LogOut size={14} />
+                                <span>Sign Out</span>
+                            </div>
                         </button>
                     </div>
                 </div>

@@ -3,25 +3,20 @@
 import React, { useState, useMemo } from "react";
 import Link from "next/link";
 import {
-    Activity,
-    AlertCircle,
-    ArrowRight,
-    Calendar,
-    Check,
-    ChevronDown,
-    Clock,
-    Filter,
-    Layers,
+    ArrowDown,
+    ArrowUp,
+    ChevronLeft,
+    ChevronRight,
     RotateCcw,
     Search,
-    Server,
-    ShieldAlert,
     Terminal,
     X,
 } from "lucide-react";
 import { RelativeTime } from "@/components/ui/relative-time";
-import { Badge } from "@/components/ui/badge";
 import { SeverityBadge } from "@/components/ui/severity-badge";
+import { EventTypeBadge } from "@/components/events/event-type-badge";
+import { HaloSelect } from "@/components/ui/halo-select";
+import { formatDeterministicDateTime, formatDeterministicTime } from "@/lib/date-format";
 
 export type TelemetryEvent = {
     id: string;
@@ -38,16 +33,31 @@ export type TelemetryEvent = {
     release?: string | null;
     requestId?: string | null;
     traceId?: string | null;
-    sessionId?: string | null;
-    issueId?: string | null;
-    status?: string | number | null;
     durationMs?: number | null;
+    operation?: string | null;
+    resource?: string | null;
+    status?: string | number | null;
+    sessionId?: string | null;
+    fingerprint?: string | null;
+    stack?: string | null;
+    breadcrumbs?: any;
+    tags?: any;
+    user?: any;
+    metadata?: any;
+    issueId?: string | null;
+    issue?: {
+        id: string;
+        title: string;
+        fingerprint?: string | null;
+    } | null;
 };
 
 interface Props {
     projectId: string;
     events: TelemetryEvent[];
 }
+
+const PAGE_SIZE = 25;
 
 export function EventStreamView({ projectId, events }: Props) {
     const [searchQuery, setSearchQuery] = useState("");
@@ -57,17 +67,29 @@ export function EventStreamView({ projectId, events }: Props) {
     const [selectedEnv, setSelectedEnv] = useState<string>("ALL");
     const [selectedSdk, setSelectedSdk] = useState<string>("ALL");
     const [selectedTimeRange, setSelectedTimeRange] = useState<string>("ALL");
+    const [sortOrder, setSortOrder] = useState<"desc" | "asc">("desc");
+    const [currentPage, setCurrentPage] = useState(1);
 
-    // Extract unique services and environments
-    const services = useMemo(() => {
+    // Extract unique dynamic dropdown options from real data
+    const allTypes = useMemo(() => {
         const set = new Set<string>();
-        for (const e of events) {
-            if (e.service) set.add(e.service);
-        }
+        for (const e of events) if (e.type) set.add(e.type);
         return Array.from(set).sort();
     }, [events]);
 
-    const environments = useMemo(() => {
+    const allSeverities = useMemo(() => {
+        const set = new Set<string>();
+        for (const e of events) if (e.severity) set.add(e.severity);
+        return Array.from(set).sort();
+    }, [events]);
+
+    const allServices = useMemo(() => {
+        const set = new Set<string>();
+        for (const e of events) if (e.service) set.add(e.service);
+        return Array.from(set).sort();
+    }, [events]);
+
+    const allEnvironments = useMemo(() => {
         const set = new Set<string>();
         for (const e of events) {
             const env = e.environment?.name || "production";
@@ -76,20 +98,31 @@ export function EventStreamView({ projectId, events }: Props) {
         return Array.from(set).sort();
     }, [events]);
 
-    const eventTypes = useMemo(() => {
+    const allSdks = useMemo(() => {
         const set = new Set<string>();
-        for (const e of events) {
-            if (e.type) set.add(e.type);
-        }
+        for (const e of events) if (e.sdkName) set.add(e.sdkName);
         return Array.from(set).sort();
     }, [events]);
 
-    const sdks = useMemo(() => {
-        const set = new Set<string>();
+    // Overview metric aggregations
+    const overviewMetrics = useMemo(() => {
+        let total = events.length;
+        let errors = 0;
+        let warnings = 0;
+        let info = 0;
+
         for (const e of events) {
-            if (e.sdkName) set.add(e.sdkName);
+            const sev = (e.severity || "").toUpperCase();
+            if (sev === "ERROR" || sev === "FATAL") {
+                errors++;
+            } else if (sev === "WARN" || sev === "WARNING") {
+                warnings++;
+            } else if (sev === "INFO") {
+                info++;
+            }
         }
-        return Array.from(set).sort();
+
+        return { total, errors, warnings, info };
     }, [events]);
 
     const hasActiveFilters =
@@ -109,22 +142,33 @@ export function EventStreamView({ projectId, events }: Props) {
         setSelectedEnv("ALL");
         setSelectedSdk("ALL");
         setSelectedTimeRange("ALL");
+        setCurrentPage(1);
     };
 
-    // Filter events
+    // Filter and Sort events
     const filteredEvents = useMemo(() => {
         const now = Date.now();
 
-        return events.filter((ev) => {
+        const list = events.filter((ev) => {
             // Search query filter
             if (searchQuery.trim()) {
                 const q = searchQuery.toLowerCase();
                 const matchTitle = ev.title.toLowerCase().includes(q);
-                const matchMsg = ev.message ? ev.message.toLowerCase().includes(q) : false;
-                const matchService = ev.service ? ev.service.toLowerCase().includes(q) : false;
-                const matchTrace = ev.traceId ? ev.traceId.toLowerCase().includes(q) : false;
-                const matchReq = ev.requestId ? ev.requestId.toLowerCase().includes(q) : false;
-                if (!matchTitle && !matchMsg && !matchService && !matchTrace && !matchReq) {
+                const matchMessage = ev.message?.toLowerCase().includes(q);
+                const matchService = ev.service?.toLowerCase().includes(q);
+                const matchTrace = ev.traceId?.toLowerCase().includes(q);
+                const matchRequest = ev.requestId?.toLowerCase().includes(q);
+                const matchType = ev.type.toLowerCase().includes(q);
+                const matchFp = ev.fingerprint?.toLowerCase().includes(q);
+                if (
+                    !matchTitle &&
+                    !matchMessage &&
+                    !matchService &&
+                    !matchTrace &&
+                    !matchRequest &&
+                    !matchType &&
+                    !matchFp
+                ) {
                     return false;
                 }
             }
@@ -151,8 +195,8 @@ export function EventStreamView({ projectId, events }: Props) {
             }
 
             // SDK filter
-            if (selectedSdk !== "ALL") {
-                if (ev.sdkName !== selectedSdk) return false;
+            if (selectedSdk !== "ALL" && ev.sdkName !== selectedSdk) {
+                return false;
             }
 
             // Time range filter
@@ -163,10 +207,20 @@ export function EventStreamView({ projectId, events }: Props) {
                 if (selectedTimeRange === "1h" && deltaMs > 60 * 60 * 1000) return false;
                 if (selectedTimeRange === "24h" && deltaMs > 24 * 60 * 60 * 1000) return false;
                 if (selectedTimeRange === "7d" && deltaMs > 7 * 24 * 60 * 60 * 1000) return false;
+                if (selectedTimeRange === "30d" && deltaMs > 30 * 24 * 60 * 60 * 1000) return false;
             }
 
             return true;
         });
+
+        // Sorting by timestamp
+        list.sort((a, b) => {
+            const timeA = new Date(a.timestamp).getTime();
+            const timeB = new Date(b.timestamp).getTime();
+            return sortOrder === "desc" ? timeB - timeA : timeA - timeB;
+        });
+
+        return list;
     }, [
         events,
         searchQuery,
@@ -176,257 +230,451 @@ export function EventStreamView({ projectId, events }: Props) {
         selectedEnv,
         selectedSdk,
         selectedTimeRange,
+        sortOrder,
     ]);
 
-    const formatTimeDetailed = (date: Date) => {
-        const d = new Date(date);
-        return d.toLocaleTimeString("en-US", {
-            hour12: false,
-            hour: "2-digit",
-            minute: "2-digit",
-            second: "2-digit",
-        });
-    };
+    // Pagination calculations
+    const totalFiltered = filteredEvents.length;
+    const totalPages = Math.max(1, Math.ceil(totalFiltered / PAGE_SIZE));
+    const paginatedEvents = useMemo(() => {
+        const start = (currentPage - 1) * PAGE_SIZE;
+        return filteredEvents.slice(start, start + PAGE_SIZE);
+    }, [filteredEvents, currentPage]);
+
+    const pageStart = totalFiltered === 0 ? 0 : (currentPage - 1) * PAGE_SIZE + 1;
+    const pageEnd = Math.min(currentPage * PAGE_SIZE, totalFiltered);
 
     return (
-        <div className="space-y-6">
-            {/* Header Area */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-6">
-                <div>
-                    <h1 className="text-2xl sm:text-3xl font-bold text-white tracking-tight">
-                        Events
-                    </h1>
-                    <p className="text-sm text-secondary mt-1">
-                        Every event received from your application.
-                    </p>
+        <div className="space-y-5">
+            {/* A. PAGE HEADER */}
+            <div className="space-y-3">
+                <div className="flex items-center justify-between gap-4">
+                    <div>
+                        <h1 className="text-2xl font-bold text-white tracking-tight">
+                            Events
+                        </h1>
+                        <p className="text-xs text-secondary mt-0.5">
+                            Every event received from your application.
+                        </p>
+                    </div>
+
+                    <div className="px-3 py-1 rounded-lg bg-surface border border-border text-xs font-mono text-zinc-300 font-semibold">
+                        {events.length} Events
+                    </div>
+                </div>
+                <div className="border-b border-border" />
+            </div>
+
+            {/* B. EVENT OVERVIEW / SUMMARY STRIP */}
+            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
+                <div className="p-3 px-4 rounded-xl border border-border bg-surface/30 space-y-0.5">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">
+                        Total Events
+                    </span>
+                    <span className="text-lg font-bold text-white block font-mono">
+                        {overviewMetrics.total}
+                    </span>
                 </div>
 
-                <div className="flex items-center gap-3">
-                    <div className="px-3.5 py-1.5 rounded-xl bg-surface border border-border flex items-center gap-2 font-mono text-xs text-zinc-300">
-                        <Activity size={14} className="text-accent" />
-                        <span>
-                            <strong className="text-white font-bold">{filteredEvents.length}</strong>
-                            {filteredEvents.length !== events.length ? ` / ${events.length}` : ""} event{filteredEvents.length !== 1 ? "s" : ""}
-                        </span>
-                    </div>
+                <div className="p-3 px-4 rounded-xl border border-border bg-surface/30 space-y-0.5">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">
+                        Errors
+                    </span>
+                    <span className="text-lg font-bold text-red-400 block font-mono">
+                        {overviewMetrics.errors}
+                    </span>
+                </div>
+
+                <div className="p-3 px-4 rounded-xl border border-border bg-surface/30 space-y-0.5">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">
+                        Warnings
+                    </span>
+                    <span className="text-lg font-bold text-amber-400 block font-mono">
+                        {overviewMetrics.warnings}
+                    </span>
+                </div>
+
+                <div className="p-3 px-4 rounded-xl border border-border bg-surface/30 space-y-0.5">
+                    <span className="text-[10px] text-zinc-500 uppercase block font-sans tracking-wider">
+                        Info
+                    </span>
+                    <span className="text-lg font-bold text-blue-400 block font-mono">
+                        {overviewMetrics.info}
+                    </span>
                 </div>
             </div>
 
-            {/* 23. Filter / Query Toolbar Order: Search → Type → Severity → Service → Environment → SDK → Time */}
-            <div className="p-3 rounded-2xl bg-surface/70 border border-border space-y-3">
-                <div className="flex items-center gap-2.5 flex-wrap">
-                    {/* 1. Search */}
-                    <div className="relative flex-1 min-w-[200px]">
-                        <Search className="absolute left-3.5 top-1/2 -translate-y-1/2 text-muted" size={14} />
+            {/* C. FILTER + SEARCH TOOLBAR */}
+            <div className="p-2.5 rounded-xl bg-surface/60 border border-border space-y-2">
+                <div className="flex items-center gap-2 flex-wrap">
+                    {/* Search Field (Flexible largest width) */}
+                    <div className="relative flex-1 min-w-[240px]">
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-muted" size={13} />
                         <input
                             type="text"
-                            placeholder="Search title, message, service, traceId..."
+                            placeholder="Search events, messages, services, traces..."
                             value={searchQuery}
-                            onChange={(e) => setSearchQuery(e.target.value)}
-                            className="w-full h-9 rounded-xl bg-[#080b11] border border-white/10 pl-9 pr-8 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-accent font-mono"
+                            onChange={(e) => {
+                                setSearchQuery(e.target.value);
+                                setCurrentPage(1);
+                            }}
+                            className="w-full h-8.5 rounded-lg bg-[#080b11] border border-white/10 pl-8 pr-7 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-accent font-mono"
                         />
                         {searchQuery && (
                             <button
                                 type="button"
-                                onClick={() => setSearchQuery("")}
-                                className="absolute right-2.5 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+                                onClick={() => {
+                                    setSearchQuery("");
+                                    setCurrentPage(1);
+                                }}
+                                className="absolute right-2 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
                             >
-                                <X size={13} />
+                                <X size={12} />
                             </button>
                         )}
                     </div>
 
-                    {/* 2. Type */}
-                    <select
+                    {/* Event Type */}
+                    <HaloSelect
                         value={selectedType}
-                        onChange={(e) => setSelectedType(e.target.value)}
-                        className="h-9 px-3 rounded-xl bg-[#080b11] border border-white/10 text-xs font-mono text-zinc-300 focus:outline-none focus:border-accent cursor-pointer"
-                    >
-                        <option value="ALL">All Types</option>
-                        {eventTypes.map((t) => (
-                            <option key={t} value={t}>{t}</option>
-                        ))}
-                    </select>
+                        onChange={(val) => {
+                            setSelectedType(val);
+                            setCurrentPage(1);
+                        }}
+                        options={[
+                            { value: "ALL", label: "All Types" },
+                            ...allTypes.map((t) => ({ value: t, label: t })),
+                        ]}
+                    />
 
-                    {/* 3. Severity */}
-                    <select
+                    {/* Severity */}
+                    <HaloSelect
                         value={selectedSeverity}
-                        onChange={(e) => setSelectedSeverity(e.target.value)}
-                        className="h-9 px-3 rounded-xl bg-[#080b11] border border-white/10 text-xs font-mono text-zinc-300 focus:outline-none focus:border-accent cursor-pointer"
-                    >
-                        <option value="ALL">All Severities</option>
-                        <option value="FATAL">FATAL</option>
-                        <option value="ERROR">ERROR</option>
-                        <option value="WARNING">WARNING</option>
-                        <option value="INFO">INFO</option>
-                    </select>
+                        onChange={(val) => {
+                            setSelectedSeverity(val);
+                            setCurrentPage(1);
+                        }}
+                        options={[
+                            { value: "ALL", label: "All Severities" },
+                            { value: "FATAL", label: "FATAL" },
+                            { value: "ERROR", label: "ERROR" },
+                            { value: "WARNING", label: "WARNING" },
+                            { value: "INFO", label: "INFO" },
+                            { value: "DEBUG", label: "DEBUG" },
+                        ]}
+                    />
 
-                    {/* 4. Service */}
-                    {services.length > 0 && (
-                        <select
+                    {/* Service */}
+                    {allServices.length > 0 && (
+                        <HaloSelect
                             value={selectedService}
-                            onChange={(e) => setSelectedService(e.target.value)}
-                            className="h-9 px-3 rounded-xl bg-[#080b11] border border-white/10 text-xs font-mono text-zinc-300 focus:outline-none focus:border-accent cursor-pointer"
-                        >
-                            <option value="ALL">All Services</option>
-                            {services.map((s) => (
-                                <option key={s} value={s}>{s}</option>
-                            ))}
-                        </select>
+                            onChange={(val) => {
+                                setSelectedService(val);
+                                setCurrentPage(1);
+                            }}
+                            options={[
+                                { value: "ALL", label: "All Services" },
+                                ...allServices.map((s) => ({ value: s, label: s })),
+                            ]}
+                        />
                     )}
 
-                    {/* 5. Environment */}
-                    {environments.length > 0 && (
-                        <select
+                    {/* Environment */}
+                    {allEnvironments.length > 0 && (
+                        <HaloSelect
                             value={selectedEnv}
-                            onChange={(e) => setSelectedEnv(e.target.value)}
-                            className="h-9 px-3 rounded-xl bg-[#080b11] border border-white/10 text-xs font-mono text-zinc-300 focus:outline-none focus:border-accent cursor-pointer"
-                        >
-                            <option value="ALL">All Environments</option>
-                            {environments.map((env) => (
-                                <option key={env} value={env}>{env}</option>
-                            ))}
-                        </select>
+                            onChange={(val) => {
+                                setSelectedEnv(val);
+                                setCurrentPage(1);
+                            }}
+                            options={[
+                                { value: "ALL", label: "All Environments" },
+                                ...allEnvironments.map((env) => ({ value: env, label: env })),
+                            ]}
+                        />
                     )}
 
-                    {/* 6. SDK */}
-                    {sdks.length > 0 && (
-                        <select
+                    {/* SDK */}
+                    {allSdks.length > 0 && (
+                        <HaloSelect
                             value={selectedSdk}
-                            onChange={(e) => setSelectedSdk(e.target.value)}
-                            className="h-9 px-3 rounded-xl bg-[#080b11] border border-white/10 text-xs font-mono text-zinc-300 focus:outline-none focus:border-accent cursor-pointer"
-                        >
-                            <option value="ALL">All SDKs</option>
-                            {sdks.map((sdk) => (
-                                <option key={sdk} value={sdk}>{sdk}</option>
-                            ))}
-                        </select>
+                            onChange={(val) => {
+                                setSelectedSdk(val);
+                                setCurrentPage(1);
+                            }}
+                            options={[
+                                { value: "ALL", label: "All SDKs" },
+                                ...allSdks.map((sdk) => ({ value: sdk, label: sdk })),
+                            ]}
+                        />
                     )}
 
-                    {/* 7. Time */}
-                    <select
+                    {/* Time Range */}
+                    <HaloSelect
                         value={selectedTimeRange}
-                        onChange={(e) => setSelectedTimeRange(e.target.value)}
-                        className="h-9 px-3 rounded-xl bg-[#080b11] border border-white/10 text-xs font-mono text-zinc-300 focus:outline-none focus:border-accent cursor-pointer"
-                    >
-                        <option value="ALL">All Time</option>
-                        <option value="15m">Last 15 minutes</option>
-                        <option value="1h">Last 1 hour</option>
-                        <option value="24h">Last 24 hours</option>
-                        <option value="7d">Last 7 days</option>
-                    </select>
+                        onChange={(val) => {
+                            setSelectedTimeRange(val);
+                            setCurrentPage(1);
+                        }}
+                        options={[
+                            { value: "ALL", label: "All Time" },
+                            { value: "15m", label: "Last 15m" },
+                            { value: "1h", label: "Last 1h" },
+                            { value: "24h", label: "Last 24h" },
+                            { value: "7d", label: "Last 7d" },
+                            { value: "30d", label: "Last 30d" },
+                        ]}
+                    />
 
                     {/* Clear Filters Button */}
                     {hasActiveFilters && (
                         <button
                             type="button"
                             onClick={clearFilters}
-                            className="h-9 px-3 rounded-xl bg-surface hover:bg-surface-hover border border-border text-xs font-mono text-zinc-300 hover:text-white transition-colors flex items-center gap-1.5 cursor-pointer"
+                            className="h-8.5 px-2.5 rounded-lg bg-surface hover:bg-surface-hover border border-border text-xs font-mono text-zinc-300 hover:text-white transition-colors flex items-center gap-1 cursor-pointer"
                         >
-                            <RotateCcw size={12} />
+                            <RotateCcw size={11} />
                             <span>Clear</span>
                         </button>
                     )}
                 </div>
             </div>
 
-            {/* 24. Main Chronological Event Stream Columns: Timestamp | Type | Event Payload / Message | Severity | Service | SDK */}
-            {filteredEvents.length === 0 ? (
-                <div className="p-12 text-center rounded-2xl bg-surface border border-border space-y-3">
-                    <p className="text-sm font-semibold text-white">No telemetry events match your filters</p>
-                    <p className="text-xs text-secondary max-w-md mx-auto">
-                        Try clearing or adjusting your search query, severity, service, SDK, or time range filters.
-                    </p>
-                    {hasActiveFilters && (
-                        <button
-                            type="button"
-                            onClick={clearFilters}
-                            className="halo-btn halo-btn-xs halo-btn-secondary mt-2 inline-flex items-center gap-1"
-                        >
-                            <RotateCcw size={12} />
-                            Reset All Filters
-                        </button>
+            {/* D. ACTIVE FILTERS ROW (Removable Chips) */}
+            {hasActiveFilters && (
+                <div className="flex items-center gap-2 flex-wrap text-xs font-mono">
+                    <span className="text-[11px] text-zinc-500">Active filters:</span>
+
+                    {searchQuery.trim() && (
+                        <span className="halo-filter-chip">
+                            <span>Search: &ldquo;{searchQuery}&rdquo;</span>
+                            <button
+                                type="button"
+                                onClick={() => setSearchQuery("")}
+                                className="hover:text-white"
+                            >
+                                <X size={11} />
+                            </button>
+                        </span>
                     )}
+
+                    {selectedType !== "ALL" && (
+                        <span className="halo-filter-chip">
+                            <span>Type: {selectedType}</span>
+                            <button
+                                type="button"
+                                onClick={() => setSelectedType("ALL")}
+                                className="hover:text-white"
+                            >
+                                <X size={11} />
+                            </button>
+                        </span>
+                    )}
+
+                    {selectedSeverity !== "ALL" && (
+                        <span className="halo-filter-chip">
+                            <span>Severity: {selectedSeverity}</span>
+                            <button
+                                type="button"
+                                onClick={() => setSelectedSeverity("ALL")}
+                                className="hover:text-white"
+                            >
+                                <X size={11} />
+                            </button>
+                        </span>
+                    )}
+
+                    {selectedService !== "ALL" && (
+                        <span className="halo-filter-chip">
+                            <span>Service: {selectedService}</span>
+                            <button
+                                type="button"
+                                onClick={() => setSelectedService("ALL")}
+                                className="hover:text-white"
+                            >
+                                <X size={11} />
+                            </button>
+                        </span>
+                    )}
+
+                    {selectedEnv !== "ALL" && (
+                        <span className="halo-filter-chip">
+                            <span>Env: {selectedEnv}</span>
+                            <button
+                                type="button"
+                                onClick={() => setSelectedEnv("ALL")}
+                                className="hover:text-white"
+                            >
+                                <X size={11} />
+                            </button>
+                        </span>
+                    )}
+
+                    {selectedSdk !== "ALL" && (
+                        <span className="halo-filter-chip">
+                            <span>SDK: {selectedSdk}</span>
+                            <button
+                                type="button"
+                                onClick={() => setSelectedSdk("ALL")}
+                                className="hover:text-white"
+                            >
+                                <X size={11} />
+                            </button>
+                        </span>
+                    )}
+
+                    {selectedTimeRange !== "ALL" && (
+                        <span className="halo-filter-chip">
+                            <span>Time: {selectedTimeRange}</span>
+                            <button
+                                type="button"
+                                onClick={() => setSelectedTimeRange("ALL")}
+                                className="hover:text-white"
+                            >
+                                <X size={11} />
+                            </button>
+                        </span>
+                    )}
+
+                    <button
+                        type="button"
+                        onClick={clearFilters}
+                        className="text-[11px] text-zinc-400 hover:text-white underline ml-1"
+                    >
+                        Clear all
+                    </button>
+                </div>
+            )}
+
+            {/* E. EVENT TABLE STREAM (Dedicated page navigation on click) */}
+            {events.length === 0 ? (
+                /* No Events Yet Empty State */
+                <div className="p-12 text-center rounded-xl bg-surface/30 border border-border space-y-3">
+                    <div className="w-10 h-10 rounded-full bg-surface border border-border flex items-center justify-center mx-auto text-muted">
+                        <Terminal size={18} />
+                    </div>
+                    <p className="text-base font-semibold text-white">No events yet</p>
+                    <p className="text-xs text-secondary max-w-md mx-auto">
+                        Telemetry events received from your application and SDK will appear here in real time.
+                    </p>
+                    <Link
+                        href={`/projects/${projectId}/sdk`}
+                        className="halo-btn halo-btn-sm halo-btn-primary inline-flex items-center gap-1.5 mt-2"
+                    >
+                        <span>SDK Setup Guide</span>
+                    </Link>
+                </div>
+            ) : filteredEvents.length === 0 ? (
+                /* No Filtered Matches Empty State */
+                <div className="p-12 text-center rounded-xl bg-surface/30 border border-border space-y-2.5">
+                    <p className="text-sm font-medium text-white">No events match your current filters</p>
+                    <p className="text-xs text-secondary max-w-md mx-auto">
+                        Try adjusting your search query, severity, service, or time range filters.
+                    </p>
+                    <button
+                        type="button"
+                        onClick={clearFilters}
+                        className="halo-btn halo-btn-xs halo-btn-secondary mt-1 inline-flex items-center gap-1"
+                    >
+                        <RotateCcw size={11} />
+                        <span>Clear Filters</span>
+                    </button>
                 </div>
             ) : (
-                <div className="rounded-2xl border border-border bg-[#080b11] overflow-hidden shadow-xl">
-                    {/* Stream Header */}
-                    <div className="grid grid-cols-[130px_90px_minmax(0,1fr)_90px_110px_100px] items-center gap-3 px-4 py-2.5 bg-surface/90 border-b border-border text-[10px] font-mono uppercase tracking-wider text-muted select-none">
-                        <span>Timestamp</span>
+                <div className="rounded-xl border border-border bg-[#080b11] overflow-hidden shadow-lg">
+                    {/* Header Row */}
+                    <div className="grid grid-cols-[130px_90px_minmax(0,1fr)_100px_130px_100px_90px] items-center gap-3 px-4 py-2.5 bg-surface/50 border-b border-border text-[10px] font-mono uppercase tracking-wider text-muted select-none">
+                        <button
+                            type="button"
+                            onClick={() => setSortOrder(sortOrder === "desc" ? "asc" : "desc")}
+                            className="flex items-center gap-1 hover:text-white transition-colors text-left"
+                        >
+                            <span>Time</span>
+                            {sortOrder === "desc" ? <ArrowDown size={11} /> : <ArrowUp size={11} />}
+                        </button>
                         <span>Type</span>
-                        <span>Event Payload / Message</span>
+                        <span>Event</span>
                         <span>Severity</span>
                         <span>Service</span>
+                        <span>Environment</span>
                         <span className="text-right">SDK</span>
                     </div>
 
-                    {/* Stream Rows */}
+                    {/* Stream Rows: Navigation to dedicated full page on click */}
                     <div className="divide-y divide-white/5">
-                        {filteredEvents.map((event) => {
+                        {paginatedEvents.map((event) => {
                             const envName = event.environment?.name || "production";
 
                             return (
                                 <Link
                                     key={event.id}
                                     href={`/projects/${projectId}/events/${event.id}`}
-                                    className="grid grid-cols-[130px_90px_minmax(0,1fr)_90px_110px_100px] items-center gap-3 px-4 py-3 hover:bg-surface/50 transition-colors group cursor-pointer"
+                                    className="grid grid-cols-[130px_90px_minmax(0,1fr)_100px_130px_100px_90px] items-center gap-3 px-4 py-3 hover:bg-surface/35 transition-colors group cursor-pointer"
                                 >
-                                    {/* 1. Timestamp */}
-                                    <div className="font-mono text-xs space-y-0.5">
-                                        <span className="text-zinc-300 font-semibold block">
-                                            {formatTimeDetailed(event.timestamp)}
-                                        </span>
-                                        <span className="text-[10px] text-zinc-500 block truncate">
+                                    {/* 1. TIME: Relative time primary, exact timestamp secondary */}
+                                    <div
+                                        className="font-mono text-xs space-y-0.5"
+                                        title={formatDeterministicDateTime(event.timestamp)}
+                                    >
+                                        <span className="text-zinc-300 block text-[11px] truncate">
                                             <RelativeTime date={event.timestamp} />
                                         </span>
-                                    </div>
-
-                                    {/* 2. Event Type Badge */}
-                                    <div>
-                                        <span className="text-[10px] font-mono font-bold px-2 py-0.5 rounded border bg-surface border-border text-accent truncate block text-center">
-                                            {event.type}
+                                        <span className="text-[10px] text-zinc-500 block truncate font-mono">
+                                            {formatDeterministicTime(event.timestamp)}
                                         </span>
                                     </div>
 
-                                    {/* 3. Primary Title & Message */}
-                                    <div className="min-w-0 pr-2">
-                                        <p className="text-xs font-semibold text-white group-hover:text-accent transition-colors truncate">
+                                    {/* 2. TYPE: Restrained neutral classification */}
+                                    <div>
+                                        <EventTypeBadge type={event.type} className="w-full truncate" />
+                                    </div>
+
+                                    {/* 3. EVENT: Dominant title & supporting detail */}
+                                    <div className="min-w-0 pr-2 space-y-0.5">
+                                        <p
+                                            className="text-xs font-semibold text-white group-hover:text-accent transition-colors truncate"
+                                            title={event.title}
+                                        >
                                             {event.title}
                                         </p>
-                                        {event.message && (
-                                            <p className="text-[11px] font-mono text-zinc-400 truncate mt-0.5">
+                                        {event.message && event.message !== event.title && (
+                                            <p className="text-[11px] font-mono text-zinc-400 truncate">
                                                 {event.message}
                                             </p>
                                         )}
                                         {event.traceId && (
-                                            <span className="text-[10px] font-mono text-zinc-600 block truncate">
+                                            <span className="text-[10px] font-mono text-zinc-500 block truncate">
                                                 trace: {event.traceId}
                                             </span>
                                         )}
                                     </div>
 
-                                    {/* 4. Severity */}
+                                    {/* 4. SEVERITY: Strong semantic badge */}
                                     <div>
-                                        <SeverityBadge severity={event.severity as any} />
+                                        <SeverityBadge severity={event.severity} />
                                     </div>
 
-                                    {/* 5. Service & Environment */}
-                                    <div className="font-mono text-xs space-y-0.5 truncate">
-                                        <span className="text-zinc-300 truncate block text-[11px]">
-                                            {event.service || "web-client"}
+                                    {/* 5. SERVICE: Actual service name */}
+                                    <div className="font-mono text-xs truncate">
+                                        <span className="text-zinc-300 font-medium truncate block">
+                                            {event.service || "—"}
                                         </span>
-                                        <span className="text-[10px] text-zinc-500 truncate block">
+                                    </div>
+
+                                    {/* 6. ENVIRONMENT: Subdued metadata */}
+                                    <div className="font-mono text-xs truncate">
+                                        <span className="text-zinc-400 truncate block">
                                             {envName}
                                         </span>
                                     </div>
 
-                                    {/* 6. SDK Version */}
-                                    <div className="font-mono text-right text-xs truncate">
-                                        <span className="text-zinc-400 text-[11px] block truncate">
-                                            {event.sdkName || "SDK"}
+                                    {/* 7. SDK: Compact two-line format */}
+                                    <div className="font-mono text-right space-y-0.5 truncate">
+                                        <span className="text-xs text-zinc-300 truncate block">
+                                            {event.sdkName || "—"}
                                         </span>
                                         {event.sdkVersion && (
-                                            <span className="text-[10px] text-zinc-600 block">
+                                            <span className="text-[10px] text-zinc-500 truncate block">
                                                 v{event.sdkVersion}
                                             </span>
                                         )}
@@ -434,6 +682,41 @@ export function EventStreamView({ projectId, events }: Props) {
                                 </Link>
                             );
                         })}
+                    </div>
+
+                    {/* F. PAGINATION / RESULT NAVIGATION */}
+                    <div className="flex items-center justify-between px-4 py-3 bg-surface/40 border-t border-border text-xs font-mono text-zinc-400">
+                        <div>
+                            Showing <span className="text-white font-semibold">{pageStart}</span>–
+                            <span className="text-white font-semibold">{pageEnd}</span> of{" "}
+                            <span className="text-white font-semibold">{totalFiltered}</span> events
+                        </div>
+
+                        <div className="flex items-center gap-2">
+                            <button
+                                type="button"
+                                disabled={currentPage <= 1}
+                                onClick={() => setCurrentPage((p) => Math.max(1, p - 1))}
+                                className="h-7 px-2.5 rounded-lg bg-surface border border-border text-zinc-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                            >
+                                <ChevronLeft size={13} />
+                                <span>Previous</span>
+                            </button>
+
+                            <span className="text-zinc-500 px-1">
+                                Page {currentPage} of {totalPages}
+                            </span>
+
+                            <button
+                                type="button"
+                                disabled={currentPage >= totalPages}
+                                onClick={() => setCurrentPage((p) => Math.min(totalPages, p + 1))}
+                                className="h-7 px-2.5 rounded-lg bg-surface border border-border text-zinc-300 hover:text-white disabled:opacity-30 disabled:cursor-not-allowed transition-colors flex items-center gap-1"
+                            >
+                                <span>Next</span>
+                                <ChevronRight size={13} />
+                            </button>
+                        </div>
                     </div>
                 </div>
             )}
