@@ -6,6 +6,7 @@ import type { InvestigationContext } from "./types/context";
 import { normalizeEvidence } from "./pipeline/normalize";
 import { detectChanges } from "./pipeline/changes";
 import { correlateEvidence } from "./pipeline/correlate";
+import { tracePropagationChains } from "./graph/propagation";
 import { buildTimeline } from "./pipeline/timeline";
 import { buildContext } from "./pipeline/build-context";
 import { generateHypotheses } from "./pipeline/hypotheses";
@@ -32,6 +33,9 @@ export function investigate(
     const graph =
         correlateEvidence(normalized);
 
+    const causalChains =
+        tracePropagationChains(normalized, graph);
+
     const timeline =
         buildTimeline(graph);
 
@@ -57,9 +61,26 @@ export function investigate(
             context,
         );
 
+    // Link reconstructed causal chains to hypotheses where applicable
+    const candidatesWithChains = candidates.map(hypothesis => {
+        const matchingChain = causalChains.find(
+            chain =>
+                hypothesis.evidenceIds.includes(chain.rootEvidenceId) ||
+                chain.steps.some(step => hypothesis.evidenceIds.includes(step.evidenceId))
+        );
+        if (matchingChain) {
+            return {
+                ...hypothesis,
+                causalChainId: matchingChain.id,
+                causalChain: matchingChain,
+            };
+        }
+        return hypothesis;
+    });
+
     const evaluated =
         evaluateHypotheses(
-            candidates,
+            candidatesWithChains,
             context,
         );
 
@@ -117,6 +138,7 @@ export function investigate(
         findings,
         hypotheses,
         rootCause,
+        causalChains,
         impact,
         recommendations,
         report,

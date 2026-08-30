@@ -48,6 +48,7 @@ import { ReplayPlayerClient } from "@/components/replay/replay-player-client";
 import { ReplayStatus } from "@/components/replay/replay-status";
 import { interpretInvestigation, type InterpretedInvestigation } from "@/lib/investigation/interpreter";
 import { RuntimeReconstructionView } from "@/components/investigation/runtime-reconstruction-view";
+import { CausalChainView } from "@/components/investigation/causal-chain-view";
 import { resolveGitHubSourceContext } from "@/lib/investigation/runtime/github-source-provider";
 import { parseStackTrace } from "@/lib/investigation/runtime/stack-parser";
 import type { SourceContext } from "@/lib/investigation/runtime/types";
@@ -578,7 +579,14 @@ function InvestigationView({
                 </div>
             </section>
 
-            {/* 8. Exact Runtime Failure & Context Reconstruction (Features 1 & 2) */}
+            {/* 8. Reconstructed Causal Chains & Competing Hypotheses */}
+            <CausalChainView
+                causalChains={interpreted.causalChains}
+                hypotheses={investigation.hypotheses}
+                rawEdges={interpreted.rawEdges}
+            />
+
+            {/* 9. Exact Runtime Failure & Context Reconstruction (Features 1 & 2) */}
             <RuntimeReconstructionView reconstruction={interpreted.runtimeReconstruction} />
 
             {/* 9. User Session Replay */}

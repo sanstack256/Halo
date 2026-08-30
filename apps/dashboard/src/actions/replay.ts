@@ -1,8 +1,7 @@
 "use server";
 
 import { prisma } from "@/lib/prisma";
-import { auth } from "@/lib/auth";
-import { headers } from "next/headers";
+import { getSession } from "@/lib/session";
 import { checkFeature, getUserOrgEntitlements } from "@/lib/entitlements";
 
 export async function getReplaySessionForIssue(issueId: string) {
@@ -154,9 +153,7 @@ export async function getProjectReplays(projectId: string) {
 }
 
 export async function updateProjectReplayConfig(projectId: string, config: any) {
-    const session = await auth.api.getSession({
-        headers: await headers(),
-    });
+    const session = await getSession();
 
     if (!session?.user?.id) {
         throw new Error("Unauthorized");

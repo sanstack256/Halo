@@ -233,5 +233,6 @@ function createDeploymentHypothesis(
         findingIds: Array.from(new Set(findings.map((f) => f.id))),
         evidenceIds,
         alternativeIds: [],
+        provenance: deployment.source,
     };
 }

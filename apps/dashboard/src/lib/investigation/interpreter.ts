@@ -6,6 +6,8 @@ import type {
     Change,
     Impact,
     Recommendation,
+    CausalChain,
+    EvidenceEdge,
 } from "@halo/investigation-engine";
 import {
     buildDashboardRecommendations,
@@ -242,6 +244,16 @@ export interface InterpretedInvestigation {
      * Exact Runtime Failure & Context Reconstruction (Features 1 & 2)
      */
     runtimeReconstruction?: FullRuntimeReconstruction;
+
+    /**
+     * Reconstructed Causal Chains
+     */
+    causalChains?: CausalChain[];
+
+    /**
+     * Raw Causal Evidence Graph Edges
+     */
+    rawEdges?: EvidenceEdge[];
 }
 
 /**
@@ -314,23 +326,30 @@ export function interpretInvestigation(
     // 2. Parse exact error details from the incident anchor, enriched with real AST source facts
     const parsedError = parseErrorDetails(anchorError, runtimeReconstruction);
 
-    // 3. Identify correlated network request within active incident boundary
-    const requestEvidence = sortedActive.filter((e) =>
-        e.type === "TRACE" ||
-        e.type === "LOG" ||
-        e.status !== undefined ||
-        e.operation?.includes("HTTP") ||
-        e.operation?.includes("POST") ||
-        e.operation?.includes("GET")
-    );
+    // 3. Identify correlated network request within active incident boundary ONLY when true correlation exists
+    const correlatedRequestEvents = sortedActive.filter((e) => {
+        if (e.id === anchorError?.id) return false;
+        const isReq = e.type === "TRACE" || e.status !== undefined || (e.operation && /\b(HTTP|GET|POST|PUT|DELETE|PATCH)\b/i.test(e.operation));
+        if (!isReq) return false;
 
-    const failedRequestEvent = requestEvidence.find((e) => {
+        // Must share traceId, requestId, sessionId, or have an explicit causal edge in investigation.graph
+        const sharesTrace = Boolean(anchorError?.traceId && e.traceId && anchorError.traceId === e.traceId);
+        const sharesRequest = Boolean(anchorError?.requestId && e.requestId && anchorError.requestId === e.requestId);
+        const sharesSession = Boolean(
+            anchorError?.metadata?.sessionId && e.metadata?.sessionId && anchorError.metadata.sessionId === e.metadata.sessionId
+        );
+        const hasGraphEdge = investigation.graph?.edges?.some(
+            edge => ((edge.from === e.id && edge.to === anchorError?.id) || (edge.from === anchorError?.id && edge.to === e.id)) &&
+                    edge.relationship !== "TEMPORALLY_PRECEDES"
+        );
+
+        return sharesTrace || sharesRequest || sharesSession || hasGraphEdge;
+    });
+
+    const failedRequestEvent = correlatedRequestEvents.find((e) => {
         const s = String(e.status || "");
-        return s.startsWith("5") || s.startsWith("4") || e.title.includes("500") || e.title.includes("400");
-    }) || sortedActive.find((e) => {
-        const s = String(e.status || "");
-        return s.startsWith("5") || s.startsWith("4");
-    }) || requestEvidence[0];
+        return s.startsWith("5") || s.startsWith("4") || (typeof e.status === "number" && e.status >= 400) || e.title.includes("500") || e.title.includes("400");
+    }) || correlatedRequestEvents[0] || null;
 
     const requestMethod: string | null =
         failedRequestEvent?.operation?.split(" ")[0] ?? null;
@@ -549,17 +568,22 @@ export function interpretInvestigation(
             : null;
 
     // Build causal chain bottom-up from what is actually observed:
-    //   [optional user trigger] → HTTP request → HTTP status → client response handler → TypeError
+    //   [optional user trigger] → [correlated HTTP request / Unknown upstream origin] → client exception
     const chainSteps: string[] = [];
     if (userTriggerLine) chainSteps.push(userTriggerLine);
-    if (requestEndpoint) chainSteps.push(reqLabel);
-    if (statusLine) chainSteps.push(statusLine);
     if (isDownstreamResponseHandler && requestEndpoint) {
+        if (reqLabel) chainSteps.push(reqLabel);
+        if (statusLine) chainSteps.push(statusLine);
         chainSteps.push(
             isHttpErrorStatus
                 ? `${funcRef} accessed \`${propRef}\` without HTTP status check`
                 : `${funcRef} accessed \`${propRef}\` on unexpected payload`
         );
+    } else if (parsedError.isTypeError) {
+        chainSteps.push(`[Origin of undefined value: Unknown]`);
+        if (sourceResolved) {
+            chainSteps.push(`${funcRef} executing \`${propRef}\``);
+        }
     }
     chainSteps.push(parsedError.errorMessage);
     const asciiFlow = chainSteps.join("\n       ↓\n");
@@ -669,6 +693,17 @@ export function interpretInvestigation(
             statement: `Whether the backend failure originated from a dependency, configuration, validation, or runtime error.`,
             provenance: "Unknown",
             details: `No backend telemetry was recorded during the ${requestStatus} response generation window.`,
+        });
+    } else if (parsedError.isTypeError && !failedRequestEvent) {
+        unknowns.push({
+            statement: `Where the undefined ${parsedError.targetProperty ? `\`${parsedError.targetProperty}\`` : "value"} originated.`,
+            provenance: "Unknown",
+            details: `No correlated upstream HTTP request, database query, dependency response, or state mutation telemetry was captured for this occurrence.`,
+        });
+        unknowns.push({
+            statement: `Whether an upstream API response, missing DB record, configuration, or local state caused the undefined dereference.`,
+            provenance: "Unknown",
+            details: `Active telemetry establishes the immediate dereference failure but lacks preceding upstream data flow.`,
         });
     } else if (!isExactRootCauseKnown) {
         unknowns.push({
@@ -1083,7 +1118,9 @@ export function interpretInvestigation(
             narrative:
                 isDownstreamResponseHandler && requestEndpoint && requestStatus != null
                     ? `\`${parsedError.errorMessage}\` alone does not explain the incident. \`${reqLabel}\` returned HTTP ${requestStatus} first — the client exception is a consequence of the failed response body, not an independent bug.`
-                    : `Available telemetry establishes: ${rootCauseStatement}`,
+                    : parsedError.isTypeError && !failedRequestEvent
+                        ? `Observed ${parsedError.errorClass} occurred while accessing \`${parsedError.targetProperty ?? "property"}\` on an undefined object. The immediate failure site is established, but the upstream origin of why the value was undefined remains Unknown (no correlated upstream request or database telemetry was captured).`
+                        : `Available telemetry establishes: ${rootCauseStatement}`,
             treeDiagram,
             provenPoints: reasoningPoints,
         },
@@ -1099,6 +1136,8 @@ export function interpretInvestigation(
         impactDetails,
         recommendations,
         runtimeReconstruction,
+        causalChains: investigation.causalChains || [],
+        rawEdges: investigation.graph?.edges || [],
     };
 }
 

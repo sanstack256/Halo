@@ -1,6 +1,6 @@
 import type { Change } from "./change";
 import type { Evidence } from "./evidence";
-import type { EvidenceGraph } from "./graph";
+import type { EvidenceGraph, CausalChain } from "./graph";
 import type { Finding } from "./finding";
 import type { Hypothesis } from "./hypothesis";
 import type { Impact } from "./impact";
@@ -29,6 +29,7 @@ export interface InvestigationReport {
         contradictingReasons: string[];
         missingReasons: string[];
         propagationPath?: string[];
+        causalChainId?: string;
     } | null;
 
     alternatives: {
@@ -58,6 +59,8 @@ export interface Investigation {
     hypotheses: Hypothesis[];
 
     rootCause: Hypothesis | null;
+
+    causalChains?: CausalChain[];
 
     impact: Impact | null;
 

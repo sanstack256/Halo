@@ -518,22 +518,23 @@ function buildRuntimeExceptionRecommendation(
     return {
         id: `fix:runtime:${normalizeId(hypothesis.id)}`,
         title: stackPatch?.filePath
-            ? `Add null guard for \`${prop ?? "undefined property"}\` access in \`${stackPatch.filePath}\``
-            : `Add defensive null/undefined guard for the failing property access`,
-        description: `${typeLabel} caused by unguarded property access on a potentially undefined value.`,
+            ? `Defensive Mitigation: Add null guard for \`${prop ?? "undefined property"}\` in \`${stackPatch.filePath}\``
+            : `Defensive Mitigation: Add null/undefined guard for the failing property access`,
+        description: `${typeLabel} defensive mitigation at the observed dereference site (upstream cause remains unobserved).`,
         priority: "HIGH",
         confidence: hypothesis.confidence,
         evidenceIds: hypothesis.evidenceIds,
         kind,
         immediateAction: stackPatch?.filePath && prop
-            ? `In \`${stackPatch.filePath}${stackPatch.lineRange ? `:${stackPatch.lineRange}` : ""}\`, add a null check or optional chaining (\`?.\`) before accessing \`${prop}\`.`
+            ? `Immediate Defensive Mitigation: In \`${stackPatch.filePath}${stackPatch.lineRange ? `:${stackPatch.lineRange}` : ""}\`, add a null check or optional chaining (\`?.\`) before accessing \`${prop}\`.`
             : prop
-            ? `Add a null/undefined guard before accessing \`${prop}\` in the failing code path.`
-            : `Add defensive null/undefined checks at the site of the failing property access.`,
+            ? `Immediate Defensive Mitigation: Add a null/undefined guard before accessing \`${prop}\` in the failing code path.`
+            : `Immediate Defensive Mitigation: Add defensive null/undefined checks at the site of the failing property access.`,
         rootCauseTechnical: anchorError
-            ? `\`${anchorError.title}\`. ` +
-              (stackPatch?.filePath ? `Stack trace points to \`${stackPatch.filePath}${stackPatch.lineRange ? `:${stackPatch.lineRange}` : ""}\`${stackPatch.functionOrComponent ? ` (${stackPatch.functionOrComponent})` : ""}. ` : "") +
-              (prop ? `The property \`${prop}\` is accessed on an object that can be undefined at this point in execution.` : "")
+            ? `Observed ${typeLabel}: \`${anchorError.title}\`. ` +
+              (stackPatch?.filePath ? `Stack trace confirms dereference crash at \`${stackPatch.filePath}${stackPatch.lineRange ? `:${stackPatch.lineRange}` : ""}\`${stackPatch.functionOrComponent ? ` (${stackPatch.functionOrComponent})` : ""}. ` : "") +
+              `This recommendation provides an immediate defensive mitigation to prevent application crashes at this dereference site. ` +
+              `The upstream reason why the accessed value was undefined is unobserved in telemetry and requires upstream data/service investigation.`
             : `A ${typeLabel} was captured. The exact code location requires stack frame analysis.`,
         codePatch,
         evidenceChain,

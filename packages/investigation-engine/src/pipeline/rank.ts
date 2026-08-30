@@ -1,5 +1,6 @@
 import type { Hypothesis } from "../types/hypothesis";
 import type { Reason } from "../types/reason";
+import { getConfidenceLevel } from "../types/confidence";
 
 /**
  * Rank hypotheses after evaluation.
@@ -23,14 +24,17 @@ export function rankHypotheses(
 
     const scored =
         hypotheses.map(
-            hypothesis => ({
-                ...hypothesis,
-
-                confidence:
-                    calculateConfidence(
-                        hypothesis,
-                    ),
-            }),
+            hypothesis => {
+                const confidence = calculateConfidence(hypothesis);
+                const confidenceLevel = getConfidenceLevel(confidence);
+                const confidenceExplanation = generateConfidenceExplanation(hypothesis, confidence, confidenceLevel);
+                return {
+                    ...hypothesis,
+                    confidence,
+                    confidenceLevel,
+                    confidenceExplanation,
+                };
+            },
         );
 
     /*
@@ -56,45 +60,78 @@ export function rankHypotheses(
             hypothesis,
             index,
             all,
-        ) => ({
-            ...hypothesis,
+        ) => {
+            const rankingExplanation = generateRankingExplanation(hypothesis, index, all);
+            return {
+                ...hypothesis,
 
-            /*
-             * "LEADING" means this is currently the strongest
-             * candidate. It does NOT mean validated root cause.
-             *
-             * Validation can still downgrade it later.
-             */
-            status:
-                index === 0 &&
-                hypothesis.confidence >=
-                    LEADING_THRESHOLD &&
-                hypothesis.score.positive >
-                    hypothesis.score.negative
-                    ? "LEADING"
-                    : normalizeRankedStatus(
-                        hypothesis,
-                    ),
+                /*
+                 * "LEADING" means this is currently the strongest
+                 * candidate. It does NOT mean validated root cause.
+                 *
+                 * Validation can still downgrade it later.
+                 */
+                status:
+                    index === 0 &&
+                    hypothesis.confidence >=
+                        LEADING_THRESHOLD &&
+                    hypothesis.score.positive >
+                        hypothesis.score.negative
+                        ? "LEADING"
+                        : normalizeRankedStatus(
+                            hypothesis,
+                        ),
 
-            /*
-             * Every other hypothesis is an explicit alternative.
-             *
-             * Keep ordering deterministic so the UI can reliably
-             * explain why alternatives were considered.
-             */
-            alternativeIds:
-                all
-                    .filter(
-                        alternative =>
-                            alternative.id !==
-                            hypothesis.id,
-                    )
-                    .map(
-                        alternative =>
-                            alternative.id,
-                    ),
-        }),
+                rankingExplanation,
+
+                /*
+                 * Every other hypothesis is an explicit alternative.
+                 *
+                 * Keep ordering deterministic so the UI can reliably
+                 * explain why alternatives were considered.
+                 */
+                alternativeIds:
+                    all
+                        .filter(
+                            alternative =>
+                                alternative.id !==
+                                hypothesis.id,
+                        )
+                        .map(
+                            alternative =>
+                                alternative.id,
+                        ),
+            };
+        },
     );
+}
+
+function generateConfidenceExplanation(
+    hypothesis: Hypothesis,
+    confidence: number,
+    level: string
+): string {
+    const positiveCount = hypothesis.supportingReasons.length;
+    const negativeCount = hypothesis.contradictingReasons.length;
+    const missingCount = hypothesis.missingReasons.length;
+
+    if (confidence === 0) {
+        return "No supporting telemetry evidence found for this hypothesis.";
+    }
+
+    return `Confidence assessed as ${level} (${confidence}%). Supported by ${positiveCount} signal${positiveCount === 1 ? "" : "s"}.${negativeCount > 0 ? ` ${negativeCount} contradicting signal${negativeCount === 1 ? "" : "s"} reduce support.` : ""}${missingCount > 0 ? ` ${missingCount} unobserved signal${missingCount === 1 ? "" : "s"} represent remaining uncertainty.` : ""}`;
+}
+
+function generateRankingExplanation(
+    hypothesis: Hypothesis,
+    index: number,
+    all: Hypothesis[]
+): string {
+    if (index === 0) {
+        return `Ranked #1 (Leading Candidate) based on strongest net supporting evidence score (${hypothesis.score.positive.toFixed(2)}) and ${hypothesis.supportingReasons.length} independent signals.`;
+    }
+    const leading = all[0];
+    return `Ranked #${index + 1} behind ${leading.title} due to lower net evidence support (${hypothesis.score.positive.toFixed(2)} vs ${leading.score.positive.toFixed(2)})${hypothesis.contradictingReasons.length > 0 ? ` and presence of contradicting signals` : ""}.`;
 }
 
 const LEADING_THRESHOLD = 70;
@@ -221,16 +258,12 @@ function causalPriority(
     ) {
         case "Shared Dependency Failure":
             return 4;
-
         case "Infrastructure Failure":
             return 4;
-
         case "Deployment Regression":
             return 3;
-
         case "Cross-Service Failure":
             return 1;
-
         default:
             return 2;
     }
@@ -407,11 +440,11 @@ function calculateConfidence(
  *
  * We use diminishing returns:
  *
- * 1 independent evidence item → 1.00
- * 2 → 1.04
- * 3 → 1.07
- * 4 → 1.09
- * 5+ → capped at 1.12
+ * 1 independent evidence item -> 1.00
+ * 2 -> 1.04
+ * 3 -> 1.07
+ * 4 -> 1.09
+ * 5+ -> capped at 1.12
  *
  * More evidence helps, but cannot manufacture certainty.
  */
@@ -458,12 +491,6 @@ function countUniqueEvidence(
 function normalizeRankedStatus(
     hypothesis: Hypothesis,
 ): Hypothesis["status"] {
-    /*
-     * A previously VALIDATED hypothesis should not be silently
-     * downgraded during ranking.
-     *
-     * Validation owns the final state.
-     */
     if (
         hypothesis.status ===
         "VALIDATED"
@@ -471,9 +498,6 @@ function normalizeRankedStatus(
         return "VALIDATED";
     }
 
-    /*
-     * Rejected hypotheses remain rejected.
-     */
     if (
         hypothesis.status ===
         "REJECTED"
