@@ -6,7 +6,10 @@ export async function getSession() {
     return await auth.api.getSession({
       headers: await headers(),
     });
-  } catch (error) {
+  } catch (error: any) {
+    if (error?.digest === "DYNAMIC_SERVER_USAGE" || error?.message?.includes("Dynamic server usage")) {
+      throw error;
+    }
     console.error("[Session] Error retrieving session:", error);
     return null;
   }
