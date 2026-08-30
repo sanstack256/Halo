@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Plus, BellRing, X } from "lucide-react";
 import { MonitorForm } from "@/components/monitors/monitor-form";
 import { useRouter } from "next/navigation";
+import type { MonitorType } from "@/generated/prisma/client";
 
 interface ProjectOption {
     id: string;
@@ -13,6 +14,7 @@ interface ProjectOption {
 interface CreateMonitorDialogProps {
     projects: ProjectOption[];
     selectedProjectId?: string;
+    initialType?: MonitorType;
     trigger?: React.ReactNode;
     onCreated?: () => void;
 }
@@ -20,6 +22,7 @@ interface CreateMonitorDialogProps {
 export function CreateMonitorDialog({
     projects,
     selectedProjectId,
+    initialType,
     trigger,
     onCreated,
 }: CreateMonitorDialogProps) {
@@ -92,6 +95,7 @@ export function CreateMonitorDialog({
                         <MonitorForm
                             projects={projects}
                             initialProjectId={selectedProjectId}
+                            initialType={initialType}
                             isModal={true}
                             onSuccess={handleSuccess}
                             onCancel={handleClose}

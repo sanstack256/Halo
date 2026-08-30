@@ -96,9 +96,37 @@ const TYPE_CONFIG: Record<
     },
 };
 
+const TYPE_DETAILS: Record<MonitorType, { title: string; desc: string; emptyDesc: string }> = {
+    ERROR: {
+        title: "Error Spike Monitors",
+        desc: "Real-time monitors evaluating error frequency bursts and fatal exceptions.",
+        emptyDesc: "No error spike monitors configured yet. Set up threshold alerts to track exception surges in production.",
+    },
+    METRIC: {
+        title: "Metric & Latency Monitors",
+        desc: "Evaluates API response durations, span latencies, and service degradation.",
+        emptyDesc: "No metric monitors configured yet. Set up alerts for P95 latency and request rate anomalies.",
+    },
+    CRON: {
+        title: "Cron & Scheduled Task Monitors",
+        desc: "Monitors background workers and scheduled tasks to ensure on-time execution.",
+        emptyDesc: "No scheduled cron monitors configured yet. Set up heartbeat monitoring for your periodic jobs.",
+    },
+    UPTIME: {
+        title: "Endpoint Uptime Probes",
+        desc: "Continuous HTTP/HTTPS synthetic availability and status code validation.",
+        emptyDesc: "No uptime probes configured yet. Set up continuous synthetic checks against your endpoints.",
+    },
+    MOBILE_BUILD: {
+        title: "Mobile Build & Stability Monitors",
+        desc: "Tracks mobile release stability and crash-free session ratios.",
+        emptyDesc: "No mobile release monitors configured yet. Set up monitors for mobile crash-free stability.",
+    },
+};
+
 export function MonitorsClient({
-    title = "Monitors",
-    description = "Continuous anomaly detection, threshold alerts, and synthetic endpoint monitors.",
+    title,
+    description,
     isMineView = false,
     initialMonitors,
     projects,
@@ -120,6 +148,11 @@ export function MonitorsClient({
     const [selectedStatus, setSelectedStatus] = useState(initialStatusFilter || "ALL");
     const [sortBy, setSortBy] = useState<"lastEvaluatedAt" | "name" | "type" | "status">("lastEvaluatedAt");
     const [onlyMine, setOnlyMine] = useState(Boolean(initialMineFilter || isMineView));
+
+    // Dynamic header resolution
+    const activeTypeDetail = selectedType !== "ALL" ? TYPE_DETAILS[selectedType as MonitorType] : undefined;
+    const resolvedTitle = title || activeTypeDetail?.title || "Monitors";
+    const resolvedDescription = description || activeTypeDetail?.desc || "Continuous anomaly detection, threshold alerts, and synthetic endpoint monitors.";
 
     // Client-side pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -227,18 +260,21 @@ export function MonitorsClient({
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="halo-page-header mb-0">
                     <div className="flex items-center gap-3">
-                        <h1 className="halo-page-title mb-0">{title}</h1>
+                        <h1 className="halo-page-title mb-0">{resolvedTitle}</h1>
                         <span className="px-2 py-0.5 rounded-full bg-white/5 border border-white/10 text-xs font-mono font-medium text-zinc-300">
                             {filteredMonitors.length} {filteredMonitors.length === 1 ? "monitor" : "monitors"}
                         </span>
                     </div>
                     <p className="halo-page-description mt-1">
-                        {description}
+                        {resolvedDescription}
                     </p>
                 </div>
 
                 <div className="flex items-center gap-3">
-                    <CreateMonitorDialog projects={projects} />
+                    <CreateMonitorDialog
+                        projects={projects}
+                        initialType={selectedType !== "ALL" ? (selectedType as MonitorType) : (initialTypeFilter as MonitorType | undefined)}
+                    />
                 </div>
             </div>
 
@@ -357,6 +393,8 @@ export function MonitorsClient({
                                 ? "No matching monitors found"
                                 : isMineView
                                 ? "No monitors created by you yet"
+                                : activeTypeDetail
+                                ? `No ${activeTypeDetail.title.toLowerCase()} configured yet`
                                 : "No monitors configured yet"}
                         </h3>
                         <p className="text-xs text-zinc-400 font-sans max-w-md mx-auto mt-1">
@@ -364,6 +402,8 @@ export function MonitorsClient({
                                 ? "No monitors match your current search and filter combination. Try adjusting or clearing filters."
                                 : isMineView
                                 ? "Monitors created by your account will appear here for dedicated ownership, quick edits, and alert management."
+                                : activeTypeDetail
+                                ? activeTypeDetail.emptyDesc
                                 : "Monitors continuously track error surges, latency thresholds, scheduled cron jobs, and endpoint uptime."}
                         </p>
                     </div>
@@ -380,6 +420,7 @@ export function MonitorsClient({
                         ) : (
                             <CreateMonitorDialog
                                 projects={projects}
+                                initialType={selectedType !== "ALL" ? (selectedType as MonitorType) : (initialTypeFilter as MonitorType | undefined)}
                                 trigger={
                                     <button type="button" className="halo-btn halo-btn-primary halo-btn-sm">
                                         <Plus size={14} />
