@@ -34,6 +34,12 @@ export type AlertWithMonitor = {
     notificationCount: number;
     deliveredCount: number;
     failedCount: number;
+    investigation?: {
+        id: string;
+        status: string;
+        rootCause: string | null;
+        confidenceScore: number | null;
+    } | null;
 };
 
 export type AlertNotification = {
@@ -177,6 +183,14 @@ export async function getOrgAlerts(
                 notifications: {
                     select: { outcome: true },
                 },
+                investigation: {
+                    select: {
+                        id: true,
+                        status: true,
+                        rootCause: true,
+                        confidenceScore: true,
+                    },
+                },
             },
         }),
     ]);
@@ -206,6 +220,7 @@ export async function getOrgAlerts(
         notificationCount: a.notifications.length,
         deliveredCount: a.notifications.filter((n) => n.outcome === "DELIVERED").length,
         failedCount: a.notifications.filter((n) => n.outcome === "FAILED").length,
+        investigation: a.investigation || null,
     }));
 
     return {
@@ -247,6 +262,14 @@ export async function getAlertById(alertId: string): Promise<{
             notifications: {
                 orderBy: { attemptedAt: "desc" },
             },
+            investigation: {
+                select: {
+                    id: true,
+                    status: true,
+                    rootCause: true,
+                    confidenceScore: true,
+                },
+            },
         },
     });
 
@@ -272,6 +295,7 @@ export async function getAlertById(alertId: string): Promise<{
         notificationCount: raw.notifications.length,
         deliveredCount: raw.notifications.filter((n) => n.outcome === "DELIVERED").length,
         failedCount: raw.notifications.filter((n) => n.outcome === "FAILED").length,
+        investigation: raw.investigation || null,
     };
 
     const notifications: AlertNotification[] = raw.notifications.map((n) => ({

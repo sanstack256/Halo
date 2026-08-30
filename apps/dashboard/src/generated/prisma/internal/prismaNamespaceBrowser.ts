@@ -67,7 +67,8 @@ export const ModelName = {
   ReplayChunk: 'ReplayChunk',
   Monitor: 'Monitor',
   MonitorAlert: 'MonitorAlert',
-  MonitorAlertNotification: 'MonitorAlertNotification'
+  MonitorAlertNotification: 'MonitorAlertNotification',
+  Investigation: 'Investigation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -386,6 +387,28 @@ export const MonitorAlertNotificationScalarFieldEnum = {
 } as const
 
 export type MonitorAlertNotificationScalarFieldEnum = (typeof MonitorAlertNotificationScalarFieldEnum)[keyof typeof MonitorAlertNotificationScalarFieldEnum]
+
+
+export const InvestigationScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  issueId: 'issueId',
+  monitorId: 'monitorId',
+  alertId: 'alertId',
+  status: 'status',
+  title: 'title',
+  summary: 'summary',
+  rootCause: 'rootCause',
+  confidenceScore: 'confidenceScore',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  evidenceCount: 'evidenceCount',
+  context: 'context',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvestigationScalarFieldEnum = (typeof InvestigationScalarFieldEnum)[keyof typeof InvestigationScalarFieldEnum]
 
 
 export const SortOrder = {

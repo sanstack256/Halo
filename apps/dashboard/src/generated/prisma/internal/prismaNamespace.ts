@@ -413,7 +413,8 @@ export const ModelName = {
   ReplayChunk: 'ReplayChunk',
   Monitor: 'Monitor',
   MonitorAlert: 'MonitorAlert',
-  MonitorAlertNotification: 'MonitorAlertNotification'
+  MonitorAlertNotification: 'MonitorAlertNotification',
+  Investigation: 'Investigation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -429,7 +430,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification"
+    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1691,6 +1692,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Investigation: {
+      payload: Prisma.$InvestigationPayload<ExtArgs>
+      fields: Prisma.InvestigationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvestigationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvestigationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationPayload>
+        }
+        findFirst: {
+          args: Prisma.InvestigationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvestigationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationPayload>
+        }
+        findMany: {
+          args: Prisma.InvestigationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationPayload>[]
+        }
+        create: {
+          args: Prisma.InvestigationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationPayload>
+        }
+        createMany: {
+          args: Prisma.InvestigationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InvestigationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationPayload>[]
+        }
+        delete: {
+          args: Prisma.InvestigationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationPayload>
+        }
+        update: {
+          args: Prisma.InvestigationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationPayload>
+        }
+        deleteMany: {
+          args: Prisma.InvestigationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvestigationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InvestigationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationPayload>[]
+        }
+        upsert: {
+          args: Prisma.InvestigationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationPayload>
+        }
+        aggregate: {
+          args: Prisma.InvestigationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvestigation>
+        }
+        groupBy: {
+          args: Prisma.InvestigationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvestigationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvestigationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvestigationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2032,6 +2107,28 @@ export const MonitorAlertNotificationScalarFieldEnum = {
 export type MonitorAlertNotificationScalarFieldEnum = (typeof MonitorAlertNotificationScalarFieldEnum)[keyof typeof MonitorAlertNotificationScalarFieldEnum]
 
 
+export const InvestigationScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  issueId: 'issueId',
+  monitorId: 'monitorId',
+  alertId: 'alertId',
+  status: 'status',
+  title: 'title',
+  summary: 'summary',
+  rootCause: 'rootCause',
+  confidenceScore: 'confidenceScore',
+  startedAt: 'startedAt',
+  completedAt: 'completedAt',
+  evidenceCount: 'evidenceCount',
+  context: 'context',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvestigationScalarFieldEnum = (typeof InvestigationScalarFieldEnum)[keyof typeof InvestigationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -2316,6 +2413,20 @@ export type EnumNotificationOutcomeFieldRefInput<$PrismaModel> = FieldRefInputTy
 export type ListEnumNotificationOutcomeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'NotificationOutcome[]'>
     
 
+
+/**
+ * Reference to a field of type 'InvestigationStatus'
+ */
+export type EnumInvestigationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvestigationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'InvestigationStatus[]'
+ */
+export type ListEnumInvestigationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvestigationStatus[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -2484,6 +2595,7 @@ export type GlobalOmitConfig = {
   monitor?: Prisma.MonitorOmit
   monitorAlert?: Prisma.MonitorAlertOmit
   monitorAlertNotification?: Prisma.MonitorAlertNotificationOmit
+  investigation?: Prisma.InvestigationOmit
 }
 
 /* Types for Logging */

@@ -207,6 +207,14 @@ export async function createEvent(
             )
             : undefined;
 
+    const resolvedService =
+        data.service?.trim() ||
+        (data.tags as any)?.service ||
+        (data.tags as any)?.application ||
+        (data.metadata as any)?.service ||
+        (data.metadata as any)?.application ||
+        undefined;
+
     /*
      * --------------------------------------------------
      * Telemetry session
@@ -305,7 +313,7 @@ export async function createEvent(
                     release?.id,
 
                 service:
-                    data.service,
+                    resolvedService,
 
                 resource:
                     data.resource,
@@ -401,6 +409,18 @@ export async function createEvent(
                     timestamp,
             },
         });
+    }
+
+    /*
+     * --------------------------------------------------
+     * Real-time Monitor Evaluation Pipeline
+     * --------------------------------------------------
+     */
+    try {
+        const { evaluateMonitorsForProject } = await import("@/lib/monitors/evaluator");
+        await evaluateMonitorsForProject(data.projectId, timestamp);
+    } catch (evalErr) {
+        console.error("[Halo Ingest] Monitor evaluation failed for project:", data.projectId, evalErr);
     }
 
     return event;

@@ -275,6 +275,7 @@ export type IssueWhereInput = {
   events?: Prisma.EventListRelationFilter
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   replaySessions?: Prisma.ReplaySessionListRelationFilter
+  investigations?: Prisma.InvestigationListRelationFilter
 }
 
 export type IssueOrderByWithRelationInput = {
@@ -293,6 +294,7 @@ export type IssueOrderByWithRelationInput = {
   events?: Prisma.EventOrderByRelationAggregateInput
   project?: Prisma.ProjectOrderByWithRelationInput
   replaySessions?: Prisma.ReplaySessionOrderByRelationAggregateInput
+  investigations?: Prisma.InvestigationOrderByRelationAggregateInput
 }
 
 export type IssueWhereUniqueInput = Prisma.AtLeast<{
@@ -315,6 +317,7 @@ export type IssueWhereUniqueInput = Prisma.AtLeast<{
   events?: Prisma.EventListRelationFilter
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   replaySessions?: Prisma.ReplaySessionListRelationFilter
+  investigations?: Prisma.InvestigationListRelationFilter
 }, "id" | "projectId_fingerprint">
 
 export type IssueOrderByWithAggregationInput = {
@@ -370,6 +373,7 @@ export type IssueCreateInput = {
   events?: Prisma.EventCreateNestedManyWithoutIssueInput
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutIssueInput
+  investigations?: Prisma.InvestigationCreateNestedManyWithoutIssueInput
 }
 
 export type IssueUncheckedCreateInput = {
@@ -387,6 +391,7 @@ export type IssueUncheckedCreateInput = {
   lastEventId?: string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutIssueInput
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutIssueInput
+  investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutIssueInput
 }
 
 export type IssueUpdateInput = {
@@ -404,6 +409,7 @@ export type IssueUpdateInput = {
   events?: Prisma.EventUpdateManyWithoutIssueNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutIssueNestedInput
+  investigations?: Prisma.InvestigationUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueUncheckedUpdateInput = {
@@ -421,6 +427,7 @@ export type IssueUncheckedUpdateInput = {
   lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutIssueNestedInput
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutIssueNestedInput
+  investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueCreateManyInput = {
@@ -618,6 +625,22 @@ export type IssueUpdateOneWithoutReplaySessionsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.IssueUpdateToOneWithWhereWithoutReplaySessionsInput, Prisma.IssueUpdateWithoutReplaySessionsInput>, Prisma.IssueUncheckedUpdateWithoutReplaySessionsInput>
 }
 
+export type IssueCreateNestedOneWithoutInvestigationsInput = {
+  create?: Prisma.XOR<Prisma.IssueCreateWithoutInvestigationsInput, Prisma.IssueUncheckedCreateWithoutInvestigationsInput>
+  connectOrCreate?: Prisma.IssueCreateOrConnectWithoutInvestigationsInput
+  connect?: Prisma.IssueWhereUniqueInput
+}
+
+export type IssueUpdateOneWithoutInvestigationsNestedInput = {
+  create?: Prisma.XOR<Prisma.IssueCreateWithoutInvestigationsInput, Prisma.IssueUncheckedCreateWithoutInvestigationsInput>
+  connectOrCreate?: Prisma.IssueCreateOrConnectWithoutInvestigationsInput
+  upsert?: Prisma.IssueUpsertWithoutInvestigationsInput
+  disconnect?: Prisma.IssueWhereInput | boolean
+  delete?: Prisma.IssueWhereInput | boolean
+  connect?: Prisma.IssueWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.IssueUpdateToOneWithWhereWithoutInvestigationsInput, Prisma.IssueUpdateWithoutInvestigationsInput>, Prisma.IssueUncheckedUpdateWithoutInvestigationsInput>
+}
+
 export type IssueCreateWithoutProjectInput = {
   id?: string
   fingerprint: string
@@ -632,6 +655,7 @@ export type IssueCreateWithoutProjectInput = {
   lastEventId?: string | null
   events?: Prisma.EventCreateNestedManyWithoutIssueInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutIssueInput
+  investigations?: Prisma.InvestigationCreateNestedManyWithoutIssueInput
 }
 
 export type IssueUncheckedCreateWithoutProjectInput = {
@@ -648,6 +672,7 @@ export type IssueUncheckedCreateWithoutProjectInput = {
   lastEventId?: string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutIssueInput
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutIssueInput
+  investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutIssueInput
 }
 
 export type IssueCreateOrConnectWithoutProjectInput = {
@@ -708,6 +733,7 @@ export type IssueCreateWithoutEventsInput = {
   lastEventId?: string | null
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutIssueInput
+  investigations?: Prisma.InvestigationCreateNestedManyWithoutIssueInput
 }
 
 export type IssueUncheckedCreateWithoutEventsInput = {
@@ -724,6 +750,7 @@ export type IssueUncheckedCreateWithoutEventsInput = {
   severity?: $Enums.EventSeverity
   lastEventId?: string | null
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutIssueInput
+  investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutIssueInput
 }
 
 export type IssueCreateOrConnectWithoutEventsInput = {
@@ -756,6 +783,7 @@ export type IssueUpdateWithoutEventsInput = {
   lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutIssueNestedInput
+  investigations?: Prisma.InvestigationUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueUncheckedUpdateWithoutEventsInput = {
@@ -772,6 +800,7 @@ export type IssueUncheckedUpdateWithoutEventsInput = {
   severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutIssueNestedInput
+  investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueCreateWithoutReplaySessionsInput = {
@@ -788,6 +817,7 @@ export type IssueCreateWithoutReplaySessionsInput = {
   lastEventId?: string | null
   events?: Prisma.EventCreateNestedManyWithoutIssueInput
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
+  investigations?: Prisma.InvestigationCreateNestedManyWithoutIssueInput
 }
 
 export type IssueUncheckedCreateWithoutReplaySessionsInput = {
@@ -804,6 +834,7 @@ export type IssueUncheckedCreateWithoutReplaySessionsInput = {
   severity?: $Enums.EventSeverity
   lastEventId?: string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutIssueInput
+  investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutIssueInput
 }
 
 export type IssueCreateOrConnectWithoutReplaySessionsInput = {
@@ -836,6 +867,7 @@ export type IssueUpdateWithoutReplaySessionsInput = {
   lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   events?: Prisma.EventUpdateManyWithoutIssueNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
+  investigations?: Prisma.InvestigationUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueUncheckedUpdateWithoutReplaySessionsInput = {
@@ -852,6 +884,91 @@ export type IssueUncheckedUpdateWithoutReplaySessionsInput = {
   severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
   lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutIssueNestedInput
+  investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutIssueNestedInput
+}
+
+export type IssueCreateWithoutInvestigationsInput = {
+  id?: string
+  fingerprint: string
+  title: string
+  status?: $Enums.IssueStatus
+  firstSeen?: Date | string
+  lastSeen?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  eventCount?: number
+  severity?: $Enums.EventSeverity
+  lastEventId?: string | null
+  events?: Prisma.EventCreateNestedManyWithoutIssueInput
+  project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutIssueInput
+}
+
+export type IssueUncheckedCreateWithoutInvestigationsInput = {
+  id?: string
+  fingerprint: string
+  title: string
+  status?: $Enums.IssueStatus
+  firstSeen?: Date | string
+  lastSeen?: Date | string
+  projectId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  eventCount?: number
+  severity?: $Enums.EventSeverity
+  lastEventId?: string | null
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutIssueInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutIssueInput
+}
+
+export type IssueCreateOrConnectWithoutInvestigationsInput = {
+  where: Prisma.IssueWhereUniqueInput
+  create: Prisma.XOR<Prisma.IssueCreateWithoutInvestigationsInput, Prisma.IssueUncheckedCreateWithoutInvestigationsInput>
+}
+
+export type IssueUpsertWithoutInvestigationsInput = {
+  update: Prisma.XOR<Prisma.IssueUpdateWithoutInvestigationsInput, Prisma.IssueUncheckedUpdateWithoutInvestigationsInput>
+  create: Prisma.XOR<Prisma.IssueCreateWithoutInvestigationsInput, Prisma.IssueUncheckedCreateWithoutInvestigationsInput>
+  where?: Prisma.IssueWhereInput
+}
+
+export type IssueUpdateToOneWithWhereWithoutInvestigationsInput = {
+  where?: Prisma.IssueWhereInput
+  data: Prisma.XOR<Prisma.IssueUpdateWithoutInvestigationsInput, Prisma.IssueUncheckedUpdateWithoutInvestigationsInput>
+}
+
+export type IssueUpdateWithoutInvestigationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
+  firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  events?: Prisma.EventUpdateManyWithoutIssueNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutIssueNestedInput
+}
+
+export type IssueUncheckedUpdateWithoutInvestigationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
+  firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  events?: Prisma.EventUncheckedUpdateManyWithoutIssueNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueCreateManyProjectInput = {
@@ -882,6 +999,7 @@ export type IssueUpdateWithoutProjectInput = {
   lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   events?: Prisma.EventUpdateManyWithoutIssueNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutIssueNestedInput
+  investigations?: Prisma.InvestigationUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueUncheckedUpdateWithoutProjectInput = {
@@ -898,6 +1016,7 @@ export type IssueUncheckedUpdateWithoutProjectInput = {
   lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutIssueNestedInput
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutIssueNestedInput
+  investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueUncheckedUpdateManyWithoutProjectInput = {
@@ -922,11 +1041,13 @@ export type IssueUncheckedUpdateManyWithoutProjectInput = {
 export type IssueCountOutputType = {
   events: number
   replaySessions: number
+  investigations: number
 }
 
 export type IssueCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   events?: boolean | IssueCountOutputTypeCountEventsArgs
   replaySessions?: boolean | IssueCountOutputTypeCountReplaySessionsArgs
+  investigations?: boolean | IssueCountOutputTypeCountInvestigationsArgs
 }
 
 /**
@@ -953,6 +1074,13 @@ export type IssueCountOutputTypeCountReplaySessionsArgs<ExtArgs extends runtime.
   where?: Prisma.ReplaySessionWhereInput
 }
 
+/**
+ * IssueCountOutputType without action
+ */
+export type IssueCountOutputTypeCountInvestigationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.InvestigationWhereInput
+}
+
 
 export type IssueSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -970,6 +1098,7 @@ export type IssueSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   events?: boolean | Prisma.Issue$eventsArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   replaySessions?: boolean | Prisma.Issue$replaySessionsArgs<ExtArgs>
+  investigations?: boolean | Prisma.Issue$investigationsArgs<ExtArgs>
   _count?: boolean | Prisma.IssueCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["issue"]>
 
@@ -1025,6 +1154,7 @@ export type IssueInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   events?: boolean | Prisma.Issue$eventsArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   replaySessions?: boolean | Prisma.Issue$replaySessionsArgs<ExtArgs>
+  investigations?: boolean | Prisma.Issue$investigationsArgs<ExtArgs>
   _count?: boolean | Prisma.IssueCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type IssueIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1040,6 +1170,7 @@ export type $IssuePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     events: Prisma.$EventPayload<ExtArgs>[]
     project: Prisma.$ProjectPayload<ExtArgs>
     replaySessions: Prisma.$ReplaySessionPayload<ExtArgs>[]
+    investigations: Prisma.$InvestigationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1451,6 +1582,7 @@ export interface Prisma__IssueClient<T, Null = never, ExtArgs extends runtime.Ty
   events<T extends Prisma.Issue$eventsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$eventsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$EventPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   replaySessions<T extends Prisma.Issue$replaySessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$replaySessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReplaySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  investigations<T extends Prisma.Issue$investigationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$investigationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvestigationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1938,6 +2070,30 @@ export type Issue$replaySessionsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.ReplaySessionScalarFieldEnum | Prisma.ReplaySessionScalarFieldEnum[]
+}
+
+/**
+ * Issue.investigations
+ */
+export type Issue$investigationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the Investigation
+   */
+  select?: Prisma.InvestigationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the Investigation
+   */
+  omit?: Prisma.InvestigationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.InvestigationInclude<ExtArgs> | null
+  where?: Prisma.InvestigationWhereInput
+  orderBy?: Prisma.InvestigationOrderByWithRelationInput | Prisma.InvestigationOrderByWithRelationInput[]
+  cursor?: Prisma.InvestigationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.InvestigationScalarFieldEnum | Prisma.InvestigationScalarFieldEnum[]
 }
 
 /**

@@ -126,3 +126,8 @@ export type MonitorAlert = Prisma.MonitorAlertModel
  * 
  */
 export type MonitorAlertNotification = Prisma.MonitorAlertNotificationModel
+/**
+ * Model Investigation
+ * 
+ */
+export type Investigation = Prisma.InvestigationModel

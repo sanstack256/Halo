@@ -41,6 +41,7 @@ model Project {
   replaySessions      ReplaySession[]
   telemetrySessions   TelemetrySession[]
   monitors            Monitor[]
+  investigations      Investigation[]
 
   @@unique([organizationId, slug])
 }
@@ -175,6 +176,7 @@ model Issue {
   events         Event[]
   project        Project         @relation(fields: [projectId], references: [id])
   replaySessions ReplaySession[]
+  investigations Investigation[]
 
   @@unique([projectId, fingerprint])
 }
@@ -376,6 +378,7 @@ model Monitor {
   project         Project         @relation(fields: [projectId], references: [id], onDelete: Cascade)
   creator         User?           @relation(fields: [creatorId], references: [id])
   alerts          MonitorAlert[]
+  investigations  Investigation[]
 
   @@index([projectId, type])
   @@index([projectId, status])
@@ -405,6 +408,7 @@ model MonitorAlert {
 
   monitor         Monitor             @relation(fields: [monitorId], references: [id], onDelete: Cascade)
   notifications   MonitorAlertNotification[]
+  investigation   Investigation?
 
   @@index([monitorId])
   @@index([status])
@@ -437,3 +441,39 @@ model MonitorAlertNotification {
 
   @@index([alertId])
 }
+
+enum InvestigationStatus {
+  QUEUED
+  RUNNING
+  COMPLETED
+  FAILED
+}
+
+model Investigation {
+  id              String              @id @default(cuid())
+  projectId       String
+  issueId         String?
+  monitorId       String?
+  alertId         String?             @unique
+  status          InvestigationStatus @default(COMPLETED)
+  title           String
+  summary         String?
+  rootCause       String?
+  confidenceScore Float?
+  startedAt       DateTime            @default(now())
+  completedAt     DateTime?
+  evidenceCount   Int                 @default(0)
+  context         Json?               // stores monitor / trigger context snapshot
+  createdAt       DateTime            @default(now())
+  updatedAt       DateTime            @updatedAt
+
+  project         Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  issue           Issue?              @relation(fields: [issueId], references: [id], onDelete: SetNull)
+  monitor         Monitor?            @relation(fields: [monitorId], references: [id], onDelete: SetNull)
+  alert           MonitorAlert?       @relation(fields: [alertId], references: [id], onDelete: SetNull)
+
+  @@index([projectId, createdAt])
+  @@index([monitorId])
+  @@index([issueId])
+}
+

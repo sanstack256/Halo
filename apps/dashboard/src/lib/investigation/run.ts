@@ -248,3 +248,144 @@ export async function investigateIssueOccurrence(
         historicalOccurrenceCount,
     };
 }
+
+export async function investigateMonitorOccurrence(
+    monitorId: string,
+    projectId: string,
+    alertId?: string | null,
+): Promise<{
+    investigation: Awaited<ReturnType<typeof investigate>>;
+    incidentAnchorId?: string;
+    incidentAnchorTimestamp: Date;
+    monitor: {
+        id: string;
+        name: string;
+        type: string;
+        query: string | null;
+        thresholdValue: number | null;
+        thresholdWindow: number | null;
+    };
+    alert?: {
+        id: string;
+        status: string;
+        conditionSummary: string;
+        observedValue: number | null;
+        thresholdValue: number | null;
+        triggeredAt: Date;
+    } | null;
+    investigationRecord: any;
+}> {
+    const { prisma } = await import("@/lib/prisma");
+    const { getInvestigationEventsForMonitor } = await import("@/actions/issue");
+
+    if (!monitorId || !projectId) {
+        throw new Error("Monitor ID and Project ID are required to run an investigation.");
+    }
+
+    const data = await getInvestigationEventsForMonitor(monitorId, projectId, alertId);
+    if (!data) {
+        throw new Error("Monitor not found in project.");
+    }
+
+    const { monitor, alert, events, anchorTime } = data;
+
+    // Convert real persisted events to normalized evidence
+    const evidence = eventsToEvidence(events);
+
+    // Run the existing investigation engine
+    const investigation = await investigate(evidence);
+
+    // Upsert the Investigation database record to track state & prevent duplication
+    let investigationRecord: any = null;
+    try {
+        const title = alert
+            ? `Investigation: ${monitor.name} (${alert.conditionSummary})`
+            : `Investigation: ${monitor.name}`;
+
+        const contextSnapshot = {
+            monitorId: monitor.id,
+            monitorName: monitor.name,
+            monitorType: monitor.type,
+            query: monitor.query,
+            thresholdValue: monitor.thresholdValue,
+            thresholdWindow: monitor.thresholdWindow,
+            alertId: alert?.id || null,
+            conditionSummary: alert?.conditionSummary || null,
+            observedValue: alert?.observedValue || null,
+            triggeredAt: anchorTime,
+        };
+
+        if (alert?.id) {
+            investigationRecord = await prisma.investigation.upsert({
+                where: { alertId: alert.id },
+                create: {
+                    projectId,
+                    monitorId: monitor.id,
+                    alertId: alert.id,
+                    status: "COMPLETED",
+                    title,
+                    summary: investigation.report.summary,
+                    rootCause: investigation.rootCause?.title || null,
+                    confidenceScore: investigation.rootCause?.confidence || null,
+                    evidenceCount: evidence.length,
+                    context: contextSnapshot,
+                    startedAt: anchorTime,
+                    completedAt: new Date(),
+                },
+                update: {
+                    summary: investigation.report.summary,
+                    rootCause: investigation.rootCause?.title || null,
+                    confidenceScore: investigation.rootCause?.confidence || null,
+                    evidenceCount: evidence.length,
+                    context: contextSnapshot,
+                    completedAt: new Date(),
+                },
+            });
+        } else {
+            investigationRecord = await prisma.investigation.create({
+                data: {
+                    projectId,
+                    monitorId: monitor.id,
+                    status: "COMPLETED",
+                    title,
+                    summary: investigation.report.summary,
+                    rootCause: investigation.rootCause?.title || null,
+                    confidenceScore: investigation.rootCause?.confidence || null,
+                    evidenceCount: evidence.length,
+                    context: contextSnapshot,
+                    startedAt: anchorTime,
+                    completedAt: new Date(),
+                },
+            });
+        }
+    } catch (err) {
+        console.error("Failed to save investigation record:", err);
+    }
+
+    const anchorError = evidence.find((e) => e.type === "ERROR") || evidence[0];
+
+    return {
+        investigation,
+        incidentAnchorId: anchorError?.id,
+        incidentAnchorTimestamp: anchorTime,
+        monitor: {
+            id: monitor.id,
+            name: monitor.name,
+            type: monitor.type,
+            query: monitor.query,
+            thresholdValue: monitor.thresholdValue,
+            thresholdWindow: monitor.thresholdWindow,
+        },
+        alert: alert
+            ? {
+                  id: alert.id,
+                  status: alert.status,
+                  conditionSummary: alert.conditionSummary,
+                  observedValue: alert.observedValue,
+                  thresholdValue: alert.thresholdValue,
+                  triggeredAt: alert.triggeredAt,
+              }
+            : null,
+        investigationRecord,
+    };
+}

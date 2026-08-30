@@ -1,15 +1,18 @@
-import { investigateIssueOccurrence } from "@/lib/investigation/run";
+import { investigateIssueOccurrence, investigateMonitorOccurrence } from "@/lib/investigation/run";
 import { BackButton } from "@/components/ui/back-button";
 import {
     Activity,
     AlertCircle,
     ArrowDown,
     ArrowRight,
+    ArrowUpRight,
+    BellRing,
     CheckCircle2,
     Clock,
     Code2,
     Compass,
     Copy,
+    FolderKanban,
     HelpCircle,
     History,
     Info,
@@ -20,10 +23,12 @@ import {
     RotateCcw,
     Server,
     ShieldAlert,
+    Sparkles,
     Terminal,
     XCircle,
     Zap,
 } from "lucide-react";
+import Link from "next/link";
 
 import type {
     Investigation,
@@ -39,6 +44,8 @@ type Props = {
     searchParams: Promise<{
         issueId?: string;
         eventId?: string;
+        monitorId?: string;
+        alertId?: string;
     }>;
 };
 
@@ -54,6 +61,7 @@ import { RegressionDetectionView } from "@/components/investigation/regression-d
 import { detectAutomaticRegression } from "@/lib/investigation/regression/regression-detector";
 import { InvestigationStickyNav } from "@/components/investigation/sticky-nav";
 import { RecommendationPlanView } from "@/components/investigation/recommendation-plan-view";
+import { RelatedTelemetryView } from "@/components/investigation/related-telemetry-view";
 import { resolveGitHubSourceContext } from "@/lib/investigation/runtime/github-source-provider";
 import { parseStackTrace } from "@/lib/investigation/runtime/stack-parser";
 import type { SourceContext } from "@/lib/investigation/runtime/types";
@@ -63,22 +71,66 @@ export default async function InvestigationPage({
     searchParams,
 }: Props) {
     const { id } = await params;
-    const { issueId, eventId } = await searchParams;
+    const { issueId, eventId, monitorId, alertId } = await searchParams;
 
-    if (!issueId) {
+    if (!issueId && !monitorId) {
         return (
             <NoEventsInvestigationModal
                 projectId={id}
-                errorMessage="Please select an active issue to start an investigation."
+                errorMessage="Please select an active issue or monitor trigger to start an investigation."
             />
         );
     }
 
     try {
-        const [{ investigation, incidentAnchorId, incidentAnchorTimestamp, historicalOccurrenceCount }, resolvedReplay] = await Promise.all([
-            investigateIssueOccurrence(issueId, id, eventId),
-            getReplaySessionForOccurrence(issueId, eventId, id),
-        ]);
+        let investigation: Investigation;
+        let incidentAnchorId: string | undefined;
+        let incidentAnchorTimestamp: Date | undefined;
+        let historicalOccurrenceCount: number | undefined;
+        let resolvedReplay: ResolvedOccurrenceReplay | null = null;
+        let monitorContext: {
+            monitor: {
+                id: string;
+                name: string;
+                type: string;
+                query: string | null;
+                thresholdValue: number | null;
+                thresholdWindow: number | null;
+            };
+            alert?: {
+                id: string;
+                status: string;
+                conditionSummary: string;
+                observedValue: number | null;
+                thresholdValue: number | null;
+                triggeredAt: Date;
+            } | null;
+            investigationRecord: any;
+        } | null = null;
+
+        if (monitorId) {
+            // Monitor Trigger Investigation Path
+            const monitorResult = await investigateMonitorOccurrence(monitorId, id, alertId);
+            investigation = monitorResult.investigation;
+            incidentAnchorId = monitorResult.incidentAnchorId;
+            incidentAnchorTimestamp = monitorResult.incidentAnchorTimestamp;
+            monitorContext = {
+                monitor: monitorResult.monitor,
+                alert: monitorResult.alert,
+                investigationRecord: monitorResult.investigationRecord,
+            };
+        } else {
+            // Issue Occurrence Investigation Path
+            const [issueResult, replay] = await Promise.all([
+                investigateIssueOccurrence(issueId!, id, eventId),
+                getReplaySessionForOccurrence(issueId!, eventId, id),
+            ]);
+            investigation = issueResult.investigation;
+            incidentAnchorId = issueResult.incidentAnchorId;
+            incidentAnchorTimestamp = issueResult.incidentAnchorTimestamp;
+            historicalOccurrenceCount = issueResult.historicalOccurrenceCount;
+            resolvedReplay = replay;
+        }
 
         // Attempt async GitHub source resolution for the primary failing frame
         const allErrors = investigation.evidence.filter((e) => e.type === "ERROR");
@@ -113,19 +165,22 @@ export default async function InvestigationPage({
             }
         }
 
-        // Run Automatic Regression Detection
-        const regressionAnalysis = await detectAutomaticRegression({
-            projectId: id,
-            issueId,
-            incidentFirstSeen: incidentAnchorTimestamp ? new Date(incidentAnchorTimestamp) : new Date(),
-            failingLocation: primaryFailingFrame ? {
-                filePath: primaryFailingFrame.filePath,
-                lineNumber: primaryFailingFrame.lineNumber,
-                functionName: primaryFailingFrame.functionName,
-            } : undefined,
-            releaseVersion: anchorError?.release,
-            commitSha: anchorError?.commit,
-        });
+        // Run Automatic Regression Detection if issue context exists
+        let regressionAnalysis: any = null;
+        if (issueId) {
+            regressionAnalysis = await detectAutomaticRegression({
+                projectId: id,
+                issueId,
+                incidentFirstSeen: incidentAnchorTimestamp ? new Date(incidentAnchorTimestamp) : new Date(),
+                failingLocation: primaryFailingFrame ? {
+                    filePath: primaryFailingFrame.filePath,
+                    lineNumber: primaryFailingFrame.lineNumber,
+                    functionName: primaryFailingFrame.functionName,
+                } : undefined,
+                releaseVersion: anchorError?.release,
+                commitSha: anchorError?.commit,
+            });
+        }
 
         return (
             <InvestigationView
@@ -138,6 +193,7 @@ export default async function InvestigationPage({
                 resolvedSourceContext={resolvedSourceContext}
                 anchorError={anchorError}
                 regressionAnalysis={regressionAnalysis}
+                monitorContext={monitorContext}
             />
         );
     } catch (error) {
@@ -165,9 +221,10 @@ function InvestigationView({
     resolvedSourceContext,
     anchorError,
     regressionAnalysis,
+    monitorContext,
 }: {
     investigation: Investigation;
-    resolvedReplay: ResolvedOccurrenceReplay;
+    resolvedReplay: ResolvedOccurrenceReplay | null;
     projectId: string;
     incidentAnchorId?: string;
     incidentAnchorTimestamp?: Date;
@@ -175,6 +232,25 @@ function InvestigationView({
     resolvedSourceContext?: SourceContext;
     anchorError?: any;
     regressionAnalysis?: any;
+    monitorContext?: {
+        monitor: {
+            id: string;
+            name: string;
+            type: string;
+            query: string | null;
+            thresholdValue: number | null;
+            thresholdWindow: number | null;
+        };
+        alert?: {
+            id: string;
+            status: string;
+            conditionSummary: string;
+            observedValue: number | null;
+            thresholdValue: number | null;
+            triggeredAt: Date;
+        } | null;
+        investigationRecord: any;
+    } | null;
 }) {
     const {
         status,
@@ -218,11 +294,75 @@ function InvestigationView({
     return (
         <div className="halo-investigation max-w-5xl mx-auto space-y-8 pb-16">
             <div className="mb-4 flex items-center justify-between">
-                <BackButton fallbackHref="/overview" label="Back to Issues" />
+                <BackButton
+                    fallbackHref={monitorContext ? `/monitors/${monitorContext.monitor.id}` : "/overview"}
+                    label={monitorContext ? "Back to Monitor" : "Back to Issues"}
+                />
                 <div className="text-xs font-mono text-zinc-500">
-                    Issue: <span className="text-zinc-300 font-semibold">{rootCause?.title || "Active Incident"}</span>
+                    {monitorContext ? (
+                        <div className="flex items-center gap-2">
+                            <span>Monitor:</span>
+                            <Link
+                                href={`/monitors/${monitorContext.monitor.id}`}
+                                className="text-white hover:text-accent font-semibold flex items-center gap-1 transition-colors"
+                            >
+                                <BellRing size={12} />
+                                {monitorContext.monitor.name}
+                            </Link>
+                            {monitorContext.alert && (
+                                <>
+                                    <span>&bull;</span>
+                                    <Link
+                                        href={`/monitors/alerts/${monitorContext.alert.id}`}
+                                        className="text-accent hover:underline"
+                                    >
+                                        Alert Detail &rarr;
+                                    </Link>
+                                </>
+                            )}
+                        </div>
+                    ) : (
+                        <div>Issue: <span className="text-zinc-300 font-semibold">{rootCause?.title || "Active Incident"}</span></div>
+                    )}
                 </div>
             </div>
+
+            {/* Monitor Trigger Origin Context Banner */}
+            {monitorContext && (
+                <div className="p-4 rounded-2xl border border-accent/20 bg-accent/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
+                    <div className="space-y-1">
+                        <div className="flex items-center gap-2 flex-wrap">
+                            <span className="px-2 py-0.5 rounded-full bg-accent/20 border border-accent/30 text-accent font-semibold text-[11px]">
+                                Monitor Origin: {monitorContext.monitor.type}
+                            </span>
+                            <span className="text-white font-semibold">
+                                {monitorContext.monitor.name}
+                            </span>
+                        </div>
+                        <p className="text-zinc-300 text-[11px] leading-relaxed">
+                            {monitorContext.alert?.conditionSummary || `Threshold parameters evaluated over rolling window.`}
+                        </p>
+                    </div>
+                    <div className="flex items-center gap-2 shrink-0">
+                        <Link
+                            href={`/monitors/${monitorContext.monitor.id}`}
+                            className="halo-btn halo-btn-secondary halo-btn-xs"
+                        >
+                            <BellRing size={11} />
+                            <span>Monitor Config</span>
+                        </Link>
+                        {monitorContext.alert && (
+                            <Link
+                                href={`/monitors/alerts/${monitorContext.alert.id}`}
+                                className="halo-btn halo-btn-primary halo-btn-xs"
+                            >
+                                <ShieldAlert size={11} />
+                                <span>View Alert</span>
+                            </Link>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Sticky Section Navigation */}
             <InvestigationStickyNav />
@@ -425,185 +565,7 @@ function InvestigationView({
                     graph={interpreted.comprehensiveGraph}
                 />
             </div>
-
-            {/* C3. AUTOMATIC REGRESSION DETECTION */}
-            <div id="section-regression" className="scroll-mt-24">
-                <RegressionDetectionView
-                    regression={interpreted.regressionAnalysis}
-                    projectId={projectId}
-                />
-            </div>
-
-            {/* D. WHAT HAPPENED (CHRONOLOGICAL) */}
-            <section id="section-what-happened" className="halo-card p-6 border-border space-y-5 scroll-mt-24">
-                <div className="border-b border-border pb-3 flex items-center justify-between">
-                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
-                        What happened
-                    </h2>
-                    <span className="text-xs font-mono text-secondary">
-                        {interpreted.whatHappened.timeFormatted}
-                        {interpreted.whatHappened.pageUrl ? ` • ${interpreted.whatHappened.pageUrl}` : ""}
-                    </span>
-                </div>
-
-                {interpreted.whatHappened.pageUrl ? (
-                    <p className="text-sm text-zinc-300">
-                        At <strong className="text-white font-mono">{interpreted.whatHappened.timeFormatted}</strong>, activity was recorded on <code className="text-accent bg-surface px-1.5 py-0.5 rounded text-xs">{interpreted.whatHappened.pageUrl}</code>. Halo reconstructed the following sequence:
-                    </p>
-                ) : (
-                    <p className="text-sm text-zinc-300">
-                        At <strong className="text-white font-mono">{interpreted.whatHappened.timeFormatted}</strong>, an incident occurred in the application. Halo reconstructed the following sequence:
-                    </p>
-                )}
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Step 1: User Action */}
-                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-accent">
-                                <MousePointer size={14} />
-                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
-                                    1. User action
-                                </h3>
-                            </div>
-                            <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
-                                interpreted.whatHappened.userAction.provenance === "Observed"
-                                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
-                                    : interpreted.whatHappened.userAction.provenance === "Inferred"
-                                    ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
-                                    : "bg-zinc-800 text-zinc-400 border-zinc-700"
-                            }`}>
-                                {interpreted.whatHappened.userAction.provenance}
-                            </span>
-                        </div>
-                        <p className="text-xs text-secondary leading-relaxed">
-                            {interpreted.whatHappened.userAction.description}
-                        </p>
-                        <p className="text-[11px] text-muted italic">
-                            {interpreted.whatHappened.userAction.replayEvidence}
-                        </p>
-                    </div>
-
-                    {/* Step 2: Failed Request */}
-                    {interpreted.whatHappened.failedRequest && (
-                        <div className="p-4 rounded-xl bg-surface border border-red-500/20 space-y-2">
-                            <div className="flex items-center justify-between">
-                                <div className="flex items-center gap-2 text-red-400">
-                                    <Server size={14} />
-                                    <h3 className="text-xs font-bold uppercase tracking-wider text-white">
-                                        2. Failed request
-                                    </h3>
-                                </div>
-                                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                    Observed
-                                </span>
-                            </div>
-                            <div className="rounded bg-[#080b11] p-2 font-mono text-[11px] text-zinc-300 space-y-0.5">
-                                <div className="text-red-400 font-bold">
-                                    {interpreted.whatHappened.failedRequest.method} {interpreted.whatHappened.failedRequest.endpoint}
-                                </div>
-                                <div>Status: {interpreted.whatHappened.failedRequest.status}</div>
-                                <div>Duration: {interpreted.whatHappened.failedRequest.durationMs} ms</div>
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Step 3: Client Exception */}
-                    <div className="p-4 rounded-xl bg-surface border border-amber-500/20 space-y-2">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-amber-400">
-                                <AlertCircle size={14} />
-                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
-                                    3. Client exception
-                                </h3>
-                            </div>
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
-                                Observed
-                            </span>
-                        </div>
-                        <p className="text-xs text-secondary">
-                            Immediately afterward:
-                        </p>
-                        <div className="rounded bg-[#080b11] p-2 font-mono text-[11px] text-amber-300">
-                            {interpreted.whatHappened.clientException.title}
-                        </div>
-                        <p className="text-[11px] font-mono text-muted">
-                            at: {interpreted.whatHappened.clientException.failingLocation}
-                        </p>
-                    </div>
-
-                    {/* Step 4: User Impact */}
-                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-blue-400">
-                                <Activity size={14} />
-                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
-                                    4. User impact
-                                </h3>
-                            </div>
-                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
-                                Inferred
-                            </span>
-                        </div>
-                        <p className="text-xs text-secondary leading-relaxed">
-                            {interpreted.whatHappened.userImpact}
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* E. KNOWN VS UNKNOWN */}
-            <section id="section-known-unknown" className="halo-card p-6 border-border space-y-5 scroll-mt-24">
-                <div className="border-b border-border pb-3 flex items-center justify-between">
-                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
-                        What is known vs unknown
-                    </h2>
-                    <span className="text-xs font-mono text-muted">Deterministic Boundary</span>
-                </div>
-
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {/* Confirmed */}
-                    <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-3">
-                        <div className="flex items-center gap-2 text-emerald-400">
-                            <CheckCircle2 size={15} />
-                            <h3 className="text-xs font-bold uppercase tracking-wider">
-                                Confirmed Facts (Observed)
-                            </h3>
-                        </div>
-                        <ul className="space-y-2 text-xs text-zinc-300">
-                            {interpreted.evidenceIntegrity.confirmedFacts.map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-2">
-                                    <span className="text-emerald-400 font-bold">&bull;</span>
-                                    <span>{item.statement}</span>
-                                </li>
-                            ))}
-                        </ul>
-                    </div>
-
-                    {/* Unknown */}
-                    <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-3">
-                        <div className="flex items-center gap-2 text-amber-400">
-                            <HelpCircle size={15} />
-                            <h3 className="text-xs font-bold uppercase tracking-wider">
-                                Unknown (Missing Telemetry)
-                            </h3>
-                        </div>
-                        <ul className="space-y-2 text-xs text-zinc-300">
-                            {interpreted.evidenceIntegrity.unknowns.map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-2">
-                                    <span className="text-amber-400 font-bold">&bull;</span>
-                                    <span>{item.statement}</span>
-                                </li>
-                            ))}
-                        </ul>
-                        <p className="text-[11px] text-amber-300/80 italic pt-1 border-t border-amber-500/20">
-                            Halo does not guess missing backend causes without correlated telemetry.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* F. EVIDENCE (EVALUATED EVIDENCE RECORDS) */}
+            {/* C3. EVALUATED EVIDENCE RECORDS */}
             <section id="section-evidence-records" className="halo-card p-6 border-border space-y-4 overflow-hidden scroll-mt-24">
                 <div className="border-b border-border pb-3 flex items-center justify-between">
                     <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
@@ -668,7 +630,7 @@ function InvestigationView({
                 </div>
             </section>
 
-            {/* G. SESSION REPLAY */}
+            {/* C4. SESSION REPLAY */}
             <section id="section-replay" className="halo-section space-y-3 scroll-mt-24">
                 <div className="flex items-center justify-between flex-wrap gap-2">
                     <SectionHeading
@@ -710,80 +672,215 @@ function InvestigationView({
                 )}
             </section>
 
-            {/* H. RUNTIME FAILURE & STACK TRACE */}
+            {/* C5. RUNTIME FAILURE & STACK TRACE */}
             <div id="section-runtime-stack" className="scroll-mt-24">
                 <RuntimeReconstructionView reconstruction={interpreted.runtimeReconstruction} />
             </div>
 
-            {/* I. RELATED TELEMETRY */}
-            {(relatedTraces.length > 0 || relatedLogs.length > 0 || relatedMetrics.length > 0 || relatedThirdParty.length > 0) && (
-                <section id="section-telemetry" className="halo-card p-6 border-border space-y-4 scroll-mt-24">
-                    <div className="border-b border-border pb-3 flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            <Layers className="w-4 h-4 text-accent" />
-                            <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
-                                Related Telemetry Signals
-                            </h2>
+            {/* C6. RELATED TELEMETRY */}
+            <RelatedTelemetryView
+                relatedTraces={relatedTraces}
+                relatedLogs={relatedLogs}
+                relatedMetrics={relatedMetrics}
+                relatedThirdParty={relatedThirdParty}
+            />
+
+            {/* D. AUTOMATIC REGRESSION DETECTION (CHANGES) */}
+            <div id="section-regression" className="scroll-mt-24">
+                <RegressionDetectionView
+                    regression={interpreted.regressionAnalysis}
+                    projectId={projectId}
+                />
+            </div>
+
+            {/* E. WHAT HAPPENED (TIMELINE) */}
+            <section id="section-what-happened" className="halo-card p-6 border-border space-y-5 scroll-mt-24">
+                <div className="border-b border-border pb-3 flex items-center justify-between">
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
+                        What happened
+                    </h2>
+                    <span className="text-xs font-mono text-secondary">
+                        {interpreted.whatHappened.timeFormatted}
+                        {interpreted.whatHappened.pageUrl ? ` • ${interpreted.whatHappened.pageUrl}` : ""}
+                    </span>
+                </div>
+
+                {interpreted.whatHappened.pageUrl ? (
+                    <p className="text-sm text-zinc-300">
+                        At <strong className="text-white font-mono">{interpreted.whatHappened.timeFormatted}</strong>, activity was recorded on <code className="text-accent bg-surface px-1.5 py-0.5 rounded text-xs">{interpreted.whatHappened.pageUrl}</code>. Halo reconstructed the following sequence:
+                    </p>
+                ) : (
+                    <p className="text-sm text-zinc-300">
+                        At <strong className="text-white font-mono">{interpreted.whatHappened.timeFormatted}</strong>, an incident occurred in the application. Halo reconstructed the following sequence:
+                    </p>
+                )}
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Step 1: User Action */}
+                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-accent">
+                                <Activity size={14} />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                    1. User action
+                                </h3>
+                            </div>
+                            <span className={`text-[10px] font-mono px-1.5 py-0.5 rounded border ${
+                                interpreted.whatHappened.userAction.provenance === "Observed"
+                                    ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                    : interpreted.whatHappened.userAction.provenance === "Inferred"
+                                    ? "bg-blue-500/10 text-blue-400 border-blue-500/20"
+                                    : "bg-zinc-800 text-zinc-400 border-zinc-700"
+                            }`}>
+                                {interpreted.whatHappened.userAction.provenance}
+                            </span>
                         </div>
-                        <span className="text-xs font-mono text-secondary">
-                            {relatedTraces.length + relatedLogs.length + relatedMetrics.length + relatedThirdParty.length} items
-                        </span>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
-                        {relatedTraces.length > 0 && (
-                            <div className="p-3 rounded-lg bg-surface border border-border space-y-2">
-                                <span className="text-[10px] text-zinc-500 uppercase block font-bold">Distributed Traces & Spans ({relatedTraces.length})</span>
-                                <ul className="space-y-1 text-zinc-300">
-                                    {relatedTraces.map((t, i) => (
-                                        <li key={i} className="truncate">
-                                            <span className="text-blue-400">{t.service}</span>: {t.title}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                        {relatedLogs.length > 0 && (
-                            <div className="p-3 rounded-lg bg-surface border border-border space-y-2">
-                                <span className="text-[10px] text-zinc-500 uppercase block font-bold">Logs ({relatedLogs.length})</span>
-                                <ul className="space-y-1 text-zinc-300">
-                                    {relatedLogs.map((l, i) => (
-                                        <li key={i} className="truncate text-zinc-400">
-                                            {l.title}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                        {relatedMetrics.length > 0 && (
-                            <div className="p-3 rounded-lg bg-surface border border-border space-y-2">
-                                <span className="text-[10px] text-zinc-500 uppercase block font-bold">Metrics ({relatedMetrics.length})</span>
-                                <ul className="space-y-1 text-zinc-300">
-                                    {relatedMetrics.map((m, i) => (
-                                        <li key={i} className="truncate text-zinc-400">
-                                            {m.title}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
-                        )}
-                        {relatedThirdParty.length > 0 && (
-                            <div className="p-3 rounded-lg bg-surface border border-border space-y-2">
-                                <span className="text-[10px] text-zinc-500 uppercase block font-bold">Infrastructure & Third Party ({relatedThirdParty.length})</span>
-                                <ul className="space-y-1 text-zinc-300">
-                                    {relatedThirdParty.map((tp, i) => (
-                                        <li key={i} className="truncate text-zinc-400">
-                                            {tp.title}
-                                        </li>
-                                    ))}
-                                </ul>
-                            </div>
+                        <p className="text-xs text-secondary leading-relaxed">
+                            {interpreted.whatHappened.userAction.description}
+                        </p>
+                        {interpreted.whatHappened.userAction.replayEvidence && (
+                            <p className="text-[11px] text-muted italic">
+                                {interpreted.whatHappened.userAction.replayEvidence}
+                            </p>
                         )}
                     </div>
-                </section>
-            )}
 
-            {/* K. RECOMMENDATIONS */}
+                    {/* Step 2: Failed Request */}
+                    {interpreted.whatHappened.failedRequest ? (
+                        <div className="p-4 rounded-xl bg-surface border border-red-500/20 space-y-2">
+                            <div className="flex items-center justify-between">
+                                <div className="flex items-center gap-2 text-red-400">
+                                    <Activity size={14} />
+                                    <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                        2. Failed request
+                                    </h3>
+                                </div>
+                                <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                    Observed
+                                </span>
+                            </div>
+                            <div className="rounded bg-[#080b11] p-2 font-mono text-[11px] text-zinc-300 space-y-0.5">
+                                <div className="text-red-400 font-bold">
+                                    {interpreted.whatHappened.failedRequest.method} {interpreted.whatHappened.failedRequest.endpoint}
+                                </div>
+                                <div>Status: {interpreted.whatHappened.failedRequest.status}</div>
+                                {interpreted.whatHappened.failedRequest.durationMs !== undefined && (
+                                    <div>Duration: {interpreted.whatHappened.failedRequest.durationMs} ms</div>
+                                )}
+                            </div>
+                        </div>
+                    ) : (
+                        <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
+                            <div className="flex items-center gap-2 text-zinc-400">
+                                <Activity size={14} />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                    2. Request Flow
+                                </h3>
+                            </div>
+                            <p className="text-xs text-secondary leading-relaxed">
+                                No network request failure recorded prior to exception.
+                            </p>
+                        </div>
+                    )}
+
+                    {/* Step 3: Client Exception */}
+                    <div className="p-4 rounded-xl bg-surface border border-amber-500/20 space-y-2">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-amber-400">
+                                <Activity size={14} />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                    3. Client exception
+                                </h3>
+                            </div>
+                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
+                                Observed
+                            </span>
+                        </div>
+                        <p className="text-xs text-secondary">
+                            Immediately afterward:
+                        </p>
+                        <div className="rounded bg-[#080b11] p-2 font-mono text-[11px] text-amber-300">
+                            {interpreted.whatHappened.clientException.title}
+                        </div>
+                        <p className="text-[11px] font-mono text-muted">
+                            at: {interpreted.whatHappened.clientException.failingLocation}
+                        </p>
+                    </div>
+
+                    {/* Step 4: User Impact */}
+                    <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
+                        <div className="flex items-center justify-between">
+                            <div className="flex items-center gap-2 text-blue-400">
+                                <Activity size={14} />
+                                <h3 className="text-xs font-bold uppercase tracking-wider text-white">
+                                    4. User impact
+                                </h3>
+                            </div>
+                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20">
+                                Inferred
+                            </span>
+                        </div>
+                        <p className="text-xs text-secondary leading-relaxed">
+                            {interpreted.whatHappened.userImpact}
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            {/* F. KNOWN & UNKNOWN FACTORS */}
+            <section id="section-known-unknown" className="halo-card p-6 border-border space-y-5 scroll-mt-24">
+                <div className="border-b border-border pb-3 flex items-center justify-between">
+                    <h2 className="text-sm font-semibold uppercase tracking-wider text-white">
+                        What is known vs unknown
+                    </h2>
+                    <span className="text-xs font-mono text-secondary">
+                        Deterministic Boundary
+                    </span>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {/* Confirmed */}
+                    <div className="p-4 rounded-xl bg-emerald-500/5 border border-emerald-500/20 space-y-3">
+                        <div className="flex items-center gap-2 text-emerald-400">
+                            <Activity size={15} />
+                            <h3 className="text-xs font-bold uppercase tracking-wider">
+                                Confirmed Facts (Observed)
+                            </h3>
+                        </div>
+                        <ul className="space-y-2 text-xs text-zinc-300">
+                            {interpreted.evidenceIntegrity.confirmedFacts.map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-2">
+                                    <span className="text-emerald-400 font-bold">&bull;</span>
+                                    <span>{item.statement}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+
+                    {/* Unknown */}
+                    <div className="p-4 rounded-xl bg-amber-500/5 border border-amber-500/20 space-y-3">
+                        <div className="flex items-center gap-2 text-amber-400">
+                            <Activity size={15} />
+                            <h3 className="text-xs font-bold uppercase tracking-wider">
+                                Unknown (Missing Telemetry)
+                            </h3>
+                        </div>
+                        <ul className="space-y-2 text-xs text-zinc-300">
+                            {interpreted.evidenceIntegrity.unknowns.map((item, idx) => (
+                                <li key={idx} className="flex items-start gap-2">
+                                    <span className="text-amber-400 font-bold">&bull;</span>
+                                    <span>{item.statement}</span>
+                                </li>
+                            ))}
+                        </ul>
+                        <p className="text-[11px] text-amber-300/80 italic pt-1 border-t border-amber-500/20">
+                            Halo does not guess missing backend causes without correlated telemetry.
+                        </p>
+                    </div>
+                </div>
+            </section>
+
+            {/* G. RECOMMENDATIONS (ACTIONS) */}
             <RecommendationPlanView plan={interpreted.recommendations} />
         </div>
     );

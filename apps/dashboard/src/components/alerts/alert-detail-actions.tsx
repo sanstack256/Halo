@@ -1,8 +1,9 @@
 "use client";
 
 import React, { useState, useTransition } from "react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckCheck, Radio } from "lucide-react";
+import { CheckCheck, Radio, Sparkles } from "lucide-react";
 import { acknowledgeAlert, resolveAlert, updateAlertNotes, type AlertWithMonitor } from "@/actions/alert";
 
 interface AlertDetailActionsProps {
@@ -89,6 +90,15 @@ export function AlertDetailActions({ alert }: AlertDetailActionsProps) {
 
             {/* Actions */}
             <div className="flex flex-col gap-2">
+                {/* Primary Launch Investigation Action */}
+                <Link
+                    href={`/projects/${alert.projectId}/investigations/new?monitorId=${alert.monitorId}&alertId=${alert.id}`}
+                    className="flex items-center justify-center gap-2 w-full px-4 py-2 text-xs font-mono rounded-lg border border-[var(--accent)] text-white bg-[var(--accent)] hover:opacity-90 transition-opacity font-semibold"
+                >
+                    <Sparkles size={13} />
+                    <span>Investigate Trigger</span>
+                </Link>
+
                 {alert.status === "OPEN" && (
                     <button
                         type="button"

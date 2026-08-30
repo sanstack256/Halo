@@ -18,6 +18,7 @@ import {
     ShieldAlert,
     ShieldCheck,
     Smartphone,
+    Sparkles,
     X,
 } from "lucide-react";
 import { HaloSelect } from "@/components/ui/halo-select";
@@ -371,6 +372,14 @@ export function AlertsClient({
                                                         Resolve
                                                     </button>
                                                 )}
+                                                <Link
+                                                    href={`/projects/${alert.projectId}/investigations/new?monitorId=${alert.monitorId}&alertId=${alert.id}`}
+                                                    title="Investigate root cause"
+                                                    className="flex items-center gap-1 px-2 py-1 text-xs rounded-md border border-[var(--accent)]/40 text-[var(--accent)] hover:bg-[var(--accent)]/10 transition-colors font-medium"
+                                                >
+                                                    <Sparkles size={10} />
+                                                    Investigate
+                                                </Link>
                                                 <Link
                                                     href={`/monitors/alerts/${alert.id}`}
                                                     className="flex items-center gap-1 px-2 py-1 text-xs rounded-md border border-[var(--border)] text-[var(--text-muted)] hover:text-white hover:border-white/30 transition-colors"

@@ -37,6 +37,8 @@ export class Halo {
 
     private enabled: boolean;
 
+    private service?: string;
+
     private release?: string;
 
     private environment?: string;
@@ -123,6 +125,9 @@ export class Halo {
 
         this.enabled =
             options.enabled ?? true;
+
+        this.service =
+            options.service;
 
         this.release =
             options.release;
@@ -484,7 +489,8 @@ export class Halo {
                 context?.traceId,
 
             service:
-                event.service,
+                event.service ??
+                this.service,
 
             resource:
                 event.resource,

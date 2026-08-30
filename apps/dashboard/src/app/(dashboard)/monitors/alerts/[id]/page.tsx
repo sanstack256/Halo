@@ -66,19 +66,23 @@ export default async function AlertDetailPage({ params }: AlertDetailPageProps) 
     return (
         <div className="space-y-6 max-w-4xl">
             {/* Breadcrumb / back */}
-            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)]">
+            <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] flex-wrap">
                 <Link href="/monitors/alerts" className="flex items-center gap-1 hover:text-white transition-colors">
                     <ArrowLeft size={12} />
                     Alerts
+                </Link>
+                <span>/</span>
+                <Link href={`/monitors/${alert.monitorId}`} className="hover:text-white transition-colors">
+                    {alert.monitorName}
                 </Link>
                 <span>/</span>
                 <span className="text-white font-mono">{alert.id.slice(0, 12)}</span>
             </div>
 
             {/* Header */}
-            <div className="flex items-start justify-between gap-4">
+            <div className="flex items-start justify-between gap-4 flex-wrap sm:flex-nowrap">
                 <div>
-                    <div className="flex items-center gap-2 mb-2">
+                    <div className="flex items-center gap-2 mb-2 flex-wrap">
                         <span className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-xs font-medium ${statusCfg.badge}`}>
                             <span className={`w-1.5 h-1.5 rounded-full ${statusCfg.dot}`} />
                             {statusCfg.label}
@@ -93,6 +97,30 @@ export default async function AlertDetailPage({ params }: AlertDetailPageProps) 
                 </div>
 
                 <AlertDetailActions alert={alert} />
+            </div>
+
+            {/* Automated Investigation Diagnostic Panel */}
+            <div className="p-4 rounded-xl border border-[var(--border)] bg-gradient-to-r from-[var(--surface-elevated)] to-[var(--surface)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
+                <div className="space-y-1">
+                    <div className="flex items-center gap-2">
+                        <Zap size={14} className="text-[var(--accent)]" />
+                        <span className="text-white font-semibold">Autonomous Diagnostic &amp; Investigation Engine</span>
+                    </div>
+                    <p className="text-[11px] text-[var(--text-secondary)] font-sans">
+                        {alert.investigation
+                            ? alert.investigation.rootCause
+                                ? `Root Cause Verdict: ${alert.investigation.rootCause}`
+                                : `Automated investigation completed (${alert.investigation.status})`
+                            : "Run multi-dimensional causal analysis on correlated events, traces, and releases around this trigger."}
+                    </p>
+                </div>
+                <Link
+                    href={`/projects/${alert.projectId}/investigations/new?monitorId=${alert.monitorId}&alertId=${alert.id}`}
+                    className="halo-btn halo-btn-primary halo-btn-sm shrink-0"
+                >
+                    <Zap size={12} />
+                    <span>{alert.investigation ? "View Investigation Report" : "Launch Full Investigation"}</span>
+                </Link>
             </div>
 
             {/* Metadata grid */}

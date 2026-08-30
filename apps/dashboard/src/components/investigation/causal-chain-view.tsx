@@ -79,9 +79,14 @@ export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges =
         hypotheses.length > 0 ? hypotheses[0].id : ""
     );
     const [inspectedEdge, setInspectedEdge] = useState<EvidenceEdge | null>(null);
+    const [showAllDirectEdges, setShowAllDirectEdges] = useState(false);
 
     const activeChain = causalChains.find((c) => c.id === selectedChainId) || causalChains[0];
     const directEdges = rawEdges.filter((e) => e.relationship !== "TEMPORALLY_PRECEDES");
+    const INITIAL_VISIBLE_DIRECT_EDGES = 3;
+    const visibleDirectEdges = showAllDirectEdges
+        ? directEdges
+        : directEdges.slice(0, INITIAL_VISIBLE_DIRECT_EDGES);
 
     return (
         <div className="space-y-8">
@@ -107,7 +112,7 @@ export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges =
                     </div>
                 ) : (
                     <div className="space-y-3">
-                        {directEdges.map((edge, idx) => {
+                        {visibleDirectEdges.map((edge, idx) => {
                             const classificationInfo = edge.classification ? CLASSIFICATION_BADGES[edge.classification] : undefined;
                             const isSelected = inspectedEdge === edge;
 
@@ -171,6 +176,28 @@ export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges =
                                 </div>
                             );
                         })}
+
+                        {directEdges.length > INITIAL_VISIBLE_DIRECT_EDGES && (
+                            <div className="pt-2 flex justify-center">
+                                <button
+                                    type="button"
+                                    onClick={() => setShowAllDirectEdges(!showAllDirectEdges)}
+                                    className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg text-xs font-medium text-secondary hover:text-white bg-surface border border-border/80 hover:border-accent/40 hover:bg-surface-hover transition-all"
+                                >
+                                    {showAllDirectEdges ? (
+                                        <>
+                                            <ChevronUp className="w-3.5 h-3.5" />
+                                            <span>Show less</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <ChevronDown className="w-3.5 h-3.5" />
+                                            <span>View all ({directEdges.length})</span>
+                                        </>
+                                    )}
+                                </button>
+                            </div>
+                        )}
                     </div>
                 )}
 

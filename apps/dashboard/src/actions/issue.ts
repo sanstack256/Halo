@@ -890,3 +890,86 @@ export async function getInvestigationEventsForOccurrence(
         historicalOccurrenceCount,
     };
 }
+
+export async function getInvestigationEventsForMonitor(
+    monitorId: string,
+    projectId: string,
+    alertId?: string | null,
+): Promise<{
+    monitor: NonNullable<Awaited<ReturnType<typeof prisma.monitor.findFirst>>>;
+    alert: Awaited<ReturnType<typeof prisma.monitorAlert.findFirst>> | null;
+    events: Awaited<ReturnType<typeof prisma.event.findMany>>;
+    anchorTime: Date;
+} | null> {
+    const monitor = await prisma.monitor.findFirst({
+        where: { id: monitorId, projectId },
+    });
+
+    if (!monitor) return null;
+
+    let alert: any = null;
+    if (alertId) {
+        alert = await prisma.monitorAlert.findFirst({
+            where: { id: alertId, monitorId },
+        });
+    }
+
+    const anchorTime = alert?.triggeredAt || monitor.lastTriggeredAt || monitor.lastEvaluatedAt || new Date();
+    const anchorTimeMs = anchorTime.getTime();
+    const windowMinutes = monitor.thresholdWindow || 15;
+    const windowMs = windowMinutes * 60 * 1000;
+
+    const from = new Date(anchorTimeMs - windowMs);
+    const to = new Date(anchorTimeMs + windowMs);
+
+    const where: any = {
+        projectId,
+        timestamp: {
+            gte: from,
+            lte: to,
+        },
+    };
+
+    if (monitor.query && monitor.query.trim()) {
+        const q = monitor.query.trim();
+        where.OR = [
+            { title: { contains: q, mode: "insensitive" } },
+            { message: { contains: q, mode: "insensitive" } },
+            { fingerprint: { contains: q, mode: "insensitive" } },
+            { service: { contains: q, mode: "insensitive" } },
+        ];
+    }
+
+    let events = await prisma.event.findMany({
+        where,
+        orderBy: { timestamp: "asc" },
+        take: INVESTIGATION_EVENT_LIMIT,
+        include: {
+            environment: {
+                select: { name: true },
+            },
+        },
+    });
+
+    if (events.length === 0 && monitor.query) {
+        events = await prisma.event.findMany({
+            where: {
+                projectId,
+                timestamp: { gte: from, lte: to },
+            },
+            orderBy: { timestamp: "asc" },
+            take: INVESTIGATION_EVENT_LIMIT,
+            include: {
+                environment: { select: { name: true } },
+            },
+        });
+    }
+
+    return {
+        monitor,
+        alert,
+        events,
+        anchorTime,
+    };
+}
+

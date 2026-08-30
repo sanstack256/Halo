@@ -116,3 +116,13 @@ export const NotificationOutcome = {
 } as const
 
 export type NotificationOutcome = (typeof NotificationOutcome)[keyof typeof NotificationOutcome]
+
+
+export const InvestigationStatus = {
+  QUEUED: 'QUEUED',
+  RUNNING: 'RUNNING',
+  COMPLETED: 'COMPLETED',
+  FAILED: 'FAILED'
+} as const
+
+export type InvestigationStatus = (typeof InvestigationStatus)[keyof typeof InvestigationStatus]

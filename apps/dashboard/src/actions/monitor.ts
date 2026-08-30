@@ -382,32 +382,50 @@ export async function createMonitor(data: CreateMonitorInput): Promise<OrgMonito
         },
     });
 
+    // Immediately evaluate monitor against real existing telemetry
+    try {
+        const { evaluateMonitor } = await import("@/lib/monitors/evaluator");
+        await evaluateMonitor(created.id);
+    } catch (evalErr) {
+        console.error("[Halo Monitor] Initial evaluation error:", evalErr);
+    }
+
+    const refreshed = await prisma.monitor.findUnique({
+        where: { id: created.id },
+        include: {
+            project: { select: { id: true, name: true, slug: true } },
+            creator: { select: { id: true, name: true, email: true } },
+        },
+    });
+
+    const finalMonitor = refreshed || created;
+
     revalidatePath("/monitors");
     revalidatePath(`/projects/${data.projectId}`);
 
     return {
-        id: created.id,
-        name: created.name,
-        description: created.description,
-        type: created.type,
-        status: created.status,
-        severity: created.severity,
-        projectId: created.projectId,
-        projectName: created.project.name,
-        environmentId: created.environmentId,
-        creatorId: created.creatorId,
-        creatorName: created.creator?.name || null,
-        thresholdValue: created.thresholdValue,
-        thresholdWindow: created.thresholdWindow,
-        query: created.query,
-        cronSchedule: created.cronSchedule,
-        endpointUrl: created.endpointUrl,
-        lastTriggeredAt: created.lastTriggeredAt,
-        lastEvaluatedAt: created.lastEvaluatedAt,
-        incidentCount: created.incidentCount,
-        alertConfig: created.alertConfig,
-        createdAt: created.createdAt,
-        updatedAt: created.updatedAt,
+        id: finalMonitor.id,
+        name: finalMonitor.name,
+        description: finalMonitor.description,
+        type: finalMonitor.type,
+        status: finalMonitor.status,
+        severity: finalMonitor.severity,
+        projectId: finalMonitor.projectId,
+        projectName: finalMonitor.project.name,
+        environmentId: finalMonitor.environmentId,
+        creatorId: finalMonitor.creatorId,
+        creatorName: finalMonitor.creator?.name || null,
+        thresholdValue: finalMonitor.thresholdValue,
+        thresholdWindow: finalMonitor.thresholdWindow,
+        query: finalMonitor.query,
+        cronSchedule: finalMonitor.cronSchedule,
+        endpointUrl: finalMonitor.endpointUrl,
+        lastTriggeredAt: finalMonitor.lastTriggeredAt,
+        lastEvaluatedAt: finalMonitor.lastEvaluatedAt,
+        incidentCount: finalMonitor.incidentCount,
+        alertConfig: finalMonitor.alertConfig,
+        createdAt: finalMonitor.createdAt,
+        updatedAt: finalMonitor.updatedAt,
     };
 }
 
@@ -474,31 +492,49 @@ export async function updateMonitor(id: string, data: Partial<CreateMonitorInput
         },
     });
 
+    // Re-evaluate monitor with updated configuration
+    try {
+        const { evaluateMonitor } = await import("@/lib/monitors/evaluator");
+        await evaluateMonitor(updated.id);
+    } catch (evalErr) {
+        console.error("[Halo Monitor] Update re-evaluation error:", evalErr);
+    }
+
+    const refreshed = await prisma.monitor.findUnique({
+        where: { id: updated.id },
+        include: {
+            project: { select: { id: true, name: true, slug: true } },
+            creator: { select: { id: true, name: true, email: true } },
+        },
+    });
+
+    const finalMonitor = refreshed || updated;
+
     revalidatePath("/monitors");
     revalidatePath(`/monitors/${id}`);
     return {
-        id: updated.id,
-        name: updated.name,
-        description: updated.description,
-        type: updated.type,
-        status: updated.status,
-        severity: updated.severity,
-        projectId: updated.projectId,
-        projectName: updated.project.name,
-        environmentId: updated.environmentId,
-        creatorId: updated.creatorId,
-        creatorName: updated.creator?.name || null,
-        thresholdValue: updated.thresholdValue,
-        thresholdWindow: updated.thresholdWindow,
-        query: updated.query,
-        cronSchedule: updated.cronSchedule,
-        endpointUrl: updated.endpointUrl,
-        lastTriggeredAt: updated.lastTriggeredAt,
-        lastEvaluatedAt: updated.lastEvaluatedAt,
-        incidentCount: updated.incidentCount,
-        alertConfig: updated.alertConfig,
-        createdAt: updated.createdAt,
-        updatedAt: updated.updatedAt,
+        id: finalMonitor.id,
+        name: finalMonitor.name,
+        description: finalMonitor.description,
+        type: finalMonitor.type,
+        status: finalMonitor.status,
+        severity: finalMonitor.severity,
+        projectId: finalMonitor.projectId,
+        projectName: finalMonitor.project.name,
+        environmentId: finalMonitor.environmentId,
+        creatorId: finalMonitor.creatorId,
+        creatorName: finalMonitor.creator?.name || null,
+        thresholdValue: finalMonitor.thresholdValue,
+        thresholdWindow: finalMonitor.thresholdWindow,
+        query: finalMonitor.query,
+        cronSchedule: finalMonitor.cronSchedule,
+        endpointUrl: finalMonitor.endpointUrl,
+        lastTriggeredAt: finalMonitor.lastTriggeredAt,
+        lastEvaluatedAt: finalMonitor.lastEvaluatedAt,
+        incidentCount: finalMonitor.incidentCount,
+        alertConfig: finalMonitor.alertConfig,
+        createdAt: finalMonitor.createdAt,
+        updatedAt: finalMonitor.updatedAt,
     };
 }
 
@@ -550,6 +586,19 @@ export type MonitorTimelineEvent = {
     status?: string;
 };
 
+export type RelatedInvestigationSummary = {
+    id: string;
+    alertId: string | null;
+    status: string;
+    title: string;
+    summary: string | null;
+    rootCause: string | null;
+    confidenceScore: number | null;
+    evidenceCount: number;
+    startedAt: Date;
+    completedAt: Date | null;
+};
+
 export type MonitorFullDetails = {
     monitor: OrgMonitor;
     alerts: Array<{
@@ -568,6 +617,7 @@ export type MonitorFullDetails = {
         notificationCount: number;
         deliveredCount: number;
         failedCount: number;
+        investigationId?: string | null;
     }>;
     stats: {
         totalAlerts: number;
@@ -580,6 +630,7 @@ export type MonitorFullDetails = {
     };
     relatedIssues: RelatedIssueSummary[];
     relatedReleases: RelatedReleaseSummary[];
+    investigations: RelatedInvestigationSummary[];
     timelineEvents: MonitorTimelineEvent[];
 };
 
@@ -612,6 +663,12 @@ export async function getMonitorFullDetails(id: string): Promise<MonitorFullDeta
                     email: true,
                 },
             },
+            investigations: {
+                orderBy: {
+                    createdAt: "desc",
+                },
+                take: 10,
+            },
             alerts: {
                 orderBy: {
                     triggeredAt: "desc",
@@ -622,6 +679,13 @@ export async function getMonitorFullDetails(id: string): Promise<MonitorFullDeta
                             id: true,
                             channel: true,
                             outcome: true,
+                        },
+                    },
+                    investigation: {
+                        select: {
+                            id: true,
+                            status: true,
+                            rootCause: true,
                         },
                     },
                 },
@@ -672,6 +736,7 @@ export async function getMonitorFullDetails(id: string): Promise<MonitorFullDeta
         notificationCount: a.notifications.length,
         deliveredCount: a.notifications.filter((n) => n.outcome === "DELIVERED").length,
         failedCount: a.notifications.filter((n) => n.outcome === "FAILED").length,
+        investigationId: a.investigation?.id || null,
     }));
 
     // Calculate stats from actual persisted alert records
@@ -681,16 +746,42 @@ export async function getMonitorFullDetails(id: string): Promise<MonitorFullDeta
     const resolvedDates = alerts.map((a) => a.resolvedAt).filter((d): d is Date => d !== null);
     const lastResolvedAt = resolvedDates.length > 0 ? resolvedDates[0] : null;
 
-    // Fetch related issues from the same project
+    // Fetch related issues from the same project matching query or general project issues
+    const { parseMonitorQuery } = await import("@/lib/monitors/query-parser");
+    const parsedQuery = parseMonitorQuery(m.query);
+
     let issueWhere: any = { projectId: m.projectId };
-    if (m.query && m.query.trim()) {
-        issueWhere = {
-            projectId: m.projectId,
-            OR: [
-                { title: { contains: m.query.trim(), mode: "insensitive" } },
-                { fingerprint: { contains: m.query.trim(), mode: "insensitive" } },
-            ],
-        };
+    const issueConditions: any[] = [];
+
+    if (parsedQuery.services.length > 0) {
+        for (const s of parsedQuery.services) {
+            issueConditions.push({
+                events: {
+                    some: {
+                        OR: [
+                            { service: { equals: s, mode: "insensitive" } },
+                            { tags: { path: ["service"], string_contains: s } },
+                            { tags: { path: ["application"], string_contains: s } },
+                        ],
+                    },
+                },
+            });
+        }
+    }
+
+    if (parsedQuery.freeText.length > 0) {
+        for (const t of parsedQuery.freeText) {
+            issueConditions.push({
+                OR: [
+                    { title: { contains: t, mode: "insensitive" } },
+                    { fingerprint: { contains: t, mode: "insensitive" } },
+                ],
+            });
+        }
+    }
+
+    if (issueConditions.length > 0) {
+        issueWhere.OR = issueConditions;
     }
 
     const rawIssues = await prisma.issue.findMany({
@@ -804,6 +895,19 @@ export async function getMonitorFullDetails(id: string): Promise<MonitorFullDeta
     // Sort timeline descending
     timelineEvents.sort((a, b) => new Date(b.timestamp).getTime() - new Date(a.timestamp).getTime());
 
+    const investigations: RelatedInvestigationSummary[] = (m.investigations || []).map((inv) => ({
+        id: inv.id,
+        alertId: inv.alertId,
+        status: inv.status,
+        title: inv.title,
+        summary: inv.summary,
+        rootCause: inv.rootCause,
+        confidenceScore: inv.confidenceScore,
+        evidenceCount: inv.evidenceCount,
+        startedAt: inv.startedAt,
+        completedAt: inv.completedAt,
+    }));
+
     return {
         monitor,
         alerts,
@@ -818,7 +922,23 @@ export async function getMonitorFullDetails(id: string): Promise<MonitorFullDeta
         },
         relatedIssues,
         relatedReleases,
+        investigations,
         timelineEvents,
     };
 }
+
+export async function evaluateMonitorAction(id: string) {
+    const session = await getSession();
+    if (!session) throw new Error("Unauthorized");
+
+    const { evaluateMonitor } = await import("@/lib/monitors/evaluator");
+    const result = await evaluateMonitor(id);
+
+    revalidatePath("/monitors");
+    revalidatePath(`/monitors/${id}`);
+    revalidatePath("/monitors/alerts");
+
+    return result;
+}
+
 

@@ -30,14 +30,15 @@ const CATEGORIES: CategoryNavItem[] = [
         id: "cause",
         label: "Cause",
         targetSectionId: "section-causal-chain",
-        sectionIds: ["section-causal-chain", "section-evidence-graph"],
+        sectionIds: ["section-causal-chain"],
         icon: Network,
     },
     {
         id: "evidence",
         label: "Evidence",
-        targetSectionId: "section-evidence-records",
+        targetSectionId: "section-evidence-graph",
         sectionIds: [
+            "section-evidence-graph",
             "section-evidence-records",
             "section-replay",
             "section-runtime-stack",

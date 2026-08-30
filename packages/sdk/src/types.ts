@@ -23,6 +23,8 @@ export interface HaloOptions {
      */
     captureHttp?: boolean;
 
+    service?: string;
+
     environment?: string;
 
     release?: string;
