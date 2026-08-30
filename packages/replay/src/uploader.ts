@@ -11,6 +11,7 @@ export class ReplayUploader {
     private flushIntervalMs: number;
     private isUploading = false;
     private environment?: string;
+    private issueId?: string;
 
     constructor(options: {
         endpoint: string;
@@ -18,12 +19,18 @@ export class ReplayUploader {
         sessionId: string;
         flushIntervalMs?: number;
         environment?: string;
+        issueId?: string;
     }) {
         this.endpoint = options.endpoint.replace(/\/$/, "");
         this.apiKey = options.apiKey;
         this.sessionId = options.sessionId;
         this.flushIntervalMs = options.flushIntervalMs ?? 5000;
         this.environment = options.environment;
+        this.issueId = options.issueId;
+    }
+
+    public setIssueId(issueId: string): void {
+        this.issueId = issueId;
     }
 
     addEvents(events: eventWithTime[]): void {
@@ -71,6 +78,7 @@ export class ReplayUploader {
                 userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
                 viewportWidth: typeof window !== "undefined" ? window.innerWidth : undefined,
                 viewportHeight: typeof window !== "undefined" ? window.innerHeight : undefined,
+                issueId: this.issueId,
                 ...extraMeta,
             },
             final: isFinal,
@@ -88,17 +96,17 @@ export class ReplayUploader {
 
             const bodyStr = JSON.stringify(payload);
 
-            if (isFinal && typeof navigator !== "undefined" && navigator.sendBeacon) {
-                const blob = new Blob([bodyStr], { type: "application/json" });
-                navigator.sendBeacon(targetUrl, blob);
-            } else {
-                await fetch(targetUrl, {
-                    method: "POST",
-                    headers,
-                    body: bodyStr,
-                    keepalive: isFinal,
-                });
-            }
+            /*
+             * Modern browsers support keepalive: true on fetch()
+             * which persists across page unloads while preserving
+             * the Authorization header (unlike navigator.sendBeacon).
+             */
+            await fetch(targetUrl, {
+                method: "POST",
+                headers,
+                body: bodyStr,
+                keepalive: isFinal,
+            });
         } catch (err) {
             console.error("[Halo Replay] Failed to upload chunk:", err);
             // Re-queue events on failure if not final

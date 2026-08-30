@@ -36,7 +36,7 @@ export async function POST(request: NextRequest) {
 
     const body = await request.json();
 
-    await createEvent({
+    const event = await createEvent({
         type: body.type,
         severity: body.severity,
 
@@ -77,7 +77,53 @@ export async function POST(request: NextRequest) {
             verified.environment.id,
     });
 
+    // Auto-correlate: If an error event with an issueId was created, associate any matching unlinked ReplaySessions
+    if (event.issueId) {
+        try {
+            const { prisma } = await import("@/lib/prisma");
+
+            if (event.sessionId) {
+                await prisma.replaySession.updateMany({
+                    where: {
+                        sessionId: event.sessionId,
+                        issueId: null,
+                    },
+                    data: {
+                        issueId: event.issueId,
+                        traceId: event.traceId ?? undefined,
+                        requestId: event.requestId ?? undefined,
+                    },
+                });
+            } else {
+                // Link recent unassigned replay in the same project
+                const recentReplay = await prisma.replaySession.findFirst({
+                    where: {
+                        projectId: verified.project.id,
+                        issueId: null,
+                        startedAt: { lte: new Date(event.timestamp.getTime() + 60000) },
+                        createdAt: { gte: new Date(event.timestamp.getTime() - 10 * 60000) },
+                    },
+                    orderBy: { createdAt: "desc" },
+                });
+                if (recentReplay) {
+                    await prisma.replaySession.update({
+                        where: { id: recentReplay.id },
+                        data: {
+                            issueId: event.issueId,
+                            traceId: event.traceId ?? undefined,
+                            requestId: event.requestId ?? undefined,
+                        },
+                    });
+                }
+            }
+        } catch (corrErr) {
+            console.error("[Halo Ingest] Failed to correlate replay with event:", corrErr);
+        }
+    }
+
     return jsonResponse(request, {
         success: true,
+        eventId: event.id,
+        issueId: event.issueId ?? undefined,
     });
 }

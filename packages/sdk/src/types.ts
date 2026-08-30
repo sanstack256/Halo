@@ -1,6 +1,11 @@
 export interface HaloOptions {
     apiKey: string;
 
+    /**
+     * Halo backend endpoint base URL (e.g. "https://app.halo.run/api" or "http://localhost:3000/api").
+     * In browser environments, defaults to "/api".
+     * In Node/server environments, defaults to process.env.HALO_ENDPOINT.
+     */
     endpoint?: string;
 
     /**

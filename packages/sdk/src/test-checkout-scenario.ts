@@ -31,12 +31,17 @@
 import { Halo } from "./halo.js";
 
 const API_KEY = process.env.HALO_API_KEY ?? "YOUR_HALO_API_KEY";
-const ENDPOINT = process.env.HALO_ENDPOINT ?? "http://localhost:3000/api";
-const RELEASE = "v1.4.2";
-const ENVIRONMENT = "production";
+const ENDPOINT = process.env.HALO_ENDPOINT ?? (process.env.NODE_ENV === "production" ? "" : "http://localhost:3000/api");
+const RELEASE = process.env.HALO_RELEASE ?? "v1.4.2";
+const ENVIRONMENT = process.env.HALO_ENVIRONMENT ?? "production";
 
 if (API_KEY === "YOUR_HALO_API_KEY") {
-    console.error("[scenario] ERROR: Set HALO_API_KEY env variable.\n  HALO_API_KEY=<key> npx tsx packages/sdk/src/test-checkout-scenario.ts");
+    console.error("[scenario] ERROR: Set HALO_API_KEY (and optionally HALO_ENDPOINT) env variable.\n  HALO_API_KEY=<key> HALO_ENDPOINT=https://your-domain.com/api npx tsx packages/sdk/src/test-checkout-scenario.ts");
+    process.exit(1);
+}
+
+if (!ENDPOINT) {
+    console.error("[scenario] ERROR: Set HALO_ENDPOINT env variable pointing to your production API.\n  HALO_API_KEY=<key> HALO_ENDPOINT=https://your-domain.com/api npx tsx packages/sdk/src/test-checkout-scenario.ts");
     process.exit(1);
 }
 

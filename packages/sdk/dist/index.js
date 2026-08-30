@@ -436,18 +436,47 @@ var Halo = class {
   sessionId;
   sessionStartedAt;
   maxBreadcrumbs;
+  onEventIngested;
   constructor(options) {
-    const endpoint = options.endpoint ?? "http://localhost:3000/api";
+    let endpoint = options.endpoint;
+    if (!endpoint) {
+      if (typeof process !== "undefined" && process.env?.HALO_ENDPOINT) {
+        endpoint = process.env.HALO_ENDPOINT;
+      } else if (typeof window !== "undefined") {
+        endpoint = "/api";
+      } else if (process.env?.NODE_ENV !== "production") {
+        endpoint = "http://localhost:3000/api";
+        console.warn(
+          "[Halo] No endpoint specified. Defaulting to 'http://localhost:3000/api' for local development. In production, pass 'endpoint' to Halo options or set HALO_ENDPOINT."
+        );
+      } else {
+        throw new Error(
+          "[Halo] 'endpoint' is required when initializing Halo in a production server/runtime environment. Please provide options.endpoint or set HALO_ENDPOINT."
+        );
+      }
+    }
+    endpoint = endpoint.replace(/\/$/, "");
     this.client = new HaloClient(
       endpoint,
       options.apiKey
     );
     this.queue = new EventQueue(
       async (event) => {
-        await this.client.post(
+        const res = await this.client.post(
           "/ingest/events",
           event
         );
+        if (res && typeof res === "object") {
+          const parsed = res;
+          this.onEventIngested?.(parsed);
+          if (typeof window !== "undefined" && parsed.issueId) {
+            try {
+              window.__HALO_REPLAY__?.setIssueId(parsed.issueId);
+            } catch {
+            }
+          }
+        }
+        return res;
       }
     );
     this.enabled = options.enabled ?? true;
@@ -457,9 +486,14 @@ var Halo = class {
       1,
       options.maxBreadcrumbs ?? 100
     );
-    this.sessionId = options.sessionId;
+    const globalSessionId = typeof window !== "undefined" ? window.__HALO_SESSION_ID__ : void 0;
+    this.sessionId = options.sessionId || globalSessionId || (typeof window !== "undefined" ? createSessionId() : void 0);
     if (this.sessionId) {
       this.sessionStartedAt = (/* @__PURE__ */ new Date()).toISOString();
+      if (typeof window !== "undefined") {
+        window.__HALO_SESSION_ID__ = this.sessionId;
+        window.__HALO_SDK__ = this;
+      }
     }
     if (options.autoCapture !== false) {
       registerGlobalHandlers(
@@ -480,6 +514,10 @@ var Halo = class {
   startSession() {
     this.sessionId = createSessionId();
     this.sessionStartedAt = (/* @__PURE__ */ new Date()).toISOString();
+    if (typeof window !== "undefined") {
+      window.__HALO_SESSION_ID__ = this.sessionId;
+      window.__HALO_SDK__ = this;
+    }
     return this.sessionId;
   }
   endSession() {
@@ -492,6 +530,12 @@ var Halo = class {
   }
   clearUser() {
     this.user = void 0;
+  }
+  /**
+   * Register a callback that is invoked whenever an event is ingested by the Halo backend.
+   */
+  onEventIngestedCallback(callback) {
+    this.onEventIngested = callback;
   }
   setTag(key, value) {
     this.tags[key] = value;
@@ -527,6 +571,17 @@ var Halo = class {
       String(error)
     );
     const context = getRequestContext();
+    if (typeof window !== "undefined" && window.__HALO_REPLAY__) {
+      try {
+        window.__HALO_REPLAY__.triggerErrorReplay({
+          title: exception.message || exception.name,
+          stack: exception.stack,
+          traceId: context?.traceId,
+          requestId: context?.requestId
+        });
+      } catch {
+      }
+    }
     return this.capture({
       type: "ERROR",
       title: exception.message || exception.name,

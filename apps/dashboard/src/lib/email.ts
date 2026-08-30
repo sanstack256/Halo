@@ -1,8 +1,12 @@
 import { Resend } from "resend";
 
-const resend = new Resend(
-  process.env.RESEND_API_KEY
-);
+function getResendClient() {
+  const apiKey = process.env.RESEND_API_KEY;
+  if (!apiKey) {
+    throw new Error("RESEND_API_KEY is not configured");
+  }
+  return new Resend(apiKey);
+}
 
 export async function sendEmail({
   to,
@@ -19,6 +23,7 @@ export async function sendEmail({
     );
   }
 
+  const resend = getResendClient();
   const { error } =
     await resend.emails.send({
       from: "Halo <onboarding@resend.dev>",

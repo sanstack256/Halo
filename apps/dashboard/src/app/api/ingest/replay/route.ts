@@ -110,6 +110,37 @@ export async function POST(request: NextRequest) {
     const expiresAt = new Date();
     expiresAt.setDate(expiresAt.getDate() + retentionDays);
 
+    // If issueId is not provided, look for correlated events in this project
+    let resolvedIssueId = meta.issueId;
+    if (!resolvedIssueId) {
+        const errorTimestamp = meta.errorAt ? new Date(meta.errorAt) : chunkStarted;
+        const matchingEvent = await prisma.event.findFirst({
+            where: {
+                projectId: verified.project.id,
+                issueId: { not: null },
+                OR: [
+                    { sessionId },
+                    ...(meta.traceId ? [{ traceId: meta.traceId }] : []),
+                    ...(meta.requestId ? [{ requestId: meta.requestId }] : []),
+                    // If error-triggered, find error event in this project around the error timestamp
+                    ...(meta.errorAt ? [{
+                        type: "ERROR" as const,
+                        timestamp: {
+                            gte: new Date(errorTimestamp.getTime() - 5 * 60000),
+                            lte: new Date(errorTimestamp.getTime() + 5 * 60000),
+                        },
+                    }] : []),
+                ],
+            },
+            select: { issueId: true },
+            orderBy: { timestamp: "desc" },
+        });
+
+        if (matchingEvent?.issueId) {
+            resolvedIssueId = matchingEvent.issueId;
+        }
+    }
+
     // 1. Upsert ReplaySession Metadata
     const replaySession = await prisma.replaySession.upsert({
         where: {
@@ -128,7 +159,7 @@ export async function POST(request: NextRequest) {
             viewportHeight: meta.viewportHeight,
             startedAt: chunkStarted,
             errorAt: meta.errorAt ? new Date(meta.errorAt) : undefined,
-            issueId: meta.issueId,
+            issueId: resolvedIssueId,
             traceId: meta.traceId,
             requestId: meta.requestId,
             status: final ? "AVAILABLE" : "RECORDING",
@@ -140,7 +171,7 @@ export async function POST(request: NextRequest) {
             status: final ? "AVAILABLE" : undefined,
             chunkCount: { increment: 1 },
             errorAt: meta.errorAt ? new Date(meta.errorAt) : undefined,
-            issueId: meta.issueId || undefined,
+            issueId: resolvedIssueId || undefined,
             traceId: meta.traceId || undefined,
             requestId: meta.requestId || undefined,
         },

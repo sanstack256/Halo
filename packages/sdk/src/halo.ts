@@ -59,12 +59,35 @@ export class Halo {
 
     private maxBreadcrumbs: number;
 
+    private onEventIngested?: (result: {
+        eventId?: string;
+        issueId?: string;
+    }) => void;
+
     constructor(
         options: HaloOptions,
     ) {
-        const endpoint =
-            options.endpoint ??
-            "http://localhost:3000/api";
+        let endpoint = options.endpoint;
+
+        if (!endpoint) {
+            if (typeof process !== "undefined" && process.env?.HALO_ENDPOINT) {
+                endpoint = process.env.HALO_ENDPOINT;
+            } else if (typeof window !== "undefined") {
+                endpoint = "/api";
+            } else if (process.env?.NODE_ENV !== "production") {
+                // Development fallback with explicit warning
+                endpoint = "http://localhost:3000/api";
+                console.warn(
+                    "[Halo] No endpoint specified. Defaulting to 'http://localhost:3000/api' for local development. In production, pass 'endpoint' to Halo options or set HALO_ENDPOINT."
+                );
+            } else {
+                throw new Error(
+                    "[Halo] 'endpoint' is required when initializing Halo in a production server/runtime environment. Please provide options.endpoint or set HALO_ENDPOINT."
+                );
+            }
+        }
+
+        endpoint = endpoint.replace(/\/$/, "");
 
         this.client =
             new HaloClient(
@@ -77,10 +100,24 @@ export class Halo {
                 async (
                     event: unknown,
                 ) => {
-                    await this.client.post(
+                    const res = await this.client.post(
                         "/ingest/events",
                         event,
                     );
+                    if (res && typeof res === "object") {
+                        const parsed = res as { eventId?: string; issueId?: string };
+                        this.onEventIngested?.(parsed);
+
+                        // If Replay SDK is active on the window, sync the issueId
+                        if (typeof window !== "undefined" && parsed.issueId) {
+                            try {
+                                (window as any).__HALO_REPLAY__?.setIssueId(parsed.issueId);
+                            } catch {
+                                // ignore
+                            }
+                        }
+                    }
+                    return res;
                 },
             );
 
@@ -100,12 +137,18 @@ export class Halo {
                     100,
             );
 
-        this.sessionId =
-            options.sessionId;
+        // Sync with browser global session if present, or generate default session for browser
+        const globalSessionId = typeof window !== "undefined" ? (window as any).__HALO_SESSION_ID__ : undefined;
+        this.sessionId = options.sessionId || globalSessionId || (typeof window !== "undefined" ? createSessionId() : undefined);
 
         if (this.sessionId) {
             this.sessionStartedAt =
                 new Date().toISOString();
+
+            if (typeof window !== "undefined") {
+                (window as any).__HALO_SESSION_ID__ = this.sessionId;
+                (window as any).__HALO_SDK__ = this;
+            }
         }
 
         /*
@@ -147,6 +190,11 @@ export class Halo {
         this.sessionStartedAt =
             new Date().toISOString();
 
+        if (typeof window !== "undefined") {
+            (window as any).__HALO_SESSION_ID__ = this.sessionId;
+            (window as any).__HALO_SDK__ = this;
+        }
+
         return this.sessionId;
     }
 
@@ -171,6 +219,18 @@ export class Halo {
 
     clearUser() {
         this.user = undefined;
+    }
+
+    /**
+     * Register a callback that is invoked whenever an event is ingested by the Halo backend.
+     */
+    onEventIngestedCallback(
+        callback: (result: {
+            eventId?: string;
+            issueId?: string;
+        }) => void,
+    ) {
+        this.onEventIngested = callback;
     }
 
     setTag(
@@ -239,6 +299,20 @@ export class Halo {
 
         const context =
             getRequestContext();
+
+        // If Replay SDK is running on the client, trigger error replay recording with trace & request context
+        if (typeof window !== "undefined" && (window as any).__HALO_REPLAY__) {
+            try {
+                (window as any).__HALO_REPLAY__.triggerErrorReplay({
+                    title: exception.message || exception.name,
+                    stack: exception.stack,
+                    traceId: context?.traceId,
+                    requestId: context?.requestId,
+                });
+            } catch {
+                // ignore
+            }
+        }
 
         return this.capture({
             type: "ERROR",

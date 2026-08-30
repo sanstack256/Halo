@@ -1,5 +1,10 @@
 interface HaloOptions {
     apiKey: string;
+    /**
+     * Halo backend endpoint base URL (e.g. "https://app.halo.run/api" or "http://localhost:3000/api").
+     * In browser environments, defaults to "/api".
+     * In Node/server environments, defaults to process.env.HALO_ENDPOINT.
+     */
     endpoint?: string;
     /**
      * Automatically install runtime
@@ -88,12 +93,20 @@ declare class Halo {
     private sessionId?;
     private sessionStartedAt?;
     private maxBreadcrumbs;
+    private onEventIngested?;
     constructor(options: HaloOptions);
     startSession(): string;
     endSession(): void;
     getSessionId(): string | undefined;
     setUser(user: HaloUser): void;
     clearUser(): void;
+    /**
+     * Register a callback that is invoked whenever an event is ingested by the Halo backend.
+     */
+    onEventIngestedCallback(callback: (result: {
+        eventId?: string;
+        issueId?: string;
+    }) => void): void;
     setTag(key: string, value: HaloTagValue): void;
     removeTag(key: string): void;
     addBreadcrumb(breadcrumb: HaloBreadcrumb): void;

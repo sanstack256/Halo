@@ -167,6 +167,10 @@ var ReplayUploader = class {
     this.sessionId = options.sessionId;
     this.flushIntervalMs = options.flushIntervalMs ?? 5e3;
     this.environment = options.environment;
+    this.issueId = options.issueId;
+  }
+  setIssueId(issueId) {
+    this.issueId = issueId;
   }
   addEvents(events) {
     this.queue.push(...events);
@@ -202,6 +206,7 @@ var ReplayUploader = class {
         userAgent: typeof navigator !== "undefined" ? navigator.userAgent : void 0,
         viewportWidth: typeof window !== "undefined" ? window.innerWidth : void 0,
         viewportHeight: typeof window !== "undefined" ? window.innerHeight : void 0,
+        issueId: this.issueId,
         ...extraMeta
       },
       final: isFinal
@@ -215,17 +220,12 @@ var ReplayUploader = class {
         headers["Authorization"] = `Bearer ${this.apiKey}`;
       }
       const bodyStr = JSON.stringify(payload);
-      if (isFinal && typeof navigator !== "undefined" && navigator.sendBeacon) {
-        const blob = new Blob([bodyStr], { type: "application/json" });
-        navigator.sendBeacon(targetUrl, blob);
-      } else {
-        await fetch(targetUrl, {
-          method: "POST",
-          headers,
-          body: bodyStr,
-          keepalive: isFinal
-        });
-      }
+      await fetch(targetUrl, {
+        method: "POST",
+        headers,
+        body: bodyStr,
+        keepalive: isFinal
+      });
     } catch (err) {
       console.error("[Halo Replay] Failed to upload chunk:", err);
       if (!isFinal) {
@@ -255,7 +255,12 @@ var HaloReplay = class {
       flushIntervalMs: options.flushIntervalMs ?? 5e3,
       ...options
     };
-    this.sessionId = options.sessionId || this.generateSessionId();
+    const globalSessionId = typeof window !== "undefined" ? window.__HALO_SESSION_ID__ : void 0;
+    this.sessionId = options.sessionId || globalSessionId || this.generateSessionId();
+    if (typeof window !== "undefined") {
+      window.__HALO_SESSION_ID__ = this.sessionId;
+      window.__HALO_REPLAY__ = this;
+    }
     this.startedAt = Date.now();
     this.ringBuffer = new ReplayRingBuffer(this.options.preErrorBufferSeconds);
     this.uploader = new ReplayUploader({
@@ -272,6 +277,9 @@ var HaloReplay = class {
   }
   getSessionId() {
     return this.sessionId;
+  }
+  setIssueId(issueId) {
+    this.uploader.setIssueId(issueId);
   }
   start() {
     if (typeof window === "undefined" || typeof document === "undefined") {

@@ -3,28 +3,53 @@ import { NextRequest, NextResponse } from "next/server";
 /**
  * Centralized CORS helper for Halo browser telemetry ingestion endpoints.
  * 
- * Configurable via `ALLOWED_ORIGINS` env var (comma-separated).
- * Defaults to allowing common local dev ports (`http://localhost:3000`, `http://localhost:3001`, `http://127.0.0.1:3000`, `http://127.0.0.1:3001`).
+ * Supports configured `ALLOWED_ORIGINS` (comma-separated, or "*" for wildcard).
+ * Automatically includes production App URLs (NEXT_PUBLIC_APP_URL, BETTER_AUTH_URL, VERCEL_URL).
+ * In development, allows localhost and 127.0.0.1.
  */
-const DEFAULT_ALLOWED_ORIGINS = [
-    "http://localhost:3000",
-    "http://localhost:3001",
-    "http://127.0.0.1:3000",
-    "http://127.0.0.1:3001",
-];
+let hasWarnedCorsInProd = false;
 
 export function getCorsHeaders(request: NextRequest): Record<string, string> {
     const origin = request.headers.get("origin");
-    
+
+    // Gather all valid trusted origins
+    const appUrls = [
+        process.env.NEXT_PUBLIC_APP_URL,
+        process.env.BETTER_AUTH_URL,
+        process.env.VERCEL_PROJECT_PRODUCTION_URL ? `https://${process.env.VERCEL_PROJECT_PRODUCTION_URL}` : undefined,
+        process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined,
+    ].filter(Boolean) as string[];
+
     const configuredOrigins = process.env.ALLOWED_ORIGINS
         ? process.env.ALLOWED_ORIGINS.split(",").map((o) => o.trim())
-        : DEFAULT_ALLOWED_ORIGINS;
+        : [];
 
-    // Check if request origin matches allowed origins
+    const isWildcard = configuredOrigins.includes("*");
+
     let allowOrigin = "";
     if (origin) {
-        if (configuredOrigins.includes(origin) || (process.env.NODE_ENV !== "production" && origin.startsWith("http://localhost:"))) {
+        if (isWildcard) {
             allowOrigin = origin;
+        } else if (
+            configuredOrigins.includes(origin) ||
+            appUrls.some((u) => u.replace(/\/$/, "") === origin)
+        ) {
+            allowOrigin = origin;
+        } else if (process.env.NODE_ENV !== "production") {
+            // In development, permit localhost and loopback interfaces
+            if (
+                origin.startsWith("http://localhost:") ||
+                origin.startsWith("http://127.0.0.1:") ||
+                origin === "http://localhost" ||
+                origin === "http://127.0.0.1"
+            ) {
+                allowOrigin = origin;
+            }
+        } else if (!hasWarnedCorsInProd && configuredOrigins.length === 0) {
+            hasWarnedCorsInProd = true;
+            console.warn(
+                "[Halo CORS] Running in production with no ALLOWED_ORIGINS configured. Set ALLOWED_ORIGINS in environment variables to allow browser telemetry ingestion from your frontend domain."
+            );
         }
     }
 

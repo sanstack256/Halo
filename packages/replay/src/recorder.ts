@@ -30,7 +30,14 @@ export class HaloReplay {
             ...options,
         };
 
-        this.sessionId = options.sessionId || this.generateSessionId();
+        const globalSessionId = typeof window !== "undefined" ? (window as any).__HALO_SESSION_ID__ : undefined;
+        this.sessionId = options.sessionId || globalSessionId || this.generateSessionId();
+
+        if (typeof window !== "undefined") {
+            (window as any).__HALO_SESSION_ID__ = this.sessionId;
+            (window as any).__HALO_REPLAY__ = this;
+        }
+
         this.startedAt = Date.now();
         this.ringBuffer = new ReplayRingBuffer(this.options.preErrorBufferSeconds);
         this.uploader = new ReplayUploader({
@@ -51,6 +58,10 @@ export class HaloReplay {
 
     public getSessionId(): string {
         return this.sessionId;
+    }
+
+    public setIssueId(issueId: string): void {
+        this.uploader.setIssueId(issueId);
     }
 
     public start(): void {

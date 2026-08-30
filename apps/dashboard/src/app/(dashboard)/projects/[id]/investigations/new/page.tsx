@@ -72,7 +72,7 @@ export default async function InvestigationPage({
     try {
         const [{ investigation, incidentAnchorId, incidentAnchorTimestamp, historicalOccurrenceCount }, replaySession] = await Promise.all([
             investigateIssueOccurrence(issueId, id, eventId),
-            getReplaySessionForIssue(issueId),
+            getReplaySessionForIssue(issueId, eventId),
         ]);
 
         // Attempt async GitHub source resolution for the primary failing frame

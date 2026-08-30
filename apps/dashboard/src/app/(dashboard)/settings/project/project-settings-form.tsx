@@ -19,7 +19,7 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
     const [description, setDescription] = useState(project.description || "");
     const [spikeProtection, setSpikeProtection] = useState(true);
     const [autoResolveDays, setAutoResolveDays] = useState("14");
-    const [allowedOrigins, setAllowedOrigins] = useState("http://localhost:3000\nhttps://myapp.com");
+    const [allowedOrigins, setAllowedOrigins] = useState("");
     const [replayEnabled, setReplayEnabled] = useState(true);
     const [samplingRate, setSamplingRate] = useState(100);
     const [errorTriggered, setErrorTriggered] = useState(true);
@@ -289,6 +289,7 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
                     <textarea
                         value={allowedOrigins}
                         onChange={(e) => setAllowedOrigins(e.target.value)}
+                        placeholder="https://app.example.com&#10;https://staging.example.com"
                         rows={3}
                         className="w-full px-3.5 py-2.5 rounded-lg border border-border-strong bg-surface-elevated text-xs text-white font-mono focus:outline-none focus:border-accent transition-colors resize-none"
                     />

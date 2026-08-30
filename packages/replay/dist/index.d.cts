@@ -113,6 +113,7 @@ declare class HaloReplay {
     constructor(options?: HaloReplayOptions);
     private generateSessionId;
     getSessionId(): string;
+    setIssueId(issueId: string): void;
     start(): void;
     private handleEvent;
     private setupErrorListeners;

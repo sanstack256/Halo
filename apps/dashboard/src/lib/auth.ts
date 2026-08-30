@@ -35,13 +35,23 @@ const trustedOrigins = [
     : []),
 ];
 
+const getAuthSecret = () => {
+  if (!process.env.BETTER_AUTH_SECRET && process.env.NODE_ENV === "production") {
+    console.error(
+      "[Halo Auth CRITICAL] BETTER_AUTH_SECRET is not set in production! A fallback development secret is being used, which is insecure. Please generate a strong secret (e.g. openssl rand -base64 32) and set BETTER_AUTH_SECRET."
+    );
+  }
+  return (
+    process.env.BETTER_AUTH_SECRET ||
+    "cd31eb49309dd6fd09970e2c21847f43648f9d94da6cca572686179f7e6b90d8"
+  );
+};
+
 export const auth = betterAuth({
   baseURL: getBaseURL(),
   trustedOrigins: Array.from(new Set(trustedOrigins.filter(Boolean))),
 
-  secret:
-    process.env.BETTER_AUTH_SECRET ||
-    "cd31eb49309dd6fd09970e2c21847f43648f9d94da6cca572686179f7e6b90d8",
+  secret: getAuthSecret(),
 
   database: prismaAdapter(prisma, {
     provider: "postgresql",
