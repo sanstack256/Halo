@@ -5,6 +5,7 @@ import Link from "next/link";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { BackButton } from "@/components/ui/back-button";
 import { HaloSelect } from "@/components/ui/halo-select";
+import { formatDeterministicDate, formatDeterministicTime, formatDeterministicDateTime } from "@/lib/date-format";
 import {
     Activity,
     AlertCircle,
@@ -143,7 +144,7 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                     </h1>
 
                     <div className="flex items-center gap-3 text-xs font-mono text-secondary flex-wrap">
-                        <span>First seen: {new Date(issue.firstSeen).toLocaleDateString()}</span>
+                        <span>First seen: {formatDeterministicDate(issue.firstSeen)}</span>
                         <span className="text-zinc-600">•</span>
                         <span>Last seen: <RelativeTime date={issue.lastSeen} /></span>
                         <span className="text-zinc-600">•</span>
@@ -256,9 +257,9 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                                                 }`}
                                             >
                                                 <td className="py-2.5 px-3 whitespace-nowrap">
-                                                    <span className="font-semibold">{new Date(ev.timestamp).toLocaleTimeString()}</span>
+                                                    <span className="font-semibold">{formatDeterministicTime(ev.timestamp)}</span>
                                                     <span className="text-[10px] text-zinc-500 ml-2">
-                                                        ({new Date(ev.timestamp).toLocaleDateString()})
+                                                        ({formatDeterministicDate(ev.timestamp)})
                                                     </span>
                                                 </td>
                                                 <td className="py-2.5 px-3 text-accent truncate">
@@ -381,11 +382,11 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                         <div className="space-y-3">
                             <div>
                                 <span className="text-[10px] text-zinc-500 uppercase block font-sans">First Occurrence</span>
-                                <span className="text-white font-semibold">{new Date(issue.firstSeen).toLocaleString()}</span>
+                                <span className="text-white font-semibold">{formatDeterministicDateTime(issue.firstSeen)}</span>
                             </div>
                             <div>
                                 <span className="text-[10px] text-zinc-500 uppercase block font-sans">Last Occurrence</span>
-                                <span className="text-white font-semibold">{new Date(issue.lastSeen).toLocaleString()}</span>
+                                <span className="text-white font-semibold">{formatDeterministicDateTime(issue.lastSeen)}</span>
                             </div>
                             <div>
                                 <span className="text-[10px] text-zinc-500 uppercase block font-sans mb-1">Triage Assignee</span>

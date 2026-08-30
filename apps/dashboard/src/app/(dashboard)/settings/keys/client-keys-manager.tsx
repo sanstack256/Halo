@@ -4,6 +4,7 @@ import { useState } from "react";
 import { createApiKey } from "@/actions/api-key";
 import { revokeApiKey } from "@/actions/settings";
 import { Check, Code2, Copy, Key, Plus, Trash2 } from "lucide-react";
+import { formatDeterministicDate } from "@/lib/date-format";
 
 type KeyItem = {
     id: string;
@@ -138,7 +139,7 @@ export function ClientKeysManager({ projectId, initialKeys }: ClientKeysManagerP
                             <div key={k.id} className="halo-table-row grid-cols-[1fr_160px_140px_100px]">
                                 <div className="halo-table-row-title">{k.name}</div>
                                 <div className="halo-table-cell-mono text-xs">{k.prefix}...</div>
-                                <div className="halo-table-cell text-xs">{new Date(k.createdAt).toLocaleDateString()}</div>
+                                <div className="halo-table-cell text-xs">{formatDeterministicDate(k.createdAt)}</div>
                                 <div>
                                     <button
                                         type="button"

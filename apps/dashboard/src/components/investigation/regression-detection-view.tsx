@@ -20,6 +20,7 @@ import {
     User,
     Zap,
 } from "lucide-react";
+import { formatDeterministicDateTime } from "@/lib/date-format";
 import type {
     RegressionAnalysisResult,
     RegressionCandidate,
@@ -167,7 +168,7 @@ export function RegressionDetectionView({ regression, projectId }: Props) {
                                 <div className="flex items-center gap-2 text-[11px] text-zinc-400 mt-0.5">
                                     <span>By {activeCandidate.authorName || "Author"}</span>
                                     <span>•</span>
-                                    <span>Committed {new Date(activeCandidate.commitDate).toLocaleString()}</span>
+                                    <span>Committed {formatDeterministicDateTime(activeCandidate.commitDate)}</span>
                                     {activeCandidate.releaseVersion && (
                                         <>
                                             <span>•</span>

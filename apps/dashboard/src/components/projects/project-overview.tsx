@@ -16,6 +16,7 @@ import {
 } from "lucide-react";
 import type { ProjectMetrics } from "@/actions/project-metrics";
 import { HaloSelect } from "@/components/ui/halo-select";
+import { formatDeterministicDateTime } from "@/lib/date-format";
 
 type RecentEvent = {
     id: string;
@@ -75,7 +76,7 @@ function getProjectStatus(
 }
 
 function formatEventTime(date: Date) {
-    return date.toLocaleString();
+    return formatDeterministicDateTime(date);
 }
 
 function formatLatency(
