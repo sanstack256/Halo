@@ -187,11 +187,11 @@ const primaryNavigation: PrimarySection[] = [
                 label: "By Monitor Type",
                 collapsible: true,
                 items: [
-                    { label: "Error", href: "/monitors?type=ERROR", icon: BellRing },
-                    { label: "Metric", href: "/monitors?type=METRIC", icon: Activity },
-                    { label: "Cron", href: "/monitors?type=CRON", icon: Clock },
-                    { label: "Uptime", href: "/monitors?type=UPTIME", icon: Globe },
-                    { label: "Mobile Build", href: "/monitors?type=MOBILE_BUILD", icon: Smartphone },
+                    { label: "Error", href: "/monitors/type/ERROR", icon: BellRing },
+                    { label: "Metric", href: "/monitors/type/METRIC", icon: Activity },
+                    { label: "Cron", href: "/monitors/type/CRON", icon: Clock },
+                    { label: "Uptime", href: "/monitors/type/UPTIME", icon: Globe },
+                    { label: "Mobile Build", href: "/monitors/type/MOBILE_BUILD", icon: Smartphone },
                 ],
             },
             {
@@ -297,17 +297,31 @@ function getActiveSection(pathname: string) {
 }
 
 function isItemActive(pathname: string, href: string, fullPath?: string) {
+    if (href.startsWith("/monitors/type/")) {
+        const typeSlug = href.replace("/monitors/type/", "");
+        return (
+            pathname === href ||
+            pathname.toLowerCase() === href.toLowerCase() ||
+            Boolean(fullPath && fullPath.includes(`type=${typeSlug}`))
+        );
+    }
     if (href.includes("?")) {
         return fullPath === href;
     }
     if (href === "/monitors/mine") {
-        return pathname === "/monitors/mine";
+        return pathname === "/monitors/mine" || Boolean(fullPath && fullPath.includes("filter=mine"));
     }
     if (href === "/monitors/alerts") {
         return pathname === "/monitors/alerts" || pathname.startsWith("/monitors/alerts/");
     }
     if (href === "/monitors") {
-        return pathname === "/monitors" && (!fullPath || !fullPath.includes("?"));
+        return (
+            pathname === "/monitors" &&
+            (!fullPath ||
+                (!fullPath.includes("type=") &&
+                    !fullPath.includes("filter=mine") &&
+                    !fullPath.includes("status=")))
+        );
     }
     if (href === "/settings") return pathname === "/settings";
     if (href === "/overview") return pathname === "/overview";

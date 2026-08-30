@@ -158,6 +158,16 @@ export function MonitorsClient({
     const [currentPage, setCurrentPage] = useState(1);
     const PAGE_SIZE = 15;
 
+    // Synchronize client state when props change (e.g. navigation via sidebar)
+    React.useEffect(() => {
+        setMonitors(initialMonitors);
+        setSelectedProject(initialProjectFilter || "ALL");
+        setSelectedType(initialTypeFilter || "ALL");
+        setSelectedStatus(initialStatusFilter || "ALL");
+        setOnlyMine(Boolean(initialMineFilter || isMineView));
+        setCurrentPage(1);
+    }, [initialMonitors, initialProjectFilter, initialTypeFilter, initialStatusFilter, initialMineFilter, isMineView]);
+
     // Filter and sort monitors
     const filteredMonitors = useMemo(() => {
         return monitors
@@ -525,27 +535,33 @@ export function MonitorsClient({
                                 <div className="text-xs font-mono text-zinc-400 truncate">
                                     {m.type === "ERROR" && (
                                         <span>
-                                            &gt;= {m.thresholdValue || 5} in {m.thresholdWindow || 10}m
+                                            {m.thresholdValue !== null
+                                                ? `>= ${m.thresholdValue} in ${m.thresholdWindow !== null ? `${m.thresholdWindow}m` : "window"}`
+                                                : m.query || "Error surge"}
                                         </span>
                                     )}
                                     {m.type === "METRIC" && (
                                         <span>
-                                            &gt; {m.thresholdValue || 500}ms
+                                            {m.thresholdValue !== null
+                                                ? `> ${m.thresholdValue}ms${m.thresholdWindow !== null ? ` in ${m.thresholdWindow}m` : ""}`
+                                                : "Metric anomaly"}
                                         </span>
                                     )}
                                     {m.type === "CRON" && (
                                         <span className="text-sky-400">
-                                            {m.cronSchedule || "*/15 * * * *"}
+                                            {m.cronSchedule || "Scheduled heartbeat"}
                                         </span>
                                     )}
                                     {m.type === "UPTIME" && (
                                         <span className="text-emerald-400 truncate">
-                                            200 OK Probe
+                                            {m.endpointUrl ? "HTTP 200 Probe" : "Endpoint Probe"}
                                         </span>
                                     )}
                                     {m.type === "MOBILE_BUILD" && (
                                         <span>
-                                            &gt;= {m.thresholdValue || 99.5}%
+                                            {m.thresholdValue !== null
+                                                ? `>= ${m.thresholdValue}% crash-free`
+                                                : "Stability tracking"}
                                         </span>
                                     )}
                                 </div>
@@ -561,6 +577,7 @@ export function MonitorsClient({
                                         href={`/monitors/${m.id}/edit`}
                                         onClick={(e) => e.stopPropagation()}
                                         title="Edit Monitor"
+                                        aria-label={`Edit ${m.name}`}
                                         className="p-1.5 rounded-lg border border-white/5 bg-white/5 text-zinc-400 hover:text-white hover:border-white/20 transition-colors"
                                     >
                                         <Edit3 size={13} />
@@ -569,6 +586,7 @@ export function MonitorsClient({
                                     <button
                                         type="button"
                                         title={m.status === "MUTED" ? "Unmute Monitor" : "Mute Monitor"}
+                                        aria-label={m.status === "MUTED" ? `Unmute ${m.name}` : `Mute ${m.name}`}
                                         onClick={(e) => handleToggleMute(e, m)}
                                         className="p-1.5 rounded-lg border border-white/5 bg-white/5 text-zinc-400 hover:text-white hover:border-white/20 transition-colors"
                                     >
@@ -578,6 +596,7 @@ export function MonitorsClient({
                                     <button
                                         type="button"
                                         title="Delete Monitor"
+                                        aria-label={`Delete ${m.name}`}
                                         onClick={(e) => handleDelete(e, m.id)}
                                         className="p-1.5 rounded-lg border border-red-500/20 bg-red-500/5 text-red-400 hover:bg-red-500/15 transition-colors"
                                     >

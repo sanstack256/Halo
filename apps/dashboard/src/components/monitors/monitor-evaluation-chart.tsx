@@ -47,7 +47,7 @@ export function MonitorEvaluationChart({ data }: MonitorEvaluationChartProps) {
                 id: `resolved-${a.id}`,
                 timestamp: new Date(a.resolvedAt),
                 status: "RESOLVED",
-                observedValue: a.thresholdValue ? a.thresholdValue * 0.5 : null,
+                observedValue: a.observedValue,
                 thresholdValue: a.thresholdValue,
                 condition: "Condition returned to normal",
                 title: "Alert Resolved",
@@ -66,9 +66,9 @@ export function MonitorEvaluationChart({ data }: MonitorEvaluationChartProps) {
                 id: `eval-${monitor.id}`,
                 timestamp: new Date(monitor.lastEvaluatedAt),
                 status: monitor.status === "FIRING" ? "FIRING" : "HEALTHY",
-                observedValue: monitor.thresholdValue ? (monitor.status === "FIRING" ? monitor.thresholdValue * 1.2 : monitor.thresholdValue * 0.4) : null,
+                observedValue: null,
                 thresholdValue: monitor.thresholdValue,
-                condition: `Status evaluated as ${monitor.status}`,
+                condition: `Evaluated status: ${monitor.status}`,
                 title: `Evaluation: ${monitor.status}`,
             });
         }

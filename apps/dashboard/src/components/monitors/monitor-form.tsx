@@ -775,15 +775,15 @@ export function MonitorForm({
                         <span className="text-[10px] text-zinc-500 uppercase block mb-0.5">Evaluation Rule</span>
                         <span className="text-zinc-200">
                             {type === "ERROR" &&
-                                `Trigger FIRING alert when error count >= ${thresholdValue || 5} events within ${thresholdWindow || 10} minutes${query ? ` matching '${query}'` : ""}.`}
+                                `Trigger FIRING alert when error count >= ${thresholdValue ?? "(not set)"} events within ${thresholdWindow ?? "(not set)"} minutes${query ? ` matching '${query}'` : ""}.`}
                             {type === "METRIC" &&
-                                `Trigger FIRING alert when latency exceeds ${thresholdValue || 500}ms over ${thresholdWindow || 15} minutes.`}
+                                `Trigger FIRING alert when latency exceeds ${thresholdValue ?? "(not set)"}ms over ${thresholdWindow ?? "(not set)"} minutes.`}
                             {type === "CRON" &&
-                                `Trigger FIRING alert if scheduled task '${cronSchedule}' misses execution heartbeat by > ${thresholdWindow || 5} minutes.`}
+                                `Trigger FIRING alert if scheduled task '${cronSchedule || "(cron expression not set)"}' misses execution heartbeat by > ${thresholdWindow ?? "(not set)"} minutes.`}
                             {type === "UPTIME" &&
-                                `Probe '${endpointUrl}' every ${thresholdWindow || 5}m; alert if status != 200 or unreachable.`}
+                                `Probe '${endpointUrl || "(endpoint URL not set)"}' every ${thresholdWindow ?? "(not set)"}m; alert if status != 200 or unreachable.`}
                             {type === "MOBILE_BUILD" &&
-                                `Trigger FIRING alert when crash-free session ratio falls below ${thresholdValue || 99.5}%.`}
+                                `Trigger FIRING alert when crash-free session ratio falls below ${thresholdValue ?? "(not set)"}%.`}
                         </span>
                     </div>
                 </div>

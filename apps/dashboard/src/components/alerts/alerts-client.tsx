@@ -81,6 +81,14 @@ export function AlertsClient({
     const [currentPage, setCurrentPage] = useState(1);
     const PAGE_SIZE = 20;
 
+    React.useEffect(() => {
+        setAlerts(initialAlerts);
+        setCounts(initialCounts);
+        setSelectedProject(initialProjectFilter || "ALL");
+        setSelectedStatus(initialStatusFilter || "ALL");
+        setCurrentPage(1);
+    }, [initialAlerts, initialCounts, initialProjectFilter, initialStatusFilter]);
+
     const projectOptions = [
         { value: "ALL", label: "All Projects" },
         ...projects.map((p) => ({ value: p.id, label: p.name })),
