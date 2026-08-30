@@ -57,3 +57,34 @@ export const ReplayStatus = {
 } as const
 
 export type ReplayStatus = (typeof ReplayStatus)[keyof typeof ReplayStatus]
+
+
+export const MonitorType = {
+  ERROR: 'ERROR',
+  METRIC: 'METRIC',
+  CRON: 'CRON',
+  UPTIME: 'UPTIME',
+  MOBILE_BUILD: 'MOBILE_BUILD'
+} as const
+
+export type MonitorType = (typeof MonitorType)[keyof typeof MonitorType]
+
+
+export const MonitorStatus = {
+  HEALTHY: 'HEALTHY',
+  FIRING: 'FIRING',
+  MUTED: 'MUTED',
+  DISABLED: 'DISABLED'
+} as const
+
+export type MonitorStatus = (typeof MonitorStatus)[keyof typeof MonitorStatus]
+
+
+export const MonitorSeverity = {
+  INFO: 'INFO',
+  WARNING: 'WARNING',
+  ERROR: 'ERROR',
+  FATAL: 'FATAL'
+} as const
+
+export type MonitorSeverity = (typeof MonitorSeverity)[keyof typeof MonitorSeverity]

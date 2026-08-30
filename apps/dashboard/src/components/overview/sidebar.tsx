@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useSearchParams } from "next/navigation";
 import {
     Activity,
     AlertCircle,
@@ -13,6 +13,7 @@ import {
     ChevronLeft,
     ChevronRight,
     CircleUserRound,
+    Clock,
     Code2,
     Compass,
     Cpu,
@@ -23,6 +24,7 @@ import {
     FolderGit2,
     FolderKanban,
     GitBranch,
+    Globe,
     Home,
     Key,
     Layers,
@@ -36,8 +38,10 @@ import {
     Server,
     Settings,
     ShieldAlert,
+    Smartphone,
     Sparkles,
     Terminal,
+    User,
     UserPlus,
     Users,
     Waypoints,
@@ -176,9 +180,23 @@ const primaryNavigation: PrimarySection[] = [
             {
                 items: [
                     { label: "All Monitors", href: "/monitors", icon: BellRing },
-                    { label: "Firing Alerts", href: "/monitors/firing", icon: ShieldAlert },
-                    { label: "Healthy Monitors", href: "/monitors/healthy", icon: Activity },
-                    { label: "Service SLOs", href: "/monitors/slos", icon: Radio },
+                    { label: "My Monitors", href: "/monitors?filter=mine", icon: User },
+                ],
+            },
+            {
+                label: "By Monitor Type",
+                collapsible: true,
+                items: [
+                    { label: "Error", href: "/monitors?type=ERROR", icon: BellRing },
+                    { label: "Metric", href: "/monitors?type=METRIC", icon: Activity },
+                    { label: "Cron", href: "/monitors?type=CRON", icon: Clock },
+                    { label: "Uptime", href: "/monitors?type=UPTIME", icon: Globe },
+                    { label: "Mobile Build", href: "/monitors?type=MOBILE_BUILD", icon: Smartphone },
+                ],
+            },
+            {
+                items: [
+                    { label: "Alerts", href: "/monitors?status=FIRING", icon: ShieldAlert },
                 ],
             },
         ],
@@ -278,7 +296,13 @@ function getActiveSection(pathname: string) {
     return "overview";
 }
 
-function isItemActive(pathname: string, href: string) {
+function isItemActive(pathname: string, href: string, fullPath?: string) {
+    if (href.includes("?")) {
+        return fullPath === href;
+    }
+    if (href === "/monitors") {
+        return pathname === "/monitors" && (!fullPath || !fullPath.includes("?"));
+    }
     if (href === "/settings") return pathname === "/settings";
     if (href === "/overview") return pathname === "/overview";
     if (href === "/investigate") return pathname === "/investigate";
@@ -286,7 +310,6 @@ function isItemActive(pathname: string, href: string) {
     if (href === "/services") return pathname === "/services";
     if (href === "/explore") return pathname === "/explore";
     if (href === "/dashboards") return pathname === "/dashboards";
-    if (href === "/monitors") return pathname === "/monitors";
     if (href === "/projects") return pathname === "/projects";
 
     return pathname === href || pathname.startsWith(`${href}/`);
@@ -302,6 +325,8 @@ interface SidebarProps {
 
 export default function Sidebar({ initialProjects = [] }: SidebarProps) {
     const pathname = usePathname();
+    const searchParams = useSearchParams();
+    const fullPath = searchParams?.toString() ? `${pathname}?${searchParams.toString()}` : pathname;
 
     const [hoveredSection, setHoveredSection] = useState<string | null>(null);
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -511,7 +536,7 @@ export default function Sidebar({ initialProjects = [] }: SidebarProps) {
                                 <div className="halo-sidebar-secondary-items">
                                     {section.items.map((item) => {
                                         const Icon = item.icon;
-                                        const active = isItemActive(pathname, item.href);
+                                        const active = isItemActive(pathname, item.href, fullPath);
 
                                         return (
                                             <Link

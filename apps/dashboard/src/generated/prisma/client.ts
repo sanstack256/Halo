@@ -111,3 +111,8 @@ export type ReplaySession = Prisma.ReplaySessionModel
  * 
  */
 export type ReplayChunk = Prisma.ReplayChunkModel
+/**
+ * Model Monitor
+ * 
+ */
+export type Monitor = Prisma.MonitorModel

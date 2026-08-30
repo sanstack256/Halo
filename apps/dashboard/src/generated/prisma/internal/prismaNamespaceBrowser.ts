@@ -64,7 +64,8 @@ export const ModelName = {
   Account: 'Account',
   Verification: 'Verification',
   ReplaySession: 'ReplaySession',
-  ReplayChunk: 'ReplayChunk'
+  ReplayChunk: 'ReplayChunk',
+  Monitor: 'Monitor'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -326,6 +327,32 @@ export const ReplayChunkScalarFieldEnum = {
 } as const
 
 export type ReplayChunkScalarFieldEnum = (typeof ReplayChunkScalarFieldEnum)[keyof typeof ReplayChunkScalarFieldEnum]
+
+
+export const MonitorScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  type: 'type',
+  status: 'status',
+  severity: 'severity',
+  projectId: 'projectId',
+  environmentId: 'environmentId',
+  creatorId: 'creatorId',
+  thresholdValue: 'thresholdValue',
+  thresholdWindow: 'thresholdWindow',
+  query: 'query',
+  cronSchedule: 'cronSchedule',
+  endpointUrl: 'endpointUrl',
+  lastTriggeredAt: 'lastTriggeredAt',
+  lastEvaluatedAt: 'lastEvaluatedAt',
+  incidentCount: 'incidentCount',
+  alertConfig: 'alertConfig',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MonitorScalarFieldEnum = (typeof MonitorScalarFieldEnum)[keyof typeof MonitorScalarFieldEnum]
 
 
 export const SortOrder = {

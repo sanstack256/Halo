@@ -389,6 +389,84 @@ export type JsonWithAggregatesFilterBase<$PrismaModel = never> = {
   _max?: Prisma.NestedJsonFilter<$PrismaModel>
 }
 
+export type EnumMonitorTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.MonitorType | Prisma.EnumMonitorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MonitorType[] | Prisma.ListEnumMonitorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MonitorType[] | Prisma.ListEnumMonitorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMonitorTypeFilter<$PrismaModel> | $Enums.MonitorType
+}
+
+export type EnumMonitorStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.MonitorStatus | Prisma.EnumMonitorStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.MonitorStatus[] | Prisma.ListEnumMonitorStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MonitorStatus[] | Prisma.ListEnumMonitorStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMonitorStatusFilter<$PrismaModel> | $Enums.MonitorStatus
+}
+
+export type EnumMonitorSeverityFilter<$PrismaModel = never> = {
+  equals?: $Enums.MonitorSeverity | Prisma.EnumMonitorSeverityFieldRefInput<$PrismaModel>
+  in?: $Enums.MonitorSeverity[] | Prisma.ListEnumMonitorSeverityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MonitorSeverity[] | Prisma.ListEnumMonitorSeverityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMonitorSeverityFilter<$PrismaModel> | $Enums.MonitorSeverity
+}
+
+export type FloatNullableFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatNullableFilter<$PrismaModel> | number | null
+}
+
+export type EnumMonitorTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MonitorType | Prisma.EnumMonitorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MonitorType[] | Prisma.ListEnumMonitorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MonitorType[] | Prisma.ListEnumMonitorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMonitorTypeWithAggregatesFilter<$PrismaModel> | $Enums.MonitorType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMonitorTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMonitorTypeFilter<$PrismaModel>
+}
+
+export type EnumMonitorStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MonitorStatus | Prisma.EnumMonitorStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.MonitorStatus[] | Prisma.ListEnumMonitorStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MonitorStatus[] | Prisma.ListEnumMonitorStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMonitorStatusWithAggregatesFilter<$PrismaModel> | $Enums.MonitorStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMonitorStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMonitorStatusFilter<$PrismaModel>
+}
+
+export type EnumMonitorSeverityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MonitorSeverity | Prisma.EnumMonitorSeverityFieldRefInput<$PrismaModel>
+  in?: $Enums.MonitorSeverity[] | Prisma.ListEnumMonitorSeverityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MonitorSeverity[] | Prisma.ListEnumMonitorSeverityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMonitorSeverityWithAggregatesFilter<$PrismaModel> | $Enums.MonitorSeverity
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMonitorSeverityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMonitorSeverityFilter<$PrismaModel>
+}
+
+export type FloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+  _sum?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -721,6 +799,73 @@ export type NestedJsonFilterBase<$PrismaModel = never> = {
   gt?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   gte?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel>
   not?: runtime.InputJsonValue | Prisma.JsonFieldRefInput<$PrismaModel> | Prisma.JsonNullValueFilter
+}
+
+export type NestedEnumMonitorTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.MonitorType | Prisma.EnumMonitorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MonitorType[] | Prisma.ListEnumMonitorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MonitorType[] | Prisma.ListEnumMonitorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMonitorTypeFilter<$PrismaModel> | $Enums.MonitorType
+}
+
+export type NestedEnumMonitorStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.MonitorStatus | Prisma.EnumMonitorStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.MonitorStatus[] | Prisma.ListEnumMonitorStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MonitorStatus[] | Prisma.ListEnumMonitorStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMonitorStatusFilter<$PrismaModel> | $Enums.MonitorStatus
+}
+
+export type NestedEnumMonitorSeverityFilter<$PrismaModel = never> = {
+  equals?: $Enums.MonitorSeverity | Prisma.EnumMonitorSeverityFieldRefInput<$PrismaModel>
+  in?: $Enums.MonitorSeverity[] | Prisma.ListEnumMonitorSeverityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MonitorSeverity[] | Prisma.ListEnumMonitorSeverityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMonitorSeverityFilter<$PrismaModel> | $Enums.MonitorSeverity
+}
+
+export type NestedEnumMonitorTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MonitorType | Prisma.EnumMonitorTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.MonitorType[] | Prisma.ListEnumMonitorTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MonitorType[] | Prisma.ListEnumMonitorTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMonitorTypeWithAggregatesFilter<$PrismaModel> | $Enums.MonitorType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMonitorTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMonitorTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumMonitorStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MonitorStatus | Prisma.EnumMonitorStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.MonitorStatus[] | Prisma.ListEnumMonitorStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MonitorStatus[] | Prisma.ListEnumMonitorStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMonitorStatusWithAggregatesFilter<$PrismaModel> | $Enums.MonitorStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMonitorStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMonitorStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumMonitorSeverityWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.MonitorSeverity | Prisma.EnumMonitorSeverityFieldRefInput<$PrismaModel>
+  in?: $Enums.MonitorSeverity[] | Prisma.ListEnumMonitorSeverityFieldRefInput<$PrismaModel>
+  notIn?: $Enums.MonitorSeverity[] | Prisma.ListEnumMonitorSeverityFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumMonitorSeverityWithAggregatesFilter<$PrismaModel> | $Enums.MonitorSeverity
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumMonitorSeverityFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumMonitorSeverityFilter<$PrismaModel>
+}
+
+export type NestedFloatNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel> | null
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel> | null
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatNullableWithAggregatesFilter<$PrismaModel> | number | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+  _sum?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedFloatNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedFloatNullableFilter<$PrismaModel>
 }
 
 

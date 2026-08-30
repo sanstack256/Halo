@@ -410,7 +410,8 @@ export const ModelName = {
   Account: 'Account',
   Verification: 'Verification',
   ReplaySession: 'ReplaySession',
-  ReplayChunk: 'ReplayChunk'
+  ReplayChunk: 'ReplayChunk',
+  Monitor: 'Monitor'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -426,7 +427,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "replayChunk"
+    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "replayChunk" | "monitor"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -1466,6 +1467,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    Monitor: {
+      payload: Prisma.$MonitorPayload<ExtArgs>
+      fields: Prisma.MonitorFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.MonitorFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.MonitorFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>
+        }
+        findFirst: {
+          args: Prisma.MonitorFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.MonitorFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>
+        }
+        findMany: {
+          args: Prisma.MonitorFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>[]
+        }
+        create: {
+          args: Prisma.MonitorCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>
+        }
+        createMany: {
+          args: Prisma.MonitorCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.MonitorCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>[]
+        }
+        delete: {
+          args: Prisma.MonitorDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>
+        }
+        update: {
+          args: Prisma.MonitorUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>
+        }
+        deleteMany: {
+          args: Prisma.MonitorDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.MonitorUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.MonitorUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>[]
+        }
+        upsert: {
+          args: Prisma.MonitorUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$MonitorPayload>
+        }
+        aggregate: {
+          args: Prisma.MonitorAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateMonitor>
+        }
+        groupBy: {
+          args: Prisma.MonitorGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MonitorGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.MonitorCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.MonitorCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -1750,6 +1825,32 @@ export const ReplayChunkScalarFieldEnum = {
 export type ReplayChunkScalarFieldEnum = (typeof ReplayChunkScalarFieldEnum)[keyof typeof ReplayChunkScalarFieldEnum]
 
 
+export const MonitorScalarFieldEnum = {
+  id: 'id',
+  name: 'name',
+  description: 'description',
+  type: 'type',
+  status: 'status',
+  severity: 'severity',
+  projectId: 'projectId',
+  environmentId: 'environmentId',
+  creatorId: 'creatorId',
+  thresholdValue: 'thresholdValue',
+  thresholdWindow: 'thresholdWindow',
+  query: 'query',
+  cronSchedule: 'cronSchedule',
+  endpointUrl: 'endpointUrl',
+  lastTriggeredAt: 'lastTriggeredAt',
+  lastEvaluatedAt: 'lastEvaluatedAt',
+  incidentCount: 'incidentCount',
+  alertConfig: 'alertConfig',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type MonitorScalarFieldEnum = (typeof MonitorScalarFieldEnum)[keyof typeof MonitorScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -1938,6 +2039,48 @@ export type ListEnumReplayStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
 
 
 /**
+ * Reference to a field of type 'MonitorType'
+ */
+export type EnumMonitorTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonitorType'>
+    
+
+
+/**
+ * Reference to a field of type 'MonitorType[]'
+ */
+export type ListEnumMonitorTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonitorType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MonitorStatus'
+ */
+export type EnumMonitorStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonitorStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'MonitorStatus[]'
+ */
+export type ListEnumMonitorStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonitorStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'MonitorSeverity'
+ */
+export type EnumMonitorSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonitorSeverity'>
+    
+
+
+/**
+ * Reference to a field of type 'MonitorSeverity[]'
+ */
+export type ListEnumMonitorSeverityFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MonitorSeverity[]'>
+    
+
+
+/**
  * Reference to a field of type 'Float'
  */
 export type FloatFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'Float'>
@@ -2115,6 +2258,7 @@ export type GlobalOmitConfig = {
   verification?: Prisma.VerificationOmit
   replaySession?: Prisma.ReplaySessionOmit
   replayChunk?: Prisma.ReplayChunkOmit
+  monitor?: Prisma.MonitorOmit
 }
 
 /* Types for Logging */
