@@ -4,22 +4,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
     Activity,
-    AlertCircle,
-    ArrowRight,
-    BellRing,
-    CheckCircle2,
-    Clock,
     GitCommit,
-    HelpCircle,
     Info,
     Layers,
-    Radio,
-    ShieldAlert,
     Sparkles,
-    Zap,
 } from "lucide-react";
-import type { ChangeExplanation, EvidenceClassification, QualitativeConfidence } from "@/lib/analytics/types";
-import { formatDeterministicDateTime } from "@/lib/date-format";
+import type { ChangeExplanation, EvidenceClassification } from "@/lib/analytics/types";
 
 interface ChangeExplanationPanelProps {
     explanation: ChangeExplanation;
@@ -45,7 +35,6 @@ export function ChangeExplanationPanel({
         affectedServices,
         relatedReleases,
         relatedIncidents,
-        relatedMonitorAlerts,
         supportingEvidence,
         counterEvidence,
         evidenceItems,
@@ -54,13 +43,13 @@ export function ChangeExplanationPanel({
     const [showEvidenceLedger, setShowEvidenceLedger] = useState(false);
 
     const classificationBadgeClass: Record<EvidenceClassification, string> = {
-        "Observed": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
-        "Correlated": "bg-amber-500/10 text-amber-400 border-amber-500/30",
-        "Strongly correlated": "bg-purple-500/10 text-purple-400 border-purple-500/30",
-        "Causal evidence established": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
-        "Possible": "bg-yellow-500/10 text-yellow-400 border-yellow-500/30",
-        "Insufficient evidence": "bg-zinc-500/10 text-zinc-400 border-zinc-500/30",
-        "Unknown": "bg-zinc-500/10 text-zinc-400 border-zinc-500/30",
+        "Observed": "halo-badge-info",
+        "Correlated": "halo-badge-degraded",
+        "Strongly correlated": "halo-badge-critical",
+        "Causal evidence established": "halo-badge-healthy",
+        "Possible": "halo-badge-degraded",
+        "Insufficient evidence": "halo-badge-neutral",
+        "Unknown": "halo-badge-neutral",
     };
 
     const primaryService = affectedServices[0]?.service;
@@ -71,34 +60,31 @@ export function ChangeExplanationPanel({
         : `/projects/${projectId || "current"}/investigations/new?service=${primaryService || "all"}`;
 
     return (
-        <div className="p-6 rounded-2xl border border-border bg-surface-elevated space-y-6 font-mono text-xs">
-            {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-border pb-4">
-                <div className="flex items-center gap-2.5">
-                    <div className="w-8 h-8 rounded-lg bg-accent/15 border border-accent/30 flex items-center justify-center text-accent">
+        <div className="halo-panel">
+            {/* Header: Title / Subtitle on Left, Status / Confidence / Action on Right */}
+            <div className="halo-panel-header">
+                <div className="halo-panel-title-group">
+                    <div className="halo-dash-icon-box">
                         <Sparkles size={16} />
                     </div>
                     <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                            <h3 className="text-sm font-bold text-white uppercase tracking-wider font-sans">
-                                Change &amp; Anomaly Explanation
-                            </h3>
-                            <span
-                                className={`px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${classificationBadgeClass[classification] || classificationBadgeClass["Correlated"]}`}
-                            >
+                            <h3 className="halo-panel-title">Change &amp; Anomaly Explanation</h3>
+                            <span className={`halo-badge ${classificationBadgeClass[classification] || "halo-badge-neutral"}`}>
                                 {classification}
                             </span>
                             <button
                                 type="button"
                                 onClick={() => setShowEvidenceLedger(!showEvidenceLedger)}
-                                className="px-2.5 py-0.5 rounded-full bg-surface border border-border text-zinc-300 text-[10px] hover:border-accent/40 transition-colors cursor-pointer flex items-center gap-1"
+                                className="halo-filter-btn h-6 px-2 text-[11px]"
+                                title="Click to view full evidence ledger"
                             >
                                 <span>Confidence: {evidenceStrength}</span>
                                 <Info size={11} className="text-accent" />
                             </button>
                         </div>
-                        <p className="text-[11px] text-zinc-400 font-sans">
-                            Evidence-backed correlation distinguishing observed changes from causal claims.
+                        <p className="halo-panel-subtitle mt-0.5">
+                            Evidence-backed correlation distinguishing observed telemetry changes from causal claims.
                         </p>
                     </div>
                 </div>
@@ -114,35 +100,35 @@ export function ChangeExplanationPanel({
                 )}
             </div>
 
-            {/* Structured What / When / Where Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-[11px]">
-                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">What Changed</span>
-                    <p className="text-white font-semibold">{whatChanged}</p>
+            {/* Structured What / When / Where / Magnitude Summary Region */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-[#06080d] p-3.5 rounded-xl border border-border">
+                <div className="space-y-1 pr-2">
+                    <span className="text-[10px] font-semibold uppercase text-text-muted tracking-wider block">What Changed</span>
+                    <p className="text-text font-medium text-xs leading-relaxed">{whatChanged}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">When</span>
-                    <p className="text-accent font-semibold">{when}</p>
+                <div className="space-y-1 sm:border-l sm:border-border sm:pl-3 pr-2">
+                    <span className="text-[10px] font-semibold uppercase text-text-muted tracking-wider block">When</span>
+                    <p className="text-accent font-semibold text-xs font-mono">{when}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Where</span>
-                    <p className="text-white font-semibold">{where}</p>
+                <div className="space-y-1 lg:border-l lg:border-border lg:pl-3 pr-2">
+                    <span className="text-[10px] font-semibold uppercase text-text-muted tracking-wider block">Where</span>
+                    <p className="text-text font-medium text-xs font-mono">{where}</p>
                 </div>
-                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Magnitude</span>
-                    <p className="text-red-400 font-semibold">{magnitudeDescription}</p>
+                <div className="space-y-1 sm:border-l sm:border-border sm:pl-3">
+                    <span className="text-[10px] font-semibold uppercase text-text-muted tracking-wider block">Magnitude</span>
+                    <p className="text-error font-semibold text-xs font-mono">{magnitudeDescription}</p>
                 </div>
             </div>
 
             {/* Interactive Evidence Ledger Breakdown */}
             {showEvidenceLedger && evidenceItems.length > 0 && (
                 <div className="p-4 rounded-xl bg-[#06080d] border border-accent/30 space-y-3 animate-in fade-in">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border/60 pb-1.5">
+                    <div className="flex items-center justify-between text-xs font-semibold text-text border-b border-border pb-2">
                         <span className="flex items-center gap-1.5 text-accent">
                             <Info size={13} />
                             <span>Shared Evidence Ledger ({evidenceItems.length} records)</span>
                         </span>
-                        <span className="text-[10px] text-muted normal-case">
+                        <span className="text-[11px] text-text-muted font-normal">
                             Confidence basis: {evidenceStrength}
                         </span>
                     </div>
@@ -151,27 +137,27 @@ export function ChangeExplanationPanel({
                         {evidenceItems.map((item) => (
                             <div
                                 key={item.id}
-                                className="p-2.5 rounded-lg bg-surface border border-border flex items-start justify-between gap-3 text-[11px]"
+                                className="p-2.5 rounded-lg bg-surface border border-border flex items-start justify-between gap-3 text-xs"
                             >
                                 <div className="space-y-0.5">
                                     <div className="flex items-center gap-2">
-                                        <span className="font-semibold text-white">{item.title}</span>
-                                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#080b11] border border-border text-muted">
+                                        <span className="font-semibold text-text">{item.title}</span>
+                                        <span className="text-[10px] px-1.5 py-0.2 rounded bg-[#080b11] border border-border text-text-muted font-mono">
                                             {item.source}
                                         </span>
                                     </div>
-                                    <p className="text-zinc-300 font-sans">{item.description}</p>
+                                    <p className="text-text-secondary text-xs">{item.description}</p>
                                 </div>
                                 <span
-                                    className={`px-2 py-0.5 rounded text-[10px] font-semibold shrink-0 ${
+                                    className={`halo-badge shrink-0 text-[10px] ${
                                         item.relationship === "SUPPORTING"
-                                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                            ? "halo-badge-healthy"
                                             : item.relationship === "COUNTER_EVIDENCE"
-                                            ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
-                                            : "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
+                                            ? "halo-badge-degraded"
+                                            : "halo-badge-info"
                                     }`}
                                 >
-                                    {item.relationship}
+                                    {item.relationship.replace("_", " ")}
                                 </span>
                             </div>
                         ))}
@@ -179,31 +165,33 @@ export function ChangeExplanationPanel({
                 </div>
             )}
 
-            {/* Affected Services & Correlated Entities Grid */}
+            {/* Contributing Services & Correlated Releases Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                {/* 1. Affected Services */}
+                {/* 1. Contributing Services */}
                 <div className="p-4 rounded-xl bg-surface border border-border space-y-3">
-                    <div className="text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border/60 pb-2 flex items-center justify-between">
-                        <span>Contributing Services</span>
-                        <span className="text-muted font-normal">({affectedServices.length})</span>
+                    <div className="text-xs font-semibold text-text border-b border-border pb-2 flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                            <Layers size={13} className="text-accent" />
+                            <span>Contributing Services</span>
+                        </span>
+                        <span className="text-text-muted text-[11px] font-normal">({affectedServices.length})</span>
                     </div>
 
                     {affectedServices.length === 0 ? (
-                        <p className="text-muted text-[11px]">No specific service concentration identified.</p>
+                        <p className="text-text-muted text-xs">No specific service concentration identified.</p>
                     ) : (
                         <div className="space-y-2">
                             {affectedServices.map((s, i) => (
                                 <div
                                     key={i}
-                                    className="flex items-center justify-between p-2 rounded-lg bg-[#080b11] border border-border"
+                                    className="flex items-center justify-between p-2 rounded-lg bg-[#080b11] border border-border text-xs"
                                 >
                                     <div className="flex items-center gap-2">
-                                        <Layers size={13} className="text-accent" />
-                                        <span className="text-white font-semibold">{s.service}</span>
+                                        <span className="text-text font-semibold">{s.service}</span>
                                     </div>
-                                    <div className="text-right">
-                                        <span className="text-red-400 font-bold">{s.errorCount} errors</span>{" "}
-                                        <span className="text-muted text-[10px]">
+                                    <div className="text-right font-mono">
+                                        <span className="text-error font-semibold">{s.errorCount} errors</span>{" "}
+                                        <span className="text-text-muted text-[11px]">
                                             ({s.shareOfTotalErrorsPct}%)
                                         </span>
                                     </div>
@@ -215,27 +203,28 @@ export function ChangeExplanationPanel({
 
                 {/* 2. Correlated Releases */}
                 <div className="p-4 rounded-xl bg-surface border border-border space-y-3">
-                    <div className="text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border/60 pb-2 flex items-center justify-between">
-                        <span>Correlated Releases &amp; Changes</span>
-                        <span className="text-muted font-normal">({relatedReleases.length})</span>
+                    <div className="text-xs font-semibold text-text border-b border-border pb-2 flex items-center justify-between">
+                        <span className="flex items-center gap-1.5">
+                            <GitCommit size={13} className="text-accent" />
+                            <span>Correlated Releases &amp; Changes</span>
+                        </span>
+                        <span className="text-text-muted text-[11px] font-normal">({relatedReleases.length})</span>
                     </div>
 
                     {relatedReleases.length === 0 ? (
-                        <p className="text-muted text-[11px]">No deployment recorded in the immediate vicinity.</p>
+                        <p className="text-text-muted text-xs">No deployment recorded in the immediate vicinity.</p>
                     ) : (
                         <div className="space-y-2">
                             {relatedReleases.map((r, i) => (
                                 <div
                                     key={i}
-                                    className="p-2 rounded-lg bg-[#080b11] border border-border space-y-1"
+                                    className="p-2 rounded-lg bg-[#080b11] border border-border flex items-center justify-between text-xs font-mono"
                                 >
-                                    <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-1.5 text-purple-400 font-semibold">
-                                            <GitCommit size={13} />
-                                            <span>Release {r.version}</span>
-                                        </div>
-                                        <span className="text-[10px] text-muted">{r.temporalRelation}</span>
+                                    <div className="flex items-center gap-1.5 text-text font-semibold">
+                                        <GitCommit size={13} className="text-accent" />
+                                        <span>Release {r.version}</span>
                                     </div>
+                                    <span className="text-[11px] text-text-muted">{r.temporalRelation}</span>
                                 </div>
                             ))}
                         </div>
@@ -247,14 +236,14 @@ export function ChangeExplanationPanel({
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 {/* Supporting Evidence */}
                 <div className="p-4 rounded-xl bg-surface border border-border space-y-2.5">
-                    <div className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider border-b border-border/60 pb-2">
+                    <div className="text-xs font-semibold text-success border-b border-border pb-2">
                         Supporting Telemetry Evidence
                     </div>
-                    <ul className="space-y-1.5 text-[11px] font-sans text-zinc-300">
+                    <ul className="space-y-1.5 text-xs text-text-secondary">
                         {supportingEvidence.map((ev, idx) => (
                             <li key={idx} className="flex items-start gap-2">
-                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
-                                <span>{ev}</span>
+                                <span className="w-1.5 h-1.5 rounded-full bg-success mt-1.5 shrink-0" />
+                                <span className="leading-relaxed">{ev}</span>
                             </li>
                         ))}
                     </ul>
@@ -262,19 +251,19 @@ export function ChangeExplanationPanel({
 
                 {/* Counter Evidence */}
                 <div className="p-4 rounded-xl bg-surface border border-border space-y-2.5">
-                    <div className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider border-b border-border/60 pb-2">
+                    <div className="text-xs font-semibold text-warning border-b border-border pb-2">
                         Counter-Evidence &amp; Boundary Conditions
                     </div>
                     {counterEvidence.length === 0 ? (
-                        <p className="text-muted text-[11px] font-sans">
+                        <p className="text-text-muted text-xs leading-relaxed">
                             No contradicting telemetry observed (e.g. no pre-existing baseline failures).
                         </p>
                     ) : (
-                        <ul className="space-y-1.5 text-[11px] font-sans text-zinc-300">
+                        <ul className="space-y-1.5 text-xs text-text-secondary">
                             {counterEvidence.map((cev, idx) => (
                                 <li key={idx} className="flex items-start gap-2">
-                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
-                                    <span>{cev}</span>
+                                    <span className="w-1.5 h-1.5 rounded-full bg-warning mt-1.5 shrink-0" />
+                                    <span className="leading-relaxed">{cev}</span>
                                 </li>
                             ))}
                         </ul>

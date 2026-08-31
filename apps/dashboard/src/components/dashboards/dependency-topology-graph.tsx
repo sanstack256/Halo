@@ -4,11 +4,8 @@ import React, { useState, useMemo, useRef } from "react";
 import Link from "next/link";
 import {
     Activity,
-    ArrowRight,
-    CheckCircle2,
     Clock,
     Database,
-    Filter,
     Globe,
     Info,
     Layers,
@@ -16,13 +13,9 @@ import {
     Minus,
     Network,
     Plus,
-    Radio,
-    RotateCcw,
-    Search,
     Server,
     ShieldAlert,
     Sparkles,
-    Zap,
 } from "lucide-react";
 import type { DependencyNode, DependencyEdge, BlastRadiusResult, CriticalPathItem } from "@/lib/analytics/types";
 import { computeBlastRadius } from "@/lib/analytics/blast-radius";
@@ -45,7 +38,7 @@ export function DependencyTopologyGraph({
 }: DependencyTopologyGraphProps) {
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
     const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
-    const [filterCategory, setFilterCategory] = useState<"ALL" | "SERVICES" | "DATABASES" | "ERRORS" | "CRITICAL_PATHS">("ALL");
+    const [filterCategory, setFilterCategory] = useState<"ALL" | "SERVICES" | "DATABASES" | "ERRORS">("ALL");
     const [zoomLevel, setZoomLevel] = useState<number>(1);
     const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
     const [isDragging, setIsDragging] = useState(false);
@@ -61,12 +54,8 @@ export function DependencyTopologyGraph({
         if (filterCategory === "ERRORS") {
             return nodes.filter((n) => n.errorRate > 0);
         }
-        if (filterCategory === "CRITICAL_PATHS" && criticalPaths.length > 0) {
-            const criticalNodeNames = new Set(criticalPaths.flatMap((p) => p.nodes));
-            return nodes.filter((n) => criticalNodeNames.has(n.name));
-        }
         return nodes;
-    }, [nodes, filterCategory, criticalPaths]);
+    }, [nodes, filterCategory]);
 
     const activeNodeNames = useMemo(() => new Set(filteredNodes.map((n) => n.name)), [filteredNodes]);
 
@@ -104,17 +93,17 @@ export function DependencyTopologyGraph({
 
     if (nodes.length === 0) {
         return (
-            <div className="p-6 rounded-2xl border border-border bg-surface-elevated space-y-4 font-mono text-xs">
-                <div className="flex items-center gap-2 border-b border-border pb-3">
-                    <Network size={14} className="text-accent" />
-                    <h3 className="text-xs font-semibold text-white uppercase tracking-wider">
-                        Observed Dependency Topology
-                    </h3>
+            <div className="halo-panel">
+                <div className="halo-panel-header">
+                    <div className="halo-panel-title-group">
+                        <Network size={15} className="text-accent" />
+                        <h3 className="halo-panel-title">Observed Dependency Topology</h3>
+                    </div>
                 </div>
-                <div className="h-44 flex flex-col items-center justify-center text-center border border-dashed border-border rounded-xl p-4">
-                    <Clock size={22} className="text-muted mb-2 opacity-50" />
-                    <p className="text-xs text-white font-medium font-sans">No dependency relationships observed</p>
-                    <p className="text-[11px] text-muted mt-0.5 max-w-sm font-sans">
+                <div className="h-44 flex flex-col items-center justify-center text-center border border-dashed border-border rounded-xl p-6">
+                    <Clock size={22} className="text-text-muted mb-2 opacity-50" />
+                    <p className="text-xs text-text font-medium">No dependency relationships observed</p>
+                    <p className="text-[11px] text-text-muted mt-1 max-w-sm">
                         As distributed traces and cross-service calls are ingested, Halo will reconstruct the real live topology graph here without speculative edges.
                     </p>
                 </div>
@@ -123,84 +112,79 @@ export function DependencyTopologyGraph({
     }
 
     // Node dimension tokens
-    const NODE_WIDTH = 140;
-    const NODE_HEIGHT = 48;
+    const isSingleNode = filteredNodes.length === 1;
+    const NODE_WIDTH = isSingleNode ? 180 : 150;
+    const NODE_HEIGHT = isSingleNode ? 56 : 50;
 
     // ViewBox dimensions
     const baseWidth = 880;
-    const baseHeight = 440;
+    const baseHeight = 380;
 
     return (
-        <div className="space-y-4 font-mono text-xs">
-            <div className="p-6 rounded-2xl border border-border bg-surface-elevated space-y-4">
+        <div className="space-y-4">
+            <div className="halo-panel">
                 {/* Header & Graph Controls */}
-                <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-3 border-b border-border pb-3">
-                    <div className="flex items-center gap-2">
-                        <Network size={14} className="text-accent" />
-                        <h3 className="text-xs font-semibold text-white uppercase tracking-wider">
-                            Observed Dependency Topology
-                        </h3>
-                        <span className="text-[10px] text-muted">
-                            ({filteredNodes.length} nodes · {filteredEdges.length} evidence edges)
-                        </span>
+                <div className="halo-panel-header">
+                    <div className="halo-panel-title-group">
+                        <Network size={15} className="text-accent" />
+                        <div>
+                            <h3 className="halo-panel-title">Observed Dependency Topology</h3>
+                            <span className="halo-panel-subtitle">
+                                {filteredNodes.length} {filteredNodes.length === 1 ? "node" : "nodes"} · {filteredEdges.length} evidence {filteredEdges.length === 1 ? "edge" : "edges"}
+                            </span>
+                        </div>
                     </div>
 
                     <div className="flex flex-wrap items-center gap-2">
                         {/* Filter Tabs */}
-                        <div className="flex items-center bg-[#080b11] p-0.5 rounded-lg border border-border text-[11px]">
+                        <div className="halo-segment-control">
                             <button
                                 type="button"
                                 onClick={() => setFilterCategory("ALL")}
-                                className={`px-2 py-1 rounded-md transition-colors ${
-                                    filterCategory === "ALL" ? "bg-accent/20 text-accent font-semibold" : "text-muted hover:text-white"
-                                }`}
+                                className={`halo-segment-btn ${filterCategory === "ALL" ? "is-active" : ""}`}
                             >
                                 All
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setFilterCategory("SERVICES")}
-                                className={`px-2 py-1 rounded-md transition-colors ${
-                                    filterCategory === "SERVICES" ? "bg-accent/20 text-accent font-semibold" : "text-muted hover:text-white"
-                                }`}
+                                className={`halo-segment-btn ${filterCategory === "SERVICES" ? "is-active" : ""}`}
                             >
                                 Services
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setFilterCategory("DATABASES")}
-                                className={`px-2 py-1 rounded-md transition-colors ${
-                                    filterCategory === "DATABASES" ? "bg-accent/20 text-accent font-semibold" : "text-muted hover:text-white"
-                                }`}
+                                className={`halo-segment-btn ${filterCategory === "DATABASES" ? "is-active" : ""}`}
                             >
                                 Databases
                             </button>
                             <button
                                 type="button"
                                 onClick={() => setFilterCategory("ERRORS")}
-                                className={`px-2 py-1 rounded-md transition-colors ${
-                                    filterCategory === "ERRORS" ? "bg-red-500/20 text-red-400 font-semibold" : "text-muted hover:text-white"
-                                }`}
+                                className={`halo-segment-btn ${filterCategory === "ERRORS" ? "is-active-error" : ""}`}
                             >
                                 Error Paths
                             </button>
                         </div>
 
-                        {/* Zoom / Pan Controls */}
+                        {/* Zoom / Pan Controls Toolbar */}
                         <div className="flex items-center gap-1 bg-[#080b11] p-1 rounded-lg border border-border">
                             <button
                                 type="button"
                                 onClick={() => setZoomLevel((z) => Math.min(2, z + 0.15))}
-                                className="p-1 rounded text-muted hover:text-white"
+                                className="p-1 rounded text-text-muted hover:text-text cursor-pointer transition-colors"
                                 title="Zoom In"
                             >
                                 <Plus size={13} />
                             </button>
-                            <span className="text-[10px] text-muted px-1">{Math.round(zoomLevel * 100)}%</span>
+                            <span className="text-[10px] font-mono text-text-muted px-1 select-none">
+                                {Math.round(zoomLevel * 100)}%
+                            </span>
                             <button
                                 type="button"
                                 onClick={() => setZoomLevel((z) => Math.max(0.5, z - 0.15))}
-                                className="p-1 rounded text-muted hover:text-white"
+                                className="p-1 rounded text-text-muted hover:text-text cursor-pointer transition-colors"
                                 title="Zoom Out"
                             >
                                 <Minus size={13} />
@@ -208,7 +192,7 @@ export function DependencyTopologyGraph({
                             <button
                                 type="button"
                                 onClick={handleFitToView}
-                                className="p-1 rounded text-muted hover:text-white ml-1 border-l border-border"
+                                className="p-1 rounded text-text-muted hover:text-text ml-1 border-l border-border cursor-pointer transition-colors"
                                 title="Fit to View"
                             >
                                 <Maximize2 size={13} />
@@ -217,14 +201,31 @@ export function DependencyTopologyGraph({
                     </div>
                 </div>
 
-                {/* SVG Topology Canvas with Dynamic Positioning & Zoom/Pan */}
+                {/* SVG Topology Canvas */}
                 <div
-                    className="relative w-full h-96 overflow-hidden bg-[#06080d] rounded-xl border border-border/60 cursor-grab active:cursor-grabbing select-none"
+                    className="relative w-full h-[360px] overflow-hidden bg-[#05080e] rounded-xl border border-border cursor-grab active:cursor-grabbing select-none"
                     onMouseDown={handleMouseDown}
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseUp}
                 >
+                    {/* Subtle Canvas Dot Grid Background */}
+                    <div
+                        className="absolute inset-0 pointer-events-none opacity-20"
+                        style={{
+                            backgroundImage: "radial-gradient(rgba(255, 255, 255, 0.25) 1px, transparent 1px)",
+                            backgroundSize: "24px 24px",
+                        }}
+                    />
+
+                    {/* Single Node Contextual Note (When only 1 node is observed) */}
+                    {isSingleNode && filteredEdges.length === 0 && (
+                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#080c14]/90 border border-border px-3.5 py-1.5 rounded-full text-[11px] text-text-muted flex items-center gap-2 pointer-events-none z-10 backdrop-blur-sm">
+                            <Info size={12} className="text-accent" />
+                            <span>No observed downstream connections in the selected scope</span>
+                        </div>
+                    )}
+
                     <svg
                         viewBox={`0 0 ${baseWidth} ${baseHeight}`}
                         className="w-full h-full"
@@ -233,18 +234,18 @@ export function DependencyTopologyGraph({
                             <marker
                                 id="arrow-default"
                                 viewBox="0 0 10 10"
-                                refX="18"
+                                refX="16"
                                 refY="5"
                                 markerWidth="5"
                                 markerHeight="5"
                                 orient="auto-start-reverse"
                             >
-                                <path d="M 0 1 L 10 5 L 0 9 z" fill="#4b5563" />
+                                <path d="M 0 1 L 10 5 L 0 9 z" fill="rgba(255,255,255,0.3)" />
                             </marker>
                             <marker
                                 id="arrow-error"
                                 viewBox="0 0 10 10"
-                                refX="18"
+                                refX="16"
                                 refY="5"
                                 markerWidth="5"
                                 markerHeight="5"
@@ -255,7 +256,7 @@ export function DependencyTopologyGraph({
                             <marker
                                 id="arrow-selected"
                                 viewBox="0 0 10 10"
-                                refX="18"
+                                refX="16"
                                 refY="5"
                                 markerWidth="5"
                                 markerHeight="5"
@@ -294,7 +295,7 @@ export function DependencyTopologyGraph({
                                         }}
                                         className="cursor-pointer group"
                                     >
-                                        <path d={pathData} fill="none" stroke="transparent" strokeWidth="14" />
+                                        <path d={pathData} fill="none" stroke="transparent" strokeWidth="16" />
                                         <path
                                             d={pathData}
                                             fill="none"
@@ -302,10 +303,10 @@ export function DependencyTopologyGraph({
                                                 isSelected
                                                     ? "#5bb8ff"
                                                     : isError
-                                                    ? "rgba(239,68,68,0.7)"
+                                                    ? "rgba(239,68,68,0.75)"
                                                     : e.isCriticalPath
                                                     ? "#fbbf24"
-                                                    : "rgba(255,255,255,0.18)"
+                                                    : "rgba(255,255,255,0.2)"
                                             }
                                             strokeWidth={isSelected ? 2.5 : e.isCriticalPath ? 2 : 1.5}
                                             strokeDasharray={e.evidence.type === "SERVICE_METADATA" ? "4 4" : undefined}
@@ -317,8 +318,9 @@ export function DependencyTopologyGraph({
 
                             {/* Collision-Free Nodes */}
                             {filteredNodes.map((n) => {
-                                const x = (n.x || 100) - NODE_WIDTH / 2;
-                                const y = (n.y || 100) - NODE_HEIGHT / 2;
+                                // For single node scenario, center precisely in canvas
+                                const x = isSingleNode ? (baseWidth - NODE_WIDTH) / 2 : (n.x || 100) - NODE_WIDTH / 2;
+                                const y = isSingleNode ? (baseHeight - NODE_HEIGHT) / 2 : (n.y || 100) - NODE_HEIGHT / 2;
                                 const isSelected = selectedNodeId === n.name;
 
                                 // Blast radius status check
@@ -326,18 +328,18 @@ export function DependencyTopologyGraph({
                                 const isObservedProp = blastRadius?.observedPropagation.some((x) => x.id === n.id);
                                 const isPotentialExp = blastRadius?.potentialExposure.some((x) => x.id === n.id);
 
-                                let strokeColor = "rgba(255,255,255,0.15)";
-                                let glowColor = "transparent";
+                                let strokeColor = "rgba(255,255,255,0.14)";
+                                let fillColor = "#080c14";
 
                                 if (isSelected || isDirect) {
                                     strokeColor = "#5bb8ff";
-                                    glowColor = "rgba(91,184,255,0.25)";
+                                    fillColor = "#0b1424";
                                 } else if (isObservedProp) {
                                     strokeColor = "#ef4444";
-                                    glowColor = "rgba(239,68,68,0.25)";
+                                    fillColor = "#1a0c0e";
                                 } else if (isPotentialExp) {
                                     strokeColor = "#f59e0b";
-                                    glowColor = "rgba(245,158,11,0.2)";
+                                    fillColor = "#1a1208";
                                 } else if (n.health === "Critical") {
                                     strokeColor = "#ef4444";
                                 } else if (n.health === "Degraded") {
@@ -361,39 +363,50 @@ export function DependencyTopologyGraph({
                                             width={NODE_WIDTH}
                                             height={NODE_HEIGHT}
                                             rx={10}
-                                            fill="#080c12"
+                                            fill={fillColor}
                                             stroke={strokeColor}
                                             strokeWidth={isSelected ? 2 : 1}
-                                            style={{ filter: glowColor !== "transparent" ? `drop-shadow(0 0 10px ${glowColor})` : undefined }}
+                                            className="transition-colors"
+                                        />
+
+                                        {/* Service Icon Box */}
+                                        <rect
+                                            x={10}
+                                            y={10}
+                                            width={28}
+                                            height={28}
+                                            rx={6}
+                                            fill="rgba(91,184,255,0.1)"
+                                            stroke="rgba(91,184,255,0.2)"
                                         />
 
                                         {/* Label */}
                                         <text
-                                            x={12}
-                                            y={21}
+                                            x={46}
+                                            y={23}
                                             fill="#ffffff"
-                                            fontSize="11"
-                                            fontFamily="monospace"
+                                            fontSize={isSingleNode ? "12" : "11"}
+                                            fontFamily="sans-serif"
                                             fontWeight="600"
                                         >
-                                            {n.name.length > 15 ? `${n.name.slice(0, 13)}…` : n.name}
+                                            {n.name.length > 14 ? `${n.name.slice(0, 12)}…` : n.name}
                                         </text>
 
-                                        {/* Telemetry metrics */}
+                                        {/* Telemetry Metrics */}
                                         <text
-                                            x={12}
-                                            y={35}
-                                            fill="#6d7b8c"
+                                            x={46}
+                                            y={isSingleNode ? 39 : 37}
+                                            fill="#8c9baa"
                                             fontSize="9.5"
                                             fontFamily="monospace"
                                         >
-                                            {n.totalCalls} reqs · {n.errorRate}% err
+                                            {n.totalCalls} calls · {n.errorRate}% err
                                         </text>
 
-                                        {/* Status Dot */}
+                                        {/* Health Status Dot */}
                                         <circle
-                                            cx={NODE_WIDTH - 14}
-                                            cy={16}
+                                            cx={NODE_WIDTH - 12}
+                                            cy={14}
                                             r={3.5}
                                             fill={
                                                 n.health === "Healthy"
@@ -415,17 +428,17 @@ export function DependencyTopologyGraph({
                 {/* Node Detail Inspector */}
                 {selectedNode && (
                     <div className="p-4 rounded-xl bg-surface border border-accent/40 space-y-3 animate-in fade-in">
-                        <div className="flex items-center justify-between border-b border-border/60 pb-2">
+                        <div className="flex items-center justify-between border-b border-border pb-2.5">
                             <div className="flex items-center gap-2">
                                 <Server size={14} className="text-accent" />
-                                <span className="font-bold text-white text-sm">{selectedNode.name}</span>
+                                <span className="font-bold text-text text-sm font-sans">{selectedNode.name}</span>
                                 <span
-                                    className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                                    className={`halo-badge ${
                                         selectedNode.health === "Healthy"
-                                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                                            ? "halo-badge-healthy"
                                             : selectedNode.health === "Degraded"
-                                            ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
-                                            : "bg-red-500/10 border-red-500/20 text-red-400"
+                                            ? "halo-badge-degraded"
+                                            : "halo-badge-critical"
                                     }`}
                                 >
                                     {selectedNode.health}
@@ -434,7 +447,7 @@ export function DependencyTopologyGraph({
 
                             <div className="flex items-center gap-2">
                                 <Link
-                                    href={`/projects/${projectId || "current"}/investigations/new?service=${selectedNode.name}`}
+                                    href={`/projects/${projectId || "current"}/investigations/new?service=${encodeURIComponent(selectedNode.name)}`}
                                     className="halo-btn halo-btn-primary halo-btn-xs"
                                 >
                                     <Sparkles size={11} />
@@ -443,29 +456,31 @@ export function DependencyTopologyGraph({
                                 <button
                                     type="button"
                                     onClick={() => setSelectedNodeId(null)}
-                                    className="text-muted hover:text-white"
+                                    className="text-text-muted hover:text-text text-base leading-none px-1 cursor-pointer"
                                 >
                                     &times;
                                 </button>
                             </div>
                         </div>
 
-                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-[11px]">
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs bg-[#06080d] p-3 rounded-lg border border-border font-mono">
                             <div>
-                                <span className="text-muted block text-[10px]">Error Rate</span>
-                                <span className="font-bold text-white">{selectedNode.errorRate}%</span>
+                                <span className="text-[10px] font-sans uppercase font-semibold text-text-muted block">Error Rate</span>
+                                <span className={selectedNode.errorRate >= 20 ? "font-bold text-error" : selectedNode.errorRate >= 5 ? "font-bold text-warning" : "font-bold text-text"}>
+                                    {selectedNode.errorRate}%
+                                </span>
                             </div>
                             <div>
-                                <span className="text-muted block text-[10px]">Call Volume</span>
-                                <span className="font-bold text-white">{selectedNode.totalCalls} calls</span>
+                                <span className="text-[10px] font-sans uppercase font-semibold text-text-muted block">Call Volume</span>
+                                <span className="font-bold text-text">{selectedNode.totalCalls} calls</span>
                             </div>
                             <div>
-                                <span className="text-muted block text-[10px]">Avg Latency</span>
-                                <span className="font-bold text-white">{selectedNode.avgLatencyMs ? `${selectedNode.avgLatencyMs}ms` : "-"}</span>
+                                <span className="text-[10px] font-sans uppercase font-semibold text-text-muted block">Avg Latency</span>
+                                <span className="font-bold text-text">{selectedNode.avgLatencyMs ? `${selectedNode.avgLatencyMs}ms` : "—"}</span>
                             </div>
                             <div>
-                                <span className="text-muted block text-[10px]">Active Issues</span>
-                                <span className="font-bold text-white">{selectedNode.recentIssueCount}</span>
+                                <span className="text-[10px] font-sans uppercase font-semibold text-text-muted block">Active Issues</span>
+                                <span className="font-bold text-text">{selectedNode.recentIssueCount}</span>
                             </div>
                         </div>
                     </div>
@@ -475,7 +490,7 @@ export function DependencyTopologyGraph({
                 {selectedEdge && (
                     <div className="p-4 rounded-xl bg-surface border border-accent/30 space-y-2 animate-in fade-in">
                         <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2 text-white font-semibold">
+                            <div className="flex items-center gap-2 text-text font-semibold text-xs">
                                 <Info size={14} className="text-accent" />
                                 <span>
                                     Observed Link Evidence: {selectedEdge.source} &rarr; {selectedEdge.target}
@@ -484,28 +499,20 @@ export function DependencyTopologyGraph({
                             <button
                                 type="button"
                                 onClick={() => setSelectedEdgeId(null)}
-                                className="text-muted hover:text-white"
+                                className="text-text-muted hover:text-text text-base leading-none px-1 cursor-pointer"
                             >
-                                Close &times;
+                                &times;
                             </button>
                         </div>
-                        <p className="text-zinc-300 text-[11px] font-sans">
+                        <p className="text-text-secondary text-xs">
                             {selectedEdge.evidence.description}
                         </p>
-                        <div className="flex items-center gap-4 text-[11px] text-muted pt-1">
-                            <span>Total Calls: {selectedEdge.callCount}</span>
+                        <div className="flex items-center gap-3 text-xs font-mono text-text-muted pt-1">
+                            <span>Calls: {selectedEdge.callCount}</span>
                             <span>·</span>
-                            <span>Errors: {selectedEdge.errorCount} ({selectedEdge.errorRate}%)</span>
+                            <span>Errors: <strong className="text-error">{selectedEdge.errorCount}</strong> ({selectedEdge.errorRate}%)</span>
                             <span>·</span>
-                            <span>
-                                Avg Latency: {selectedEdge.avgLatencyMs ? `${selectedEdge.avgLatencyMs}ms` : "N/A"}
-                            </span>
-                            {selectedEdge.p95LatencyMs && (
-                                <>
-                                    <span>·</span>
-                                    <span>P95: {selectedEdge.p95LatencyMs}ms</span>
-                                </>
-                            )}
+                            <span>Latency: {selectedEdge.avgLatencyMs ? `${selectedEdge.avgLatencyMs}ms` : "—"}</span>
                         </div>
                     </div>
                 )}

@@ -1,26 +1,15 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
     Activity,
-    AlertCircle,
-    ArrowDownRight,
-    ArrowRight,
-    ArrowUpRight,
-    CheckCircle2,
-    Clock,
-    Flame,
     Layers,
     Radio,
     Server,
     ShieldAlert,
-    Sparkles,
-    TrendingDown,
     TrendingUp,
-    Zap,
 } from "lucide-react";
-import { useState } from "react";
 import type { ServiceLandscapeData, ServiceLandscapeItem } from "@/lib/analytics/types";
 import { DashboardFilterBar } from "./dashboard-filter-bar";
 import { ServiceMatrixTable } from "./service-matrix-table";
@@ -49,21 +38,26 @@ export function ServiceLandscapeClient({
     const [selectedService, setSelectedService] = useState<ServiceLandscapeItem | null>(null);
 
     return (
-        <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto font-mono text-xs">
+        <div className="halo-dash-shell">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                        <span className="p-2 rounded-xl bg-accent/15 text-accent border border-accent/30">
+            <div className="halo-dash-header">
+                <nav className="halo-dash-breadcrumb" aria-label="Breadcrumb">
+                    <Link href="/dashboards" className="halo-dash-breadcrumb-item">Dashboards</Link>
+                    <span className="halo-dash-breadcrumb-sep">/</span>
+                    <span className="halo-dash-breadcrumb-current">Service Landscape</span>
+                </nav>
+                <div className="halo-dash-title-row">
+                    <div className="halo-dash-title-group">
+                        <div className="halo-dash-icon-box">
                             <Server size={18} />
-                        </span>
-                        <h1 className="text-xl font-bold text-white tracking-tight font-sans">
-                            Service Landscape
-                        </h1>
+                        </div>
+                        <div>
+                            <h1 className="halo-dash-title">Service Landscape</h1>
+                            <p className="halo-dash-desc">
+                                Cross-service operational matrix, failure contribution rankings, and regression analysis.
+                            </p>
+                        </div>
                     </div>
-                    <p className="text-secondary text-xs font-sans">
-                        Cross-service operational matrix, failure contribution rankings, and regression analysis.
-                    </p>
                 </div>
             </div>
 
@@ -78,62 +72,61 @@ export function ServiceLandscapeClient({
                 showComparisonToggle={false}
             />
 
-            {/* Summary Counters */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-4 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Total Services</span>
-                    <div className="text-xl font-bold text-white tracking-tight">
-                        {summary.totalServices}
+            {/* Primary Summary KPI Row */}
+            <div className="halo-kpi-grid">
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Total Services</span>
+                    <div className="halo-kpi-value">{summary.totalServices}</div>
+                    <div className="halo-kpi-sub">
+                        <span>Across organization</span>
                     </div>
-                    <span className="text-[10px] text-muted block">Across organization</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Healthy</span>
-                    <div className="text-xl font-bold text-emerald-400 tracking-tight">
-                        {summary.healthyCount}
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Healthy</span>
+                    <div className="halo-kpi-value text-success">{summary.healthyCount}</div>
+                    <div className="halo-kpi-sub">
+                        <span>Normal error rates</span>
                     </div>
-                    <span className="text-[10px] text-muted block">Normal error rates</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Degraded</span>
-                    <div className="text-xl font-bold text-amber-400 tracking-tight">
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Degraded</span>
+                    <div className={`halo-kpi-value ${summary.degradedCount > 0 ? "text-warning" : "text-text"}`}>
                         {summary.degradedCount}
                     </div>
-                    <span className="text-[10px] text-muted block">Elevated failure rates</span>
+                    <div className="halo-kpi-sub">
+                        <span>Elevated failure rates</span>
+                    </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Critical</span>
-                    <div className="text-xl font-bold text-red-400 tracking-tight">
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Critical</span>
+                    <div className={`halo-kpi-value ${summary.criticalCount > 0 ? "text-error" : "text-text"}`}>
                         {summary.criticalCount}
                     </div>
-                    <span className="text-[10px] text-muted block">Fatal / severe errors</span>
+                    <div className="halo-kpi-sub">
+                        <span>Fatal / severe errors</span>
+                    </div>
                 </div>
             </div>
 
-            {/* Service Rankings Grid */}
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3.5">
+            {/* Secondary Signals Strip: Sleek & Compact */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3 bg-[#06080d] p-3 rounded-xl border border-border">
                 {/* 1. Highest Failure Contributors */}
-                <div className="p-4 rounded-2xl bg-surface-elevated border border-border space-y-2.5">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border pb-2">
-                        <span className="flex items-center gap-1.5 text-red-400">
-                            <ShieldAlert size={13} />
-                            <span>Failure Share</span>
-                        </span>
+                <div className="space-y-1.5 pr-2">
+                    <div className="flex items-center gap-1.5 text-[11px] font-semibold text-text uppercase tracking-wider">
+                        <ShieldAlert size={12} className="text-error" />
+                        <span>Failure Share</span>
                     </div>
-
                     {rankings.highestFailureContributors.length === 0 ? (
-                        <span className="text-[11px] text-muted block">No failure data</span>
+                        <span className="text-[11px] text-text-muted">No failure data</span>
                     ) : (
-                        <div className="space-y-1.5">
-                            {rankings.highestFailureContributors.map((r, i) => (
-                                <div key={i} className="flex items-center justify-between">
-                                    <span className="text-zinc-200 truncate pr-2">{r.service}</span>
-                                    <span className="text-red-400 font-bold shrink-0">
-                                        {r.failureContributionPct}%
-                                    </span>
+                        <div className="space-y-1">
+                            {rankings.highestFailureContributors.slice(0, 2).map((r, i) => (
+                                <div key={i} className="flex items-center justify-between text-xs font-mono">
+                                    <span className="text-text truncate pr-2">{r.service}</span>
+                                    <span className="text-error font-semibold shrink-0">{r.failureContributionPct}%</span>
                                 </div>
                             ))}
                         </div>
@@ -141,24 +134,19 @@ export function ServiceLandscapeClient({
                 </div>
 
                 {/* 2. Fastest Degrading */}
-                <div className="p-4 rounded-2xl bg-surface-elevated border border-border space-y-2.5">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border pb-2">
-                        <span className="flex items-center gap-1.5 text-amber-400">
-                            <TrendingUp size={13} />
-                            <span>Degradation</span>
-                        </span>
+                <div className="space-y-1.5 sm:border-l sm:border-border sm:pl-3 pr-2">
+                    <div className="flex items-center gap-1.5 text-[11px] font-semibold text-text uppercase tracking-wider">
+                        <TrendingUp size={12} className="text-warning" />
+                        <span>Degradation</span>
                     </div>
-
                     {rankings.fastestDegrading.length === 0 ? (
-                        <span className="text-[11px] text-muted block">No degradation observed</span>
+                        <span className="text-[11px] text-text-muted">No degradation observed</span>
                     ) : (
-                        <div className="space-y-1.5">
-                            {rankings.fastestDegrading.map((r, i) => (
-                                <div key={i} className="flex items-center justify-between">
-                                    <span className="text-zinc-200 truncate pr-2">{r.service}</span>
-                                    <span className="text-amber-400 font-bold shrink-0">
-                                        +{r.errorRateChange}%
-                                    </span>
+                        <div className="space-y-1">
+                            {rankings.fastestDegrading.slice(0, 2).map((r, i) => (
+                                <div key={i} className="flex items-center justify-between text-xs font-mono">
+                                    <span className="text-text truncate pr-2">{r.service}</span>
+                                    <span className="text-warning font-semibold shrink-0">+{r.errorRateChange}%</span>
                                 </div>
                             ))}
                         </div>
@@ -166,49 +154,39 @@ export function ServiceLandscapeClient({
                 </div>
 
                 {/* 3. Latency Regressions */}
-                <div className="p-4 rounded-2xl bg-surface-elevated border border-border space-y-2.5">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border pb-2">
-                        <span className="flex items-center gap-1.5 text-purple-400">
-                            <Activity size={13} />
-                            <span>Latency Delta</span>
-                        </span>
+                <div className="space-y-1.5 lg:border-l lg:border-border lg:pl-3 pr-2">
+                    <div className="flex items-center gap-1.5 text-[11px] font-semibold text-text uppercase tracking-wider">
+                        <Activity size={12} className="text-accent" />
+                        <span>Latency Delta</span>
                     </div>
-
                     {rankings.highestLatencyRegressions.length === 0 ? (
-                        <span className="text-[11px] text-muted block">No regressions detected</span>
+                        <span className="text-[11px] text-text-muted">No regressions detected</span>
                     ) : (
-                        <div className="space-y-1.5">
-                            {rankings.highestLatencyRegressions.map((r, i) => (
-                                <div key={i} className="flex items-center justify-between">
-                                    <span className="text-zinc-200 truncate pr-2">{r.service}</span>
-                                    <span className="text-purple-400 font-bold shrink-0">
-                                        +{r.latencyDiffMs}ms
-                                    </span>
+                        <div className="space-y-1">
+                            {rankings.highestLatencyRegressions.slice(0, 2).map((r, i) => (
+                                <div key={i} className="flex items-center justify-between text-xs font-mono">
+                                    <span className="text-text truncate pr-2">{r.service}</span>
+                                    <span className="text-accent font-semibold shrink-0">+{r.latencyDiffMs}ms</span>
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
 
-                {/* 4. Traffic Exposure */}
-                <div className="p-4 rounded-2xl bg-surface-elevated border border-border space-y-2.5">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border pb-2">
-                        <span className="flex items-center gap-1.5 text-cyan-400">
-                            <Layers size={13} />
-                            <span>Traffic Volume</span>
-                        </span>
+                {/* 4. Traffic Dominance */}
+                <div className="space-y-1.5 sm:border-l sm:border-border sm:pl-3">
+                    <div className="flex items-center gap-1.5 text-[11px] font-semibold text-text uppercase tracking-wider">
+                        <Layers size={12} className="text-cyan-400" />
+                        <span>Traffic Volume</span>
                     </div>
-
                     {rankings.highestTrafficExposure.length === 0 ? (
-                        <span className="text-[11px] text-muted block">No traffic records</span>
+                        <span className="text-[11px] text-text-muted">No active traffic</span>
                     ) : (
-                        <div className="space-y-1.5">
-                            {rankings.highestTrafficExposure.map((r, i) => (
-                                <div key={i} className="flex items-center justify-between">
-                                    <span className="text-zinc-200 truncate pr-2">{r.service}</span>
-                                    <span className="text-cyan-400 font-bold shrink-0">
-                                        {r.requestSharePct}% ({r.requestCount})
-                                    </span>
+                        <div className="space-y-1">
+                            {rankings.highestTrafficExposure.slice(0, 2).map((r, i) => (
+                                <div key={i} className="flex items-center justify-between text-xs font-mono">
+                                    <span className="text-text truncate pr-2">{r.service}</span>
+                                    <span className="text-text-secondary font-semibold shrink-0">{r.requestSharePct}% ({r.requestCount})</span>
                                 </div>
                             ))}
                         </div>
@@ -220,15 +198,14 @@ export function ServiceLandscapeClient({
             <ServiceMatrixTable
                 services={services}
                 onSelectService={(s) => setSelectedService(s)}
-                projectId={currentProjectId !== "ALL" ? currentProjectId : undefined}
+                projectId={currentProjectId}
             />
 
             {/* Service Inspector Drawer */}
             {selectedService && (
                 <ServiceInspectorDrawer
                     service={selectedService}
-                    projectId={currentProjectId !== "ALL" ? currentProjectId : undefined}
-                    timeRangeKey={currentTimeRange}
+                    projectId={currentProjectId}
                     onClose={() => setSelectedService(null)}
                 />
             )}

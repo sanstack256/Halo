@@ -2960,3 +2960,416 @@ HALO INVESTIGATION
     color: #ffffff;
     padding: 6px 10px;
 }
+
+/* =====================================================
+   WORLD-CLASS OBSERVABILITY DASHBOARDS DESIGN SYSTEM
+===================================================== */
+
+/* Container & Shell */
+.halo-dash-shell {
+    max-width: 1440px;
+    margin: 0 auto;
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    font-family: var(--font-sans);
+}
+
+/* Page Header */
+.halo-dash-header {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+}
+
+.halo-dash-breadcrumb {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 11px;
+    color: var(--text-muted);
+    font-weight: 500;
+}
+
+.halo-dash-breadcrumb-item {
+    color: var(--text-muted);
+    text-decoration: none;
+    transition: color var(--transition-fast);
+}
+
+.halo-dash-breadcrumb-item:hover {
+    color: var(--text);
+}
+
+.halo-dash-breadcrumb-sep {
+    opacity: 0.4;
+    font-size: 10px;
+}
+
+.halo-dash-breadcrumb-current {
+    color: var(--text-secondary);
+}
+
+.halo-dash-title-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    flex-wrap: wrap;
+}
+
+.halo-dash-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.halo-dash-icon-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border-radius: 9px;
+    background: var(--accent-soft);
+    border: 1px solid rgba(91, 184, 255, 0.2);
+    color: var(--accent);
+    flex-shrink: 0;
+}
+
+.halo-dash-title {
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.025em;
+    color: var(--text);
+    margin: 0;
+    line-height: 1.2;
+}
+
+.halo-dash-desc {
+    font-size: 12.5px;
+    color: var(--text-secondary);
+    margin: 0;
+    line-height: 1.45;
+}
+
+/* Unified Filter Bar Surface */
+.halo-filter-surface {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding: 8px 12px;
+    background: var(--surface);
+    border: 1px solid var(--border-strong);
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+}
+
+.halo-filter-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+.halo-filter-divider {
+    width: 1px;
+    height: 18px;
+    background: var(--border-strong);
+    margin: 0 2px;
+}
+
+.halo-filter-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    height: 32px;
+    padding: 0 10px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    background: #080b11;
+    color: var(--text-secondary);
+    font-size: 12px;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    user-select: none;
+}
+
+.halo-filter-btn:hover {
+    color: var(--text);
+    border-color: var(--border-strong);
+    background: var(--surface-interactive);
+}
+
+.halo-filter-btn.is-active {
+    background: var(--accent-soft);
+    border-color: rgba(91, 184, 255, 0.35);
+    color: var(--accent);
+    font-weight: 600;
+}
+
+/* KPI Metric Cards */
+.halo-kpi-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
+    gap: 10px;
+}
+
+.halo-kpi-card {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 12px 14px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    transition: border-color var(--transition-fast), background var(--transition-fast);
+    position: relative;
+}
+
+.halo-kpi-card:hover {
+    border-color: var(--border-strong);
+    background: #090e15;
+}
+
+.halo-kpi-eyebrow {
+    font-size: 11px;
+    font-weight: 600;
+    color: var(--text-muted);
+    letter-spacing: 0.01em;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    line-height: 1.2;
+}
+
+.halo-kpi-value {
+    font-size: 22px;
+    font-weight: 700;
+    font-family: var(--font-sans);
+    letter-spacing: -0.03em;
+    color: var(--text);
+    line-height: 1.15;
+    margin: 4px 0 1px;
+}
+
+.halo-kpi-sub {
+    font-size: 11px;
+    color: var(--text-muted);
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    margin-top: 2px;
+}
+
+.halo-kpi-delta {
+    font-weight: 600;
+    font-family: var(--font-mono);
+    font-size: 10.5px;
+}
+
+.halo-kpi-delta.is-positive {
+    color: var(--success);
+}
+
+.halo-kpi-delta.is-negative {
+    color: var(--error);
+}
+
+.halo-kpi-delta.is-neutral {
+    color: var(--accent);
+}
+
+/* Primary Dashboard Panel */
+.halo-panel {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 18px 20px;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+}
+
+.halo-panel-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    flex-wrap: wrap;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--border);
+}
+
+.halo-panel-title-group {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.halo-panel-title {
+    font-size: 13px;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin: 0;
+}
+
+.halo-panel-subtitle {
+    font-size: 11.5px;
+    color: var(--text-muted);
+    font-weight: 400;
+}
+
+/* Signal Switcher Buttons */
+.halo-segment-control {
+    display: flex;
+    align-items: center;
+    background: #06080d;
+    padding: 2px;
+    border-radius: 8px;
+    border: 1px solid var(--border);
+}
+
+.halo-segment-btn {
+    padding: 4px 10px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--text-muted);
+    background: transparent;
+    border: none;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.halo-segment-btn:hover {
+    color: var(--text);
+}
+
+.halo-segment-btn.is-active {
+    color: var(--text);
+    background: var(--surface-interactive);
+    font-weight: 600;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.4);
+}
+
+.halo-segment-btn.is-active-error {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+    font-weight: 600;
+}
+
+.halo-segment-btn.is-active-accent {
+    color: var(--accent);
+    background: var(--accent-soft);
+    font-weight: 600;
+}
+
+.halo-segment-btn.is-active-warning {
+    color: #f59e0b;
+    background: rgba(245, 158, 11, 0.15);
+    font-weight: 600;
+}
+
+/* Semantic Badges */
+.halo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-size: 11px;
+    font-weight: 600;
+    line-height: 1.35;
+    border: 1px solid transparent;
+}
+
+.halo-badge-healthy {
+    background: rgba(34, 197, 94, 0.1);
+    color: #22c55e;
+    border-color: rgba(34, 197, 94, 0.2);
+}
+
+.halo-badge-degraded {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border-color: rgba(245, 158, 11, 0.2);
+}
+
+.halo-badge-critical {
+    background: rgba(239, 68, 68, 0.12);
+    color: #ef4444;
+    border-color: rgba(239, 68, 68, 0.25);
+}
+
+.halo-badge-info {
+    background: var(--accent-soft);
+    color: var(--accent);
+    border-color: rgba(91, 184, 255, 0.25);
+}
+
+.halo-badge-neutral {
+    background: rgba(255, 255, 255, 0.05);
+    color: var(--text-secondary);
+    border-color: var(--border);
+}
+
+/* =====================================================
+   PRODUCTION TIME-SERIES VISUALIZATION SYSTEM
+===================================================== */
+
+.halo-chart-surface {
+    position: relative;
+    width: 100%;
+    background: #05080e;
+    border: 1px solid var(--border);
+    border-radius: 12px;
+    padding: 14px 16px 12px;
+    overflow: hidden;
+    user-select: none;
+}
+
+.halo-chart-tooltip {
+    position: absolute;
+    pointer-events: none;
+    z-index: 30;
+    background: #080c14;
+    border: 1px solid var(--border-strong);
+    border-radius: 8px;
+    padding: 8px 10px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(8px);
+    min-width: 140px;
+    transition: opacity var(--transition-fast), transform var(--transition-fast);
+}
+
+.halo-chart-legend {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    font-size: 11px;
+    color: var(--text-secondary);
+}
+
+.halo-chart-legend-item {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+}
+
+.halo-chart-legend-indicator {
+    width: 10px;
+    height: 2.5px;
+    border-radius: 2px;
+}
+
+.halo-chart-legend-indicator.is-dashed {
+    background: transparent;
+    border-top: 1.5px dashed rgba(255, 255, 255, 0.4);
+}

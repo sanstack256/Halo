@@ -3,14 +3,9 @@
 import React from "react";
 import Link from "next/link";
 import {
-    Activity,
-    AlertCircle,
     ArrowDownRight,
-    ArrowRight,
-    CheckCircle2,
     Layers,
     Radio,
-    ShieldAlert,
     Sparkles,
     X,
 } from "lucide-react";
@@ -31,23 +26,21 @@ export function BlastRadiusPanel({ blastRadius, projectId, onClose }: BlastRadiu
         unobserved,
     } = blastRadius;
 
-    const investigateUrl = `/projects/${projectId || "current"}/investigations/new?service=${selectedEntity}`;
+    const investigateUrl = `/projects/${projectId || "current"}/investigations/new?service=${encodeURIComponent(selectedEntity)}`;
 
     return (
-        <div className="p-6 rounded-2xl border border-accent/20 bg-surface-elevated space-y-4 font-mono text-xs animate-in fade-in">
+        <div className="halo-panel border-accent/30 animate-in fade-in">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
-                <div className="flex items-center gap-2">
-                    <div className="w-7 h-7 rounded-lg bg-accent/15 border border-accent/30 flex items-center justify-center text-accent">
-                        <Radio size={14} />
+            <div className="halo-panel-header">
+                <div className="halo-panel-title-group">
+                    <div className="halo-dash-icon-box">
+                        <Radio size={15} />
                     </div>
                     <div>
-                        <div className="flex items-center gap-2">
-                            <h3 className="text-xs font-bold text-white uppercase tracking-wider">
-                                Blast Radius &amp; Failure Propagation: {selectedEntity}
-                            </h3>
-                        </div>
-                        <p className="text-[11px] text-muted font-sans">
+                        <h3 className="halo-panel-title">
+                            Blast Radius &amp; Failure Propagation: <span className="text-accent">{selectedEntity}</span>
+                        </h3>
+                        <p className="halo-panel-subtitle">
                             Distinguishes observed downstream failure transmission from structural exposure risk.
                         </p>
                     </div>
@@ -65,24 +58,25 @@ export function BlastRadiusPanel({ blastRadius, projectId, onClose }: BlastRadiu
                     <button
                         type="button"
                         onClick={onClose}
-                        className="p-1 text-muted hover:text-white"
+                        className="p-1 text-text-muted hover:text-text cursor-pointer transition-colors"
+                        title="Close panel"
                     >
                         <X size={16} />
                     </button>
                 </div>
             </div>
 
-            {/* Radius Categories Grid */}
+            {/* 3-Column Evidence Categories Grid */}
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                 {/* 1. Observed Downstream Failure Propagation */}
-                <div className="p-4 rounded-xl bg-surface border border-red-500/30 space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-red-400 uppercase tracking-wider border-b border-border/60 pb-1.5">
+                <div className="p-4 rounded-xl bg-surface border border-error/30 space-y-2.5">
+                    <div className="flex items-center justify-between text-xs font-semibold text-error border-b border-border pb-2">
                         <span>Observed Failure Propagation</span>
-                        <span>({observedPropagation.length})</span>
+                        <span className="font-mono">({observedPropagation.length})</span>
                     </div>
 
                     {observedPropagation.length === 0 ? (
-                        <p className="text-[11px] text-muted font-sans">
+                        <p className="text-xs text-text-muted leading-relaxed">
                             No downstream services observed propagating active errors.
                         </p>
                     ) : (
@@ -90,18 +84,18 @@ export function BlastRadiusPanel({ blastRadius, projectId, onClose }: BlastRadiu
                             {observedPropagation.map((d, i) => (
                                 <div
                                     key={i}
-                                    className="p-2 rounded-lg bg-[#080b11] border border-red-500/20 space-y-1 text-[11px]"
+                                    className="p-2.5 rounded-lg bg-[#080b11] border border-error/20 space-y-1 text-xs"
                                 >
                                     <div className="flex items-center justify-between">
-                                        <div className="flex items-center gap-1.5 text-white font-semibold">
-                                            <ArrowDownRight size={12} className="text-red-400" />
+                                        <div className="flex items-center gap-1.5 text-text font-semibold">
+                                            <ArrowDownRight size={13} className="text-error shrink-0" />
                                             <span>{d.name}</span>
                                         </div>
-                                        <span className="text-red-400 font-bold">
+                                        <span className="text-error font-semibold font-mono text-[11px]">
                                             {d.observedErrorRate}% err ({d.hops} hop)
                                         </span>
                                     </div>
-                                    <span className="text-[10px] text-zinc-400 block font-sans">
+                                    <span className="text-[11px] text-text-secondary block">
                                         {d.evidence}
                                     </span>
                                 </div>
@@ -111,14 +105,14 @@ export function BlastRadiusPanel({ blastRadius, projectId, onClose }: BlastRadiu
                 </div>
 
                 {/* 2. Potential Structural Exposure */}
-                <div className="p-4 rounded-xl bg-surface border border-amber-500/30 space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-amber-400 uppercase tracking-wider border-b border-border/60 pb-1.5">
+                <div className="p-4 rounded-xl bg-surface border border-warning/30 space-y-2.5">
+                    <div className="flex items-center justify-between text-xs font-semibold text-warning border-b border-border pb-2">
                         <span>Potential Structural Exposure</span>
-                        <span>({potentialExposure.length})</span>
+                        <span className="font-mono">({potentialExposure.length})</span>
                     </div>
 
                     {potentialExposure.length === 0 ? (
-                        <p className="text-[11px] text-muted font-sans">
+                        <p className="text-xs text-text-muted leading-relaxed">
                             No active connected callers in current traffic graph.
                         </p>
                     ) : (
@@ -126,13 +120,13 @@ export function BlastRadiusPanel({ blastRadius, projectId, onClose }: BlastRadiu
                             {potentialExposure.map((p, i) => (
                                 <div
                                     key={i}
-                                    className="p-2 rounded-lg bg-[#080b11] border border-border flex items-center justify-between text-[11px]"
+                                    className="p-2.5 rounded-lg bg-[#080b11] border border-border flex items-center justify-between text-xs"
                                 >
-                                    <div className="flex items-center gap-1.5 text-zinc-200">
-                                        <Layers size={12} className="text-amber-400" />
-                                        <span>{p.name}</span>
+                                    <div className="flex items-center gap-1.5 text-text">
+                                        <Layers size={13} className="text-warning shrink-0" />
+                                        <span className="font-medium">{p.name}</span>
                                     </div>
-                                    <span className="text-muted text-[10px]">
+                                    <span className="text-text-muted text-[11px]">
                                         {p.connectionType}
                                     </span>
                                 </div>
@@ -142,22 +136,22 @@ export function BlastRadiusPanel({ blastRadius, projectId, onClose }: BlastRadiu
                 </div>
 
                 {/* 3. Unobserved / Isolated */}
-                <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
-                    <div className="flex items-center justify-between text-[11px] font-semibold text-muted uppercase tracking-wider border-b border-border/60 pb-1.5">
+                <div className="p-4 rounded-xl bg-surface border border-border space-y-2.5">
+                    <div className="flex items-center justify-between text-xs font-semibold text-text-muted border-b border-border pb-2">
                         <span>Unobserved / Isolated</span>
-                        <span>({unobserved.length})</span>
+                        <span className="font-mono">({unobserved.length})</span>
                     </div>
 
                     {unobserved.length === 0 ? (
-                        <p className="text-[11px] text-muted font-sans">
+                        <p className="text-xs text-text-muted leading-relaxed">
                             All graph nodes share observed connectivity.
                         </p>
                     ) : (
-                        <div className="space-y-1 max-h-28 overflow-y-auto pr-1">
+                        <div className="space-y-1 max-h-36 overflow-y-auto pr-1">
                             {unobserved.map((u, i) => (
                                 <div
                                     key={i}
-                                    className="p-1.5 rounded bg-[#080b11] border border-border text-muted text-[10px]"
+                                    className="p-1.5 rounded bg-[#080b11] border border-border text-text-muted text-[11px] font-mono"
                                 >
                                     {u.name}
                                 </div>

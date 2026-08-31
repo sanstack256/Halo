@@ -4,11 +4,7 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
     Activity,
-    AlertCircle,
-    ArrowDownRight,
-    ArrowRight,
     ArrowUpRight,
-    CheckCircle2,
     Clock,
     Flame,
     Layers,
@@ -16,8 +12,6 @@ import {
     Server,
     ShieldAlert,
     Sparkles,
-    TrendingDown,
-    TrendingUp,
 } from "lucide-react";
 import type { SystemExplorerData, TimeBucketPoint } from "@/lib/analytics/types";
 import { DashboardFilterBar } from "./dashboard-filter-bar";
@@ -51,21 +45,26 @@ export function SystemExplorerClient({
     const servicesList = serviceContributions.map((s) => s.service);
 
     return (
-        <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto font-mono text-xs">
+        <div className="halo-dash-shell">
             {/* Page Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                        <span className="p-2 rounded-xl bg-accent/15 text-accent border border-accent/30">
+            <div className="halo-dash-header">
+                <nav className="halo-dash-breadcrumb" aria-label="Breadcrumb">
+                    <Link href="/dashboards" className="halo-dash-breadcrumb-item">Dashboards</Link>
+                    <span className="halo-dash-breadcrumb-sep">/</span>
+                    <span className="halo-dash-breadcrumb-current">System Explorer</span>
+                </nav>
+                <div className="halo-dash-title-row">
+                    <div className="halo-dash-title-group">
+                        <div className="halo-dash-icon-box">
                             <Activity size={18} />
-                        </span>
-                        <h1 className="text-xl font-bold text-white tracking-tight font-sans">
-                            System Explorer
-                        </h1>
+                        </div>
+                        <div>
+                            <h1 className="halo-dash-title">System Explorer</h1>
+                            <p className="halo-dash-desc">
+                                Cross-signal temporal timeline and evidence-backed change detection engine.
+                            </p>
+                        </div>
                     </div>
-                    <p className="text-secondary text-xs font-sans">
-                        Cross-signal temporal timeline and evidence-backed change detection engine.
-                    </p>
                 </div>
             </div>
 
@@ -85,255 +84,298 @@ export function SystemExplorerClient({
             />
 
             {/* Summary Metrics Row */}
-            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-3">
+            <div className="halo-kpi-grid">
                 {/* Total Requests */}
-                <div className="p-3.5 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Total Requests</span>
-                    <div className="text-lg font-bold text-white tracking-tight">
-                        {summaryMetrics.totalRequests.current}
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Total Requests</span>
+                    <div className="halo-kpi-value">
+                        {summaryMetrics.totalRequests.current.toLocaleString()}
                     </div>
-                    {summaryMetrics.totalRequests.relativeDiffPct !== null && (
-                        <div className="flex items-center gap-1 text-[10px] text-muted">
-                            <span
-                                className={`font-semibold ${
-                                    (summaryMetrics.totalRequests.relativeDiffPct || 0) >= 0
-                                        ? "text-cyan-400"
-                                        : "text-muted"
-                                }`}
-                            >
-                                {(summaryMetrics.totalRequests.relativeDiffPct || 0) >= 0 ? "+" : ""}
-                                {summaryMetrics.totalRequests.relativeDiffPct}%
-                            </span>
-                            <span>vs prev</span>
-                        </div>
-                    )}
+                    <div className="halo-kpi-sub">
+                        {summaryMetrics.totalRequests.relativeDiffPct !== null ? (
+                            <>
+                                <span
+                                    className={`halo-kpi-delta ${
+                                        (summaryMetrics.totalRequests.relativeDiffPct || 0) >= 0
+                                            ? "is-neutral"
+                                            : "text-muted"
+                                    }`}
+                                >
+                                    {(summaryMetrics.totalRequests.relativeDiffPct || 0) >= 0 ? "+" : ""}
+                                    {summaryMetrics.totalRequests.relativeDiffPct}%
+                                </span>
+                                <span>vs previous</span>
+                            </>
+                        ) : (
+                            <span>Observed volume</span>
+                        )}
+                    </div>
                 </div>
 
                 {/* Total Errors */}
-                <div className="p-3.5 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Total Errors</span>
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Total Errors</span>
                     <div
-                        className={`text-lg font-bold tracking-tight ${
-                            summaryMetrics.totalErrors.current > 0 ? "text-red-400" : "text-white"
+                        className={`halo-kpi-value ${
+                            summaryMetrics.totalErrors.current > 0 ? "text-error" : "text-white"
                         }`}
                     >
-                        {summaryMetrics.totalErrors.current}
+                        {summaryMetrics.totalErrors.current.toLocaleString()}
                     </div>
-                    {summaryMetrics.totalErrors.relativeDiffPct !== null && (
-                        <div className="flex items-center gap-1 text-[10px] text-muted">
-                            <span
-                                className={`font-semibold ${
-                                    (summaryMetrics.totalErrors.relativeDiffPct || 0) > 0
-                                        ? "text-red-400"
-                                        : "text-emerald-400"
-                                }`}
-                            >
-                                {(summaryMetrics.totalErrors.relativeDiffPct || 0) > 0 ? "+" : ""}
-                                {summaryMetrics.totalErrors.relativeDiffPct}%
-                            </span>
-                            <span>vs prev</span>
-                        </div>
-                    )}
+                    <div className="halo-kpi-sub">
+                        {summaryMetrics.totalErrors.relativeDiffPct !== null ? (
+                            <>
+                                <span
+                                    className={`halo-kpi-delta ${
+                                        (summaryMetrics.totalErrors.relativeDiffPct || 0) > 0
+                                            ? "is-negative"
+                                            : "is-positive"
+                                    }`}
+                                >
+                                    {(summaryMetrics.totalErrors.relativeDiffPct || 0) > 0 ? "+" : ""}
+                                    {summaryMetrics.totalErrors.relativeDiffPct}%
+                                </span>
+                                <span>vs previous</span>
+                            </>
+                        ) : (
+                            <span>Recorded failures</span>
+                        )}
+                    </div>
                 </div>
 
                 {/* Error Rate */}
-                <div className="p-3.5 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Error Rate</span>
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Error Rate</span>
                     <div
-                        className={`text-lg font-bold tracking-tight ${
+                        className={`halo-kpi-value ${
                             summaryMetrics.errorRate.current >= 20
-                                ? "text-red-400"
+                                ? "text-error"
                                 : summaryMetrics.errorRate.current >= 5
-                                ? "text-amber-400"
+                                ? "text-warning"
                                 : "text-white"
                         }`}
                     >
                         {summaryMetrics.errorRate.current}%
                     </div>
-                    {summaryMetrics.errorRate.percentagePointsDiff !== null && (
-                        <div className="flex items-center gap-1 text-[10px] text-muted">
-                            <span
-                                className={`font-semibold ${
-                                    (summaryMetrics.errorRate.percentagePointsDiff || 0) > 0
-                                        ? "text-red-400"
-                                        : "text-emerald-400"
-                                }`}
-                            >
-                                {(summaryMetrics.errorRate.percentagePointsDiff || 0) > 0 ? "+" : ""}
-                                {summaryMetrics.errorRate.percentagePointsDiff}pp
-                            </span>
-                            <span>vs prev</span>
-                        </div>
-                    )}
+                    <div className="halo-kpi-sub">
+                        {summaryMetrics.errorRate.percentagePointsDiff !== null ? (
+                            <>
+                                <span
+                                    className={`halo-kpi-delta ${
+                                        (summaryMetrics.errorRate.percentagePointsDiff || 0) > 0
+                                            ? "is-negative"
+                                            : "is-positive"
+                                    }`}
+                                >
+                                    {(summaryMetrics.errorRate.percentagePointsDiff || 0) > 0 ? "+" : ""}
+                                    {summaryMetrics.errorRate.percentagePointsDiff}pp
+                                </span>
+                                <span>vs previous</span>
+                            </>
+                        ) : (
+                            <span>Failure proportion</span>
+                        )}
+                    </div>
                 </div>
 
                 {/* Avg Latency */}
-                <div className="p-3.5 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Avg Latency</span>
-                    <div className="text-lg font-bold text-white tracking-tight">
-                        {summaryMetrics.avgLatencyMs.current > 0 ? `${summaryMetrics.avgLatencyMs.current}ms` : "-"}
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Avg Latency</span>
+                    <div className="halo-kpi-value">
+                        {summaryMetrics.avgLatencyMs.current !== null
+                            ? `${summaryMetrics.avgLatencyMs.current}ms`
+                            : "—"}
                     </div>
-                    <span className="text-[10px] text-muted block">
-                        Across trace spans
-                    </span>
+                    <div className="halo-kpi-sub">
+                        {summaryMetrics.avgLatencyMs.absoluteDiff !== null ? (
+                            <>
+                                <span
+                                    className={`halo-kpi-delta ${
+                                        (summaryMetrics.avgLatencyMs.absoluteDiff || 0) > 0
+                                            ? "is-negative"
+                                            : "is-positive"
+                                    }`}
+                                >
+                                    {(summaryMetrics.avgLatencyMs.absoluteDiff || 0) > 0 ? "+" : ""}
+                                    {summaryMetrics.avgLatencyMs.absoluteDiff}ms
+                                </span>
+                                <span>vs previous</span>
+                            </>
+                        ) : (
+                            <span>Trace spans</span>
+                        )}
+                    </div>
                 </div>
 
                 {/* P95 Latency */}
-                <div className="p-3.5 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">P95 Latency</span>
-                    <div className="text-lg font-bold text-white tracking-tight">
-                        {summaryMetrics.p95LatencyMs.current > 0 ? `${summaryMetrics.p95LatencyMs.current}ms` : "-"}
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">P95 Latency</span>
+                    <div className="halo-kpi-value">
+                        {summaryMetrics.p95LatencyMs.current !== null
+                            ? `${summaryMetrics.p95LatencyMs.current}ms`
+                            : "—"}
                     </div>
-                    <span className="text-[10px] text-muted block">
-                        Tail response time
-                    </span>
+                    <div className="halo-kpi-sub">
+                        {summaryMetrics.p95LatencyMs.absoluteDiff !== null ? (
+                            <>
+                                <span
+                                    className={`halo-kpi-delta ${
+                                        (summaryMetrics.p95LatencyMs.absoluteDiff || 0) > 0
+                                            ? "is-negative"
+                                            : "is-positive"
+                                    }`}
+                                >
+                                    {(summaryMetrics.p95LatencyMs.absoluteDiff || 0) > 0 ? "+" : ""}
+                                    {summaryMetrics.p95LatencyMs.absoluteDiff}ms
+                                </span>
+                                <span>vs previous</span>
+                            </>
+                        ) : (
+                            <span>Tail response</span>
+                        )}
+                    </div>
                 </div>
 
-                {/* Active Incidents & Firing Monitors */}
-                <div className="p-3.5 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Active Alerts</span>
-                    <div className="text-lg font-bold text-white tracking-tight">
-                        {summaryMetrics.monitorsFiringCount} firing · {summaryMetrics.activeIncidentsCount} open
+                {/* Active Alerts */}
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Active Alerts</span>
+                    <div className="halo-kpi-value">
+                        <span className={summaryMetrics.monitorsFiringCount > 0 ? "text-error" : "text-text"}>
+                            {summaryMetrics.monitorsFiringCount} firing
+                        </span>
+                        <span className="text-text-muted text-sm font-normal"> · {summaryMetrics.activeIncidentsCount} open</span>
                     </div>
-                    <span className="text-[10px] text-muted block">
-                        Monitors &amp; Issues
-                    </span>
+                    <div className="halo-kpi-sub">
+                        <span>Monitors &amp; issues</span>
+                    </div>
                 </div>
             </div>
 
-            {/* Primary Synchronized Multi-Signal Timeline */}
+            {/* Synchronized Multi-Signal Timeline */}
             <SynchronizedTimeline
                 timeline={timeline}
                 markers={markers}
                 projectId={currentProjectId !== "ALL" ? currentProjectId : undefined}
             />
 
-            {/* Explain a Change Engine Panel */}
+            {/* Change & Anomaly Explanation Section */}
             <ChangeExplanationPanel
                 explanation={explanation}
                 projectId={currentProjectId !== "ALL" ? currentProjectId : undefined}
                 environment={currentEnvironment !== "ALL" ? currentEnvironment : undefined}
             />
 
-            {/* Service Contribution Table */}
-            <div className="p-6 rounded-2xl border border-border bg-surface-elevated space-y-4">
-                <div className="flex items-center justify-between border-b border-border pb-3">
-                    <div className="flex items-center gap-2">
-                        <Server size={14} className="text-accent" />
-                        <h3 className="text-xs font-semibold text-white uppercase tracking-wider">
-                            Service Contribution Breakdown
-                        </h3>
+            {/* Service Contribution Breakdown Table */}
+            <div className="halo-panel">
+                <div className="halo-panel-header">
+                    <div className="halo-panel-title-group">
+                        <Layers size={15} className="text-accent" />
+                        <h2 className="halo-panel-title">Service Contribution Breakdown</h2>
                     </div>
-                    <span className="text-[10px] text-muted">
-                        ({serviceContributions.length} services contributing telemetry)
+                    <span className="halo-panel-subtitle">
+                        ({serviceContributions.length} {serviceContributions.length === 1 ? "service" : "services"} contributing telemetry)
                     </span>
                 </div>
 
                 {serviceContributions.length === 0 ? (
-                    <div className="py-8 text-center text-muted">
-                        No service contribution data available.
+                    <div className="py-8 text-center text-text-muted text-xs">
+                        No service telemetry recorded in selected window.
                     </div>
                 ) : (
                     <div className="overflow-x-auto">
                         <table className="w-full text-left border-collapse">
                             <thead>
-                                <tr className="border-b border-border/80 text-[10px] uppercase text-muted tracking-wider">
-                                    <th className="py-2.5 px-3">Service</th>
-                                    <th className="py-2.5 px-3">Health</th>
-                                    <th className="py-2.5 px-3">Error Share</th>
-                                    <th className="py-2.5 px-3">Error Rate</th>
-                                    <th className="py-2.5 px-3">Avg Latency</th>
-                                    <th className="py-2.5 px-3">Traffic Share</th>
-                                    <th className="py-2.5 px-3 text-right">Action</th>
+                                <tr className="border-b border-border text-[11px] font-medium text-text-muted">
+                                    <th className="pb-2.5 pl-2">Service</th>
+                                    <th className="pb-2.5">Health</th>
+                                    <th className="pb-2.5">Error Share</th>
+                                    <th className="pb-2.5">Error Rate</th>
+                                    <th className="pb-2.5">Avg Latency</th>
+                                    <th className="pb-2.5">Traffic Share</th>
+                                    <th className="pb-2.5 pr-2 text-right">Action</th>
                                 </tr>
                             </thead>
-                            <tbody className="divide-y divide-border/40">
+                            <tbody className="divide-y divide-border text-xs">
                                 {serviceContributions.map((s) => (
-                                    <tr key={`${s.service}-${s.projectId}`} className="hover:bg-white/[0.02]">
-                                        <td className="py-3 px-3">
-                                            <div className="font-semibold text-white flex items-center gap-1.5">
-                                                <Layers size={13} className="text-accent" />
-                                                <span>{s.service}</span>
+                                    <tr
+                                        key={s.service}
+                                        className="hover:bg-surface-interactive/60 transition-colors group"
+                                    >
+                                        {/* Service */}
+                                        <td className="py-3 pl-2">
+                                            <div className="flex items-center gap-2">
+                                                <Server size={13} className="text-accent shrink-0" />
+                                                <div>
+                                                    <span className="font-semibold text-text group-hover:text-accent transition-colors">
+                                                        {s.service}
+                                                    </span>
+                                                    <span className="text-[10px] text-text-muted block font-mono">
+                                                        {s.projectName}
+                                                    </span>
+                                                </div>
                                             </div>
-                                            <span className="text-[10px] text-muted block mt-0.5">
-                                                {s.projectName}
-                                            </span>
                                         </td>
 
-                                        <td className="py-3 px-3">
+                                        {/* Health */}
+                                        <td className="py-3">
                                             <span
-                                                className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${
-                                                    s.health === "Healthy"
-                                                        ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
+                                                className={`halo-badge ${
+                                                    s.health === "Critical"
+                                                        ? "halo-badge-critical"
                                                         : s.health === "Degraded"
-                                                        ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
-                                                        : s.health === "Critical"
-                                                        ? "bg-red-500/10 border-red-500/20 text-red-400"
-                                                        : "bg-zinc-500/10 border-zinc-500/20 text-zinc-400"
+                                                        ? "halo-badge-degraded"
+                                                        : "halo-badge-healthy"
                                                 }`}
                                             >
                                                 {s.health}
                                             </span>
                                         </td>
 
-                                        <td className="py-3 px-3">
-                                            <div className="space-y-1">
-                                                <div className="flex items-center justify-between text-[11px]">
-                                                    <span className="text-white font-medium">
-                                                        {s.errorContributionPct}%
-                                                    </span>
-                                                    <span className="text-[10px] text-muted">
-                                                        ({s.errorCount} errs)
-                                                    </span>
-                                                </div>
-                                                <div className="w-20 h-1.5 bg-surface rounded-full overflow-hidden border border-border">
+                                        {/* Error Share */}
+                                        <td className="py-3 font-mono text-[11.5px]">
+                                            <div className="flex items-center gap-2">
+                                                <div className="w-16 h-1.5 bg-[#06080d] rounded-full overflow-hidden border border-border">
                                                     <div
-                                                        className="h-full bg-red-400 rounded-full"
+                                                        className="h-full bg-error rounded-full"
                                                         style={{ width: `${Math.min(100, s.errorContributionPct)}%` }}
                                                     />
                                                 </div>
+                                                <span className="font-semibold text-text">{s.errorContributionPct}%</span>
+                                                <span className="text-[10px] text-text-muted">({s.errorCount} errs)</span>
                                             </div>
                                         </td>
 
-                                        <td className="py-3 px-3">
-                                            <span className="font-semibold text-white">
+                                        {/* Error Rate */}
+                                        <td className="py-3 font-mono text-[11.5px]">
+                                            <span className={s.errorRate >= 20 ? "text-error font-semibold" : s.errorRate >= 5 ? "text-warning font-semibold" : "text-text"}>
                                                 {s.errorRate}%
                                             </span>
-                                            {s.errorRateComparison?.percentagePointsDiff !== null && (
-                                                <span
-                                                    className={`text-[10px] block mt-0.5 ${
-                                                        (s.errorRateComparison?.percentagePointsDiff || 0) > 0
-                                                            ? "text-red-400"
-                                                            : "text-emerald-400"
-                                                    }`}
-                                                >
-                                                    {(s.errorRateComparison?.percentagePointsDiff || 0) > 0 ? "+" : ""}
-                                                    {s.errorRateComparison?.percentagePointsDiff}pp
+                                            {s.errorRateComparison?.percentagePointsDiff !== null && s.errorRateComparison?.percentagePointsDiff !== undefined && (
+                                                <span className="text-[10px] text-text-muted ml-1">
+                                                    ({s.errorRateComparison.percentagePointsDiff >= 0 ? "+" : ""}{s.errorRateComparison.percentagePointsDiff}pp)
                                                 </span>
                                             )}
                                         </td>
 
-                                        <td className="py-3 px-3">
-                                            <span className="text-zinc-200">
-                                                {s.avgLatencyMs ? `${s.avgLatencyMs}ms` : "-"}
-                                            </span>
+                                        {/* Avg Latency */}
+                                        <td className="py-3 font-mono text-[11.5px] text-text-secondary">
+                                            {s.avgLatencyMs !== null ? `${s.avgLatencyMs}ms` : "—"}
                                         </td>
 
-                                        <td className="py-3 px-3">
-                                            <span className="text-zinc-200">
-                                                {s.requestContributionPct}%
-                                            </span>
-                                            <span className="text-[10px] text-muted block mt-0.5">
-                                                ({s.totalCount} reqs)
-                                            </span>
+                                        {/* Traffic Share */}
+                                        <td className="py-3 font-mono text-[11.5px] text-text-secondary">
+                                            <span>{s.requestContributionPct}%</span>
+                                            <span className="text-[10px] text-text-muted ml-1">({s.totalCount} reqs)</span>
                                         </td>
 
-                                        <td className="py-3 px-3 text-right">
+                                        {/* Action */}
+                                        <td className="py-3 pr-2 text-right">
                                             <Link
-                                                href={`/dashboards/services?projectId=${s.projectId}&service=${s.service}`}
-                                                className="halo-btn halo-btn-secondary halo-btn-xs"
+                                                href={`/dashboards/services?service=${encodeURIComponent(s.service)}`}
+                                                className="halo-filter-btn text-[11px] h-7 px-2.5"
                                             >
-                                                <span>Landscape &rarr;</span>
+                                                <span>Landscape</span>
+                                                <ArrowUpRight size={12} />
                                             </Link>
                                         </td>
                                     </tr>

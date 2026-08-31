@@ -1,21 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
     Activity,
-    AlertCircle,
-    ArrowRight,
-    CheckCircle2,
-    Clock,
     GitCommit,
     Layers,
     ShieldAlert,
     Sparkles,
-    TrendingDown,
-    TrendingUp,
 } from "lucide-react";
-import { useState } from "react";
 import type { ChangeIntelligenceData, ChangeImpactItem } from "@/lib/analytics/types";
 import { DashboardFilterBar } from "./dashboard-filter-bar";
 import { ChangeTimelineView } from "./change-timeline-view";
@@ -44,21 +37,26 @@ export function ChangeIntelligenceClient({
     const [selectedChange, setSelectedChange] = useState<ChangeImpactItem | null>(null);
 
     return (
-        <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto font-mono text-xs">
+        <div className="halo-dash-shell">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                        <span className="p-2 rounded-xl bg-accent/15 text-accent border border-accent/30">
+            <div className="halo-dash-header">
+                <nav className="halo-dash-breadcrumb" aria-label="Breadcrumb">
+                    <Link href="/dashboards" className="halo-dash-breadcrumb-item">Dashboards</Link>
+                    <span className="halo-dash-breadcrumb-sep">/</span>
+                    <span className="halo-dash-breadcrumb-current">Change Intelligence</span>
+                </nav>
+                <div className="halo-dash-title-row">
+                    <div className="halo-dash-title-group">
+                        <div className="halo-dash-icon-box">
                             <GitCommit size={18} />
-                        </span>
-                        <h1 className="text-xl font-bold text-white tracking-tight font-sans">
-                            Change Intelligence
-                        </h1>
+                        </div>
+                        <div>
+                            <h1 className="halo-dash-title">Change Intelligence</h1>
+                            <p className="halo-dash-desc">
+                                Automated pre/post deployment baseline comparison and regression detection engine.
+                            </p>
+                        </div>
                     </div>
-                    <p className="text-secondary text-xs font-sans">
-                        Automated pre/post deployment baseline comparison and regression detection engine.
-                    </p>
                 </div>
             </div>
 
@@ -74,47 +72,47 @@ export function ChangeIntelligenceClient({
             />
 
             {/* Summary Counters */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
-                <div className="p-4 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Total Releases</span>
-                    <div className="text-xl font-bold text-white tracking-tight">
-                        {summary.totalChanges}
+            <div className="halo-kpi-grid">
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Total Releases</span>
+                    <div className="halo-kpi-value">{summary.totalChanges}</div>
+                    <div className="halo-kpi-sub">
+                        <span>In evaluated scope</span>
                     </div>
-                    <span className="text-[10px] text-muted block">In evaluated scope</span>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Regressions Detected</span>
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Regressions Detected</span>
                     <div
-                        className={`text-xl font-bold tracking-tight ${
-                            summary.regressionsDetected > 0 ? "text-red-400" : "text-emerald-400"
+                        className={`halo-kpi-value ${
+                            summary.regressionsDetected > 0 ? "text-error" : "text-success"
                         }`}
                     >
                         {summary.regressionsDetected}
                     </div>
-                    <span className="text-[10px] text-muted block">
-                        Elevated failure or latency
-                    </span>
+                    <div className="halo-kpi-sub">
+                        <span>Elevated failure or latency</span>
+                    </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Stable Deployments</span>
-                    <div className="text-xl font-bold text-emerald-400 tracking-tight">
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Stable Deployments</span>
+                    <div className="halo-kpi-value text-success">
                         {summary.stableChanges}
                     </div>
-                    <span className="text-[10px] text-muted block">
-                        No telemetry regression
-                    </span>
+                    <div className="halo-kpi-sub">
+                        <span>No telemetry regression</span>
+                    </div>
                 </div>
 
-                <div className="p-4 rounded-2xl bg-surface-elevated border border-border space-y-1">
-                    <span className="text-[10px] text-muted uppercase block">Insufficient Data</span>
-                    <div className="text-xl font-bold text-zinc-400 tracking-tight">
+                <div className="halo-kpi-card">
+                    <span className="halo-kpi-eyebrow">Insufficient Data</span>
+                    <div className="halo-kpi-value text-text-muted">
                         {summary.insufficientDataCount}
                     </div>
-                    <span className="text-[10px] text-muted block">
-                        Low event volume
-                    </span>
+                    <div className="halo-kpi-sub">
+                        <span>Low event volume</span>
+                    </div>
                 </div>
             </div>
 

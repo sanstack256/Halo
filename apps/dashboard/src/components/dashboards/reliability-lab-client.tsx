@@ -4,20 +4,10 @@ import React from "react";
 import Link from "next/link";
 import {
     Activity,
-    AlertCircle,
-    ArrowRight,
-    CheckCircle2,
-    Clock,
-    Flame,
-    Gauge,
     Layers,
     Radio,
     ShieldAlert,
-    ShieldCheck,
     Sparkles,
-    TrendingDown,
-    TrendingUp,
-    Zap,
 } from "lucide-react";
 import type { ReliabilityLabData } from "@/lib/analytics/types";
 import { DashboardFilterBar } from "./dashboard-filter-bar";
@@ -47,21 +37,26 @@ export function ReliabilityLabClient({
     const { provenance } = data;
 
     return (
-        <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto font-mono text-xs">
+        <div className="halo-dash-shell">
             {/* Header */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-                <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                        <span className="p-2 rounded-xl bg-accent/15 text-accent border border-accent/30">
+            <div className="halo-dash-header">
+                <nav className="halo-dash-breadcrumb" aria-label="Breadcrumb">
+                    <Link href="/dashboards" className="halo-dash-breadcrumb-item">Dashboards</Link>
+                    <span className="halo-dash-breadcrumb-sep">/</span>
+                    <span className="halo-dash-breadcrumb-current">Reliability Lab</span>
+                </nav>
+                <div className="halo-dash-title-row">
+                    <div className="halo-dash-title-group">
+                        <div className="halo-dash-icon-box">
                             <Radio size={18} />
-                        </span>
-                        <h1 className="text-xl font-bold text-white tracking-tight font-sans">
-                            Reliability Lab
-                        </h1>
+                        </div>
+                        <div>
+                            <h1 className="halo-dash-title">Reliability Lab</h1>
+                            <p className="halo-dash-desc">
+                                Long-term reliability posture, error budget burn rates, and recurring failure pattern detector.
+                            </p>
+                        </div>
                     </div>
-                    <p className="text-secondary text-xs font-sans">
-                        Long-term reliability posture, error budget burn rates, and recurring failure pattern detector.
-                    </p>
                 </div>
             </div>
 

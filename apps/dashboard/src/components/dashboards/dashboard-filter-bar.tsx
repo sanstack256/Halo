@@ -4,18 +4,13 @@ import React from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import {
     Calendar,
-    Check,
-    ChevronDown,
-    Filter,
     FolderKanban,
     Globe,
     Info,
-    RotateCcw,
     Layers,
-    Sparkles,
 } from "lucide-react";
 import { HaloSelect } from "@/components/ui/halo-select";
-import type { TimeRangeKey, DataProvenance } from "@/lib/analytics/types";
+import type { DataProvenance } from "@/lib/analytics/types";
 import { DashboardProvenanceModal } from "./dashboard-provenance-modal";
 
 interface DashboardFilterBarProps {
@@ -87,13 +82,13 @@ export function DashboardFilterBar({
     const isComparing = currentComparison === "PREVIOUS_PERIOD";
 
     return (
-        <div className="p-3.5 rounded-2xl bg-surface border border-border flex flex-wrap items-center justify-between gap-3 text-xs font-mono">
-            {/* Left Filter Group */}
-            <div className="flex flex-wrap items-center gap-2.5">
+        <div className="halo-filter-surface">
+            {/* Left Filter Controls Group */}
+            <div className="halo-filter-group">
                 {/* Project Selector */}
                 {projects.length > 1 && (
                     <div className="flex items-center gap-1.5">
-                        <FolderKanban size={13} className="text-muted" />
+                        <FolderKanban size={13} className="text-muted shrink-0" />
                         <HaloSelect
                             value={currentProjectId}
                             onChange={(val) => updateFilter("projectId", val)}
@@ -104,7 +99,7 @@ export function DashboardFilterBar({
 
                 {/* Environment Selector */}
                 <div className="flex items-center gap-1.5">
-                    <Globe size={13} className="text-muted" />
+                    <Globe size={13} className="text-muted shrink-0" />
                     <HaloSelect
                         value={currentEnvironment}
                         onChange={(val) => updateFilter("environment", val)}
@@ -112,20 +107,10 @@ export function DashboardFilterBar({
                     />
                 </div>
 
-                {/* Time Range Selector */}
-                <div className="flex items-center gap-1.5">
-                    <Calendar size={13} className="text-muted" />
-                    <HaloSelect
-                        value={currentTimeRange}
-                        onChange={(val) => updateFilter("range", val)}
-                        options={timeRangeOptions}
-                    />
-                </div>
-
                 {/* Optional Service Filter */}
                 {showServiceFilter && services.length > 0 && (
                     <div className="flex items-center gap-1.5">
-                        <Layers size={13} className="text-muted" />
+                        <Layers size={13} className="text-muted shrink-0" />
                         <HaloSelect
                             value={currentService}
                             onChange={(val) => updateFilter("service", val)}
@@ -134,6 +119,18 @@ export function DashboardFilterBar({
                     </div>
                 )}
 
+                <div className="halo-filter-divider" />
+
+                {/* Time Range Selector */}
+                <div className="flex items-center gap-1.5">
+                    <Calendar size={13} className="text-muted shrink-0" />
+                    <HaloSelect
+                        value={currentTimeRange}
+                        onChange={(val) => updateFilter("range", val)}
+                        options={timeRangeOptions}
+                    />
+                </div>
+
                 {/* Comparison Mode Toggle */}
                 {showComparisonToggle && (
                     <button
@@ -141,28 +138,25 @@ export function DashboardFilterBar({
                         onClick={() =>
                             updateFilter("compare", isComparing ? "NONE" : "PREVIOUS_PERIOD")
                         }
-                        className={`h-8 px-3 rounded-lg border transition-all flex items-center gap-1.5 cursor-pointer select-none ${
-                            isComparing
-                                ? "bg-accent/15 border-accent/40 text-accent font-semibold shadow-sm"
-                                : "bg-[#080b11] border-border text-secondary hover:border-border-strong hover:text-white"
-                        }`}
+                        className={`halo-filter-btn ${isComparing ? "is-active" : ""}`}
                         title="Compare current window against previous symmetrical period"
                     >
-                        <span className={`w-1.5 h-1.5 rounded-full ${isComparing ? "bg-accent" : "bg-muted"}`} />
+                        <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${isComparing ? "bg-accent" : "bg-muted"}`} />
                         <span>Compare: Previous Period</span>
                     </button>
                 )}
             </div>
 
-            {/* Right Provenance / Inspection Button */}
+            {/* Right Provenance Action */}
             {provenance && (
                 <div className="flex items-center gap-2">
                     <button
                         type="button"
                         onClick={() => setIsProvenanceOpen(true)}
-                        className="h-8 px-3 rounded-lg border border-border bg-[#080b11] text-secondary hover:text-white hover:border-border-strong transition-colors flex items-center gap-1.5"
+                        className="halo-filter-btn"
+                        title="Inspect telemetry sources and analytics provenance"
                     >
-                        <Info size={13} className="text-accent" />
+                        <Info size={13} className="text-accent shrink-0" />
                         <span>Data Provenance</span>
                     </button>
 
