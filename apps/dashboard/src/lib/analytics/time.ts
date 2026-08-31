@@ -130,11 +130,11 @@ export function calculateMetricComparison(
 
     if (previous !== 0) {
         relativeDiffPct = Math.round(((current - previous) / previous) * 1000) / 10;
-    } else if (current > 0) {
-        relativeDiffPct = 100.0;
-    } else {
-        relativeDiffPct = 0.0;
     }
+    // When previous === 0, there is no finite relative change:
+    // any positive current value is an infinite multiplier over zero.
+    // We return null to signal "no meaningful ratio" rather than fabricating 100%.
+    // absoluteDiff still reflects the raw magnitude change.
 
     if (isRateMetric) {
         percentagePointsDiff = Math.round((current - previous) * 10) / 10;

@@ -20,9 +20,11 @@ import {
     TrendingUp,
     Zap,
 } from "lucide-react";
-import type { ServiceLandscapeData } from "@/lib/analytics/types";
+import { useState } from "react";
+import type { ServiceLandscapeData, ServiceLandscapeItem } from "@/lib/analytics/types";
 import { DashboardFilterBar } from "./dashboard-filter-bar";
 import { ServiceMatrixTable } from "./service-matrix-table";
+import { ServiceInspectorDrawer } from "./service-inspector-drawer";
 
 interface ServiceLandscapeClientProps {
     data: ServiceLandscapeData;
@@ -44,6 +46,7 @@ export function ServiceLandscapeClient({
     currentService = "ALL",
 }: ServiceLandscapeClientProps) {
     const { services, rankings, summary, provenance } = data;
+    const [selectedService, setSelectedService] = useState<ServiceLandscapeItem | null>(null);
 
     return (
         <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto font-mono text-xs">
@@ -216,8 +219,19 @@ export function ServiceLandscapeClient({
             {/* Cross-Service Matrix Table */}
             <ServiceMatrixTable
                 services={services}
-                timeRangeKey={currentTimeRange}
+                onSelectService={(s) => setSelectedService(s)}
+                projectId={currentProjectId !== "ALL" ? currentProjectId : undefined}
             />
+
+            {/* Service Inspector Drawer */}
+            {selectedService && (
+                <ServiceInspectorDrawer
+                    service={selectedService}
+                    projectId={currentProjectId !== "ALL" ? currentProjectId : undefined}
+                    timeRangeKey={currentTimeRange}
+                    onClose={() => setSelectedService(null)}
+                />
+            )}
         </div>
     );
 }

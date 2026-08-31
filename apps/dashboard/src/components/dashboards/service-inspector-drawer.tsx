@@ -7,9 +7,9 @@ import {
     AlertCircle,
     ArrowDownRight,
     ArrowRight,
-    ArrowUpRight,
+    CheckCircle2,
     Clock,
-    Flame,
+    Database,
     GitCommit,
     Layers,
     Radio,
@@ -17,34 +17,39 @@ import {
     ShieldAlert,
     Sparkles,
     X,
-    Zap,
 } from "lucide-react";
-import type { ServiceLandscapeItem, ServiceDetailedContext } from "@/lib/analytics/types";
+import type { ServiceDetailedContext, ServiceLandscapeItem } from "@/lib/analytics/types";
 import { getServiceDetailedContextAction } from "@/actions/analytics";
-import { formatDeterministicDateTime } from "@/lib/date-format";
 
 interface ServiceInspectorDrawerProps {
-    service: ServiceLandscapeItem;
+    service: ServiceLandscapeItem | null;
+    projectId?: string;
     timeRangeKey?: string;
     onClose: () => void;
 }
 
 export function ServiceInspectorDrawer({
     service,
-    timeRangeKey = "24h",
+    projectId,
+    timeRangeKey,
     onClose,
 }: ServiceInspectorDrawerProps) {
-    const [loading, setLoading] = useState(true);
-    const [detail, setDetail] = useState<ServiceDetailedContext | null>(null);
+    const [loading, setLoading] = useState(false);
+    const [context, setContext] = useState<ServiceDetailedContext | null>(null);
 
     useEffect(() => {
+        if (!service) {
+            setContext(null);
+            return;
+        }
+
         let isMounted = true;
         setLoading(true);
 
         getServiceDetailedContextAction(service.service, service.projectId, timeRangeKey)
             .then((res) => {
                 if (isMounted) {
-                    setDetail(res);
+                    setContext(res);
                     setLoading(false);
                 }
             })
@@ -55,207 +60,225 @@ export function ServiceInspectorDrawer({
         return () => {
             isMounted = false;
         };
-    }, [service.service, service.projectId, timeRangeKey]);
+    }, [service, timeRangeKey]);
+
+    if (!service) return null;
 
     const investigateUrl = `/projects/${service.projectId}/investigations/new?service=${service.service}`;
 
     return (
-        <div className="fixed inset-0 z-50 flex justify-end bg-black/70 animate-in fade-in duration-150 font-mono text-xs">
-            <div className="relative w-full max-w-xl bg-[var(--surface-elevated)] border-l border-border h-full shadow-2xl p-6 overflow-y-auto space-y-6 flex flex-col justify-between">
+        <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end font-mono text-xs animate-in fade-in duration-150">
+            <div className="w-full max-w-xl bg-[#080b11] border-l border-border h-full overflow-y-auto p-6 space-y-6 flex flex-col justify-between shadow-2xl">
                 <div className="space-y-6">
                     {/* Drawer Header */}
-                    <div className="flex items-start justify-between border-b border-border pb-4">
-                        <div className="space-y-1">
-                            <div className="flex items-center gap-2">
-                                <span className="p-1.5 rounded-lg bg-accent/15 text-accent border border-accent/30">
-                                    <Server size={16} />
-                                </span>
-                                <h2 className="text-base font-bold text-white tracking-tight">
-                                    {service.service}
-                                </h2>
-                                <span
-                                    className={`px-2.5 py-0.5 rounded-full text-[10px] font-semibold border ${
-                                        service.health === "Healthy"
-                                            ? "bg-emerald-500/10 border-emerald-500/20 text-emerald-400"
-                                            : service.health === "Degraded"
-                                            ? "bg-amber-500/10 border-amber-500/20 text-amber-400"
-                                            : service.health === "Critical"
-                                            ? "bg-red-500/10 border-red-500/20 text-red-400"
-                                            : "bg-zinc-500/10 border-zinc-500/20 text-zinc-400"
-                                    }`}
-                                >
-                                    {service.health}
-                                </span>
+                    <div className="flex items-center justify-between border-b border-border pb-4">
+                        <div className="flex items-center gap-3">
+                            <div className="w-9 h-9 rounded-xl bg-accent/15 border border-accent/30 flex items-center justify-center text-accent">
+                                <Server size={18} />
                             </div>
-                            <p className="text-[11px] text-muted font-sans">
-                                Project: {service.projectName}
-                            </p>
+                            <div>
+                                <div className="flex items-center gap-2">
+                                    <h2 className="text-base font-bold text-white tracking-wide font-sans">
+                                        {service.service}
+                                    </h2>
+                                    <span
+                                        className={`px-2 py-0.5 rounded-full text-[10px] font-semibold border ${
+                                            service.health === "Healthy"
+                                                ? "bg-emerald-500/10 text-emerald-400 border-emerald-500/20"
+                                                : service.health === "Degraded"
+                                                ? "bg-amber-500/10 text-amber-400 border-amber-500/20"
+                                                : "bg-red-500/10 text-red-400 border-red-500/20"
+                                        }`}
+                                    >
+                                        {service.health}
+                                    </span>
+                                </div>
+                                <p className="text-[11px] text-muted font-sans">
+                                    Project: {service.projectName}
+                                </p>
+                            </div>
                         </div>
 
                         <button
                             type="button"
                             onClick={onClose}
-                            className="p-1 rounded-lg text-zinc-400 hover:text-white"
+                            className="p-1 text-muted hover:text-white rounded-lg hover:bg-surface"
                         >
                             <X size={18} />
                         </button>
                     </div>
 
-                    {/* Health Explanation Banner */}
-                    <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                        <span className="text-[10px] text-muted uppercase block">Health Assessment</span>
-                        <p className="text-white font-medium text-xs font-sans">
-                            {service.healthReason}
-                        </p>
+                    {/* Primary Action Button */}
+                    <div className="p-4 rounded-xl bg-surface border border-accent/30 flex items-center justify-between gap-3">
+                        <div>
+                            <span className="font-semibold text-white block">Launch Deep Investigation</span>
+                            <span className="text-[11px] text-muted font-sans">
+                                Automatically pre-populates traces, active issues, and recent releases.
+                            </span>
+                        </div>
+                        <Link
+                            href={investigateUrl}
+                            className="halo-btn halo-btn-primary halo-btn-sm shrink-0"
+                        >
+                            <Sparkles size={12} />
+                            <span>Analyze Service</span>
+                        </Link>
                     </div>
 
-                    {/* Core Metric Cards */}
-                    <div className="grid grid-cols-3 gap-3">
-                        <div className="p-3 rounded-xl bg-surface border border-border">
+                    {/* Operational Summary Grid */}
+                    <div className="grid grid-cols-3 gap-3 text-[11px]">
+                        <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
                             <span className="text-[10px] text-muted uppercase block">Error Rate</span>
-                            <div className="text-lg font-bold text-white mt-0.5">
+                            <span className={`text-base font-bold ${service.errorRate > 0 ? "text-red-400" : "text-white"}`}>
                                 {service.errorRate}%
-                            </div>
-                            <span className="text-[10px] text-muted block">
-                                {service.errorCount} total errors
                             </span>
                         </div>
-
-                        <div className="p-3 rounded-xl bg-surface border border-border">
-                            <span className="text-[10px] text-muted uppercase block">Latency (P95)</span>
-                            <div className="text-lg font-bold text-white mt-0.5">
+                        <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
+                            <span className="text-[10px] text-muted uppercase block">Failure Share</span>
+                            <span className="text-base font-bold text-white">
+                                {service.failureContributionPct}%
+                            </span>
+                        </div>
+                        <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
+                            <span className="text-[10px] text-muted uppercase block">P95 Latency</span>
+                            <span className="text-base font-bold text-amber-400">
                                 {service.p95LatencyMs ? `${service.p95LatencyMs}ms` : "-"}
-                            </div>
-                            <span className="text-[10px] text-muted block">
-                                Avg: {service.avgLatencyMs ? `${service.avgLatencyMs}ms` : "-"}
-                            </span>
-                        </div>
-
-                        <div className="p-3 rounded-xl bg-surface border border-border">
-                            <span className="text-[10px] text-muted uppercase block">Request Volume</span>
-                            <div className="text-lg font-bold text-white mt-0.5">
-                                {service.totalCount}
-                            </div>
-                            <span className="text-[10px] text-muted block">
-                                {service.failureContributionPct}% failure share
                             </span>
                         </div>
                     </div>
 
-                    {/* Observed Dependencies */}
-                    {detail && (
-                        <div className="p-4 rounded-xl bg-surface border border-border space-y-3">
-                            <div className="text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border/60 pb-2">
-                                Observed Dependency Connections
-                            </div>
+                    {/* Deterministic Health Rationale */}
+                    <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
+                        <span className="text-[10px] text-muted uppercase font-semibold block">
+                            Health Status Rationale
+                        </span>
+                        <p className="text-[11px] text-zinc-300 font-sans">{service.healthReason}</p>
+                    </div>
 
-                            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 text-[11px]">
-                                <div>
-                                    <span className="text-[10px] text-muted uppercase block mb-1">
-                                        Upstream Callers
-                                    </span>
-                                    {detail.observedDependencies.upstream.length === 0 ? (
-                                        <span className="text-muted">Direct entrypoint / no callers</span>
-                                    ) : (
-                                        <div className="space-y-1">
-                                            {detail.observedDependencies.upstream.map((u, i) => (
-                                                <div
-                                                    key={i}
-                                                    className="flex items-center justify-between p-1.5 rounded bg-[#080b11] border border-border text-zinc-300"
-                                                >
-                                                    <div className="flex items-center gap-1.5">
-                                                        <ArrowDownRight size={12} className="text-accent" />
-                                                        <span>{u.service}</span>
-                                                    </div>
-                                                    <span className="text-muted text-[10px]">
-                                                        {u.callCount} calls
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-
-                                <div>
-                                    <span className="text-[10px] text-muted uppercase block mb-1">
-                                        Downstream Targets
-                                    </span>
-                                    {detail.observedDependencies.downstream.length === 0 ? (
-                                        <span className="text-muted">No external calls observed</span>
-                                    ) : (
-                                        <div className="space-y-1">
-                                            {detail.observedDependencies.downstream.map((d, i) => (
-                                                <div
-                                                    key={i}
-                                                    className="flex items-center justify-between p-1.5 rounded bg-[#080b11] border border-border text-zinc-300"
-                                                >
-                                                    <div className="flex items-center gap-1.5">
-                                                        <ArrowUpRight size={12} className="text-purple-400" />
-                                                        <span>{d.service}</span>
-                                                    </div>
-                                                    <span className="text-muted text-[10px]">
-                                                        {d.avgLatencyMs ? `${d.avgLatencyMs}ms` : "-"}
-                                                    </span>
-                                                </div>
-                                            ))}
-                                        </div>
-                                    )}
-                                </div>
-                            </div>
+                    {loading ? (
+                        <div className="h-32 flex items-center justify-center text-muted">
+                            Loading service context...
                         </div>
-                    )}
+                    ) : context ? (
+                        <div className="space-y-6">
+                            {/* Upstream & Downstream Observed Dependencies */}
+                            <div className="space-y-3">
+                                <div className="text-[11px] font-semibold text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-border pb-1.5">
+                                    <Layers size={13} className="text-accent" />
+                                    <span>Observed Trace Dependencies</span>
+                                </div>
 
-                    {/* Related Active Issues */}
-                    {detail && detail.relatedIssues.length > 0 && (
-                        <div className="p-4 rounded-xl bg-surface border border-border space-y-2.5">
-                            <div className="text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border/60 pb-2 flex items-center justify-between">
-                                <span>Related Active Issues</span>
-                                <span className="text-muted font-normal">
-                                    ({detail.relatedIssues.length})
-                                </span>
-                            </div>
-
-                            <div className="space-y-1.5">
-                                {detail.relatedIssues.map((iss) => (
-                                    <Link
-                                        key={iss.id}
-                                        href={`/projects/${service.projectId}/issues/${iss.id}`}
-                                        className="flex items-center justify-between p-2 rounded-lg bg-[#080b11] border border-border hover:border-border-strong hover:text-white transition-colors group"
-                                    >
-                                        <div className="space-y-0.5 min-w-0 pr-2">
-                                            <div className="font-semibold text-zinc-200 truncate group-hover:text-accent">
-                                                {iss.title}
-                                            </div>
-                                            <span className="text-[10px] text-muted block">
-                                                {iss.eventCount} occurrences · Last seen {formatDeterministicDateTime(new Date(iss.lastSeen))}
-                                            </span>
-                                        </div>
-                                        <span className={`halo-severity halo-severity-${iss.severity.toLowerCase()} text-[10px] shrink-0`}>
-                                            {iss.severity}
+                                <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                    {/* Upstream */}
+                                    <div className="p-3 rounded-xl bg-surface border border-border space-y-2">
+                                        <span className="text-[10px] text-muted uppercase block">
+                                            Upstream Callers ({context.observedDependencies.upstream.length})
                                         </span>
-                                    </Link>
-                                ))}
+                                        {context.observedDependencies.upstream.length === 0 ? (
+                                            <p className="text-muted text-[10px] font-sans">No incoming trace spans.</p>
+                                        ) : (
+                                            <div className="space-y-1">
+                                                {context.observedDependencies.upstream.map((u, i) => (
+                                                    <div key={i} className="flex items-center justify-between text-[11px]">
+                                                        <span className="text-white font-medium">{u.service}</span>
+                                                        <span className="text-muted">{u.callCount} calls</span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+
+                                    {/* Downstream */}
+                                    <div className="p-3 rounded-xl bg-surface border border-border space-y-2">
+                                        <span className="text-[10px] text-muted uppercase block">
+                                            Downstream Targets ({context.observedDependencies.downstream.length})
+                                        </span>
+                                        {context.observedDependencies.downstream.length === 0 ? (
+                                            <p className="text-muted text-[10px] font-sans">No downstream calls recorded.</p>
+                                        ) : (
+                                            <div className="space-y-1">
+                                                {context.observedDependencies.downstream.map((d, i) => (
+                                                    <div key={i} className="flex items-center justify-between text-[11px]">
+                                                        <span className="text-white font-medium">{d.service}</span>
+                                                        <span className="text-muted">
+                                                            {d.callCount} calls {d.errorRate > 0 && `(${d.errorRate}% err)`}
+                                                        </span>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        )}
+                                    </div>
+                                </div>
                             </div>
+
+                            {/* Active Correlated Issues */}
+                            <div className="space-y-3">
+                                <div className="text-[11px] font-semibold text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-border pb-1.5">
+                                    <ShieldAlert size={13} className="text-red-400" />
+                                    <span>Correlated Active Issues ({context.activeIssues.length})</span>
+                                </div>
+
+                                {context.activeIssues.length === 0 ? (
+                                    <p className="text-muted text-[11px] font-sans">No active open issues for this service.</p>
+                                ) : (
+                                    <div className="space-y-2">
+                                        {context.activeIssues.map((iss) => (
+                                            <Link
+                                                key={iss.id}
+                                                href={`/projects/${service.projectId}/issues/${iss.id}`}
+                                                className="p-2.5 rounded-lg bg-surface border border-border flex items-center justify-between hover:border-accent/40 transition-colors"
+                                            >
+                                                <div className="space-y-0.5">
+                                                    <span className="text-white font-medium block">{iss.title}</span>
+                                                    <span className="text-muted text-[10px]">{iss.eventCount} occurrences</span>
+                                                </div>
+                                                <span className="text-red-400 text-[10px] uppercase font-semibold">
+                                                    {iss.severity}
+                                                </span>
+                                            </Link>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+
+                            {/* Recurring Failure Patterns */}
+                            {context.recurringFailures.length > 0 && (
+                                <div className="space-y-3">
+                                    <div className="text-[11px] font-semibold text-white uppercase tracking-wider flex items-center gap-1.5 border-b border-border pb-1.5">
+                                        <Activity size={13} className="text-amber-400" />
+                                        <span>Recurring Failure Fingerprints</span>
+                                    </div>
+
+                                    <div className="space-y-2">
+                                        {context.recurringFailures.slice(0, 3).map((f, i) => (
+                                            <div
+                                                key={i}
+                                                className="p-2.5 rounded-lg bg-[#080b11] border border-border flex items-center justify-between"
+                                            >
+                                                <div className="space-y-0.5 max-w-sm">
+                                                    <span className="text-zinc-200 font-medium block truncate">{f.title}</span>
+                                                    <span className="text-muted text-[9.5px]">FP: {f.fingerprint}</span>
+                                                </div>
+                                                <span className="text-amber-400 font-bold text-[11px]">
+                                                    {f.count}x
+                                                </span>
+                                            </div>
+                                        ))}
+                                    </div>
+                                </div>
+                            )}
                         </div>
-                    )}
+                    ) : null}
                 </div>
 
-                {/* Footer Actions */}
-                <div className="pt-4 border-t border-border flex items-center justify-between gap-3">
-                    <Link
-                        href={`/dashboards/system?projectId=${service.projectId}&service=${service.service}`}
+                <div className="pt-4 border-t border-border flex items-center justify-end">
+                    <button
+                        type="button"
+                        onClick={onClose}
                         className="halo-btn halo-btn-secondary halo-btn-sm"
                     >
-                        <span>System Explorer &rarr;</span>
-                    </Link>
-
-                    <Link
-                        href={investigateUrl}
-                        className="halo-btn halo-btn-primary halo-btn-sm"
-                    >
-                        <Sparkles size={12} />
-                        <span>Investigate Service</span>
-                    </Link>
+                        Close Inspector
+                    </button>
                 </div>
             </div>
         </div>

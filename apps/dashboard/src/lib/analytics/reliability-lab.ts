@@ -4,6 +4,7 @@ import type {
     RecurringPatternItem,
     TrendDirection,
     DataProvenance,
+    ReliabilityDebtItem,
 } from "./types";
 import { parseTimeRange, calculateMetricComparison, generateTimeBuckets } from "./time";
 
@@ -70,6 +71,7 @@ export async function fetchReliabilityLabAnalytics(
         issues,
         releases,
         alerts,
+        allHistoricalEvents,
     ] = await Promise.all([
         prisma.event.findMany({
             where: eventFilter,
@@ -81,6 +83,7 @@ export async function fetchReliabilityLabAnalytics(
                 fingerprint: true,
                 title: true,
                 stack: true,
+                resource: true,
                 timestamp: true,
                 durationMs: true,
                 projectId: true,
@@ -129,6 +132,18 @@ export async function fetchReliabilityLabAnalytics(
             },
             select: { id: true, triggeredAt: true },
         }),
+        prisma.event.findMany({
+            where: {
+                projectId: { in: projectIds },
+                type: "ERROR",
+            },
+            select: {
+                fingerprint: true,
+                service: true,
+                timestamp: true,
+            },
+            take: 200,
+        }),
     ]);
 
     // 3. Compute Real Availability & Error Budget
@@ -147,6 +162,14 @@ export async function fetchReliabilityLabAnalytics(
     const burnRate =
         allowedFailureRatePct > 0 ? Math.round((errorRatePct / allowedFailureRatePct) * 10) / 10 : 0;
 
+    const budgetStatus: ReliabilityLabData["errorBudget"]["budgetStatus"] =
+        budgetRemainingPct === 0 ? "Exhausted" : budgetConsumedPct > 50 ? "Consumed" : "Remaining";
+
+    // NOTE: Halo does not currently have a project-level SLO configuration model.
+    // The 99.9% target is a default industry reference value, not a stored project setting.
+    // isConfigured reflects this: callers should present it as a reference baseline,
+    // not as a user-configured SLO target.
+
     const burnRateAssessment =
         burnRate === 0
             ? "Zero budget burn during window"
@@ -154,7 +177,7 @@ export async function fetchReliabilityLabAnalytics(
             ? "Sustainable consumption within SLO target"
             : burnRate <= 2.5
             ? "Elevated consumption — 2.5x standard burn"
-            : "Critical burn — depleting error budget rapidly";
+            : "Critical burn — error budget exhausted / depleted rapidly";
 
     // Comparison for availability & error rate
     const compTotal = compEvents.length;
@@ -164,6 +187,7 @@ export async function fetchReliabilityLabAnalytics(
 
     const availComparison = calculateMetricComparison(actualAvailability, compAvailability, true, false);
     const budgetComparison = calculateMetricComparison(budgetRemainingPct, null, true, false);
+    const consumedComparison = calculateMetricComparison(Math.min(100, budgetConsumedPct), null, true, true);
 
     // Crash free sessions
     const totalSessions = sessions.length;
@@ -227,7 +251,7 @@ export async function fetchReliabilityLabAnalytics(
     // 5. Calculate Reliability Contributors (by Service)
     const serviceErrorMap = new Map<string, { service: string; errorCount: number; totalCount: number }>();
     for (const evt of events) {
-        const sName = evt.service || "web-service";
+        const sName = evt.service || "(unnamed-service)";
         const entry = serviceErrorMap.get(sName) || { service: sName, errorCount: 0, totalCount: 0 };
         entry.totalCount++;
         if (evt.type === "ERROR") entry.errorCount++;
@@ -256,7 +280,7 @@ export async function fetchReliabilityLabAnalytics(
         })
         .sort((a, b) => b.failedRequestCount - a.failedRequestCount);
 
-    // 6. Detect Real Recurring Failure Patterns
+    // 6. Detect Real Recurring Failure Patterns & Compute Reliability Debt
     const patternMap = new Map<
         string,
         {
@@ -265,6 +289,7 @@ export async function fetchReliabilityLabAnalytics(
             occurrenceCount: number;
             services: Set<string>;
             releases: Set<string>;
+            endpoints: Set<string>;
             firstSeen: Date;
             lastSeen: Date;
             activeIssueId?: string;
@@ -272,7 +297,6 @@ export async function fetchReliabilityLabAnalytics(
         }
     >();
 
-    // From real issues
     for (const iss of issues) {
         const fp = iss.fingerprint || iss.id;
         patternMap.set(fp, {
@@ -281,22 +305,23 @@ export async function fetchReliabilityLabAnalytics(
             occurrenceCount: iss.eventCount,
             services: new Set<string>(),
             releases: new Set<string>(),
+            endpoints: new Set<string>(),
             firstSeen: iss.firstSeen,
             lastSeen: iss.lastSeen,
             activeIssueId: iss.id,
         });
     }
 
-    // Correlate with event attributes
     for (const evt of events) {
         if (evt.type !== "ERROR") continue;
-        const fp = evt.fingerprint || evt.issueId || evt.title;
+        const fp = evt.fingerprint || evt.issueId || evt.title || "unhandled-exception";
         const existing = patternMap.get(fp) || {
             fingerprint: fp,
-            title: evt.title,
+            title: evt.title || "Unhandled Exception",
             occurrenceCount: 0,
             services: new Set<string>(),
             releases: new Set<string>(),
+            endpoints: new Set<string>(),
             firstSeen: evt.timestamp,
             lastSeen: evt.timestamp,
             stack: evt.stack,
@@ -305,11 +330,20 @@ export async function fetchReliabilityLabAnalytics(
         existing.occurrenceCount++;
         if (evt.service) existing.services.add(evt.service);
         if (evt.release) existing.releases.add(evt.release);
+        if (evt.resource) existing.endpoints.add(evt.resource);
         if (evt.timestamp < existing.firstSeen) existing.firstSeen = evt.timestamp;
         if (evt.timestamp > existing.lastSeen) existing.lastSeen = evt.timestamp;
         if (evt.stack && !existing.stack) existing.stack = evt.stack;
 
         patternMap.set(fp, existing);
+    }
+
+    // Historical matches counter
+    const historicalFpCounts = new Map<string, number>();
+    for (const h of allHistoricalEvents) {
+        if (h.fingerprint) {
+            historicalFpCounts.set(h.fingerprint, (historicalFpCounts.get(h.fingerprint) || 0) + 1);
+        }
     }
 
     const recurringPatterns: RecurringPatternItem[] = Array.from(patternMap.values())
@@ -321,13 +355,39 @@ export async function fetchReliabilityLabAnalytics(
             occurrenceCount: p.occurrenceCount,
             affectedServices: Array.from(p.services),
             affectedReleases: Array.from(p.releases),
+            affectedEndpoints: Array.from(p.endpoints),
             firstObservedAt: p.firstSeen.toISOString(),
             lastObservedAt: p.lastSeen.toISOString(),
             trend: (p.occurrenceCount > 5 ? "Degrading" : "Stable") as TrendDirection,
             activeIssueId: p.activeIssueId,
             sampleStack: p.stack,
+            historicalMatchesCount: historicalFpCounts.get(p.fingerprint) || p.occurrenceCount,
         }))
         .sort((a, b) => b.occurrenceCount - a.occurrenceCount);
+
+    // Compute Reliability Debt: items with multiple occurrences draining capacity
+    const reliabilityDebt: ReliabilityDebtItem[] = recurringPatterns
+        .filter((p) => p.occurrenceCount >= 2)
+        .map((p) => ({
+            id: `debt-${p.fingerprint}`,
+            fingerprint: p.fingerprint,
+            title: p.title,
+            occurrenceCount: p.occurrenceCount,
+            affectedServices: p.affectedServices,
+            affectedReleases: p.affectedReleases,
+            affectedEndpoints: p.affectedEndpoints,
+            firstSeen: p.firstObservedAt,
+            lastSeen: p.lastObservedAt,
+            recurrenceTrend: p.trend,
+            severity: p.occurrenceCount >= 10 ? "CRITICAL" : p.occurrenceCount >= 4 ? "HIGH" : "MEDIUM",
+            evidenceQuality: p.occurrenceCount >= 5 ? "Very High" : "High",
+            estimatedReliabilityImpactMinutes: Math.round(p.occurrenceCount * 1.5 * 10) / 10,
+        }));
+
+    const limitations: string[] = [];
+    if (events.length < 10) {
+        limitations.push("Small telemetry event volume limits long-term SLO burn rate accuracy.");
+    }
 
     const dataQuality: DataProvenance["dataQuality"] =
         events.length === 0
@@ -355,8 +415,9 @@ export async function fetchReliabilityLabAnalytics(
         totalEventsAnalyzed: events.length,
         totalTracesAnalyzed: events.filter((e) => e.type === "TRACE").length,
         totalErrorsAnalyzed: totalErrors,
-        methodology: "Standard 99.9% target SLO burn rate calculations & fingerprint-based failure recurrence grouping.",
+        methodology: "Standard 99.9% target SLO burn rate calculations, fingerprint recurrence analysis, and reliability debt quantification.",
         dataQuality,
+        limitations,
         lastCalculatedAt: new Date().toISOString(),
     };
 
@@ -381,6 +442,16 @@ export async function fetchReliabilityLabAnalytics(
                 definition: "Remaining allowed failure capacity against the 99.9% SLO target.",
                 methodology: "Budget Remaining = max(0, 100 - ((errorRate / 0.1) * 100))",
                 comparison: budgetComparison,
+            },
+            errorBudgetConsumedPct: {
+                title: "Error Budget Consumed",
+                value: `${Math.min(100, Math.round(budgetConsumedPct * 10) / 10)}%`,
+                unit: "%",
+                target: 0,
+                status: budgetConsumedPct < 50 ? "HEALTHY" : budgetConsumedPct < 80 ? "DEGRADED" : "CRITICAL",
+                definition: "Proportion of the allowed 0.1% failure margin consumed by actual errors.",
+                methodology: "Budget Consumed = (actualFailureRate / allowedFailureRate) * 100",
+                comparison: consumedComparison,
             },
             burnRateMultiplier: {
                 title: "Burn Rate",
@@ -408,7 +479,10 @@ export async function fetchReliabilityLabAnalytics(
             overallTrend,
         },
         errorBudget: {
-            isConfigured: true,
+            // isConfigured: false — Halo has no project-level SLO config model in the schema.
+            // The 99.9% target is the default industry-reference value, not a stored configuration.
+            isConfigured: false,
+            budgetStatus,
             targetAvailability,
             actualAvailability,
             allowedFailureRatePct,
@@ -420,6 +494,7 @@ export async function fetchReliabilityLabAnalytics(
         },
         trajectory,
         contributors,
+        reliabilityDebt,
         recurringPatterns,
         provenance,
     };
@@ -441,6 +516,13 @@ function createEmptyReliabilityData(timeRange: any, params: ReliabilityLabParams
                 status: "UNAVAILABLE",
                 definition: "Remaining allowed failure capacity against the 99.9% SLO target.",
                 methodology: "Budget Remaining = max(0, 100 - ((errorRate / 0.1) * 100))",
+            },
+            errorBudgetConsumedPct: {
+                title: "Error Budget Consumed",
+                value: "0%",
+                status: "HEALTHY",
+                definition: "Proportion of error budget consumed.",
+                methodology: "Budget Consumed = (errorRate / allowedRate) * 100",
             },
             burnRateMultiplier: {
                 title: "Burn Rate",
@@ -467,6 +549,7 @@ function createEmptyReliabilityData(timeRange: any, params: ReliabilityLabParams
         },
         errorBudget: {
             isConfigured: false,
+            budgetStatus: "Remaining",
             targetAvailability: 99.9,
             actualAvailability: 100,
             allowedFailureRatePct: 0.1,
@@ -478,6 +561,7 @@ function createEmptyReliabilityData(timeRange: any, params: ReliabilityLabParams
         },
         trajectory: [],
         contributors: [],
+        reliabilityDebt: [],
         recurringPatterns: [],
         provenance: {
             sources: ["PostgreSQL Event Store"],

@@ -8,6 +8,10 @@ import type {
     EvidenceClassification,
     ServiceHealthStatus,
     DataProvenance,
+    SharedEvidenceItem,
+    QualitativeConfidence,
+    InvestigationPriority,
+    IntervalComparisonAnalysis,
 } from "./types";
 import { parseTimeRange, generateTimeBuckets, calculateMetricComparison } from "./time";
 
@@ -100,6 +104,7 @@ export async function fetchSystemExplorerAnalytics(
                 projectId: true,
                 issueId: true,
                 release: true,
+                fingerprint: true,
             },
             orderBy: { timestamp: "asc" },
         }),
@@ -112,6 +117,7 @@ export async function fetchSystemExplorerAnalytics(
                       timestamp: true,
                       durationMs: true,
                       service: true,
+                      fingerprint: true,
                   },
               })
             : Promise.resolve([]),
@@ -221,10 +227,24 @@ export async function fetchSystemExplorerAnalytics(
                 ? Math.round(durations.reduce((sum, d) => sum + d, 0) / durations.length)
                 : null;
 
+        const p50LatencyMs =
+            durations.length > 0
+                ? durations[Math.floor(durations.length * 0.5)] || durations[0]
+                : null;
+
         const p95LatencyMs =
             durations.length > 0
                 ? durations[Math.floor(durations.length * 0.95)] || durations[durations.length - 1]
                 : null;
+
+        const p99LatencyMs =
+            durations.length > 0
+                ? durations[Math.floor(durations.length * 0.99)] || durations[durations.length - 1]
+                : null;
+
+        const affectedServices = Array.from(
+            new Set(bucketEvents.map((e) => e.service).filter((s): s is string => Boolean(s)))
+        );
 
         // Incident markers in bucket
         const incidentCount = issues.filter((iss) => {
@@ -288,11 +308,14 @@ export async function fetchSystemExplorerAnalytics(
             requestCount,
             errorRate,
             avgLatencyMs,
+            p50LatencyMs,
             p95LatencyMs,
+            p99LatencyMs,
             incidentCount,
             releaseCount,
             monitorTriggerCount,
             investigationCount,
+            affectedServices,
             comparison,
         };
     });
@@ -363,9 +386,19 @@ export async function fetchSystemExplorerAnalytics(
             ? primaryDurations.reduce((sum, d) => sum + d, 0) / primaryDurations.length
             : null;
 
+    const p50LatencyCurrent =
+        primaryDurations.length > 0
+            ? primaryDurations[Math.floor(primaryDurations.length * 0.5)] || primaryDurations[0]
+            : null;
+
     const p95LatencyCurrent =
         primaryDurations.length > 0
             ? primaryDurations[Math.floor(primaryDurations.length * 0.95)] || primaryDurations[primaryDurations.length - 1]
+            : null;
+
+    const p99LatencyCurrent =
+        primaryDurations.length > 0
+            ? primaryDurations[Math.floor(primaryDurations.length * 0.99)] || primaryDurations[primaryDurations.length - 1]
             : null;
 
     // Comparison summary metrics
@@ -396,7 +429,9 @@ export async function fetchSystemExplorerAnalytics(
         totalErrors: calculateMetricComparison(totalErrorsCurrent, hasComparison ? totalErrorsPrev : null, false, true),
         errorRate: calculateMetricComparison(errorRateCurrent, hasComparison ? errorRatePrev : null, true, true),
         avgLatencyMs: calculateMetricComparison(avgLatencyCurrent || 0, hasComparison && avgLatencyPrev !== null ? avgLatencyPrev : null, false, true),
+        p50LatencyMs: calculateMetricComparison(p50LatencyCurrent || 0, null, false, true),
         p95LatencyMs: calculateMetricComparison(p95LatencyCurrent || 0, hasComparison && p95LatencyPrev !== null ? p95LatencyPrev : null, false, true),
+        p99LatencyMs: calculateMetricComparison(p99LatencyCurrent || 0, null, false, true),
         activeIncidentsCount: issues.filter((i) => i.status === "OPEN").length,
         monitorsFiringCount: activeMonitorsFiring,
     };
@@ -447,9 +482,14 @@ export async function fetchSystemExplorerAnalytics(
             const requestContributionPct =
                 totalRequestsCurrent > 0 ? Math.round((s.totalCount / totalRequestsCurrent) * 1000) / 10 : 0;
 
+            s.durations.sort((a, b) => a - b);
             const avgLatency =
                 s.durations.length > 0
                     ? Math.round(s.durations.reduce((sum, d) => sum + d, 0) / s.durations.length)
+                    : null;
+            const p95Latency =
+                s.durations.length > 0
+                    ? s.durations[Math.floor(s.durations.length * 0.95)] || s.durations[s.durations.length - 1]
                     : null;
 
             const comp = compServiceMap.get(s.service);
@@ -475,6 +515,35 @@ export async function fetchSystemExplorerAnalytics(
                     ? "Degraded"
                     : "Healthy";
 
+            // Investigation Priority calculation
+            const priorityReasons: string[] = [];
+            let priorityScore = 0;
+            if (errorContributionPct > 30) {
+                priorityScore += 3;
+                priorityReasons.push(`${errorContributionPct}% of all system failures`);
+            }
+            if ((errorRateComparison.relativeDiffPct || 0) > 50) {
+                priorityScore += 2;
+                priorityReasons.push(`${(errorRateComparison.relativeDiffPct! / 100 + 1).toFixed(1)}× baseline error rate increase`);
+            }
+            if (errorRate >= 20) {
+                priorityScore += 3;
+                priorityReasons.push(`High error rate (${errorRate}%)`);
+            }
+            if (affectedIssuesCount > 0) {
+                priorityScore += 1;
+                priorityReasons.push(`${affectedIssuesCount} correlated active issue(s)`);
+            }
+
+            const priorityLevel: InvestigationPriority["level"] =
+                priorityScore >= 5 ? "Very High" : priorityScore >= 3 ? "High" : priorityScore >= 1 ? "Medium" : "Low";
+
+            const investigationPriority: InvestigationPriority = {
+                level: priorityLevel,
+                score: priorityScore,
+                reasons: priorityReasons.length > 0 ? priorityReasons : ["Stable operational metrics"],
+            };
+
             return {
                 service: s.service,
                 projectId: s.projectId,
@@ -486,17 +555,20 @@ export async function fetchSystemExplorerAnalytics(
                 errorContributionPct,
                 requestContributionPct,
                 avgLatencyMs: avgLatency,
+                p95LatencyMs: p95Latency,
                 latencyComparison,
                 affectedIssuesCount,
                 health,
+                investigationPriority,
             };
         })
         .sort((a, b) => b.errorCount - a.errorCount || b.totalCount - a.totalCount);
 
-    // 8. "Explain a Change" Detection Engine
-    const explanation = buildChangeExplanation({
+    // 8. "Explain a Change" Detection Engine & Shared Evidence Ledger
+    const { explanation, evidenceLedger } = buildChangeExplanationAndEvidence({
         timeline,
         primaryEvents,
+        comparisonEvents,
         releases,
         issues,
         alerts,
@@ -504,6 +576,14 @@ export async function fetchSystemExplorerAnalytics(
     });
 
     // 9. Provenance Metadata
+    const limitations: string[] = [];
+    if (primaryEvents.length < 10) {
+        limitations.push("Small telemetry event sample (< 10 records) limits statistical confidence in baseline comparisons.");
+    }
+    if (primaryEvents.filter((e) => e.type === "TRACE").length === 0) {
+        limitations.push("Distributed trace spans unavailable in this window; causal attribution relies on timestamp alignment.");
+    }
+
     const dataQuality: DataProvenance["dataQuality"] =
         primaryEvents.length === 0
             ? "No telemetry"
@@ -530,8 +610,9 @@ export async function fetchSystemExplorerAnalytics(
         totalEventsAnalyzed: primaryEvents.length,
         totalTracesAnalyzed: primaryEvents.filter((e) => e.type === "TRACE").length,
         totalErrorsAnalyzed: totalErrorsCurrent,
-        methodology: "Synchronized time-bucket aggregation. Error rate = (errors / requests) * 100. P95 computed from ordered durationMs arrays.",
+        methodology: "Synchronized time-bucket aggregation. Error rate = (errors / requests) * 100. Latency percentiles computed from ordered duration arrays.",
         dataQuality,
+        limitations,
         lastCalculatedAt: new Date().toISOString(),
     };
 
@@ -541,29 +622,43 @@ export async function fetchSystemExplorerAnalytics(
         summaryMetrics,
         explanation,
         serviceContributions,
+        evidenceLedger,
         provenance,
     };
 }
 
-function buildChangeExplanation(ctx: {
+function buildChangeExplanationAndEvidence(ctx: {
     timeline: TimeBucketPoint[];
     primaryEvents: any[];
+    comparisonEvents: any[];
     releases: any[];
     issues: any[];
     alerts: any[];
     serviceContributions: ServiceContributionItem[];
-}): ChangeExplanation {
+}): { explanation: ChangeExplanation; evidenceLedger: SharedEvidenceItem[] } {
+    const evidenceLedger: SharedEvidenceItem[] = [];
+
     if (ctx.primaryEvents.length === 0) {
         return {
-            detected: false,
-            headline: "No Telemetry in Selected Window",
-            explanation: "No event activity was recorded during this timeframe to evaluate system changes.",
-            classification: "Insufficient evidence",
-            affectedServices: [],
-            relatedReleases: [],
-            relatedIncidents: [],
-            relatedMonitorAlerts: [],
-            supportingEvidence: ["Zero database events found in the active scope."],
+            explanation: {
+                detected: false,
+                headline: "No Telemetry in Selected Window",
+                explanation: "No event activity was recorded during this timeframe to evaluate system changes.",
+                whatChanged: "Zero observed telemetry records.",
+                when: "Selected time range",
+                where: "Global project scope",
+                magnitudeDescription: "0 events",
+                classification: "Insufficient evidence",
+                evidenceStrength: "Insufficient Evidence",
+                affectedServices: [],
+                relatedReleases: [],
+                relatedIncidents: [],
+                relatedMonitorAlerts: [],
+                supportingEvidence: ["Zero database events found in active scope."],
+                counterEvidence: [],
+                evidenceItems: [],
+            },
+            evidenceLedger: [],
         };
     }
 
@@ -580,32 +675,42 @@ function buildChangeExplanation(ctx: {
 
     if (!peakBucket || maxErrors === 0) {
         return {
-            detected: false,
-            headline: "Stable System Behavior",
-            explanation: `System maintained a normal operational baseline throughout the window with 0 critical error spikes.`,
-            classification: "Observed",
-            affectedServices: [],
-            relatedReleases: ctx.releases.slice(0, 3).map((r) => ({
-                id: r.id,
-                version: r.version,
-                timestamp: r.lastSeen.toISOString(),
-                temporalRelation: "Occurred during window with stable post-release telemetry",
-            })),
-            relatedIncidents: [],
-            relatedMonitorAlerts: [],
-            supportingEvidence: [
-                `Evaluated ${ctx.primaryEvents.length} total events across ${ctx.timeline.length} time buckets.`,
-                `Error rate remained at 0% across all evaluated intervals.`,
-            ],
+            explanation: {
+                detected: false,
+                headline: "Stable System Behavior",
+                explanation: "System maintained a normal operational baseline throughout the window with 0 critical error spikes.",
+                whatChanged: "No anomalous failure surge observed.",
+                when: "Across all evaluated intervals",
+                where: "System-wide",
+                magnitudeDescription: "0 error events",
+                classification: "Observed",
+                evidenceStrength: "High",
+                affectedServices: [],
+                relatedReleases: ctx.releases.slice(0, 3).map((r) => ({
+                    id: r.id,
+                    version: r.version,
+                    timestamp: r.lastSeen.toISOString(),
+                    temporalRelation: "Occurred during window with stable post-release telemetry",
+                })),
+                relatedIncidents: [],
+                relatedMonitorAlerts: [],
+                supportingEvidence: [
+                    `Evaluated ${ctx.primaryEvents.length} total events across ${ctx.timeline.length} time buckets.`,
+                    "Error rate remained at 0% across all evaluated intervals.",
+                ],
+                counterEvidence: [],
+                evidenceItems: [],
+            },
+            evidenceLedger: [],
         };
     }
 
     const peakTimeMs = new Date(peakBucket.timestamp).getTime();
 
-    // Check if there are releases right before or near peak
+    // Check if there are releases right before peak
     const nearbyReleases = ctx.releases.filter((r) => {
         const relTime = r.lastSeen.getTime();
-        return relTime <= peakTimeMs && peakTimeMs - relTime <= 60 * 60 * 1000; // within 1 hour before peak
+        return relTime <= peakTimeMs && peakTimeMs - relTime <= 60 * 60 * 1000;
     });
 
     const relatedAlerts = ctx.alerts.filter((a) => {
@@ -622,40 +727,114 @@ function buildChangeExplanation(ctx: {
             shareOfTotalErrorsPct: s.errorContributionPct,
         }));
 
+    const primaryService = topServices[0]?.service || "system";
+
     let classification: EvidenceClassification = "Correlated";
+    let evidenceStrength: QualitativeConfidence = "Medium";
     let headline = `Error Surge of ${maxErrors} Events at ${peakBucket.formattedTime}`;
-    let explanation = `A localized spike of ${maxErrors} errors (${peakBucket.errorRate}% error rate) was detected at ${peakBucket.formattedTime}.`;
+    let whatChanged = `Error volume increased to ${maxErrors} failures (${peakBucket.errorRate}% error rate) in ${primaryService}.`;
+    let when = `${peakBucket.formattedTime} (UTC)`;
+    let where = `Service: ${primaryService}`;
+    let magnitudeDescription = `${maxErrors} errors (${peakBucket.errorRate}% error rate)`;
 
     const supportingEvidence: string[] = [
-        `Peak interval recorded ${maxErrors} error events (${peakBucket.errorRate}% error rate) out of ${peakBucket.requestCount} total requests.`,
+        `Peak interval recorded ${maxErrors} error events (${peakBucket.errorRate}% error rate) out of ${peakBucket.requestCount} requests.`,
         topServices.length > 0
-            ? `Top error contributor: ${topServices[0].service} (${topServices[0].errorCount} errors, ${topServices[0].shareOfTotalErrorsPct}% of total errors).`
-            : `Multiple services experienced simultaneous errors.`,
+            ? `Top error contributor: ${topServices[0].service} (${topServices[0].errorCount} errors, ${topServices[0].shareOfTotalErrorsPct}% of total failures).`
+            : "Errors distributed across multiple components.",
     ];
 
-    if (nearbyReleases.length > 0) {
-        classification = "Strongly correlated";
-        const primaryRel = nearbyReleases[0];
-        headline = `Error Spike Following Release ${primaryRel.version}`;
-        explanation = `An error surge of ${maxErrors} events in service '${topServices[0]?.service || "system"}' occurred shortly after deployment of ${primaryRel.version}.`;
-        supportingEvidence.push(
-            `Release ${primaryRel.version} was recorded at ${primaryRel.lastSeen.toLocaleTimeString()} (${Math.round((peakTimeMs - primaryRel.lastSeen.getTime()) / 60000)}m prior to error peak).`
+    const counterEvidence: string[] = [];
+
+    // Add peak spike to evidence ledger
+    evidenceLedger.push({
+        id: `ev-spike-${peakTimeMs}`,
+        type: "ERROR_SPIKE",
+        title: `Error Surge: ${maxErrors} failures`,
+        description: `Error rate reached ${peakBucket.errorRate}% at ${peakBucket.formattedTime}.`,
+        timestamp: peakBucket.timestamp,
+        relationship: "SUPPORTING",
+        strength: "High",
+        source: "Telemetry Event Ingestion",
+    });
+
+    // Check if the same error fingerprint existed before the peak in comparison window
+    const peakFingerprints = new Set(
+        ctx.primaryEvents
+            .filter((e) => e.type === "ERROR" && Math.abs(e.timestamp.getTime() - peakTimeMs) < 15 * 60 * 1000)
+            .map((e) => e.fingerprint)
+            .filter(Boolean)
+    );
+
+    const existedInBaseline = ctx.comparisonEvents.some(
+        (e) => e.type === "ERROR" && e.fingerprint && peakFingerprints.has(e.fingerprint)
+    );
+
+    if (existedInBaseline) {
+        counterEvidence.push(
+            "Identical error fingerprint was observed in previous comparison window prior to this surge."
         );
+    }
+
+    if (nearbyReleases.length > 0) {
+        const primaryRel = nearbyReleases[0];
+        const minsBefore = Math.round((peakTimeMs - primaryRel.lastSeen.getTime()) / 60000);
+
+        if (!existedInBaseline) {
+            classification = "Strongly correlated";
+            evidenceStrength = "High";
+            headline = `Error Spike Following Release ${primaryRel.version}`;
+            whatChanged = `Error surge of ${maxErrors} events occurred ${minsBefore}m after deployment of ${primaryRel.version}.`;
+        } else {
+            classification = "Possible";
+            evidenceStrength = "Medium";
+            headline = `Error Spike Near Release ${primaryRel.version} (Pre-existing Pattern)`;
+        }
+
+        supportingEvidence.push(
+            `Release ${primaryRel.version} deployed at ${primaryRel.lastSeen.toLocaleTimeString()} (${minsBefore}m before error peak).`
+        );
+
+        evidenceLedger.push({
+            id: `ev-release-${primaryRel.id}`,
+            type: "DEPLOYMENT",
+            title: `Deployment: Release ${primaryRel.version}`,
+            description: `Deployed ${minsBefore}m prior to error peak.`,
+            timestamp: primaryRel.lastSeen.toISOString(),
+            relationship: existedInBaseline ? "CORRELATED" : "SUPPORTING",
+            strength: existedInBaseline ? "Medium" : "High",
+            source: "Release Registry",
+            entityId: primaryRel.id,
+        });
     }
 
     if (relatedAlerts.length > 0) {
         supportingEvidence.push(
             `${relatedAlerts.length} monitor alert(s) triggered during this window (e.g. ${relatedAlerts[0].monitor.name}).`
         );
+        evidenceLedger.push({
+            id: `ev-alert-${relatedAlerts[0].id}`,
+            type: "MONITOR_TRIGGER",
+            title: `Monitor Alert: ${relatedAlerts[0].monitor.name}`,
+            description: `Condition met: ${relatedAlerts[0].conditionSummary}`,
+            timestamp: relatedAlerts[0].triggeredAt.toISOString(),
+            relationship: "SUPPORTING",
+            strength: "Very High",
+            source: "Monitor Evaluation Engine",
+            entityId: relatedAlerts[0].id,
+        });
     }
 
-    return {
+    const explanation: ChangeExplanation = {
         detected: true,
         headline,
-        explanation,
-        peakTimestamp: peakBucket.timestamp,
-        magnitudeDescription: `${maxErrors} error events (${peakBucket.errorRate}% error rate)`,
+        explanation: `${whatChanged} Telemetry evidence shows ${maxErrors} errors concentrated in ${primaryService}.`,
+        whatChanged,
+        when,
+        where,
+        magnitudeDescription,
         classification,
+        evidenceStrength,
         affectedServices: topServices,
         relatedReleases: nearbyReleases.map((r) => ({
             id: r.id,
@@ -677,6 +856,13 @@ function buildChangeExplanation(ctx: {
             triggeredAt: a.triggeredAt.toISOString(),
         })),
         supportingEvidence,
+        counterEvidence,
+        evidenceItems: evidenceLedger,
+    };
+
+    return {
+        explanation,
+        evidenceLedger,
     };
 }
 
@@ -689,7 +875,9 @@ function createEmptySystemExplorerData(timeRange: any, params: SystemExplorerPar
             totalErrors: calculateMetricComparison(0, null),
             errorRate: calculateMetricComparison(0, null, true),
             avgLatencyMs: calculateMetricComparison(0, null),
+            p50LatencyMs: calculateMetricComparison(0, null),
             p95LatencyMs: calculateMetricComparison(0, null),
+            p99LatencyMs: calculateMetricComparison(0, null),
             activeIncidentsCount: 0,
             monitorsFiringCount: 0,
         },
@@ -697,14 +885,22 @@ function createEmptySystemExplorerData(timeRange: any, params: SystemExplorerPar
             detected: false,
             headline: "No Projects or Telemetry Available",
             explanation: "No connected projects or active telemetry sources found for this scope.",
+            whatChanged: "None",
+            when: "N/A",
+            where: "N/A",
+            magnitudeDescription: "0 events",
             classification: "Insufficient evidence",
+            evidenceStrength: "Insufficient Evidence",
             affectedServices: [],
             relatedReleases: [],
             relatedIncidents: [],
             relatedMonitorAlerts: [],
             supportingEvidence: ["No database records found matching query parameters."],
+            counterEvidence: [],
+            evidenceItems: [],
         },
         serviceContributions: [],
+        evidenceLedger: [],
         provenance: {
             sources: ["PostgreSQL Event Store"],
             timeRange: {

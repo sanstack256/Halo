@@ -15,9 +15,11 @@ import {
     TrendingDown,
     TrendingUp,
 } from "lucide-react";
-import type { ChangeIntelligenceData } from "@/lib/analytics/types";
+import { useState } from "react";
+import type { ChangeIntelligenceData, ChangeImpactItem } from "@/lib/analytics/types";
 import { DashboardFilterBar } from "./dashboard-filter-bar";
 import { ChangeTimelineView } from "./change-timeline-view";
+import { ChangeImpactModal } from "./change-impact-modal";
 
 interface ChangeIntelligenceClientProps {
     data: ChangeIntelligenceData;
@@ -39,6 +41,7 @@ export function ChangeIntelligenceClient({
     currentService = "ALL",
 }: ChangeIntelligenceClientProps) {
     const { changes, summary, provenance } = data;
+    const [selectedChange, setSelectedChange] = useState<ChangeImpactItem | null>(null);
 
     return (
         <div className="p-6 md:p-8 space-y-6 max-w-7xl mx-auto font-mono text-xs">
@@ -116,7 +119,20 @@ export function ChangeIntelligenceClient({
             </div>
 
             {/* Change Timeline View */}
-            <ChangeTimelineView changes={changes} />
+            <ChangeTimelineView
+                changes={changes}
+                onSelectChange={(c) => setSelectedChange(c)}
+                projectId={currentProjectId}
+            />
+
+            {/* Deep Impact Analysis Modal */}
+            {selectedChange && (
+                <ChangeImpactModal
+                    change={selectedChange}
+                    projectId={currentProjectId}
+                    onClose={() => setSelectedChange(null)}
+                />
+            )}
         </div>
     );
 }

@@ -293,13 +293,54 @@ export function ReliabilityPostureView({ data, projectId }: ReliabilityPostureVi
                                             Services: {p.affectedServices.join(", ") || "application"}
                                         </span>
                                         <span>·</span>
-                                        <span>Last: {formatDeterministicDateTime(new Date(p.lastObservedAt))}</span>
+                                        <span>Last: {formatDeterministicDateTime(p.lastObservedAt)}</span>
                                     </div>
                                 </div>
                             ))}
                         </div>
                     )}
                 </div>
+
+                {/* 2. Reliability Debt */}
+                {data.reliabilityDebt && data.reliabilityDebt.length > 0 && (
+                    <div className="p-6 rounded-2xl border border-amber-500/20 bg-surface-elevated space-y-4 lg:col-span-2">
+                        <div className="flex items-center justify-between border-b border-border pb-3">
+                            <div className="flex items-center gap-2">
+                                <Zap size={14} className="text-amber-400" />
+                                <h3 className="text-xs font-semibold text-white uppercase tracking-wider">
+                                    Reliability Debt
+                                </h3>
+                            </div>
+                            <span className="text-[10px] text-muted">
+                                Persistent failure patterns consuming reliability budget ({data.reliabilityDebt.length} active patterns)
+                            </span>
+                        </div>
+
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                            {data.reliabilityDebt.map((debt) => (
+                                <div
+                                    key={debt.id}
+                                    className="p-3 rounded-xl bg-surface border border-border flex items-start justify-between gap-2"
+                                >
+                                    <div className="space-y-1">
+                                        <div className="flex items-center gap-2">
+                                            <span className="font-semibold text-white text-[11px] truncate max-w-xs">{debt.title}</span>
+                                            <span className="px-1.5 py-0.2 rounded text-[9px] font-bold bg-amber-500/10 text-amber-400 border border-amber-500/20">
+                                                {debt.severity}
+                                            </span>
+                                        </div>
+                                        <p className="text-[10px] text-muted font-sans">
+                                            Observed {debt.occurrenceCount}x across {debt.affectedServices.join(", ") || "services"}
+                                        </p>
+                                    </div>
+                                    <span className="text-[10px] text-amber-400 font-bold shrink-0">
+                                        ~{debt.estimatedReliabilityImpactMinutes}m impact
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 {/* 2. Top Reliability Contributors */}
                 <div className="p-6 rounded-2xl border border-border bg-surface-elevated space-y-4">

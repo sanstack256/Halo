@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 import {
     Activity,
@@ -11,13 +11,14 @@ import {
     Clock,
     GitCommit,
     HelpCircle,
+    Info,
     Layers,
     Radio,
     ShieldAlert,
     Sparkles,
     Zap,
 } from "lucide-react";
-import type { ChangeExplanation, EvidenceClassification } from "@/lib/analytics/types";
+import type { ChangeExplanation, EvidenceClassification, QualitativeConfidence } from "@/lib/analytics/types";
 import { formatDeterministicDateTime } from "@/lib/date-format";
 
 interface ChangeExplanationPanelProps {
@@ -35,53 +36,32 @@ export function ChangeExplanationPanel({
         detected,
         headline,
         explanation: text,
-        peakTimestamp,
+        whatChanged,
+        when,
+        where,
         magnitudeDescription,
         classification,
+        evidenceStrength,
         affectedServices,
         relatedReleases,
         relatedIncidents,
         relatedMonitorAlerts,
         supportingEvidence,
+        counterEvidence,
+        evidenceItems,
     } = explanation;
 
-    const classificationConfig: Record<
-        EvidenceClassification,
-        { label: string; badgeClass: string; desc: string }
-    > = {
-        "Observed": {
-            label: "Observed",
-            badgeClass: "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
-            desc: "Signals were temporally observed without definitive cross-service causality.",
-        },
-        "Correlated": {
-            label: "Correlated",
-            badgeClass: "bg-amber-500/10 text-amber-400 border-amber-500/30",
-            desc: "Telemetry shifts align chronologically across multiple services or releases.",
-        },
-        "Strongly correlated": {
-            label: "Strongly Correlated",
-            badgeClass: "bg-purple-500/10 text-purple-400 border-purple-500/30",
-            desc: "High-confidence temporal alignment with sharp telemetry deviation immediately following change.",
-        },
-        "Causal evidence established": {
-            label: "Causal Evidence Established",
-            badgeClass: "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
-            desc: "Direct causal chain validated through distributed trace context and error payloads.",
-        },
-        "Possible": {
-            label: "Possible",
-            badgeClass: "bg-yellow-500/10 text-yellow-400 border-yellow-500/30",
-            desc: "Plausible relationship with partial supporting evidence.",
-        },
-        "Insufficient evidence": {
-            label: "Insufficient Evidence",
-            badgeClass: "bg-zinc-500/10 text-zinc-400 border-zinc-500/30",
-            desc: "Sample size or telemetry records are insufficient to establish a reliable conclusion.",
-        },
-    };
+    const [showEvidenceLedger, setShowEvidenceLedger] = useState(false);
 
-    const currentClass = classificationConfig[classification] || classificationConfig["Correlated"];
+    const classificationBadgeClass: Record<EvidenceClassification, string> = {
+        "Observed": "bg-cyan-500/10 text-cyan-400 border-cyan-500/30",
+        "Correlated": "bg-amber-500/10 text-amber-400 border-amber-500/30",
+        "Strongly correlated": "bg-purple-500/10 text-purple-400 border-purple-500/30",
+        "Causal evidence established": "bg-emerald-500/10 text-emerald-400 border-emerald-500/30",
+        "Possible": "bg-yellow-500/10 text-yellow-400 border-yellow-500/30",
+        "Insufficient evidence": "bg-zinc-500/10 text-zinc-400 border-zinc-500/30",
+        "Unknown": "bg-zinc-500/10 text-zinc-400 border-zinc-500/30",
+    };
 
     const primaryService = affectedServices[0]?.service;
     const primaryIncident = relatedIncidents[0];
@@ -104,14 +84,21 @@ export function ChangeExplanationPanel({
                                 Change &amp; Anomaly Explanation
                             </h3>
                             <span
-                                className={`px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${currentClass.badgeClass}`}
-                                title={currentClass.desc}
+                                className={`px-2.5 py-0.5 rounded-full border text-[10px] font-semibold ${classificationBadgeClass[classification] || classificationBadgeClass["Correlated"]}`}
                             >
-                                {currentClass.label}
+                                {classification}
                             </span>
+                            <button
+                                type="button"
+                                onClick={() => setShowEvidenceLedger(!showEvidenceLedger)}
+                                className="px-2.5 py-0.5 rounded-full bg-surface border border-border text-zinc-300 text-[10px] hover:border-accent/40 transition-colors cursor-pointer flex items-center gap-1"
+                            >
+                                <span>Confidence: {evidenceStrength}</span>
+                                <Info size={11} className="text-accent" />
+                            </button>
                         </div>
                         <p className="text-[11px] text-zinc-400 font-sans">
-                            Evidence-backed correlation derived from synchronized telemetry signals.
+                            Evidence-backed correlation distinguishing observed changes from causal claims.
                         </p>
                     </div>
                 </div>
@@ -127,31 +114,70 @@ export function ChangeExplanationPanel({
                 )}
             </div>
 
-            {/* Headline & Core Summary */}
-            <div className="p-4 rounded-xl bg-surface border border-border space-y-2">
-                <div className="text-sm font-semibold text-white flex items-center gap-2">
-                    <AlertCircle size={15} className="text-accent shrink-0" />
-                    <span>{headline}</span>
+            {/* Structured What / When / Where Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-4 gap-3 text-[11px]">
+                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
+                    <span className="text-[10px] text-muted uppercase block">What Changed</span>
+                    <p className="text-white font-semibold">{whatChanged}</p>
                 </div>
-                <p className="text-zinc-300 font-sans text-xs leading-relaxed">
-                    {text}
-                </p>
-
-                {magnitudeDescription && (
-                    <div className="pt-2 border-t border-border/60 flex items-center gap-2 text-[11px] text-zinc-400">
-                        <span className="text-muted">Magnitude:</span>
-                        <span className="text-white font-semibold">{magnitudeDescription}</span>
-                        {peakTimestamp && (
-                            <>
-                                <span className="text-muted">· Peak Time:</span>
-                                <span className="text-accent">
-                                    {formatDeterministicDateTime(new Date(peakTimestamp))}
-                                </span>
-                            </>
-                        )}
-                    </div>
-                )}
+                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
+                    <span className="text-[10px] text-muted uppercase block">When</span>
+                    <p className="text-accent font-semibold">{when}</p>
+                </div>
+                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
+                    <span className="text-[10px] text-muted uppercase block">Where</span>
+                    <p className="text-white font-semibold">{where}</p>
+                </div>
+                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
+                    <span className="text-[10px] text-muted uppercase block">Magnitude</span>
+                    <p className="text-red-400 font-semibold">{magnitudeDescription}</p>
+                </div>
             </div>
+
+            {/* Interactive Evidence Ledger Breakdown */}
+            {showEvidenceLedger && evidenceItems.length > 0 && (
+                <div className="p-4 rounded-xl bg-[#06080d] border border-accent/30 space-y-3 animate-in fade-in">
+                    <div className="flex items-center justify-between text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border/60 pb-1.5">
+                        <span className="flex items-center gap-1.5 text-accent">
+                            <Info size={13} />
+                            <span>Shared Evidence Ledger ({evidenceItems.length} records)</span>
+                        </span>
+                        <span className="text-[10px] text-muted normal-case">
+                            Confidence basis: {evidenceStrength}
+                        </span>
+                    </div>
+
+                    <div className="space-y-2">
+                        {evidenceItems.map((item) => (
+                            <div
+                                key={item.id}
+                                className="p-2.5 rounded-lg bg-surface border border-border flex items-start justify-between gap-3 text-[11px]"
+                            >
+                                <div className="space-y-0.5">
+                                    <div className="flex items-center gap-2">
+                                        <span className="font-semibold text-white">{item.title}</span>
+                                        <span className="text-[9px] px-1.5 py-0.2 rounded bg-[#080b11] border border-border text-muted">
+                                            {item.source}
+                                        </span>
+                                    </div>
+                                    <p className="text-zinc-300 font-sans">{item.description}</p>
+                                </div>
+                                <span
+                                    className={`px-2 py-0.5 rounded text-[10px] font-semibold shrink-0 ${
+                                        item.relationship === "SUPPORTING"
+                                            ? "bg-emerald-500/10 text-emerald-400 border border-emerald-500/20"
+                                            : item.relationship === "COUNTER_EVIDENCE"
+                                            ? "bg-amber-500/10 text-amber-400 border border-amber-500/20"
+                                            : "bg-cyan-500/10 text-cyan-400 border border-cyan-500/20"
+                                    }`}
+                                >
+                                    {item.relationship}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+            )}
 
             {/* Affected Services & Correlated Entities Grid */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -187,7 +213,7 @@ export function ChangeExplanationPanel({
                     )}
                 </div>
 
-                {/* 2. Correlated Releases / Changes */}
+                {/* 2. Correlated Releases */}
                 <div className="p-4 rounded-xl bg-surface border border-border space-y-3">
                     <div className="text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border/60 pb-2 flex items-center justify-between">
                         <span>Correlated Releases &amp; Changes</span>
@@ -217,20 +243,43 @@ export function ChangeExplanationPanel({
                 </div>
             </div>
 
-            {/* Supporting Evidence Bullets */}
-            <div className="p-4 rounded-xl bg-surface border border-border space-y-2.5">
-                <div className="text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border/60 pb-2">
-                    Supporting Telemetry Evidence
+            {/* Supporting & Counter Evidence Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Supporting Evidence */}
+                <div className="p-4 rounded-xl bg-surface border border-border space-y-2.5">
+                    <div className="text-[11px] font-semibold text-emerald-400 uppercase tracking-wider border-b border-border/60 pb-2">
+                        Supporting Telemetry Evidence
+                    </div>
+                    <ul className="space-y-1.5 text-[11px] font-sans text-zinc-300">
+                        {supportingEvidence.map((ev, idx) => (
+                            <li key={idx} className="flex items-start gap-2">
+                                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 mt-1.5 shrink-0" />
+                                <span>{ev}</span>
+                            </li>
+                        ))}
+                    </ul>
                 </div>
 
-                <ul className="space-y-1.5 text-[11px] font-sans text-zinc-300">
-                    {supportingEvidence.map((ev, idx) => (
-                        <li key={idx} className="flex items-start gap-2">
-                            <span className="w-1.5 h-1.5 rounded-full bg-accent mt-1.5 shrink-0" />
-                            <span>{ev}</span>
-                        </li>
-                    ))}
-                </ul>
+                {/* Counter Evidence */}
+                <div className="p-4 rounded-xl bg-surface border border-border space-y-2.5">
+                    <div className="text-[11px] font-semibold text-amber-400 uppercase tracking-wider border-b border-border/60 pb-2">
+                        Counter-Evidence &amp; Boundary Conditions
+                    </div>
+                    {counterEvidence.length === 0 ? (
+                        <p className="text-muted text-[11px] font-sans">
+                            No contradicting telemetry observed (e.g. no pre-existing baseline failures).
+                        </p>
+                    ) : (
+                        <ul className="space-y-1.5 text-[11px] font-sans text-zinc-300">
+                            {counterEvidence.map((cev, idx) => (
+                                <li key={idx} className="flex items-start gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
+                                    <span>{cev}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    )}
+                </div>
             </div>
         </div>
     );

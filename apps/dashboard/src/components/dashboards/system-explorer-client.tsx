@@ -205,8 +205,7 @@ export function SystemExplorerClient({
             <SynchronizedTimeline
                 timeline={timeline}
                 markers={markers}
-                onSelectBucket={(b) => setSelectedBucket(b)}
-                selectedBucket={selectedBucket}
+                projectId={currentProjectId !== "ALL" ? currentProjectId : undefined}
             />
 
             {/* Explain a Change Engine Panel */}

@@ -74,6 +74,7 @@ export function DependencyIntelligenceClient({
             <DependencyTopologyGraph
                 nodes={nodes}
                 edges={edges}
+                criticalPaths={data.criticalPaths}
                 observedCallTotal={observedCallTotal}
                 projectId={currentProjectId !== "ALL" ? currentProjectId : undefined}
             />

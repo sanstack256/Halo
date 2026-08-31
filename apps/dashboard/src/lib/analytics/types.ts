@@ -8,11 +8,43 @@ export type EvidenceClassification =
     | "Strongly correlated"
     | "Causal evidence established"
     | "Possible"
-    | "Insufficient evidence";
+    | "Insufficient evidence"
+    | "Unknown";
+
+export type ReleaseVerdict =
+    | "Regression Detected"
+    | "Likely Regression"
+    | "No Regression Observed"
+    | "Insufficient Evidence"
+    | "Inconclusive";
 
 export type ServiceHealthStatus = "Healthy" | "Degraded" | "Critical" | "Unknown";
 
 export type TrendDirection = "Improving" | "Stable" | "Degrading" | "Volatile" | "Unknown";
+
+export type QualitativeConfidence = "Very High" | "High" | "Medium" | "Low" | "Insufficient Evidence";
+
+export type InvestigationPriorityLevel = "Very High" | "High" | "Medium" | "Low";
+
+export interface InvestigationPriority {
+    level: InvestigationPriorityLevel;
+    score: number;
+    reasons: string[];
+}
+
+export interface SharedEvidenceItem {
+    id: string;
+    type: "ERROR_SPIKE" | "DEPLOYMENT" | "TRACE_LINK" | "DEPENDENCY_ANOMALY" | "ISSUE_OCCURRENCE" | "MONITOR_TRIGGER" | "HISTORICAL_RECURRENCE";
+    title: string;
+    description: string;
+    timestamp: string;
+    relationship: "SUPPORTING" | "COUNTER_EVIDENCE" | "CORRELATED" | "OBSERVED";
+    strength: QualitativeConfidence;
+    source: string;
+    entityId?: string;
+    linkUrl?: string;
+    metadata?: Record<string, any>;
+}
 
 export interface DataProvenance {
     sources: string[];
@@ -33,6 +65,7 @@ export interface DataProvenance {
     totalErrorsAnalyzed: number;
     methodology: string;
     dataQuality: "Complete" | "Partial" | "Insufficient observations" | "No telemetry";
+    limitations?: string[];
     lastCalculatedAt: string;
 }
 
@@ -54,12 +87,14 @@ export interface TimeBucketPoint {
     requestCount: number;
     errorRate: number;
     avgLatencyMs: number | null;
+    p50LatencyMs: number | null;
     p95LatencyMs: number | null;
+    p99LatencyMs: number | null;
     incidentCount: number;
     releaseCount: number;
     monitorTriggerCount: number;
     investigationCount: number;
-    // For comparison period if active
+    affectedServices: string[];
     comparison?: {
         errorCount: number;
         requestCount: number;
@@ -83,9 +118,12 @@ export interface ChangeExplanation {
     detected: boolean;
     headline: string;
     explanation: string;
-    peakTimestamp?: string;
-    magnitudeDescription?: string;
+    whatChanged: string;
+    when: string;
+    where: string;
+    magnitudeDescription: string;
     classification: EvidenceClassification;
+    evidenceStrength: QualitativeConfidence;
     affectedServices: Array<{
         service: string;
         errorCount: number;
@@ -113,6 +151,8 @@ export interface ChangeExplanation {
         triggeredAt: string;
     }>;
     supportingEvidence: string[];
+    counterEvidence: string[];
+    evidenceItems: SharedEvidenceItem[];
 }
 
 export interface ServiceContributionItem {
@@ -126,9 +166,40 @@ export interface ServiceContributionItem {
     errorContributionPct: number;
     requestContributionPct: number;
     avgLatencyMs: number | null;
+    p95LatencyMs: number | null;
     latencyComparison?: MetricComparison;
     affectedIssuesCount: number;
     health: ServiceHealthStatus;
+    investigationPriority: InvestigationPriority;
+}
+
+export interface IntervalComparisonAnalysis {
+    selectedInterval: {
+        start: string;
+        end: string;
+        formattedTime: string;
+        requestCount: number;
+        errorCount: number;
+        errorRate: number;
+        avgLatencyMs: number | null;
+    };
+    baselineInterval: {
+        start: string;
+        end: string;
+        requestCount: number;
+        errorCount: number;
+        errorRate: number;
+        avgLatencyMs: number | null;
+    };
+    increasedMetrics: string[];
+    decreasedMetrics: string[];
+    appearedItems: string[];
+    disappearedItems: string[];
+    affectedServices: Array<{ service: string; errorCount: number; errorRate: number }>;
+    affectedEndpoints: Array<{ endpoint: string; count: number; errorCount: number }>;
+    relatedReleases: Array<{ version: string; timestamp: string }>;
+    relatedIssues: Array<{ id: string; title: string; severity: string }>;
+    relatedMonitors: Array<{ id: string; name: string; condition: string }>;
 }
 
 export interface SystemExplorerData {
@@ -139,12 +210,15 @@ export interface SystemExplorerData {
         totalErrors: MetricComparison;
         errorRate: MetricComparison;
         avgLatencyMs: MetricComparison;
+        p50LatencyMs: MetricComparison;
         p95LatencyMs: MetricComparison;
+        p99LatencyMs: MetricComparison;
         activeIncidentsCount: number;
         monitorsFiringCount: number;
     };
     explanation: ChangeExplanation;
     serviceContributions: ServiceContributionItem[];
+    evidenceLedger: SharedEvidenceItem[];
     provenance: DataProvenance;
 }
 
@@ -154,6 +228,7 @@ export interface ServiceLandscapeItem {
     projectName: string;
     health: ServiceHealthStatus;
     healthReason: string;
+    investigationPriority: InvestigationPriority;
     errorCount: number;
     totalCount: number;
     errorRate: number;
@@ -163,11 +238,13 @@ export interface ServiceLandscapeItem {
     latencyComparison?: MetricComparison;
     requestCount: number;
     failureContributionPct: number;
+    trafficSharePct: number;
     dependencyCount: number;
     trend: TrendDirection;
     lastSeen: string | null;
     activeIssuesCount: number;
     recentReleasesCount: number;
+    mostRecurringFingerprint?: string;
 }
 
 export interface ServiceLandscapeRankings {
@@ -175,6 +252,8 @@ export interface ServiceLandscapeRankings {
     fastestDegrading: Array<{ service: string; errorRateChange: number; currentRate: number }>;
     highestLatencyRegressions: Array<{ service: string; latencyDiffMs: number; currentP95Ms: number }>;
     highestTrafficExposure: Array<{ service: string; requestCount: number; requestSharePct: number }>;
+    highestReliabilityRisk: Array<{ service: string; priority: InvestigationPriorityLevel; errorRate: number }>;
+    mostRecurringFailures: Array<{ service: string; recurrenceCount: number }>;
 }
 
 export interface ServiceDetailedContext {
@@ -183,6 +262,7 @@ export interface ServiceDetailedContext {
     projectName: string;
     health: ServiceHealthStatus;
     healthReason: string;
+    investigationPriority: InvestigationPriority;
     metrics: {
         errorRate: number;
         errorCount: number;
@@ -190,10 +270,11 @@ export interface ServiceDetailedContext {
         avgLatencyMs: number | null;
         p95LatencyMs: number | null;
         failureContributionPct: number;
+        trafficSharePct: number;
         trend: TrendDirection;
     };
     observedDependencies: {
-        upstream: Array<{ service: string; callCount: number; errorRate: number }>;
+        upstream: Array<{ service: string; callCount: number; errorRate: number; avgLatencyMs: number | null }>;
         downstream: Array<{ service: string; callCount: number; errorRate: number; avgLatencyMs: number | null }>;
     };
     recentChanges: Array<{
@@ -203,12 +284,19 @@ export interface ServiceDetailedContext {
         eventCount: number;
         errorCount: number;
     }>;
-    relatedIssues: Array<{
+    activeIssues: Array<{
         id: string;
         title: string;
         severity: string;
         status: string;
         eventCount: number;
+        lastSeen: string;
+    }>;
+    recurringFailures: Array<{
+        fingerprint: string;
+        title: string;
+        count: number;
+        firstSeen: string;
         lastSeen: string;
     }>;
     recentInvestigations: Array<{
@@ -258,10 +346,18 @@ export interface ChangeImpactItem {
         requestCount: MetricComparison;
         avgLatencyMs: MetricComparison;
     };
+    verdict: ReleaseVerdict;
     impactClassification: EvidenceClassification;
+    evidenceStrength: QualitativeConfidence;
     regressionDetected: boolean;
     regressionSeverity?: "LOW" | "MEDIUM" | "HIGH" | "CRITICAL";
     regressionReason?: string;
+    sampleSizeAssessment: {
+        baselineEvents: number;
+        observationEvents: number;
+        isSufficient: boolean;
+        notes: string;
+    };
     relatedIssuesCount: number;
     relatedMonitorsCount: number;
     relatedInvestigationsCount: number;
@@ -272,6 +368,7 @@ export interface ChangeImpactDeepAnalysis {
     observedChanges: string[];
     likelyRelatedChanges: string[];
     unrelatedChanges: string[];
+    counterEvidence: string[];
     insufficientEvidenceNotes: string[];
     relatedIssues: Array<{
         id: string;
@@ -301,6 +398,7 @@ export interface ChangeImpactDeepAnalysis {
         errorCount: number;
         requestCount: number;
     }>;
+    evidenceItems: SharedEvidenceItem[];
 }
 
 export interface ChangeIntelligenceData {
@@ -308,6 +406,7 @@ export interface ChangeIntelligenceData {
     summary: {
         totalChanges: number;
         regressionsDetected: number;
+        likelyRegressions: number;
         stableChanges: number;
         insufficientDataCount: number;
     };
@@ -326,6 +425,10 @@ export interface DependencyNode {
     avgLatencyMs: number | null;
     recentIssueCount: number;
     recentReleaseCount: number;
+    // Layout coordinates
+    x?: number;
+    y?: number;
+    tier?: number;
 }
 
 export interface DependencyEdge {
@@ -338,6 +441,7 @@ export interface DependencyEdge {
     avgLatencyMs: number | null;
     p95LatencyMs: number | null;
     lastObservedAt: string;
+    isCriticalPath?: boolean;
     evidence: {
         type: "TRACE_SPAN" | "REQUEST_HEADER" | "SERVICE_METADATA";
         observedSampleCount: number;
@@ -345,27 +449,28 @@ export interface DependencyEdge {
     };
 }
 
+export interface CriticalPathItem {
+    pathId: string;
+    nodes: string[];
+    callVolume: number;
+    avgLatencyMs: number;
+    totalErrors: number;
+    errorRate: number;
+    evidenceSampleCount: number;
+}
+
 export interface BlastRadiusResult {
     selectedEntity: string;
     directlyAffected: Array<{ id: string; name: string; reason: string }>;
-    downstreamImpact: Array<{ id: string; name: string; hops: number; observedErrorRate: number }>;
-    potentiallyExposed: Array<{ id: string; name: string; connectionType: string }>;
+    observedPropagation: Array<{ id: string; name: string; hops: number; observedErrorRate: number; evidence: string }>;
+    potentialExposure: Array<{ id: string; name: string; hops: number; connectionType: string }>;
     unobserved: Array<{ id: string; name: string }>;
-}
-
-export interface FailurePropagationStep {
-    stepIndex: number;
-    sourceEntity: string;
-    targetEntity: string;
-    timestamp: string;
-    latencyMs: number;
-    status: "ERROR" | "SUCCESS";
-    evidence: string;
 }
 
 export interface DependencyIntelligenceData {
     nodes: DependencyNode[];
     edges: DependencyEdge[];
+    criticalPaths: CriticalPathItem[];
     observedCallTotal: number;
     provenance: DataProvenance;
 }
@@ -381,6 +486,45 @@ export interface ReliabilityPostureMetric {
     comparison?: MetricComparison;
 }
 
+export interface ReliabilityDebtItem {
+    id: string;
+    fingerprint: string;
+    title: string;
+    occurrenceCount: number;
+    affectedServices: string[];
+    affectedReleases: string[];
+    affectedEndpoints: string[];
+    firstSeen: string;
+    lastSeen: string;
+    recurrenceTrend: TrendDirection;
+    severity: "CRITICAL" | "HIGH" | "MEDIUM" | "LOW";
+    evidenceQuality: QualitativeConfidence;
+    estimatedReliabilityImpactMinutes: number;
+}
+
+export interface OccurrenceComparison {
+    fingerprint: string;
+    title: string;
+    currentOccurrence: {
+        timestamp: string;
+        service: string;
+        release?: string;
+        errorCount: number;
+        errorRate: number;
+        avgLatencyMs: number | null;
+    };
+    previousOccurrence: {
+        timestamp: string;
+        service: string;
+        release?: string;
+        errorCount: number;
+        errorRate: number;
+        avgLatencyMs: number | null;
+    };
+    differences: string[];
+    sharedAttributes: string[];
+}
+
 export interface RecurringPatternItem {
     id: string;
     fingerprint: string;
@@ -388,17 +532,20 @@ export interface RecurringPatternItem {
     occurrenceCount: number;
     affectedServices: string[];
     affectedReleases: string[];
+    affectedEndpoints: string[];
     firstObservedAt: string;
     lastObservedAt: string;
     trend: TrendDirection;
     activeIssueId?: string;
     sampleStack?: string | null;
+    historicalMatchesCount: number;
 }
 
 export interface ReliabilityLabData {
     posture: {
         availabilityPct: ReliabilityPostureMetric;
         errorBudgetRemainingPct: ReliabilityPostureMetric;
+        errorBudgetConsumedPct: ReliabilityPostureMetric;
         burnRateMultiplier: ReliabilityPostureMetric;
         crashFreeSessionPct: ReliabilityPostureMetric;
         incidentFrequencyPerDay: ReliabilityPostureMetric;
@@ -406,6 +553,7 @@ export interface ReliabilityLabData {
     };
     errorBudget: {
         isConfigured: boolean;
+        budgetStatus: "Remaining" | "Consumed" | "Exhausted";
         targetAvailability: number;
         actualAvailability: number;
         allowedFailureRatePct: number;
@@ -432,6 +580,7 @@ export interface ReliabilityLabData {
         downtimeMinutesEstimate: number;
         trend: TrendDirection;
     }>;
+    reliabilityDebt: ReliabilityDebtItem[];
     recurringPatterns: RecurringPatternItem[];
     provenance: DataProvenance;
 }

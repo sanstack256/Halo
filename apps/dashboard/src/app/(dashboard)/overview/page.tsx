@@ -81,7 +81,7 @@ export default async function OverviewPage() {
                                         </h2>
 
                                         <p className="text-xs text-secondary leading-relaxed">
-                                            {alert.impact} &bull; {alert.suspectedCause}
+                                            {alert.occurrenceDescription} &bull; {alert.suspectedCause}
                                         </p>
                                     </div>
 
@@ -165,7 +165,7 @@ export default async function OverviewPage() {
                                         <div className="space-y-1.5 min-w-0">
                                             <div className="flex items-center gap-2.5 flex-wrap">
                                                 <span className="halo-metric-pill text-accent bg-accent/10 border-accent/30 font-semibold">
-                                                    Confidence: {disc.confidence} ({disc.confidenceScore}%)
+                                                    {disc.confidence}{disc.confidenceScore !== null ? ` (${Math.round(disc.confidenceScore * 100)}%)` : ""}
                                                 </span>
                                                 <span className="text-xs font-mono text-muted">
                                                     {disc.service} &bull; {disc.projectName}
@@ -182,13 +182,18 @@ export default async function OverviewPage() {
                                             </h3>
 
                                             <p className="text-xs text-secondary leading-relaxed">
-                                                {disc.summary} &bull; <span className="text-muted">{disc.supportingEvidenceCount} pieces of supporting evidence evaluated.</span>
+                                                {disc.summary}
+                                                {disc.supportingEvidenceCount > 0 && (
+                                                    <span className="text-muted"> &bull; {disc.supportingEvidenceCount} pieces of supporting evidence evaluated.</span>
+                                                )}
                                             </p>
                                         </div>
 
                                         <div className="flex-shrink-0">
                                             <Link
-                                                href={`/projects/${disc.projectId}/investigations/new?issueId=${disc.issueId}`}
+                                                href={disc.issueId
+                                                    ? `/projects/${disc.projectId}/investigations/new?issueId=${disc.issueId}`
+                                                    : `/projects/${disc.projectId}/investigations/new`}
                                                 className="halo-btn halo-btn-sm halo-btn-primary"
                                             >
                                                 Open Discovery <ArrowUpRight size={13} />
@@ -241,7 +246,7 @@ export default async function OverviewPage() {
 
                                         <div className="halo-table-cell-mono text-xs">{incident.service}</div>
 
-                                        <div className="halo-table-cell text-xs">{incident.impactedEstimate}</div>
+                                        <div className="halo-table-cell text-xs">{incident.occurrenceDescription}</div>
 
                                         <div>
                                             <span className={`halo-severity halo-severity-${incident.severity.toLowerCase()}`}>
@@ -340,7 +345,7 @@ export default async function OverviewPage() {
                                 {data.recentInvestigations.map((inv) => (
                                     <div key={inv.id} className="halo-table-row grid-cols-[1fr_140px_120px_140px]">
                                         <div>
-                                            <div className="halo-table-row-title">{inv.issueTitle}</div>
+                                            <div className="halo-table-row-title">{inv.title}</div>
                                             <div className="halo-table-row-meta font-medium text-accent">
                                                 {inv.rootCauseTitle}
                                             </div>
@@ -348,11 +353,17 @@ export default async function OverviewPage() {
 
                                         <div className="halo-table-cell">{inv.projectName}</div>
 
-                                        <div className="halo-table-cell-mono">{inv.confidence}%</div>
+                                        <div className="halo-table-cell-mono">
+                                            {inv.confidenceScore !== null
+                                                ? `${Math.round(inv.confidenceScore * 100)}%`
+                                                : "N/A"}
+                                        </div>
 
                                         <div>
                                             <Link
-                                                href={`/projects/${inv.projectId}/investigations/new?issueId=${inv.issueId}`}
+                                                href={inv.issueId
+                                                    ? `/projects/${inv.projectId}/investigations/new?issueId=${inv.issueId}`
+                                                    : `/projects/${inv.projectId}/investigations/new`}
                                                 className="halo-btn halo-btn-sm halo-btn-secondary"
                                             >
                                                 View Report <ArrowUpRight size={13} />

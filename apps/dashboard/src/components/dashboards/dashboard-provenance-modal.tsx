@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { CheckCircle2, Database, Info, Layers, ShieldCheck, X } from "lucide-react";
+import { AlertCircle, CheckCircle2, Database, Info, Layers, ShieldCheck, X } from "lucide-react";
 import type { DataProvenance } from "@/lib/analytics/types";
 import { formatDeterministicDateTime } from "@/lib/date-format";
 
@@ -12,9 +12,9 @@ interface DashboardProvenanceModalProps {
 
 export function DashboardProvenanceModal({ provenance, onClose }: DashboardProvenanceModalProps) {
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-150 font-mono text-xs">
             <div
-                className="relative w-full max-w-xl rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] p-6 shadow-2xl space-y-6 text-xs font-mono max-h-[90vh] overflow-y-auto"
+                className="relative w-full max-w-xl rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto"
                 role="dialog"
                 aria-modal="true"
             >
@@ -26,7 +26,7 @@ export function DashboardProvenanceModal({ provenance, onClose }: DashboardProve
                         </div>
                         <div>
                             <h2 className="text-sm font-bold text-white uppercase tracking-wider font-sans">
-                                Analytical Provenance &amp; Methodology
+                                Analytical Provenance &amp; Lineage
                             </h2>
                             <p className="text-[11px] text-zinc-400 font-sans">
                                 Transparent telemetry lineage and mathematical derivation rules.
@@ -60,7 +60,7 @@ export function DashboardProvenanceModal({ provenance, onClose }: DashboardProve
                                         : provenance.dataQuality === "Partial"
                                         ? "bg-amber-400"
                                         : "bg-red-400"
-                                }`}
+                                    }`}
                             />
                             <span className="text-white font-semibold">{provenance.dataQuality}</span>
                         </div>
@@ -80,8 +80,8 @@ export function DashboardProvenanceModal({ provenance, onClose }: DashboardProve
                         <div className="flex justify-between">
                             <span className="text-muted">Primary Window:</span>
                             <span className="text-white font-medium">
-                                {formatDeterministicDateTime(new Date(provenance.timeRange.start))} &rarr;{" "}
-                                {formatDeterministicDateTime(new Date(provenance.timeRange.end))}
+                                {formatDeterministicDateTime(provenance.timeRange.start)} &rarr;{" "}
+                                {formatDeterministicDateTime(provenance.timeRange.end)}
                             </span>
                         </div>
 
@@ -89,13 +89,31 @@ export function DashboardProvenanceModal({ provenance, onClose }: DashboardProve
                             <div className="flex justify-between">
                                 <span className="text-muted">Comparison Window:</span>
                                 <span className="text-accent font-medium">
-                                    {formatDeterministicDateTime(new Date(provenance.comparisonRange.start))} &rarr;{" "}
-                                    {formatDeterministicDateTime(new Date(provenance.comparisonRange.end))}
+                                    {formatDeterministicDateTime(provenance.comparisonRange.start)} &rarr;{" "}
+                                    {formatDeterministicDateTime(provenance.comparisonRange.end)}
                                 </span>
                             </div>
                         )}
                     </div>
                 </div>
+
+                {/* Limitations / Why this conclusion is limited */}
+                {provenance.limitations && provenance.limitations.length > 0 && (
+                    <div className="p-4 rounded-xl bg-amber-500/10 border border-amber-500/30 space-y-2">
+                        <div className="flex items-center gap-1.5 text-amber-400 font-semibold text-[11px] uppercase tracking-wider">
+                            <AlertCircle size={13} />
+                            <span>Why This Conclusion Is Limited</span>
+                        </div>
+                        <ul className="space-y-1 text-[11px] font-sans text-zinc-300">
+                            {provenance.limitations.map((lim, i) => (
+                                <li key={i} className="flex items-start gap-2">
+                                    <span className="w-1.5 h-1.5 rounded-full bg-amber-400 mt-1.5 shrink-0" />
+                                    <span>{lim}</span>
+                                </li>
+                            ))}
+                        </ul>
+                    </div>
+                )}
 
                 {/* Data Sources */}
                 <div className="space-y-2">
@@ -124,7 +142,7 @@ export function DashboardProvenanceModal({ provenance, onClose }: DashboardProve
                 {/* Footer Timestamp */}
                 <div className="flex items-center justify-between text-[10px] text-muted border-t border-border pt-3">
                     <span>Generated by Halo Analytical Engine</span>
-                    <span>Last calculated: {formatDeterministicDateTime(new Date(provenance.lastCalculatedAt))}</span>
+                    <span>Last calculated: {formatDeterministicDateTime(provenance.lastCalculatedAt)}</span>
                 </div>
             </div>
         </div>

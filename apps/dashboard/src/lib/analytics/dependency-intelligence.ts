@@ -4,11 +4,12 @@ import type {
     DependencyNode,
     DependencyEdge,
     BlastRadiusResult,
-    FailurePropagationStep,
     ServiceHealthStatus,
     DataProvenance,
+    CriticalPathItem,
 } from "./types";
 import { parseTimeRange } from "./time";
+import { computeDynamicGraphLayout } from "./graph-layout";
 export { computeBlastRadius } from "./blast-radius";
 
 export interface DependencyIntelligenceParams {
@@ -157,7 +158,7 @@ export async function fetchDependencyIntelligenceAnalytics(
     // Traverse trace cascades
     for (const [traceId, spanList] of traceGroups.entries()) {
         if (spanList.length < 2) continue;
-        // Sort spans by timestamp
+        // Sort spans chronologically
         spanList.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
 
         for (let i = 0; i < spanList.length - 1; i++) {
@@ -191,7 +192,7 @@ export async function fetchDependencyIntelligenceAnalytics(
         }
     }
 
-    // Also connect services directly to their recorded resources
+    // Connect services directly to their recorded resources
     for (const evt of events) {
         if (evt.resource && evt.service && evt.resource !== evt.service) {
             const edgeKey: EdgeKey = `${evt.service}->${evt.resource}`;
@@ -214,7 +215,7 @@ export async function fetchDependencyIntelligenceAnalytics(
     }
 
     // 5. Build Dependency Nodes
-    const nodes: DependencyNode[] = Array.from(nodeMap.values()).map((n) => {
+    const rawNodesList: DependencyNode[] = Array.from(nodeMap.values()).map((n) => {
         const errorRate = n.totalCount > 0 ? Math.round((n.errorCount / n.totalCount) * 1000) / 10 : 0;
         n.durations.sort((a, b) => a - b);
         const avgLatency =
@@ -247,7 +248,7 @@ export async function fetchDependencyIntelligenceAnalytics(
     });
 
     // 6. Build Dependency Edges
-    const edges: DependencyEdge[] = Array.from(edgeMap.values()).map((e) => {
+    const rawEdgesList: DependencyEdge[] = Array.from(edgeMap.values()).map((e) => {
         const errorRate = e.callCount > 0 ? Math.round((e.errorCount / e.callCount) * 1000) / 10 : 0;
         e.durations.sort((a, b) => a - b);
         const avgLatency =
@@ -278,10 +279,17 @@ export async function fetchDependencyIntelligenceAnalytics(
         };
     });
 
-    const observedCallTotal = edges.reduce((sum, e) => sum + e.callCount, 0);
+    // 7. Compute Collision-Free Dynamic Layout and Critical Paths
+    const layouted = computeDynamicGraphLayout(rawNodesList, rawEdgesList);
+    const observedCallTotal = rawEdgesList.reduce((sum, e) => sum + e.callCount, 0);
+
+    const limitations: string[] = [];
+    if (traceGroups.size < 5) {
+        limitations.push("Trace coverage is limited (< 5 traces); relationships are derived primarily from recorded service metadata.");
+    }
 
     const dataQuality: DataProvenance["dataQuality"] =
-        nodes.length === 0 ? "No telemetry" : "Complete";
+        rawNodesList.length === 0 ? "No telemetry" : "Complete";
 
     const provenance: DataProvenance = {
         sources: ["Distributed Trace Collector", "Service Telemetry Index", "Resource Dependency Graph"],
@@ -298,22 +306,24 @@ export async function fetchDependencyIntelligenceAnalytics(
         totalErrorsAnalyzed: events.filter((e) => e.type === "ERROR").length,
         methodology: "Trace correlation and causal span linking. Edges drawn exclusively from observed distributed trace spans and request telemetry.",
         dataQuality,
+        limitations,
         lastCalculatedAt: new Date().toISOString(),
     };
 
     return {
-        nodes,
-        edges,
+        nodes: layouted.nodes,
+        edges: layouted.edges,
+        criticalPaths: layouted.criticalPaths,
         observedCallTotal,
         provenance,
     };
 }
 
-
 function createEmptyDependencyData(timeRange: any, params: DependencyIntelligenceParams): DependencyIntelligenceData {
     return {
         nodes: [],
         edges: [],
+        criticalPaths: [],
         observedCallTotal: 0,
         provenance: {
             sources: ["Distributed Trace Collector"],

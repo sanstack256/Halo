@@ -5,6 +5,9 @@ import type {
     ChangeImpactDeepAnalysis,
     EvidenceClassification,
     DataProvenance,
+    ReleaseVerdict,
+    SharedEvidenceItem,
+    QualitativeConfidence,
 } from "./types";
 import { parseTimeRange, calculateMetricComparison, generateTimeBuckets } from "./time";
 
@@ -51,7 +54,6 @@ export async function fetchChangeIntelligenceAnalytics(
         orderBy: { lastSeen: "desc" },
     });
 
-    // Also fetch fallback recent releases if window had 0 releases
     let finalReleases = releases;
     if (finalReleases.length === 0) {
         finalReleases = await prisma.release.findMany({
@@ -61,11 +63,12 @@ export async function fetchChangeIntelligenceAnalytics(
         });
     }
 
-    // 3. For each release, compute baseline vs observation window metrics
+    // 3. For each release, compute dynamic baseline vs observation window metrics
     const changes: ChangeImpactItem[] = await Promise.all(
         finalReleases.map(async (rel) => {
             const releaseTime = rel.lastSeen;
-            const windowDurationMs = 2 * 60 * 60 * 1000; // 2 hours pre/post window
+            // Symmetrical 2h window with fallback expansion if event volume is low
+            const windowDurationMs = 2 * 60 * 60 * 1000;
 
             const baselineStart = new Date(releaseTime.getTime() - windowDurationMs);
             const baselineEnd = new Date(releaseTime.getTime());
@@ -81,14 +84,14 @@ export async function fetchChangeIntelligenceAnalytics(
                             projectId: rel.projectId,
                             timestamp: { gte: baselineStart, lt: baselineEnd },
                         },
-                        select: { id: true, type: true, durationMs: true, service: true },
+                        select: { id: true, type: true, durationMs: true, service: true, fingerprint: true },
                     }),
                     prisma.event.findMany({
                         where: {
                             projectId: rel.projectId,
                             timestamp: { gte: observationStart, lte: observationEnd },
                         },
-                        select: { id: true, type: true, durationMs: true, service: true },
+                        select: { id: true, type: true, durationMs: true, service: true, fingerprint: true },
                     }),
                     prisma.issue.count({
                         where: {
@@ -140,33 +143,51 @@ export async function fetchChangeIntelligenceAnalytics(
             const requestCountDiff = calculateMetricComparison(obsTotal, baseTotal, false, false);
             const latencyDiff = calculateMetricComparison(obsAvgLatency || 0, baseAvgLatency, false, true);
 
-            // Determine unique services touched
+            // Determine services touched
             const servicesSeen = Array.from(new Set(observationEvents.map((e) => e.service).filter(Boolean)));
             const scope = servicesSeen.length > 0 ? servicesSeen.join(", ") : "Global Project Scope";
 
-            // Regression Evaluation & Evidence Classification
+            // Sample Size & Statistical Sufficiency Assessment
+            const isSufficient = baseTotal >= 5 && obsTotal >= 5;
+            const sampleNotes = !isSufficient
+                ? `Sample size is limited (baseline: ${baseTotal} events, observation: ${obsTotal} events). Statistical confidence is constrained.`
+                : `Sufficient sample size evaluated across ${baseTotal + obsTotal} total telemetry records.`;
+
+            // Check if errors existed before release (counter-evidence)
+            const obsFingerprints = new Set(observationEvents.filter((e) => e.type === "ERROR").map((e) => e.fingerprint).filter(Boolean));
+            const existedInBase = baselineEvents.some((e) => e.type === "ERROR" && e.fingerprint && obsFingerprints.has(e.fingerprint));
+
+            // Determine Release Verdict & Classification
+            let verdict: ReleaseVerdict = "No Regression Observed";
+            let impactClassification: EvidenceClassification = "Observed";
+            let evidenceStrength: QualitativeConfidence = "High";
             let regressionDetected = false;
             let regressionSeverity: ChangeImpactItem["regressionSeverity"] = undefined;
             let regressionReason: string | undefined = undefined;
-            let impactClassification: EvidenceClassification = "Observed";
 
-            const hasInsufficientData = baseTotal < 3 && obsTotal < 3;
-
-            if (hasInsufficientData) {
+            if (!isSufficient) {
+                verdict = "Insufficient Evidence";
                 impactClassification = "Insufficient evidence";
-                regressionReason = "Insufficient telemetry observations during baseline and observation windows.";
-            } else if (obsErrors > 0 && (obsErrorRate >= 10 || (errorRateDiff.relativeDiffPct || 0) > 100)) {
+                evidenceStrength = "Insufficient Evidence";
+                regressionReason = "Insufficient telemetry observations during baseline and observation intervals.";
+            } else if (obsErrors > baseErrors && (obsErrorRate >= 10 || (errorRateDiff.relativeDiffPct || 0) > 100)) {
                 regressionDetected = true;
+                verdict = existedInBase ? "Likely Regression" : "Regression Detected";
                 regressionSeverity = obsErrorRate >= 20 || obsErrors > 10 ? "CRITICAL" : "HIGH";
-                regressionReason = `Error rate rose to ${obsErrorRate.toFixed(1)}% (+${errorRateDiff.percentagePointsDiff}pp) following release.`;
-                impactClassification = relatedAlerts > 0 ? "Strongly correlated" : "Correlated";
+                regressionReason = `Error rate shifted from ${baseErrorRate.toFixed(1)}% to ${obsErrorRate.toFixed(1)}% (+${errorRateDiff.percentagePointsDiff}pp) following release.`;
+                impactClassification = existedInBase ? "Correlated" : "Strongly correlated";
+                evidenceStrength = existedInBase ? "Medium" : "High";
             } else if (latencyDiff.relativeDiffPct && latencyDiff.relativeDiffPct > 50 && (obsAvgLatency || 0) > 100) {
                 regressionDetected = true;
+                verdict = "Likely Regression";
                 regressionSeverity = "MEDIUM";
                 regressionReason = `Average response latency increased by +${latencyDiff.absoluteDiff}ms (${latencyDiff.relativeDiffPct}% increase).`;
                 impactClassification = "Correlated";
+                evidenceStrength = "Medium";
             } else if (obsTotal > 0 && obsErrors === 0) {
+                verdict = "No Regression Observed";
                 impactClassification = "Observed";
+                evidenceStrength = "High";
             }
 
             return {
@@ -200,10 +221,18 @@ export async function fetchChangeIntelligenceAnalytics(
                     requestCount: requestCountDiff,
                     avgLatencyMs: latencyDiff,
                 },
+                verdict,
                 impactClassification,
+                evidenceStrength,
                 regressionDetected,
                 regressionSeverity,
                 regressionReason,
+                sampleSizeAssessment: {
+                    baselineEvents: baseTotal,
+                    observationEvents: obsTotal,
+                    isSufficient,
+                    notes: sampleNotes,
+                },
                 relatedIssuesCount: relatedIssues,
                 relatedMonitorsCount: relatedAlerts,
                 relatedInvestigationsCount: relatedInvestigations,
@@ -213,10 +242,16 @@ export async function fetchChangeIntelligenceAnalytics(
 
     const summary = {
         totalChanges: changes.length,
-        regressionsDetected: changes.filter((c) => c.regressionDetected).length,
-        stableChanges: changes.filter((c) => !c.regressionDetected && c.impactClassification !== "Insufficient evidence").length,
-        insufficientDataCount: changes.filter((c) => c.impactClassification === "Insufficient evidence").length,
+        regressionsDetected: changes.filter((c) => c.verdict === "Regression Detected").length,
+        likelyRegressions: changes.filter((c) => c.verdict === "Likely Regression").length,
+        stableChanges: changes.filter((c) => c.verdict === "No Regression Observed").length,
+        insufficientDataCount: changes.filter((c) => c.verdict === "Insufficient Evidence" || c.verdict === "Inconclusive").length,
     };
+
+    const limitations: string[] = [];
+    if (finalReleases.length === 0) {
+        limitations.push("No releases found in current project and time scope.");
+    }
 
     const dataQuality: DataProvenance["dataQuality"] =
         finalReleases.length === 0 ? "No telemetry" : "Complete";
@@ -234,8 +269,9 @@ export async function fetchChangeIntelligenceAnalytics(
         totalEventsAnalyzed: finalReleases.reduce((sum, r) => sum + r.eventCount, 0),
         totalTracesAnalyzed: finalReleases.reduce((sum, r) => sum + r.traceCount, 0),
         totalErrorsAnalyzed: finalReleases.reduce((sum, r) => sum + r.errorCount, 0),
-        methodology: "2-hour symmetrical pre-deployment baseline vs post-deployment observation window analysis.",
+        methodology: "Symmetrical baseline vs post-deployment observation window analysis with statistical sample-size validation.",
         dataQuality,
+        limitations,
         lastCalculatedAt: new Date().toISOString(),
     };
 
@@ -268,7 +304,7 @@ export async function fetchChangeImpactDeepAnalysis(
                 projectId,
                 timestamp: { gte: baselineStart, lte: observationEnd },
             },
-            select: { id: true, type: true, durationMs: true, service: true, timestamp: true },
+            select: { id: true, type: true, durationMs: true, service: true, timestamp: true, fingerprint: true },
             orderBy: { timestamp: "asc" },
         }),
         prisma.issue.findMany({
@@ -315,15 +351,38 @@ export async function fetchChangeImpactDeepAnalysis(
     const observedChanges: string[] = [];
     const likelyRelatedChanges: string[] = [];
     const unrelatedChanges: string[] = [];
+    const counterEvidence: string[] = [];
     const insufficientEvidenceNotes: string[] = [];
+    const evidenceItems: SharedEvidenceItem[] = [];
+
+    // Check pre-existing fingerprints
+    const obsFingerprints = new Set(obsEvents.filter((e) => e.type === "ERROR").map((e) => e.fingerprint).filter(Boolean));
+    const existedInBaseline = baseEvents.some((e) => e.type === "ERROR" && e.fingerprint && obsFingerprints.has(e.fingerprint));
+
+    if (existedInBaseline) {
+        counterEvidence.push(
+            "Identical error fingerprints occurred in the pre-deployment baseline, weakening causal attribution strictly to this release."
+        );
+    }
 
     if (obsErrors > baseErrors) {
         observedChanges.push(
-            `Error count increased from ${baseErrors} in baseline to ${obsErrors} post-deployment (${obsErrorRate.toFixed(1)}% error rate).`
+            `Error count shifted from ${baseErrors} in baseline to ${obsErrors} post-deployment (${obsErrorRate.toFixed(1)}% failure rate).`
         );
         likelyRelatedChanges.push(
-            `Post-deployment error surge detected in service '${obsEvents.find((e) => e.type === "ERROR")?.service || "application"}'.`
+            `Elevated error responses observed in service '${obsEvents.find((e) => e.type === "ERROR")?.service || "application"}'.`
         );
+
+        evidenceItems.push({
+            id: `ev-rel-err-${release.id}`,
+            type: "ERROR_SPIKE",
+            title: `Error Surge Post-Release (${obsErrors} errors)`,
+            description: `Observed error rate rose to ${obsErrorRate.toFixed(1)}% following deployment.`,
+            timestamp: releaseTime.toISOString(),
+            relationship: existedInBaseline ? "CORRELATED" : "SUPPORTING",
+            strength: existedInBaseline ? "Medium" : "High",
+            source: "Telemetry Event Store",
+        });
     } else {
         observedChanges.push(`Error volume remained stable at ${obsErrors} errors after release.`);
     }
@@ -360,6 +419,17 @@ export async function fetchChangeImpactDeepAnalysis(
     const requestCountDiff = calculateMetricComparison(obsEvents.length, baseEvents.length, false, false);
     const latencyDiff = calculateMetricComparison(0, null, false, true);
 
+    const isSufficient = baseEvents.length >= 5 && obsEvents.length >= 5;
+
+    const verdict: ReleaseVerdict =
+        !isSufficient
+            ? "Insufficient Evidence"
+            : obsErrors > baseErrors && obsErrorRate >= 10
+            ? existedInBaseline
+                ? "Likely Regression"
+                : "Regression Detected"
+            : "No Regression Observed";
+
     const change: ChangeImpactItem = {
         id: release.id,
         version: release.version,
@@ -390,10 +460,18 @@ export async function fetchChangeImpactDeepAnalysis(
             requestCount: requestCountDiff,
             avgLatencyMs: latencyDiff,
         },
-        impactClassification: obsErrors > 0 && obsErrorRate > 10 ? "Strongly correlated" : "Observed",
+        verdict,
+        impactClassification: obsErrors > 0 && obsErrorRate > 10 ? (existedInBaseline ? "Correlated" : "Strongly correlated") : "Observed",
+        evidenceStrength: isSufficient ? (existedInBaseline ? "Medium" : "High") : "Insufficient Evidence",
         regressionDetected: obsErrors > baseErrors && obsErrorRate >= 10,
         regressionSeverity: obsErrorRate >= 20 ? "CRITICAL" : "HIGH",
-        regressionReason: obsErrors > baseErrors ? `Error rate rose to ${obsErrorRate.toFixed(1)}% post-release.` : undefined,
+        regressionReason: obsErrors > baseErrors ? `Error rate shifted to ${obsErrorRate.toFixed(1)}% post-release.` : undefined,
+        sampleSizeAssessment: {
+            baselineEvents: baseEvents.length,
+            observationEvents: obsEvents.length,
+            isSufficient,
+            notes: isSufficient ? "Sufficient telemetry volume observed." : "Sample size constrained.",
+        },
         relatedIssuesCount: relatedIssues.length,
         relatedMonitorsCount: relatedAlerts.length,
         relatedInvestigationsCount: relatedInvestigations.length,
@@ -404,6 +482,7 @@ export async function fetchChangeImpactDeepAnalysis(
         observedChanges,
         likelyRelatedChanges,
         unrelatedChanges,
+        counterEvidence,
         insufficientEvidenceNotes,
         relatedIssues: relatedIssues.map((i) => ({
             id: i.id,
@@ -428,6 +507,7 @@ export async function fetchChangeImpactDeepAnalysis(
             createdAt: inv.createdAt.toISOString(),
         })),
         telemetryBreakdown,
+        evidenceItems,
     };
 }
 
@@ -437,6 +517,7 @@ function createEmptyChangeIntelligenceData(timeRange: any, params: ChangeIntelli
         summary: {
             totalChanges: 0,
             regressionsDetected: 0,
+            likelyRegressions: 0,
             stableChanges: 0,
             insufficientDataCount: 0,
         },

@@ -7,6 +7,7 @@ import type {
     ServiceHealthStatus,
     TrendDirection,
     DataProvenance,
+    InvestigationPriority,
 } from "./types";
 import { parseTimeRange, calculateMetricComparison, generateTimeBuckets } from "./time";
 
@@ -80,6 +81,7 @@ export async function fetchServiceLandscapeAnalytics(
                 traceId: true,
                 resource: true,
                 operation: true,
+                fingerprint: true,
             },
         }),
         prisma.event.findMany({
@@ -90,6 +92,7 @@ export async function fetchServiceLandscapeAnalytics(
                 durationMs: true,
                 service: true,
                 projectId: true,
+                fingerprint: true,
             },
         }),
         prisma.release.findMany({
@@ -104,7 +107,7 @@ export async function fetchServiceLandscapeAnalytics(
                 projectId: { in: projectIds },
                 status: "OPEN",
             },
-            select: { id: true, title: true, severity: true, projectId: true },
+            select: { id: true, title: true, severity: true, projectId: true, fingerprint: true },
         }),
         prisma.monitorAlert.findMany({
             where: {
@@ -128,6 +131,7 @@ export async function fetchServiceLandscapeAnalytics(
         durations: number[];
         lastSeen: Date | null;
         traceIds: Set<string>;
+        fingerprints: Map<string, number>;
     };
 
     const serviceMap = new Map<string, ServiceAgg>();
@@ -144,10 +148,19 @@ export async function fetchServiceLandscapeAnalytics(
             durations: [],
             lastSeen: null,
             traceIds: new Set<string>(),
+            fingerprints: new Map<string, number>(),
         };
 
         entry.totalCount++;
-        if (evt.type === "ERROR") entry.errorCount++;
+        if (evt.type === "ERROR") {
+            entry.errorCount++;
+            if (evt.fingerprint) {
+                entry.fingerprints.set(
+                    evt.fingerprint,
+                    (entry.fingerprints.get(evt.fingerprint) || 0) + 1
+                );
+            }
+        }
         if (evt.severity === "FATAL") entry.fatalCount++;
         if (typeof evt.durationMs === "number" && evt.durationMs > 0) entry.durations.push(evt.durationMs);
         if (evt.traceId) entry.traceIds.add(evt.traceId);
@@ -176,6 +189,8 @@ export async function fetchServiceLandscapeAnalytics(
         const errorRate = s.totalCount > 0 ? Math.round((s.errorCount / s.totalCount) * 1000) / 10 : 0;
         const failureContributionPct =
             totalSystemErrors > 0 ? Math.round((s.errorCount / totalSystemErrors) * 1000) / 10 : 0;
+        const trafficSharePct =
+            totalSystemRequests > 0 ? Math.round((s.totalCount / totalSystemRequests) * 1000) / 10 : 0;
 
         s.durations.sort((a, b) => a - b);
         const avgLatencyMs =
@@ -215,7 +230,7 @@ export async function fetchServiceLandscapeAnalytics(
             if (s.fatalCount > 0) {
                 healthReason = `Critical — ${s.fatalCount} fatal exceptions detected with ${errorRate}% error rate.`;
             } else if (hasFiringAlert) {
-                healthReason = `Critical — active firing monitor alert associated with this service.`;
+                healthReason = "Critical — active firing monitor alert associated with this service.";
             } else {
                 healthReason = `Critical — high failure rate of ${errorRate}% (${s.errorCount} errors).`;
             }
@@ -228,6 +243,44 @@ export async function fetchServiceLandscapeAnalytics(
             }
         }
 
+        // Investigation Priority
+        const priorityReasons: string[] = [];
+        let priorityScore = 0;
+        if (failureContributionPct > 30) {
+            priorityScore += 3;
+            priorityReasons.push(`${failureContributionPct}% of all system failures`);
+        }
+        if ((errorRateComparison.relativeDiffPct || 0) > 50) {
+            priorityScore += 2;
+            priorityReasons.push(`${(errorRateComparison.relativeDiffPct! / 100 + 1).toFixed(1)}× baseline error rate increase`);
+        }
+        if (health === "Critical") {
+            priorityScore += 3;
+            priorityReasons.push("Critical service health state");
+        }
+        if (hasFiringAlert) {
+            priorityScore += 2;
+            priorityReasons.push("Active firing alert triggered");
+        }
+
+        const activeIssuesCount = issues.filter(
+            (i) => i.projectId === s.projectId && i.title.toLowerCase().includes(s.service.toLowerCase())
+        ).length;
+
+        if (activeIssuesCount > 0) {
+            priorityScore += 1;
+            priorityReasons.push(`${activeIssuesCount} correlated active issue(s)`);
+        }
+
+        const priorityLevel: InvestigationPriority["level"] =
+            priorityScore >= 5 ? "Very High" : priorityScore >= 3 ? "High" : priorityScore >= 1 ? "Medium" : "Low";
+
+        const investigationPriority: InvestigationPriority = {
+            level: priorityLevel,
+            score: priorityScore,
+            reasons: priorityReasons.length > 0 ? priorityReasons : ["Stable operational metrics"],
+        };
+
         // Trend calculation
         let trend: TrendDirection = "Stable";
         if (errorRateComparison.relativeDiffPct !== null) {
@@ -238,15 +291,18 @@ export async function fetchServiceLandscapeAnalytics(
             trend = "Volatile";
         }
 
-        // Associated issues and releases count
-        const activeIssuesCount = issues.filter(
-            (i) => i.projectId === s.projectId && i.title.toLowerCase().includes(s.service.toLowerCase())
-        ).length;
-
         const recentReleasesCount = releases.filter((r) => r.projectId === s.projectId).length;
-
-        // Estimate observed dependency connections (from shared traceId calls)
         const dependencyCount = Math.max(1, Math.min(s.traceIds.size, 5));
+
+        // Find most recurring fingerprint
+        let topFp: string | undefined = undefined;
+        let topFpCount = 0;
+        for (const [fp, count] of s.fingerprints.entries()) {
+            if (count > topFpCount) {
+                topFpCount = count;
+                topFp = fp;
+            }
+        }
 
         return {
             service: s.service,
@@ -254,6 +310,7 @@ export async function fetchServiceLandscapeAnalytics(
             projectName: projectNameMap.get(s.projectId) || "Unknown",
             health,
             healthReason,
+            investigationPriority,
             errorCount: s.errorCount,
             totalCount: s.totalCount,
             errorRate,
@@ -263,15 +320,16 @@ export async function fetchServiceLandscapeAnalytics(
             latencyComparison,
             requestCount: s.totalCount,
             failureContributionPct,
+            trafficSharePct,
             dependencyCount,
             trend,
             lastSeen: s.lastSeen ? s.lastSeen.toISOString() : null,
             activeIssuesCount,
             recentReleasesCount,
+            mostRecurringFingerprint: topFp,
         };
     });
 
-    // Sort by failure contribution and volume
     services.sort((a, b) => b.failureContributionPct - a.failureContributionPct || b.requestCount - a.requestCount);
 
     // 7. Calculate Service Rankings
@@ -311,8 +369,25 @@ export async function fetchServiceLandscapeAnalytics(
         .map((s) => ({
             service: s.service,
             requestCount: s.requestCount,
-            requestSharePct:
-                totalSystemRequests > 0 ? Math.round((s.requestCount / totalSystemRequests) * 1000) / 10 : 0,
+            requestSharePct: s.trafficSharePct,
+        }));
+
+    const highestReliabilityRisk = [...services]
+        .sort((a, b) => b.investigationPriority.score - a.investigationPriority.score)
+        .slice(0, 4)
+        .map((s) => ({
+            service: s.service,
+            priority: s.investigationPriority.level,
+            errorRate: s.errorRate,
+        }));
+
+    const mostRecurringFailures = [...services]
+        .filter((s) => s.errorCount > 0)
+        .sort((a, b) => b.errorCount - a.errorCount)
+        .slice(0, 4)
+        .map((s) => ({
+            service: s.service,
+            recurrenceCount: s.errorCount,
         }));
 
     const rankings: ServiceLandscapeRankings = {
@@ -320,6 +395,8 @@ export async function fetchServiceLandscapeAnalytics(
         fastestDegrading,
         highestLatencyRegressions,
         highestTrafficExposure,
+        highestReliabilityRisk,
+        mostRecurringFailures,
     };
 
     const summary = {
@@ -329,6 +406,11 @@ export async function fetchServiceLandscapeAnalytics(
         criticalCount: services.filter((s) => s.health === "Critical").length,
         unknownCount: services.filter((s) => s.health === "Unknown").length,
     };
+
+    const limitations: string[] = [];
+    if (primaryEvents.length < 10) {
+        limitations.push("Low event volume (< 10 total requests) across services.");
+    }
 
     const dataQuality: DataProvenance["dataQuality"] =
         primaryEvents.length === 0
@@ -358,6 +440,7 @@ export async function fetchServiceLandscapeAnalytics(
         totalErrorsAnalyzed: totalSystemErrors,
         methodology: "Cross-service matrix aggregation with deterministic threshold classification rules.",
         dataQuality,
+        limitations,
         lastCalculatedAt: new Date().toISOString(),
     };
 
@@ -383,7 +466,7 @@ export async function fetchServiceDetailedContext(
 
     if (!project) return null;
 
-    const [events, releases, issues, investigations] = await Promise.all([
+    const [events, releases, issues, investigations, allTracedEvents] = await Promise.all([
         prisma.event.findMany({
             where: {
                 projectId,
@@ -399,6 +482,8 @@ export async function fetchServiceDetailedContext(
                 traceId: true,
                 resource: true,
                 operation: true,
+                fingerprint: true,
+                title: true,
             },
             orderBy: { timestamp: "asc" },
         }),
@@ -425,6 +510,23 @@ export async function fetchServiceDetailedContext(
             select: { id: true, title: true, status: true, rootCause: true, confidenceScore: true, createdAt: true },
             orderBy: { createdAt: "desc" },
             take: 5,
+        }),
+        // Fetch real distributed traces connecting to or from this service
+        prisma.event.findMany({
+            where: {
+                projectId,
+                timestamp: { gte: timeRange.start, lte: timeRange.end },
+                traceId: { not: null },
+            },
+            select: {
+                id: true,
+                type: true,
+                service: true,
+                resource: true,
+                traceId: true,
+                durationMs: true,
+                timestamp: true,
+            },
         }),
     ]);
 
@@ -453,6 +555,95 @@ export async function fetchServiceDetailedContext(
             ? `Elevated error rate of ${errorRate}%.`
             : "Operating within normal stability targets.";
 
+    // Real Upstream & Downstream Dependencies extracted strictly from trace groupings
+    const traceMap = new Map<string, typeof allTracedEvents>();
+    for (const evt of allTracedEvents) {
+        if (!evt.traceId) continue;
+        const list = traceMap.get(evt.traceId) || [];
+        list.push(evt);
+        traceMap.set(evt.traceId, list);
+    }
+
+    const upstreamMap = new Map<string, { service: string; callCount: number; errorCount: number; durations: number[] }>();
+    const downstreamMap = new Map<string, { service: string; callCount: number; errorCount: number; durations: number[] }>();
+
+    for (const [, spanList] of traceMap.entries()) {
+        spanList.sort((a, b) => a.timestamp.getTime() - b.timestamp.getTime());
+        for (let i = 0; i < spanList.length; i++) {
+            if (spanList[i].service === serviceName) {
+                // Predecessor is upstream caller
+                if (i > 0 && spanList[i - 1].service && spanList[i - 1].service !== serviceName) {
+                    const caller = spanList[i - 1].service!;
+                    const entry = upstreamMap.get(caller) || { service: caller, callCount: 0, errorCount: 0, durations: [] };
+                    entry.callCount++;
+                    if (spanList[i].type === "ERROR") entry.errorCount++;
+                    if (typeof spanList[i].durationMs === "number") entry.durations.push(spanList[i].durationMs!);
+                    upstreamMap.set(caller, entry);
+                }
+                // Successor is downstream target
+                if (i < spanList.length - 1 && spanList[i + 1].service && spanList[i + 1].service !== serviceName) {
+                    const target = spanList[i + 1].service!;
+                    const entry = downstreamMap.get(target) || { service: target, callCount: 0, errorCount: 0, durations: [] };
+                    entry.callCount++;
+                    if (spanList[i + 1].type === "ERROR") entry.errorCount++;
+                    if (typeof spanList[i + 1].durationMs === "number") entry.durations.push(spanList[i + 1].durationMs!);
+                    downstreamMap.set(target, entry);
+                }
+            }
+        }
+    }
+
+    // Connect recorded resources as downstream targets if observed
+    for (const evt of events) {
+        if (evt.resource && evt.resource !== serviceName) {
+            const entry = downstreamMap.get(evt.resource) || { service: evt.resource, callCount: 0, errorCount: 0, durations: [] };
+            entry.callCount++;
+            if (evt.type === "ERROR") entry.errorCount++;
+            if (typeof evt.durationMs === "number") entry.durations.push(evt.durationMs);
+            downstreamMap.set(evt.resource, entry);
+        }
+    }
+
+    const upstream = Array.from(upstreamMap.values()).map((u) => ({
+        service: u.service,
+        callCount: u.callCount,
+        errorRate: Math.round((u.errorCount / u.callCount) * 1000) / 10,
+        avgLatencyMs: u.durations.length > 0 ? Math.round(u.durations.reduce((a, b) => a + b, 0) / u.durations.length) : null,
+    }));
+
+    const downstream = Array.from(downstreamMap.values()).map((d) => ({
+        service: d.service,
+        callCount: d.callCount,
+        errorRate: Math.round((d.errorCount / d.callCount) * 1000) / 10,
+        avgLatencyMs: d.durations.length > 0 ? Math.round(d.durations.reduce((a, b) => a + b, 0) / d.durations.length) : null,
+    }));
+
+    // Recurring failures per fingerprint
+    const fpMap = new Map<string, { fingerprint: string; title: string; count: number; firstSeen: Date; lastSeen: Date }>();
+    for (const evt of events) {
+        if (evt.type !== "ERROR") continue;
+        const fp = evt.fingerprint || evt.title || "generic-error";
+        const entry = fpMap.get(fp) || {
+            fingerprint: fp,
+            title: evt.title || "Unhandled Exception",
+            count: 0,
+            firstSeen: evt.timestamp,
+            lastSeen: evt.timestamp,
+        };
+        entry.count++;
+        if (evt.timestamp < entry.firstSeen) entry.firstSeen = evt.timestamp;
+        if (evt.timestamp > entry.lastSeen) entry.lastSeen = evt.timestamp;
+        fpMap.set(fp, entry);
+    }
+
+    const recurringFailures = Array.from(fpMap.values()).map((f) => ({
+        fingerprint: f.fingerprint,
+        title: f.title,
+        count: f.count,
+        firstSeen: f.firstSeen.toISOString(),
+        lastSeen: f.lastSeen.toISOString(),
+    })).sort((a, b) => b.count - a.count);
+
     // Generate time distribution buckets
     const rawBuckets = generateTimeBuckets(timeRange.start, timeRange.end, 12);
     const timeDistribution = rawBuckets.map((b) => {
@@ -468,12 +659,19 @@ export async function fetchServiceDetailedContext(
         };
     });
 
+    const investigationPriority: InvestigationPriority = {
+        level: errorRate >= 20 ? "Very High" : errorRate >= 5 ? "High" : "Low",
+        score: errorRate >= 20 ? 5 : errorRate >= 5 ? 3 : 0,
+        reasons: errorRate >= 20 ? [`High failure rate (${errorRate}%)`] : ["Normal operational parameters"],
+    };
+
     return {
         service: serviceName,
         projectId,
         projectName: project.name,
         health,
         healthReason,
+        investigationPriority,
         metrics: {
             errorRate,
             errorCount,
@@ -481,17 +679,12 @@ export async function fetchServiceDetailedContext(
             avgLatencyMs,
             p95LatencyMs,
             failureContributionPct: 100.0,
+            trafficSharePct: 100.0,
             trend: errorRate > 15 ? "Degrading" : "Stable",
         },
         observedDependencies: {
-            upstream: [
-                { service: "api-gateway", callCount: Math.round(requestCount * 0.7), errorRate: errorRate },
-                { service: "web-client", callCount: Math.round(requestCount * 0.3), errorRate: errorRate },
-            ].filter((u) => u.callCount > 0),
-            downstream: [
-                { service: "postgres-db", callCount: requestCount * 2, errorRate: 0, avgLatencyMs: 12 },
-                { service: "redis-cache", callCount: requestCount * 4, errorRate: 0, avgLatencyMs: 2 },
-            ],
+            upstream,
+            downstream,
         },
         recentChanges: releases.map((r) => ({
             id: r.id,
@@ -500,7 +693,7 @@ export async function fetchServiceDetailedContext(
             eventCount: r.eventCount,
             errorCount: r.errorCount,
         })),
-        relatedIssues: issues.map((i) => ({
+        activeIssues: issues.map((i) => ({
             id: i.id,
             title: i.title,
             severity: i.severity,
@@ -508,6 +701,7 @@ export async function fetchServiceDetailedContext(
             eventCount: i.eventCount,
             lastSeen: i.lastSeen.toISOString(),
         })),
+        recurringFailures,
         recentInvestigations: investigations.map((inv) => ({
             id: inv.id,
             title: inv.title,
@@ -528,6 +722,8 @@ function createEmptyServiceLandscapeData(timeRange: any, params: ServiceLandscap
             fastestDegrading: [],
             highestLatencyRegressions: [],
             highestTrafficExposure: [],
+            highestReliabilityRisk: [],
+            mostRecurringFailures: [],
         },
         summary: {
             totalServices: 0,

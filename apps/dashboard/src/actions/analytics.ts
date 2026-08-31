@@ -31,6 +31,15 @@ import {
     type ReliabilityLabParams,
 } from "@/lib/analytics/reliability-lab";
 
+import { compareFailureOccurrences } from "@/lib/analytics/occurrence-comparison";
+
+export async function getOccurrenceComparisonAction(fingerprint: string, projectId: string) {
+    const session = await getSession();
+    if (!session) throw new Error("Unauthorized");
+
+    return compareFailureOccurrences(fingerprint, projectId);
+}
+
 export interface DashboardFilterContext {
     projects: Array<{ id: string; name: string }>;
     environments: string[];
@@ -56,10 +65,10 @@ export async function getDashboardFilterContext(): Promise<DashboardFilterContex
         }),
     ]);
 
+    // Return only real environment names from the database.
+    // Do NOT inject fabricated defaults — callers must handle an empty array
+    // by showing an appropriate "No environments recorded" UI state.
     const environments = Array.from(new Set(envRows.map((e) => e.name).filter(Boolean)));
-    if (environments.length === 0) {
-        environments.push("production", "staging", "development");
-    }
 
     return {
         projects,

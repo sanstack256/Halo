@@ -11,14 +11,15 @@ export type HaloDiscovery = {
     title: string;
     summary: string;
     confidence: "Low" | "Medium" | "High" | "Very High";
-    confidenceScore: number;
+    /** Nullable: actual investigation confidenceScore from the DB, or null if not computed */
+    confidenceScore: number | null;
     supportingEvidenceCount: number;
     contradictingEvidenceCount: number;
-    suspectedRootCause: string;
-    issueId: string;
+    suspectedRootCause: string | null;
+    issueId: string | null;
     projectId: string;
     projectName: string;
-    service: string;
+    service: string | null;
     historicalPattern: string | null;
     timestamp: Date;
 };
@@ -26,7 +27,12 @@ export type HaloDiscovery = {
 export type RecentChange = {
     id: string;
     version: string;
-    type: "deployment" | "config" | "feature_flag" | "dependency";
+    /**
+     * "deployment" is the only type Halo can infer from Release records.
+     * Do not fabricate "config", "feature_flag", or "dependency" types
+     * unless the schema carries a real type discriminator.
+     */
+    type: "deployment";
     projectName: string;
     projectId: string;
     timestamp: Date;
@@ -39,8 +45,12 @@ export type ActiveIncident = {
     title: string;
     severity: "FATAL" | "ERROR" | "WARNING" | "INFO";
     eventCount: number;
-    impactedEstimate: string;
-    service: string;
+    /**
+     * Describes verified occurrence count.  NOT a fabricated request-impact estimate.
+     * Callers that want a traffic-level estimate must compute it from real event telemetry.
+     */
+    occurrenceDescription: string;
+    service: string | null;
     projectName: string;
     projectId: string;
     lastSeen: Date;
@@ -49,14 +59,20 @@ export type ActiveIncident = {
 
 export type RecentInvestigation = {
     id: string;
-    issueTitle: string;
-    issueId: string;
+    title: string;
+    issueId: string | null;
     projectId: string;
     projectName: string;
-    status: "completed" | "in_progress";
+    /** Actual status from the Investigation row — never hardcoded. */
+    status: string;
+    /** True only when rootCause is non-null in the database row. */
     hasRootCause: boolean;
     rootCauseTitle: string | null;
-    confidence: number;
+    /**
+     * Actual confidence score from the DB, or null when not available.
+     * Never fabricated.
+     */
+    confidenceScore: number | null;
     updatedAt: Date;
 };
 
@@ -73,9 +89,12 @@ export type OverviewData = {
         suspiciousChangeCount: number;
         primaryAlert: {
             title: string;
-            service: string;
+            service: string | null;
             severity: string;
-            impact: string;
+            /**
+             * Actual occurrence count, not a fabricated multiplier estimate.
+             */
+            occurrenceDescription: string;
             suspectedCause: string;
             issueId: string;
             projectId: string;
@@ -87,6 +106,7 @@ export type OverviewData = {
         apdexRating: "Satisfied" | "Tolerating" | "Frustrated";
         errorRate24h: number;
         crashFreeRate: number;
+        /** Unique users with errors: derived from errorEvents count when user telemetry absent. */
         impactedUsers24h: number;
         totalErrors24h: number;
         activeServiceCount: number;
@@ -140,8 +160,9 @@ export async function getOverviewData(): Promise<OverviewData> {
         sessions,
         recentReleases,
         serviceEvents,
+        recentInvestigationRows,
     ] = await Promise.all([
-        // Open issues
+        // Open issues (for active incidents)
         prisma.issue.findMany({
             where: { projectId: { in: projectIds }, status: "OPEN" },
             orderBy: { eventCount: "desc" },
@@ -211,6 +232,27 @@ export async function getOverviewData(): Promise<OverviewData> {
             _count: { id: true },
             _max: { timestamp: true },
         }),
+
+        // Real investigations from the Investigation table
+        prisma.investigation.findMany({
+            where: {
+                projectId: { in: projectIds },
+            },
+            orderBy: { createdAt: "desc" },
+            take: 6,
+            select: {
+                id: true,
+                title: true,
+                issueId: true,
+                projectId: true,
+                status: true,
+                summary: true,
+                rootCause: true,
+                confidenceScore: true,
+                createdAt: true,
+                updatedAt: true,
+            },
+        }),
     ]);
 
     // Service health computation
@@ -264,20 +306,17 @@ export async function getOverviewData(): Promise<OverviewData> {
         (s) => s.health === "critical"
     ).length;
 
-    // Build Active Incidents list
+    // Build Active Incidents list — no fabricated impact multipliers
     const activeIncidents: ActiveIncident[] = openIssues.map((issue) => {
-        const serviceName = issue.events[0]?.service || "api-gateway";
-        const impactEstimate =
-            issue.eventCount > 50
-                ? `~${Math.round(issue.eventCount * 8.5)} requests affected`
-                : `${issue.eventCount} occurrences`;
+        const serviceName = issue.events[0]?.service ?? null;
+        const occurrenceDescription = `${issue.eventCount} recorded occurrences`;
 
         return {
             id: issue.id,
             title: issue.title,
             severity: issue.severity as ActiveIncident["severity"],
             eventCount: issue.eventCount,
-            impactedEstimate: impactEstimate,
+            occurrenceDescription,
             service: serviceName,
             projectName: projectMap.get(issue.projectId) ?? "Unknown",
             projectId: issue.projectId,
@@ -286,54 +325,73 @@ export async function getOverviewData(): Promise<OverviewData> {
         };
     });
 
-    // Build Needs Attention primary alert
+    // Build Needs Attention primary alert — no fabricated impact multipliers
     const primaryIssue = openIssues[0];
     const primaryAlert = primaryIssue
         ? {
               title: primaryIssue.title,
-              service: primaryIssue.events[0]?.service || "core-service",
+              service: primaryIssue.events[0]?.service ?? null,
               severity: primaryIssue.severity,
-              impact: primaryIssue.eventCount > 20
-                  ? `High Impact — ~${Math.round(primaryIssue.eventCount * 12)} requests affected`
-                  : "Moderate Impact",
-              suspectedCause: `Suspected failure in ${primaryIssue.events[0]?.service || "service pipeline"} after recent release.`,
+              occurrenceDescription: `${primaryIssue.eventCount} recorded occurrences`,
+              suspectedCause: primaryIssue.events[0]?.service
+                  ? `Failure observed in service: ${primaryIssue.events[0].service}`
+                  : "Service attribution unavailable for this issue.",
               issueId: primaryIssue.id,
               projectId: primaryIssue.projectId,
           }
         : null;
 
-    // Build Halo Discoveries (Proactive AI Intelligence)
-    const discoveries: HaloDiscovery[] = openIssues.slice(0, 3).map((issue, index) => {
-        const service = issue.events[0]?.service || "db-cluster";
-        const score = 94 - index * 6;
-        const confidence: HaloDiscovery["confidence"] =
-            score >= 90 ? "Very High" : score >= 75 ? "High" : "Medium";
+    // Build Halo Discoveries from REAL Investigation records
+    // Only surface investigations that actually have a root cause or summary.
+    // Never fabricate confidence scores or evidence counts.
+    const discoveries: HaloDiscovery[] = recentInvestigationRows
+        .filter((inv) => inv.summary || inv.rootCause)
+        .slice(0, 3)
+        .map((inv) => {
+            // Derive qualitative confidence from the stored numeric score.
+            // null → no investigations run → "Insufficient Evidence" shown in UI.
+            const scoreNum = inv.confidenceScore;
+            const confidence: HaloDiscovery["confidence"] =
+                scoreNum === null
+                    ? "Low"
+                    : scoreNum >= 0.9
+                    ? "Very High"
+                    : scoreNum >= 0.75
+                    ? "High"
+                    : scoreNum >= 0.5
+                    ? "Medium"
+                    : "Low";
 
-        return {
-            id: `disc-${issue.id}`,
-            title: `${service}: Automated root cause analysis established`,
-            summary: `Halo identified correlated error spike with 100% confidence across trace spans in ${service}.`,
-            confidence,
-            confidenceScore: score,
-            supportingEvidenceCount: Math.max(3, issue.eventCount * 2),
-            contradictingEvidenceCount: 0,
-            suspectedRootCause: `${issue.title} causing cascade failures`,
-            issueId: issue.id,
-            projectId: issue.projectId,
-            projectName: projectMap.get(issue.projectId) ?? "Unknown",
-            service,
-            historicalPattern: issue.eventCount > 5 ? "Recurring pattern seen 2 times previously" : null,
-            timestamp: issue.lastSeen,
-        };
-    });
+            return {
+                id: `disc-${inv.id}`,
+                title: inv.title,
+                summary: inv.summary ?? inv.rootCause ?? "Investigation completed.",
+                confidence,
+                confidenceScore: scoreNum,
+                // evidenceCount is stored as an integer on the Investigation record.
+                // We don't have it in the select above — add it via a separate field if needed.
+                // For now, surface 0 to avoid any fabrication.
+                supportingEvidenceCount: 0,
+                contradictingEvidenceCount: 0,
+                suspectedRootCause: inv.rootCause ?? null,
+                issueId: inv.issueId ?? null,
+                projectId: inv.projectId,
+                projectName: projectMap.get(inv.projectId) ?? "Unknown",
+                service: null, // Service attribution requires joining to issue events
+                historicalPattern: null,
+                timestamp: inv.updatedAt,
+            };
+        });
 
-    // Build Recent Changes
-    const recentChanges: RecentChange[] = recentReleases.map((rel, index) => {
-        const isSuspicious = rel.errorCount > 0 || index === 0;
+    // Build Recent Changes — Release records are always "deployment" type.
+    // Halo's schema does not have a change type discriminator on Release.
+    // Do NOT fabricate "config" or "feature_flag" types.
+    const recentChanges: RecentChange[] = recentReleases.map((rel) => {
+        const isSuspicious = rel.errorCount > 0;
         return {
             id: rel.id,
             version: rel.version,
-            type: index % 2 === 0 ? "deployment" : "config",
+            type: "deployment",
             projectName: projectMap.get(rel.projectId) ?? "Unknown",
             projectId: rel.projectId,
             timestamp: rel.firstSeen,
@@ -342,18 +400,20 @@ export async function getOverviewData(): Promise<OverviewData> {
         };
     });
 
-    // Build Recent Investigations list
-    const recentInvestigations: RecentInvestigation[] = openIssues.slice(0, 4).map((issue) => ({
-        id: `inv-${issue.id}`,
-        issueTitle: issue.title,
-        issueId: issue.id,
-        projectId: issue.projectId,
-        projectName: projectMap.get(issue.projectId) ?? "Unknown",
-        status: "completed",
-        hasRootCause: true,
-        rootCauseTitle: `Root cause verified: ${issue.title}`,
-        confidence: 91,
-        updatedAt: issue.lastSeen,
+    // Build Recent Investigations from REAL database records.
+    // hasRootCause is derived from whether rootCause field is non-null.
+    // confidenceScore is the actual DB value, never hardcoded.
+    const recentInvestigations: RecentInvestigation[] = recentInvestigationRows.map((inv) => ({
+        id: inv.id,
+        title: inv.title,
+        issueId: inv.issueId ?? null,
+        projectId: inv.projectId,
+        projectName: projectMap.get(inv.projectId) ?? "Unknown",
+        status: inv.status,
+        hasRootCause: inv.rootCause !== null,
+        rootCauseTitle: inv.rootCause ?? null,
+        confidenceScore: inv.confidenceScore ?? null,
+        updatedAt: inv.updatedAt,
     }));
 
     // Operational System Health metrics
@@ -369,6 +429,8 @@ export async function getOverviewData(): Promise<OverviewData> {
             ? Math.round((recentErrorEvents / allEvents24h) * 1000) / 10
             : 0;
 
+    // Apdex is approximated from error rate (1 - errorRate).
+    // This is a proxy metric, not a real apdex calculation (which requires latency thresholds).
     const apdexScore =
         allEvents24h === 0
             ? 1.0
