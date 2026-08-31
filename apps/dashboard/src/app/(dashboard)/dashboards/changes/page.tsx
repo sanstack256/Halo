@@ -1,5 +1,5 @@
-import { getDashboardFilterContext, getServiceLandscapeAnalytics } from "@/actions/analytics";
-import { ServiceLandscapeClient } from "@/components/dashboards/service-landscape-client";
+import { getDashboardFilterContext, getChangeIntelligenceAnalytics } from "@/actions/analytics";
+import { ChangeIntelligenceClient } from "@/components/dashboards/change-intelligence-client";
 
 interface PageProps {
     searchParams: Promise<{
@@ -10,7 +10,7 @@ interface PageProps {
     }>;
 }
 
-export default async function ServiceLandscapePage({ searchParams }: PageProps) {
+export default async function ChangeIntelligencePage({ searchParams }: PageProps) {
     const sp = await searchParams;
     const projectId = sp.projectId || "ALL";
     const environment = sp.environment || "ALL";
@@ -19,7 +19,7 @@ export default async function ServiceLandscapePage({ searchParams }: PageProps) 
 
     const [filterContext, analyticsData] = await Promise.all([
         getDashboardFilterContext(),
-        getServiceLandscapeAnalytics({
+        getChangeIntelligenceAnalytics({
             projectId: projectId !== "ALL" ? projectId : undefined,
             environment: environment !== "ALL" ? environment : undefined,
             timeRangeKey: range,
@@ -28,7 +28,7 @@ export default async function ServiceLandscapePage({ searchParams }: PageProps) 
     ]);
 
     return (
-        <ServiceLandscapeClient
+        <ChangeIntelligenceClient
             data={analyticsData}
             projects={filterContext.projects}
             environments={filterContext.environments}

@@ -24,6 +24,7 @@ import {
     FolderGit2,
     FolderKanban,
     GitBranch,
+    GitCommit,
     Globe,
     Home,
     Key,
@@ -165,9 +166,11 @@ const primaryNavigation: PrimarySection[] = [
             {
                 items: [
                     { label: "All Dashboards", href: "/dashboards", icon: LayoutDashboard },
-                    { label: "System Health", href: "/dashboards/system", icon: Activity },
-                    { label: "Service Health", href: "/dashboards/services", icon: Server },
-                    { label: "SLO & Error Budget", href: "/dashboards/slo", icon: Radio },
+                    { label: "System Explorer", href: "/dashboards/system", icon: Activity },
+                    { label: "Service Landscape", href: "/dashboards/services", icon: Server },
+                    { label: "Change Intelligence", href: "/dashboards/changes", icon: GitCommit },
+                    { label: "Dependency Intelligence", href: "/dashboards/dependencies", icon: Network },
+                    { label: "Reliability Lab", href: "/dashboards/reliability", icon: Radio },
                 ],
             },
         ],

@@ -1,0 +1,45 @@
+"filename", "language", "TypeScript", "TypeScript JSX", "comment", "blank", "total"
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/analytics.ts", "TypeScript", 116, 0, 0, 32, 148
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/dashboards/changes/page.tsx", "TypeScript JSX", 0, 37, 0, 5, 42
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/dashboards/dependencies/page.tsx", "TypeScript JSX", 0, 33, 0, 5, 38
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/dashboards/page.tsx", "TypeScript JSX", 0, 100, 7, 12, 119
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/dashboards/reliability/page.tsx", "TypeScript JSX", 0, 40, 0, 5, 45
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/dashboards/services/page.tsx", "TypeScript JSX", 0, -5, 0, 0, -5
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/dashboards/slo/page.tsx", "TypeScript JSX", 0, -92, -5, -10, -107
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/dashboards/system/page.tsx", "TypeScript JSX", 0, -88, -3, -8, -99
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/monitors/alerts/[id]/page.tsx", "TypeScript JSX", 0, 4, 0, 0, 4
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/investigations/new/page.tsx", "TypeScript JSX", 0, 1, 0, 0, 1
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/alerts/alerts-client.tsx", "TypeScript JSX", 0, 4, 0, 0, 4
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/blast-radius-panel.tsx", "TypeScript JSX", 0, 148, 5, 14, 167
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/change-explanation-panel.tsx", "TypeScript JSX", 0, 214, 6, 18, 238
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/change-impact-modal.tsx", "TypeScript JSX", 0, 204, 9, 19, 232
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/change-intelligence-client.tsx", "TypeScript JSX", 0, 108, 4, 11, 123
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/change-timeline-view.tsx", "TypeScript JSX", 0, 203, 8, 20, 231
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/dashboard-filter-bar.tsx", "TypeScript JSX", 0, 155, 7, 18, 180
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/dashboard-provenance-modal.tsx", "TypeScript JSX", 0, 115, 6, 12, 133
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/dependency-intelligence-client.tsx", "TypeScript JSX", 0, 73, 3, 7, 83
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/dependency-topology-graph.tsx", "TypeScript JSX", 0, 307, 17, 33, 357
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/recurring-pattern-modal.tsx", "TypeScript JSX", 0, 134, 5, 12, 151
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/reliability-lab-client.tsx", "TypeScript JSX", 0, 78, 3, 7, 88
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/reliability-posture-view.tsx", "TypeScript JSX", 0, 321, 16, 24, 361
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/service-inspector-drawer.tsx", "TypeScript JSX", 0, 237, 6, 21, 264
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/service-landscape-client.tsx", "TypeScript JSX", 0, 196, 9, 19, 224
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/service-matrix-table.tsx", "TypeScript JSX", 0, 326, 12, 21, 359
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/synchronized-timeline.tsx", "TypeScript JSX", 0, 397, 19, 39, 455
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/dashboards/system-explorer-client.tsx", "TypeScript JSX", 0, 315, 12, 23, 350
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/monitors/monitor-detail-header.tsx", "TypeScript JSX", 0, 4, 0, 1, 5
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/monitors/monitor-form.tsx", "TypeScript JSX", 0, -51, 0, 0, -51
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/monitors/monitors-client.tsx", "TypeScript JSX", 0, 4, 0, 1, 5
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/overview/sidebar.tsx", "TypeScript JSX", 0, 3, 0, 0, 3
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/analytics/blast-radius.ts", "TypeScript", 62, 0, 2, 7, 71
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/analytics/change-intelligence.ts", "TypeScript", 408, 0, 11, 40, 459
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/analytics/dependency-intelligence.ts", "TypeScript", 284, 0, 11, 39, 334
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/analytics/reliability-lab.ts", "TypeScript", 444, 0, 12, 42, 498
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/analytics/service-landscape.ts", "TypeScript", 488, 0, 14, 53, 555
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/analytics/system-explorer.ts", "TypeScript", 630, 0, 21, 73, 724
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/analytics/time.ts", "TypeScript", 138, 0, 0, 19, 157
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/analytics/types.ts", "TypeScript", 408, 0, 3, 27, 438
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/monitors/__tests__/acceptance-audit.ts", "TypeScript", 231, 0, 33, 36, 300
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/monitors/__tests__/evaluator.test.ts", "TypeScript", 97, 0, 18, 16, 131
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/monitors/definitions.ts", "TypeScript", 100, 0, 10, 5, 115
+"Total", "-", 3406, 3525, 281, 718, 7930

@@ -1,41 +1,37 @@
-import { getDashboardFilterContext, getServiceLandscapeAnalytics } from "@/actions/analytics";
-import { ServiceLandscapeClient } from "@/components/dashboards/service-landscape-client";
+import { getDashboardFilterContext, getDependencyIntelligenceAnalytics } from "@/actions/analytics";
+import { DependencyIntelligenceClient } from "@/components/dashboards/dependency-intelligence-client";
 
 interface PageProps {
     searchParams: Promise<{
         projectId?: string;
         environment?: string;
         range?: string;
-        service?: string;
     }>;
 }
 
-export default async function ServiceLandscapePage({ searchParams }: PageProps) {
+export default async function DependencyIntelligencePage({ searchParams }: PageProps) {
     const sp = await searchParams;
     const projectId = sp.projectId || "ALL";
     const environment = sp.environment || "ALL";
     const range = sp.range || "24h";
-    const service = sp.service || "ALL";
 
     const [filterContext, analyticsData] = await Promise.all([
         getDashboardFilterContext(),
-        getServiceLandscapeAnalytics({
+        getDependencyIntelligenceAnalytics({
             projectId: projectId !== "ALL" ? projectId : undefined,
             environment: environment !== "ALL" ? environment : undefined,
             timeRangeKey: range,
-            service: service !== "ALL" ? service : undefined,
         }),
     ]);
 
     return (
-        <ServiceLandscapeClient
+        <DependencyIntelligenceClient
             data={analyticsData}
             projects={filterContext.projects}
             environments={filterContext.environments}
             currentProjectId={projectId}
             currentEnvironment={environment}
             currentTimeRange={range}
-            currentService={service}
         />
     );
 }
