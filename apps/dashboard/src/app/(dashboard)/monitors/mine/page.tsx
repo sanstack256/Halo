@@ -39,7 +39,7 @@ export default async function MyMonitorsPage({ searchParams }: MyMonitorsPagePro
 
     return (
         <MonitorsClient
-            title="My Monitors"
+            title="Owned by Me"
             description="Monitors created and managed by you across your workspace projects."
             isMineView={true}
             initialMonitors={monitors}

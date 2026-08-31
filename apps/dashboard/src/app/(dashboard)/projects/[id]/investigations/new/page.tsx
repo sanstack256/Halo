@@ -1,4 +1,5 @@
 import { investigateIssueOccurrence, investigateMonitorOccurrence } from "@/lib/investigation/run";
+import { getMonitorTypeDefinition } from "@/lib/monitors/definitions";
 import { BackButton } from "@/components/ui/back-button";
 import {
     Activity,
@@ -333,7 +334,7 @@ function InvestigationView({
                     <div className="space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
                             <span className="px-2 py-0.5 rounded-full bg-accent/20 border border-accent/30 text-accent font-semibold text-[11px]">
-                                Monitor Origin: {monitorContext.monitor.type}
+                                Monitor Origin: {getMonitorTypeDefinition(monitorContext.monitor.type).shortLabel}
                             </span>
                             <span className="text-white font-semibold">
                                 {monitorContext.monitor.name}

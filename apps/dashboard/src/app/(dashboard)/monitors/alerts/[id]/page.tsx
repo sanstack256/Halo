@@ -21,13 +21,17 @@ import { RelativeTime } from "@/components/ui/relative-time";
 import { formatDeterministicDateTime } from "@/lib/date-format";
 import { AlertDetailActions } from "@/components/alerts/alert-detail-actions";
 import type { MonitorType, NotificationChannel, NotificationOutcome } from "@/generated/prisma/client";
+import {
+    MONITOR_TYPE_DEFINITIONS,
+    getMonitorTypeDefinition,
+} from "@/lib/monitors/definitions";
 
 const TYPE_CONFIG: Record<MonitorType, { label: string; icon: any; colorClass: string }> = {
-    ERROR: { label: "Error Spike", icon: BellRing, colorClass: "text-red-400 bg-red-500/10" },
-    METRIC: { label: "Metric Anomaly", icon: Activity, colorClass: "text-amber-400 bg-amber-500/10" },
-    CRON: { label: "Cron Job", icon: Clock, colorClass: "text-sky-400 bg-sky-500/10" },
-    UPTIME: { label: "Uptime Probe", icon: Globe, colorClass: "text-emerald-400 bg-emerald-500/10" },
-    MOBILE_BUILD: { label: "Mobile Release", icon: Smartphone, colorClass: "text-purple-400 bg-purple-500/10" },
+    ERROR: { label: MONITOR_TYPE_DEFINITIONS.ERROR.shortLabel, icon: MONITOR_TYPE_DEFINITIONS.ERROR.icon, colorClass: MONITOR_TYPE_DEFINITIONS.ERROR.colorClass },
+    METRIC: { label: MONITOR_TYPE_DEFINITIONS.METRIC.shortLabel, icon: MONITOR_TYPE_DEFINITIONS.METRIC.icon, colorClass: MONITOR_TYPE_DEFINITIONS.METRIC.colorClass },
+    CRON: { label: MONITOR_TYPE_DEFINITIONS.CRON.shortLabel, icon: MONITOR_TYPE_DEFINITIONS.CRON.icon, colorClass: MONITOR_TYPE_DEFINITIONS.CRON.colorClass },
+    UPTIME: { label: MONITOR_TYPE_DEFINITIONS.UPTIME.shortLabel, icon: MONITOR_TYPE_DEFINITIONS.UPTIME.icon, colorClass: MONITOR_TYPE_DEFINITIONS.UPTIME.colorClass },
+    MOBILE_BUILD: { label: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.shortLabel, icon: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.icon, colorClass: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.colorClass },
 };
 
 const STATUS_CONFIG = {
@@ -69,7 +73,7 @@ export default async function AlertDetailPage({ params }: AlertDetailPageProps) 
             <div className="flex items-center gap-2 text-xs text-[var(--text-muted)] flex-wrap">
                 <Link href="/monitors/alerts" className="flex items-center gap-1 hover:text-white transition-colors">
                     <ArrowLeft size={12} />
-                    Alerts
+                    Alert Rules
                 </Link>
                 <span>/</span>
                 <Link href={`/monitors/${alert.monitorId}`} className="hover:text-white transition-colors">

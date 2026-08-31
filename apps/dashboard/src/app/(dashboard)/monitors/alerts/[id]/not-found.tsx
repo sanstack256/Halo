@@ -19,7 +19,7 @@ export default function AlertNotFound() {
                 className="halo-btn halo-btn-secondary halo-btn-sm font-mono mt-2"
             >
                 <ArrowLeft size={13} />
-                <span>Return to Alerts</span>
+                <span>Return to Alert Rules</span>
             </Link>
         </div>
     );

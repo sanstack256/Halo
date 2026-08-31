@@ -27,39 +27,44 @@ import {
 import { toggleMonitorStatus, deleteMonitor, type OrgMonitor } from "@/actions/monitor";
 import type { MonitorType, MonitorStatus } from "@/generated/prisma/client";
 
+import {
+    MONITOR_TYPE_DEFINITIONS,
+    getMonitorTypeDefinition,
+} from "@/lib/monitors/definitions";
+
 const TYPE_CONFIG: Record<
     MonitorType,
     { label: string; icon: any; colorClass: string; borderClass: string }
 > = {
     ERROR: {
-        label: "Error Spike",
-        icon: BellRing,
-        colorClass: "text-red-400 bg-red-500/10",
-        borderClass: "border-red-500/20",
+        label: MONITOR_TYPE_DEFINITIONS.ERROR.shortLabel,
+        icon: MONITOR_TYPE_DEFINITIONS.ERROR.icon,
+        colorClass: MONITOR_TYPE_DEFINITIONS.ERROR.colorClass,
+        borderClass: MONITOR_TYPE_DEFINITIONS.ERROR.borderClass,
     },
     METRIC: {
-        label: "Metric Anomaly",
-        icon: Activity,
-        colorClass: "text-amber-400 bg-amber-500/10",
-        borderClass: "border-amber-500/20",
+        label: MONITOR_TYPE_DEFINITIONS.METRIC.shortLabel,
+        icon: MONITOR_TYPE_DEFINITIONS.METRIC.icon,
+        colorClass: MONITOR_TYPE_DEFINITIONS.METRIC.colorClass,
+        borderClass: MONITOR_TYPE_DEFINITIONS.METRIC.borderClass,
     },
     CRON: {
-        label: "Cron Job",
-        icon: Clock,
-        colorClass: "text-sky-400 bg-sky-500/10",
-        borderClass: "border-sky-500/20",
+        label: MONITOR_TYPE_DEFINITIONS.CRON.shortLabel,
+        icon: MONITOR_TYPE_DEFINITIONS.CRON.icon,
+        colorClass: MONITOR_TYPE_DEFINITIONS.CRON.colorClass,
+        borderClass: MONITOR_TYPE_DEFINITIONS.CRON.borderClass,
     },
     UPTIME: {
-        label: "Uptime Probe",
-        icon: Globe,
-        colorClass: "text-emerald-400 bg-emerald-500/10",
-        borderClass: "border-emerald-500/20",
+        label: MONITOR_TYPE_DEFINITIONS.UPTIME.shortLabel,
+        icon: MONITOR_TYPE_DEFINITIONS.UPTIME.icon,
+        colorClass: MONITOR_TYPE_DEFINITIONS.UPTIME.colorClass,
+        borderClass: MONITOR_TYPE_DEFINITIONS.UPTIME.borderClass,
     },
     MOBILE_BUILD: {
-        label: "Mobile Release",
-        icon: Smartphone,
-        colorClass: "text-purple-400 bg-purple-500/10",
-        borderClass: "border-purple-500/20",
+        label: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.shortLabel,
+        icon: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.icon,
+        colorClass: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.colorClass,
+        borderClass: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.borderClass,
     },
 };
 
@@ -124,7 +129,7 @@ export function MonitorDetailHeader({ monitor }: MonitorDetailHeaderProps) {
                     className="inline-flex items-center gap-1.5 text-xs text-[var(--text-muted)] hover:text-white transition-colors font-mono"
                 >
                     <ArrowLeft size={13} />
-                    <span>Back to All Monitors</span>
+                    <span>Back to Monitor Overview</span>
                 </Link>
                 <div className="flex items-center gap-2 text-xs font-mono text-[var(--text-muted)]">
                     <span>Project:</span>

@@ -54,7 +54,7 @@ export function MonitorTriggerHistory({ data }: MonitorTriggerHistoryProps) {
                     href={`/monitors/alerts?monitor=${monitor.id}`}
                     className="text-xs text-[var(--accent)] hover:underline font-mono"
                 >
-                    View in Alerts Control &rarr;
+                    View in Alert Rules &rarr;
                 </Link>
             </div>
 

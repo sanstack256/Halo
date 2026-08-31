@@ -60,67 +60,72 @@ interface MonitorsClientProps {
     currentUserId?: string;
 }
 
+import {
+    MONITOR_TYPE_DEFINITIONS,
+    getMonitorTypeDefinition,
+} from "@/lib/monitors/definitions";
+
 const TYPE_CONFIG: Record<
     MonitorType,
     { label: string; icon: any; colorClass: string; borderClass: string }
 > = {
     ERROR: {
-        label: "Error Spike",
-        icon: BellRing,
-        colorClass: "text-red-400 bg-red-500/10",
-        borderClass: "border-red-500/20",
+        label: MONITOR_TYPE_DEFINITIONS.ERROR.shortLabel,
+        icon: MONITOR_TYPE_DEFINITIONS.ERROR.icon,
+        colorClass: MONITOR_TYPE_DEFINITIONS.ERROR.colorClass,
+        borderClass: MONITOR_TYPE_DEFINITIONS.ERROR.borderClass,
     },
     METRIC: {
-        label: "Metric Anomaly",
-        icon: Activity,
-        colorClass: "text-amber-400 bg-amber-500/10",
-        borderClass: "border-amber-500/20",
+        label: MONITOR_TYPE_DEFINITIONS.METRIC.shortLabel,
+        icon: MONITOR_TYPE_DEFINITIONS.METRIC.icon,
+        colorClass: MONITOR_TYPE_DEFINITIONS.METRIC.colorClass,
+        borderClass: MONITOR_TYPE_DEFINITIONS.METRIC.borderClass,
     },
     CRON: {
-        label: "Cron Job",
-        icon: Clock,
-        colorClass: "text-sky-400 bg-sky-500/10",
-        borderClass: "border-sky-500/20",
+        label: MONITOR_TYPE_DEFINITIONS.CRON.shortLabel,
+        icon: MONITOR_TYPE_DEFINITIONS.CRON.icon,
+        colorClass: MONITOR_TYPE_DEFINITIONS.CRON.colorClass,
+        borderClass: MONITOR_TYPE_DEFINITIONS.CRON.borderClass,
     },
     UPTIME: {
-        label: "Uptime Probe",
-        icon: Globe,
-        colorClass: "text-emerald-400 bg-emerald-500/10",
-        borderClass: "border-emerald-500/20",
+        label: MONITOR_TYPE_DEFINITIONS.UPTIME.shortLabel,
+        icon: MONITOR_TYPE_DEFINITIONS.UPTIME.icon,
+        colorClass: MONITOR_TYPE_DEFINITIONS.UPTIME.colorClass,
+        borderClass: MONITOR_TYPE_DEFINITIONS.UPTIME.borderClass,
     },
     MOBILE_BUILD: {
-        label: "Mobile Release",
-        icon: Smartphone,
-        colorClass: "text-purple-400 bg-purple-500/10",
-        borderClass: "border-purple-500/20",
+        label: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.shortLabel,
+        icon: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.icon,
+        colorClass: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.colorClass,
+        borderClass: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.borderClass,
     },
 };
 
 const TYPE_DETAILS: Record<MonitorType, { title: string; desc: string; emptyDesc: string }> = {
     ERROR: {
-        title: "Error Spike Monitors",
-        desc: "Real-time monitors evaluating error frequency bursts and fatal exceptions.",
-        emptyDesc: "No error spike monitors configured yet. Set up threshold alerts to track exception surges in production.",
+        title: MONITOR_TYPE_DEFINITIONS.ERROR.title,
+        desc: MONITOR_TYPE_DEFINITIONS.ERROR.description,
+        emptyDesc: "No error activity monitors configured yet. Set up threshold alerts to track exception surges in production.",
     },
     METRIC: {
-        title: "Metric & Latency Monitors",
-        desc: "Evaluates API response durations, span latencies, and service degradation.",
-        emptyDesc: "No metric monitors configured yet. Set up alerts for P95 latency and request rate anomalies.",
+        title: MONITOR_TYPE_DEFINITIONS.METRIC.title,
+        desc: MONITOR_TYPE_DEFINITIONS.METRIC.description,
+        emptyDesc: "No performance anomaly monitors configured yet. Set up alerts for latency and throughput anomalies.",
     },
     CRON: {
-        title: "Cron & Scheduled Task Monitors",
-        desc: "Monitors background workers and scheduled tasks to ensure on-time execution.",
-        emptyDesc: "No scheduled cron monitors configured yet. Set up heartbeat monitoring for your periodic jobs.",
+        title: MONITOR_TYPE_DEFINITIONS.CRON.title,
+        desc: MONITOR_TYPE_DEFINITIONS.CRON.description,
+        emptyDesc: "No scheduled job monitors configured yet. Set up heartbeat monitoring for your periodic jobs.",
     },
     UPTIME: {
-        title: "Endpoint Uptime Probes",
-        desc: "Continuous HTTP/HTTPS synthetic availability and status code validation.",
-        emptyDesc: "No uptime probes configured yet. Set up continuous synthetic checks against your endpoints.",
+        title: MONITOR_TYPE_DEFINITIONS.UPTIME.title,
+        desc: MONITOR_TYPE_DEFINITIONS.UPTIME.description,
+        emptyDesc: "No service availability monitors configured yet. Set up continuous synthetic checks against your endpoints.",
     },
     MOBILE_BUILD: {
-        title: "Mobile Build & Stability Monitors",
-        desc: "Tracks mobile release stability and crash-free session ratios.",
-        emptyDesc: "No mobile release monitors configured yet. Set up monitors for mobile crash-free stability.",
+        title: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.title,
+        desc: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.description,
+        emptyDesc: "No release health monitors configured yet. Set up monitors for release crash-free stability.",
     },
 };
 
@@ -151,8 +156,8 @@ export function MonitorsClient({
 
     // Dynamic header resolution
     const activeTypeDetail = selectedType !== "ALL" ? TYPE_DETAILS[selectedType as MonitorType] : undefined;
-    const resolvedTitle = title || activeTypeDetail?.title || "Monitors";
-    const resolvedDescription = description || activeTypeDetail?.desc || "Continuous anomaly detection, threshold alerts, and synthetic endpoint monitors.";
+    const resolvedTitle = title || (isMineView ? "Owned by Me" : activeTypeDetail?.title || "Monitor Overview");
+    const resolvedDescription = description || (isMineView ? "Monitors created and managed by you across your workspace projects." : activeTypeDetail?.desc || "Continuous anomaly detection, threshold alerts, and real-time operational monitors.");
 
     // Client-side pagination state
     const [currentPage, setCurrentPage] = useState(1);
@@ -341,12 +346,12 @@ export function MonitorsClient({
                             setCurrentPage(1);
                         }}
                         options={[
-                            { value: "ALL", label: "All Types" },
-                            { value: "ERROR", label: "Error Spikes" },
-                            { value: "METRIC", label: "Metric Anomalies" },
-                            { value: "CRON", label: "Cron Jobs" },
-                            { value: "UPTIME", label: "Uptime Probes" },
-                            { value: "MOBILE_BUILD", label: "Mobile Builds" },
+                            { value: "ALL", label: "All Categories" },
+                            { value: "ERROR", label: "Error Activity" },
+                            { value: "METRIC", label: "Performance" },
+                            { value: "CRON", label: "Scheduled Jobs" },
+                            { value: "UPTIME", label: "Availability" },
+                            { value: "MOBILE_BUILD", label: "Release Health" },
                         ]}
                     />
 
@@ -414,7 +419,7 @@ export function MonitorsClient({
                                 ? "Monitors created by your account will appear here for dedicated ownership, quick edits, and alert management."
                                 : activeTypeDetail
                                 ? activeTypeDetail.emptyDesc
-                                : "Monitors continuously track error surges, latency thresholds, scheduled cron jobs, and endpoint uptime."}
+                                : "Monitors continuously track error activity, performance anomalies, scheduled job health, service availability, and release health."}
                         </p>
                     </div>
                     <div>

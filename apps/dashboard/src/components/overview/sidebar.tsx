@@ -179,24 +179,24 @@ const primaryNavigation: PrimarySection[] = [
         sections: [
             {
                 items: [
-                    { label: "All Monitors", href: "/monitors", icon: BellRing },
-                    { label: "My Monitors", href: "/monitors/mine", icon: User },
+                    { label: "Monitor Overview", href: "/monitors", icon: BellRing },
+                    { label: "Owned by Me", href: "/monitors/mine", icon: User },
                 ],
             },
             {
-                label: "By Monitor Type",
+                label: "Monitor Categories",
                 collapsible: true,
                 items: [
-                    { label: "Error", href: "/monitors/type/ERROR", icon: BellRing },
-                    { label: "Metric", href: "/monitors/type/METRIC", icon: Activity },
-                    { label: "Cron", href: "/monitors/type/CRON", icon: Clock },
-                    { label: "Uptime", href: "/monitors/type/UPTIME", icon: Globe },
-                    { label: "Mobile Build", href: "/monitors/type/MOBILE_BUILD", icon: Smartphone },
+                    { label: "Error Activity", href: "/monitors/type/ERROR", icon: BellRing },
+                    { label: "Performance", href: "/monitors/type/METRIC", icon: Activity },
+                    { label: "Scheduled Jobs", href: "/monitors/type/CRON", icon: Clock },
+                    { label: "Availability", href: "/monitors/type/UPTIME", icon: Globe },
+                    { label: "Release Health", href: "/monitors/type/MOBILE_BUILD", icon: Smartphone },
                 ],
             },
             {
                 items: [
-                    { label: "Alerts", href: "/monitors/alerts", icon: ShieldAlert },
+                    { label: "Alert Rules", href: "/monitors/alerts", icon: ShieldAlert },
                 ],
             },
         ],

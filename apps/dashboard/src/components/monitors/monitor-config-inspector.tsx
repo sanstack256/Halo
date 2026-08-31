@@ -58,11 +58,11 @@ export function MonitorConfigInspector({ data }: MonitorConfigInspectorProps) {
                     <div className="space-y-1">
                         <span className="text-[10px] text-[var(--text-muted)] uppercase block">Evaluation Mode</span>
                         <span className="text-white font-medium">
-                            {monitor.type === "ERROR" && "Error Count Burst in Rolling Window"}
-                            {monitor.type === "METRIC" && "Metric & Latency Threshold"}
-                            {monitor.type === "CRON" && "Cron Heartbeat Missing"}
-                            {monitor.type === "UPTIME" && "Synthetic HTTP Probe Availability"}
-                            {monitor.type === "MOBILE_BUILD" && "Crash-free Ratio & Stability"}
+                            {monitor.type === "ERROR" && "Error & Crash Detection (Rolling Window)"}
+                            {monitor.type === "METRIC" && "Performance Anomaly Threshold"}
+                            {monitor.type === "CRON" && "Scheduled Job Health & Missing Heartbeat"}
+                            {monitor.type === "UPTIME" && "Service Availability & Synthetic Probe"}
+                            {monitor.type === "MOBILE_BUILD" && "Release Health & Stability Target"}
                         </span>
                     </div>
 

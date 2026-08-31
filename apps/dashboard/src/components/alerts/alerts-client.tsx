@@ -25,13 +25,17 @@ import { HaloSelect } from "@/components/ui/halo-select";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { acknowledgeAlert, resolveAlert, type AlertWithMonitor } from "@/actions/alert";
 import type { MonitorAlertStatus, MonitorType } from "@/generated/prisma/client";
+import {
+    MONITOR_TYPE_DEFINITIONS,
+    getMonitorTypeDefinition,
+} from "@/lib/monitors/definitions";
 
 const TYPE_CONFIG: Record<MonitorType, { label: string; icon: any; colorClass: string }> = {
-    ERROR: { label: "Error Spike", icon: BellRing, colorClass: "text-red-400 bg-red-500/10" },
-    METRIC: { label: "Metric Anomaly", icon: Activity, colorClass: "text-amber-400 bg-amber-500/10" },
-    CRON: { label: "Cron Job", icon: Clock, colorClass: "text-sky-400 bg-sky-500/10" },
-    UPTIME: { label: "Uptime Probe", icon: Globe, colorClass: "text-emerald-400 bg-emerald-500/10" },
-    MOBILE_BUILD: { label: "Mobile Release", icon: Smartphone, colorClass: "text-purple-400 bg-purple-500/10" },
+    ERROR: { label: MONITOR_TYPE_DEFINITIONS.ERROR.shortLabel, icon: MONITOR_TYPE_DEFINITIONS.ERROR.icon, colorClass: MONITOR_TYPE_DEFINITIONS.ERROR.colorClass },
+    METRIC: { label: MONITOR_TYPE_DEFINITIONS.METRIC.shortLabel, icon: MONITOR_TYPE_DEFINITIONS.METRIC.icon, colorClass: MONITOR_TYPE_DEFINITIONS.METRIC.colorClass },
+    CRON: { label: MONITOR_TYPE_DEFINITIONS.CRON.shortLabel, icon: MONITOR_TYPE_DEFINITIONS.CRON.icon, colorClass: MONITOR_TYPE_DEFINITIONS.CRON.colorClass },
+    UPTIME: { label: MONITOR_TYPE_DEFINITIONS.UPTIME.shortLabel, icon: MONITOR_TYPE_DEFINITIONS.UPTIME.icon, colorClass: MONITOR_TYPE_DEFINITIONS.UPTIME.colorClass },
+    MOBILE_BUILD: { label: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.shortLabel, icon: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.icon, colorClass: MONITOR_TYPE_DEFINITIONS.MOBILE_BUILD.colorClass },
 };
 
 const STATUS_CONFIG: Record<MonitorAlertStatus, { label: string; dot: string; badge: string }> = {
@@ -183,7 +187,7 @@ export function AlertsClient({
             {/* ── Header ─────────────────────────────────────────────────────── */}
             <div className="flex items-start justify-between gap-4">
                 <div>
-                    <h1 className="text-xl font-semibold text-white tracking-tight">Alerts</h1>
+                    <h1 className="text-xl font-semibold text-white tracking-tight">Alert Rules</h1>
                     <p className="text-sm text-[var(--text-secondary)] mt-0.5">
                         Monitor-triggered alert events and their resolution lifecycle.
                     </p>

@@ -19,7 +19,7 @@ export default function MonitorNotFound() {
                 className="halo-btn halo-btn-secondary halo-btn-sm font-mono mt-2"
             >
                 <ArrowLeft size={13} />
-                <span>Return to All Monitors</span>
+                <span>Return to Monitor Overview</span>
             </Link>
         </div>
     );

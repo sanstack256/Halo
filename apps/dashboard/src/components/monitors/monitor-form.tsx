@@ -38,61 +38,10 @@ interface MonitorFormProps {
     isModal?: boolean;
 }
 
-const MONITOR_TYPES: {
-    type: MonitorType;
-    label: string;
-    tagline: string;
-    description: string;
-    triggerCondition: string;
-    dataRequired: string;
-    icon: any;
-}[] = [
-    {
-        type: "ERROR",
-        label: "Error Spike & Crash Monitor",
-        tagline: "Track error bursts and fatal exceptions",
-        description: "Monitors real-time telemetry events and triggers when error frequency exceeds a specified volume within a rolling window.",
-        triggerCondition: "Error occurrences >= Threshold count within rolling window",
-        dataRequired: "Application error events, exceptions, or trace logs",
-        icon: BellRing,
-    },
-    {
-        type: "METRIC",
-        label: "Metric & Latency Anomaly",
-        tagline: "Detect slow API responses and resource spikes",
-        description: "Evaluates service performance metrics (P95/P99 latency, request rates, execution duration) against baseline thresholds.",
-        triggerCondition: "Aggregated metric value > Threshold value (ms/count)",
-        dataRequired: "Trace durations, span metadata, or telemetry metrics",
-        icon: Activity,
-    },
-    {
-        type: "CRON",
-        label: "Cron & Scheduled Task Monitor",
-        tagline: "Ensure background jobs execute on time",
-        description: "Monitors periodic jobs and background workers, alerting immediately if a scheduled execution misses its expected heartbeat.",
-        triggerCondition: "Job execution fails to check in within schedule + grace period",
-        dataRequired: "Cron schedule expression & task check-ins",
-        icon: Clock,
-    },
-    {
-        type: "UPTIME",
-        label: "Endpoint Uptime & Synthetic Probe",
-        tagline: "Monitor HTTP endpoint availability worldwide",
-        description: "Performs continuous HTTP/HTTPS availability checks against your public or private endpoints and validates response status codes.",
-        triggerCondition: "Probe response status != 200 or timeout exceeded",
-        dataRequired: "Target HTTP/HTTPS URL endpoint",
-        icon: Globe,
-    },
-    {
-        type: "MOBILE_BUILD",
-        label: "Mobile Build & Crash-Free Session",
-        tagline: "Track release stability and mobile regressions",
-        description: "Monitors mobile application releases and alerts when crash-free session ratios fall below production stability targets.",
-        triggerCondition: "Crash-free session percentage < Target stability threshold",
-        dataRequired: "Mobile SDK telemetry sessions and crash reports",
-        icon: Smartphone,
-    },
-];
+import {
+    MONITOR_TYPES_LIST,
+    getMonitorTypeDefinition,
+} from "@/lib/monitors/definitions";
 
 export function MonitorForm({
     projects,
@@ -148,7 +97,7 @@ export function MonitorForm({
     // Inline validation errors
     const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
-    const selectedTypeConfig = MONITOR_TYPES.find((t) => t.type === type) || MONITOR_TYPES[0];
+    const selectedTypeConfig = getMonitorTypeDefinition(type);
     const selectedProjectObj = projects.find((p) => p.id === projectId);
 
     const validateForm = () => {
@@ -296,7 +245,7 @@ export function MonitorForm({
                         className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white mb-4 transition-colors font-mono"
                     >
                         <ArrowLeft size={13} />
-                        <span>Back to All Monitors</span>
+                        <span>Back to Monitor Overview</span>
                     </Link>
 
                     <div className="halo-page-header border-b border-border pb-6">
@@ -329,12 +278,12 @@ export function MonitorForm({
                         </p>
                     </div>
                     <span className="px-2 py-0.5 rounded bg-accent/15 border border-accent/30 text-accent text-[11px] font-bold">
-                        {selectedTypeConfig.label}
+                        {selectedTypeConfig.title}
                     </span>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-                    {MONITOR_TYPES.map((t) => {
+                    {MONITOR_TYPES_LIST.map((t) => {
                         const Icon = t.icon;
                         const isSelected = type === t.type;
 
@@ -361,7 +310,7 @@ export function MonitorForm({
                                 </div>
                                 <div className="space-y-1 min-w-0">
                                     <div className="font-semibold text-xs text-white flex items-center gap-2">
-                                        <span>{t.label}</span>
+                                        <span>{t.title}</span>
                                     </div>
                                     <p className="text-[11px] text-zinc-400 font-sans leading-tight">
                                         {t.description}
@@ -761,7 +710,7 @@ export function MonitorForm({
 
                     <div>
                         <span className="text-[10px] text-zinc-500 uppercase block mb-0.5">Monitor Type</span>
-                        <span className="text-accent font-semibold block">{selectedTypeConfig.label}</span>
+                        <span className="text-accent font-semibold block">{selectedTypeConfig.title}</span>
                     </div>
 
                     <div>
