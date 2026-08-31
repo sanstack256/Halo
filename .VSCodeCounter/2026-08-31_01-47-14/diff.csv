@@ -1,0 +1,35 @@
+"filename", "language", "TypeScript", "TypeScript JSX", "comment", "blank", "total"
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/alert.ts", "TypeScript", 24, 0, 0, 0, 24
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/event.ts", "TypeScript", 13, 0, 5, 2, 20
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/issue.ts", "TypeScript", 72, 0, 0, 11, 83
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/monitor.ts", "TypeScript", 101, 0, 2, 17, 120
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/investigate/page.tsx", "TypeScript JSX", 0, 47, 1, 9, 57
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/monitors/alerts/[id]/page.tsx", "TypeScript JSX", 0, 26, 1, 1, 28
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/investigations/new/page.tsx", "TypeScript JSX", 0, 94, 3, 0, 97
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/alerts/alert-detail-actions.tsx", "TypeScript JSX", 0, 8, 1, 1, 10
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/alerts/alerts-client.tsx", "TypeScript JSX", 0, 9, 0, 0, 9
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/investigation/causal-chain-view.tsx", "TypeScript JSX", 0, 26, 0, 1, 27
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/investigation/related-telemetry-view.tsx", "TypeScript JSX", 0, 282, 4, 17, 303
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/investigation/sticky-nav.tsx", "TypeScript JSX", 0, 1, 0, 0, 1
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/monitors/monitor-future-investigation-slot.tsx", "TypeScript JSX", 0, 47, 0, 3, 50
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/browser.ts", "TypeScript", 1, 0, 4, 0, 5
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/client.ts", "TypeScript", 1, 0, 4, 0, 5
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/commonInputTypes.ts", "TypeScript", 30, 0, 0, 4, 34
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/enums.ts", "TypeScript", 7, 0, 0, 3, 10
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/class.ts", "TypeScript", 1, 0, 8, 1, 10
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/prismaNamespace.ts", "TypeScript", 97, 0, 6, 9, 112
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/prismaNamespaceBrowser.ts", "TypeScript", 20, 0, 0, 3, 23
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models.ts", "TypeScript", 1, 0, 0, 0, 1
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Investigation.ts", "TypeScript", 1499, 0, 689, 155, 2343
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Issue.ts", "TypeScript", 130, 0, 15, 11, 156
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Monitor.ts", "TypeScript", 162, 0, 15, 12, 189
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/MonitorAlert.ts", "TypeScript", 116, 0, 12, 11, 139
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Project.ts", "TypeScript", 180, 0, 15, 11, 206
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/run.ts", "TypeScript", 127, 0, 3, 11, 141
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/monitors/__tests__/evaluator.test.ts", "TypeScript", 205, 0, 31, 33, 269
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/monitors/evaluator.ts", "TypeScript", 232, 0, 26, 33, 291
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/monitors/query-parser.ts", "TypeScript", 135, 0, 17, 20, 172
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/notifications/email-alert.ts", "TypeScript", 281, 0, 8, 24, 313
+"/Users/nssanjeev/Development/Halo/packages/sdk/src/halo.ts", "TypeScript", 4, 0, 0, 2, 6
+"/Users/nssanjeev/Development/Halo/packages/sdk/src/types.ts", "TypeScript", 1, 0, 0, 1, 2
+"Total", "-", 3440, 540, 870, 406, 5256

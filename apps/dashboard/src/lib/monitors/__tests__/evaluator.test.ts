@@ -241,6 +241,137 @@ async function runTests() {
     assert.strictEqual(evalRes7?.alertCreated, false);
     console.log("✓ Disabled monitor is ignored.");
 
+    // Re-enable monitor for subsequent tests
+    await prisma.monitor.update({
+        where: { id: monitor1.id },
+        data: { status: "HEALTHY" },
+    });
+
+    // -------------------------------------------------------------------------
+    // TEST 9: Re-triggering a new independent firing episode after recovery
+    // -------------------------------------------------------------------------
+    console.log("\n--- TEST 9: New firing episode after recovery creates NEW alert ---");
+    const episode2Time = new Date(futureTime.getTime() + 60 * 1000);
+
+    for (let i = 1; i <= 4; i++) {
+        await createEvent({
+            projectId: projectA.id,
+            environmentId: envA.id,
+            type: "ERROR",
+            severity: "ERROR",
+            title: `Episode 2 Payment failure ${i}`,
+            service: "web-client",
+            timestamp: new Date(episode2Time.getTime() + i * 1000).toISOString(),
+        });
+    }
+
+    const mAfterEpisode2 = await prisma.monitor.findUnique({ where: { id: monitor1.id } });
+    assert.strictEqual(mAfterEpisode2?.status, "FIRING");
+
+    const allAlertsAfterEp2 = await prisma.monitorAlert.findMany({
+        where: { monitorId: monitor1.id },
+        orderBy: { triggeredAt: "asc" },
+    });
+    assert.strictEqual(allAlertsAfterEp2.length, 2, "Must have exactly 2 alerts across 2 independent episodes");
+    assert.strictEqual(allAlertsAfterEp2[0].status, "RESOLVED", "First alert remains RESOLVED");
+    assert.strictEqual(allAlertsAfterEp2[1].status, "OPEN", "Second alert is OPEN");
+    assert.strictEqual(allAlertsAfterEp2[1].observedValue, 4);
+    console.log("✓ New firing episode after recovery creates a new OPEN alert while preserving historical resolved alert.");
+
+    // -------------------------------------------------------------------------
+    // TEST 10: Email Alert Idempotency & Delivery Handling
+    // -------------------------------------------------------------------------
+    console.log("\n--- TEST 10: Email Notification Dispatch & Idempotency ---");
+    const { sendMonitorAlertEmail } = await import("@/lib/notifications/email-alert");
+    const openAlertId = allAlertsAfterEp2[1].id;
+
+    // First attempt to send email
+    const emailRes1 = await sendMonitorAlertEmail(openAlertId);
+    console.log("  Email dispatch result:", emailRes1);
+
+    const notifs = await prisma.monitorAlertNotification.findMany({
+        where: { alertId: openAlertId },
+    });
+    assert.ok(notifs.length >= 1, "A notification record must be persisted");
+    assert.strictEqual(notifs[0].channel, "EMAIL");
+
+    // If delivered, second call must be skipped (idempotent)
+    if (emailRes1.delivered) {
+        const emailRes2 = await sendMonitorAlertEmail(openAlertId);
+        assert.strictEqual(emailRes2.skipped, true, "Duplicate email attempt for same episode must be skipped");
+        console.log("✓ Email dispatch is strictly idempotent.");
+    } else {
+        console.log("✓ Notification record persisted with failure reason (e.g. unconfigured key in CI).");
+    }
+
+    // -------------------------------------------------------------------------
+    // TEST 11: Complex Multi-field Filter Evaluation (env, release, severity, text)
+    // -------------------------------------------------------------------------
+    console.log("\n--- TEST 11: Multi-field Query Filtering ---");
+    const monitor2 = await prisma.monitor.create({
+        data: {
+            name: "Checkout Crash Monitor",
+            type: "ERROR",
+            status: "HEALTHY",
+            severity: "ERROR",
+            projectId: projectA.id,
+            thresholdValue: 2,
+            thresholdWindow: 10,
+            query: "service:web-client env:production severity:FATAL checkout",
+        },
+    });
+
+    const filterTestTime = new Date(episode2Time.getTime() + 10 * 60 * 1000);
+
+    // Event missing "checkout" keyword
+    await createEvent({
+        projectId: projectA.id,
+        environmentId: envA.id,
+        type: "ERROR",
+        severity: "FATAL",
+        title: "Login failure",
+        service: "web-client",
+        timestamp: new Date(filterTestTime.getTime() + 1000).toISOString(),
+    });
+
+    // Event with severity ERROR (not FATAL)
+    await createEvent({
+        projectId: projectA.id,
+        environmentId: envA.id,
+        type: "ERROR",
+        severity: "ERROR",
+        title: "checkout crash",
+        service: "web-client",
+        timestamp: new Date(filterTestTime.getTime() + 2000).toISOString(),
+    });
+
+    // 2 Events matching ALL filter criteria
+    for (let i = 1; i <= 2; i++) {
+        await createEvent({
+            projectId: projectA.id,
+            environmentId: envA.id,
+            type: "ERROR",
+            severity: "FATAL",
+            title: `checkout crash event ${i}`,
+            service: "web-client",
+            timestamp: new Date(filterTestTime.getTime() + (3000 + i * 1000)).toISOString(),
+        });
+    }
+
+    const evalResMulti = await evaluateMonitor(monitor2.id, new Date(filterTestTime.getTime() + 6000));
+    assert.strictEqual(evalResMulti?.matchingCount, 2, "Only events matching service, env, severity:FATAL, and checkout should match");
+    assert.strictEqual(evalResMulti?.isThresholdViolated, true);
+    assert.strictEqual(evalResMulti?.newState, "FIRING");
+    console.log("✓ Multi-field query filter matches only events satisfying all criteria.");
+
+    // -------------------------------------------------------------------------
+    // TEST 12: Project Batch Evaluation
+    // -------------------------------------------------------------------------
+    console.log("\n--- TEST 12: evaluateMonitorsForProject Batch Processing ---");
+    const batchResults = await evaluateMonitorsForProject(projectA.id, new Date(filterTestTime.getTime() + 7000));
+    assert.ok(batchResults.length >= 2, "Batch must evaluate all active monitors in project");
+    console.log(`✓ Batch evaluation processed ${batchResults.length} monitors for Project A.`);
+
     // Cleanup
     await prisma.monitorAlertNotification.deleteMany({
         where: { alert: { monitor: { projectId: { in: [projectA.id, projectB.id] } } } },
@@ -256,7 +387,7 @@ async function runTests() {
     });
 
     console.log("\n==================================================");
-    console.log("ALL MONITOR EVALUATOR TESTS PASSED WITH 0 ERRORS!");
+    console.log("ALL MONITOR EVALUATOR TESTS (1-12) PASSED WITH 0 ERRORS!");
     console.log("==================================================");
 }
 

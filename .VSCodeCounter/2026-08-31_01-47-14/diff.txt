@@ -1,0 +1,90 @@
+Date : 2026-08-31 01:47:14
+Directory : /Users/nssanjeev/Development/Halo
+Total : 33 files,  3980 codes, 870 comments, 406 blanks, all 5256 lines
+
+Languages
++----------------+------------+------------+------------+------------+------------+
+| language       | files      | code       | comment    | blank      | total      |
++----------------+------------+------------+------------+------------+------------+
+| TypeScript     |         24 |      3,440 |        860 |        374 |      4,674 |
+| TypeScript JSX |          9 |        540 |         10 |         32 |        582 |
++----------------+------------+------------+------------+------------+------------+
+
+Directories
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| path                                                                                                           | files      | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+| .                                                                                                              |         33 |      3,980 |        870 |        406 |      5,256 |
+| apps                                                                                                           |         31 |      3,975 |        870 |        403 |      5,248 |
+| apps/dashboard                                                                                                 |         31 |      3,975 |        870 |        403 |      5,248 |
+| apps/dashboard/src                                                                                             |         31 |      3,975 |        870 |        403 |      5,248 |
+| apps/dashboard/src/actions                                                                                     |          4 |        210 |          7 |         30 |        247 |
+| apps/dashboard/src/app                                                                                         |          3 |        167 |          5 |         10 |        182 |
+| apps/dashboard/src/app/(dashboard)                                                                             |          3 |        167 |          5 |         10 |        182 |
+| apps/dashboard/src/app/(dashboard)/investigate                                                                 |          1 |         47 |          1 |          9 |         57 |
+| apps/dashboard/src/app/(dashboard)/monitors                                                                    |          1 |         26 |          1 |          1 |         28 |
+| apps/dashboard/src/app/(dashboard)/monitors/alerts                                                             |          1 |         26 |          1 |          1 |         28 |
+| apps/dashboard/src/app/(dashboard)/monitors/alerts/[id]                                                        |          1 |         26 |          1 |          1 |         28 |
+| apps/dashboard/src/app/(dashboard)/projects                                                                    |          1 |         94 |          3 |          0 |         97 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]                                                               |          1 |         94 |          3 |          0 |         97 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/investigations                                                |          1 |         94 |          3 |          0 |         97 |
+| apps/dashboard/src/app/(dashboard)/projects/[id]/investigations/new                                            |          1 |         94 |          3 |          0 |         97 |
+| apps/dashboard/src/components                                                                                  |          6 |        373 |          5 |         22 |        400 |
+| apps/dashboard/src/components/alerts                                                                           |          2 |         17 |          1 |          1 |         19 |
+| apps/dashboard/src/components/investigation                                                                    |          3 |        309 |          4 |         18 |        331 |
+| apps/dashboard/src/components/monitors                                                                         |          1 |         47 |          0 |          3 |         50 |
+| apps/dashboard/src/generated                                                                                   |         13 |      2,245 |        768 |        220 |      3,233 |
+| apps/dashboard/src/generated/prisma                                                                            |         13 |      2,245 |        768 |        220 |      3,233 |
+| apps/dashboard/src/generated/prisma (Files)                                                                    |          5 |         40 |          8 |          7 |         55 |
+| apps/dashboard/src/generated/prisma/internal                                                                   |          3 |        118 |         14 |         13 |        145 |
+| apps/dashboard/src/generated/prisma/models                                                                     |          5 |      2,087 |        746 |        200 |      3,033 |
+| apps/dashboard/src/lib                                                                                         |          5 |        980 |         85 |        121 |      1,186 |
+| apps/dashboard/src/lib/investigation                                                                           |          1 |        127 |          3 |         11 |        141 |
+| apps/dashboard/src/lib/monitors                                                                                |          3 |        572 |         74 |         86 |        732 |
+| apps/dashboard/src/lib/monitors (Files)                                                                        |          2 |        367 |         43 |         53 |        463 |
+| apps/dashboard/src/lib/monitors/__tests__                                                                      |          1 |        205 |         31 |         33 |        269 |
+| apps/dashboard/src/lib/notifications                                                                           |          1 |        281 |          8 |         24 |        313 |
+| packages                                                                                                       |          2 |          5 |          0 |          3 |          8 |
+| packages/sdk                                                                                                   |          2 |          5 |          0 |          3 |          8 |
+| packages/sdk/src                                                                                               |          2 |          5 |          0 |          3 |          8 |
++----------------------------------------------------------------------------------------------------------------+------------+------------+------------+------------+------------+
+
+Files
++----------------------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| filename                                                                                                       | language       | code       | comment    | blank      | total      |
++----------------------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/alert.ts                                          | TypeScript     |         24 |          0 |          0 |         24 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/event.ts                                          | TypeScript     |         13 |          5 |          2 |         20 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/issue.ts                                          | TypeScript     |         72 |          0 |         11 |         83 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/monitor.ts                                        | TypeScript     |        101 |          2 |         17 |        120 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/investigate/page.tsx                      | TypeScript JSX |         47 |          1 |          9 |         57 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/monitors/alerts/[id]/page.tsx             | TypeScript JSX |         26 |          1 |          1 |         28 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/investigations/new/page.tsx | TypeScript JSX |         94 |          3 |          0 |         97 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/alerts/alert-detail-actions.tsx                | TypeScript JSX |          8 |          1 |          1 |         10 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/alerts/alerts-client.tsx                       | TypeScript JSX |          9 |          0 |          0 |          9 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/investigation/causal-chain-view.tsx            | TypeScript JSX |         26 |          0 |          1 |         27 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/investigation/related-telemetry-view.tsx       | TypeScript JSX |        282 |          4 |         17 |        303 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/investigation/sticky-nav.tsx                   | TypeScript JSX |          1 |          0 |          0 |          1 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/components/monitors/monitor-future-investigation-slot.tsx | TypeScript JSX |         47 |          0 |          3 |         50 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/browser.ts                               | TypeScript     |          1 |          4 |          0 |          5 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/client.ts                                | TypeScript     |          1 |          4 |          0 |          5 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/commonInputTypes.ts                      | TypeScript     |         30 |          0 |          4 |         34 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/enums.ts                                 | TypeScript     |          7 |          0 |          3 |         10 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/class.ts                        | TypeScript     |          1 |          8 |          1 |         10 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/prismaNamespace.ts              | TypeScript     |         97 |          6 |          9 |        112 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/prismaNamespaceBrowser.ts       | TypeScript     |         20 |          0 |          3 |         23 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models.ts                                | TypeScript     |          1 |          0 |          0 |          1 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Investigation.ts                  | TypeScript     |      1,499 |        689 |        155 |      2,343 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Issue.ts                          | TypeScript     |        130 |         15 |         11 |        156 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Monitor.ts                        | TypeScript     |        162 |         15 |         12 |        189 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/MonitorAlert.ts                   | TypeScript     |        116 |         12 |         11 |        139 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Project.ts                        | TypeScript     |        180 |         15 |         11 |        206 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/run.ts                                  | TypeScript     |        127 |          3 |         11 |        141 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/monitors/__tests__/evaluator.test.ts                  | TypeScript     |        205 |         31 |         33 |        269 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/monitors/evaluator.ts                                 | TypeScript     |        232 |         26 |         33 |        291 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/monitors/query-parser.ts                              | TypeScript     |        135 |         17 |         20 |        172 |
+| /Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/notifications/email-alert.ts                          | TypeScript     |        281 |          8 |         24 |        313 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/halo.ts                                                     | TypeScript     |          4 |          0 |          2 |          6 |
+| /Users/nssanjeev/Development/Halo/packages/sdk/src/types.ts                                                    | TypeScript     |          1 |          0 |          1 |          2 |
+| Total                                                                                                          |                |      3,980 |        870 |        406 |      5,256 |
++----------------------------------------------------------------------------------------------------------------+----------------+------------+------------+------------+------------+
