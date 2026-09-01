@@ -143,9 +143,10 @@ export function normalizeEvidence(
 }
 
 function normalizeString(
-    value: string,
+    value: string | undefined | null,
     fallback: string
 ): string {
+    if (typeof value !== "string") return fallback;
     const normalized = value.trim();
 
     return normalized.length > 0

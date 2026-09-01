@@ -367,17 +367,21 @@ export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges =
                                                                 {step.service}
                                                             </span>
                                                             <span
-                                                                className={`text-[10px] font-mono uppercase px-1.5 py-0.5 rounded ${
+                                                                className={`text-[10px] font-mono uppercase px-1.5 py-0.5 rounded border ${
                                                                     step.role === "ROOT_CAUSE"
-                                                                        ? "bg-red-500/10 text-red-400 border border-red-500/20 font-bold"
+                                                                        ? "bg-red-500/10 text-red-400 border-red-500/20 font-bold"
+                                                                        : step.role === "CANDIDATE_CAUSE"
+                                                                        ? "bg-amber-500/10 text-amber-400 border-amber-500/20 font-semibold"
                                                                         : step.role === "TRIGGER"
-                                                                        ? "bg-blue-500/10 text-blue-400 border border-blue-500/20 font-bold"
+                                                                        ? "bg-blue-500/10 text-blue-400 border-blue-500/20 font-bold"
+                                                                        : step.role === "STRUCTURAL_CONTEXT"
+                                                                        ? "bg-zinc-800 text-zinc-400 border-zinc-700 font-normal"
                                                                         : step.role === "SYMPTOM"
-                                                                        ? "bg-amber-500/10 text-amber-400 border border-amber-500/20 font-bold"
-                                                                        : "bg-surface text-muted"
+                                                                        ? "bg-rose-500/10 text-rose-400 border-rose-500/20 font-semibold"
+                                                                        : "bg-surface text-muted border-border"
                                                                 }`}
                                                             >
-                                                                {step.role}
+                                                                {step.role.replace(/_/g, " ")}
                                                             </span>
                                                         </div>
                                                         <div className="text-[11px] font-mono text-muted">

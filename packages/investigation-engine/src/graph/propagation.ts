@@ -62,10 +62,20 @@ export function tracePropagationChains(
         const visited = new Set<string>([rootId]);
         const chainEdges: EvidenceEdge[] = [];
 
-        const rootRole =
-            root.type === "DEPLOYMENT" || root.type === "CONFIG" || root.type === "FEATURE_FLAG"
-                ? "TRIGGER"
-                : "ROOT_CAUSE";
+        let rootRole: CausalChainStep["role"] = "CANDIDATE_CAUSE";
+        if (root.type === "DEPLOYMENT" || root.type === "CONFIG" || root.type === "FEATURE_FLAG") {
+            rootRole = "TRIGGER";
+        } else if (
+            root.title.toLowerCase().includes("database") ||
+            root.title.toLowerCase().includes("orders.list") ||
+            (root.type === "TRACE" && (!root.status || (typeof root.status === "number" && root.status < 400)))
+        ) {
+            rootRole = "STRUCTURAL_CONTEXT";
+        } else if (root.type === "ERROR" || (typeof root.status === "number" && root.status >= 400) || root.status === 500) {
+            rootRole = "ROOT_CAUSE";
+        } else {
+            rootRole = "CONTEXT";
+        }
 
         const steps: CausalChainStep[] = [
             {

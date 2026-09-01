@@ -561,11 +561,15 @@ export function interpretInvestigation(
         rootCauseStatement = rootCause.description;
         verdict = rootCause.description || rootCause.title;
     } else {
-        headline = parsedError.errorMessage || "Unhandled exception";
-        firstObservedUpstreamFailure = parsedError.errorMessage || "Unknown";
-        downstreamSymptom = "Application entered an error state"; 
-        rootCauseStatement = "The exact root cause is currently unknown due to missing server-side execution telemetry.";
-        verdict = "Inconclusive telemetry signal prevents establishing a single definitive root cause.";
+        headline = investigation.evidence.length === 0 ? "Insufficient Telemetry Observed" : (parsedError.errorMessage || "Telemetry Analysis Complete");
+        firstObservedUpstreamFailure = investigation.evidence.length === 0 ? "None observed" : (parsedError.errorMessage || "Unknown");
+        downstreamSymptom = investigation.evidence.length === 0 ? "No errors observed in selected window" : "Application operational state under investigation"; 
+        rootCauseStatement = investigation.evidence.length === 0
+            ? "No request or error telemetry was observed in the selected window."
+            : "The exact root cause is currently unconfirmed from available telemetry.";
+        verdict = investigation.evidence.length === 0
+            ? "Insufficient telemetry signal prevents establishing an incident or causal verdict."
+            : "Telemetry signal evaluated without a single definitive root cause.";
     }
 
     // 6. Causal Flow — HTTP request → HTTP status → client response handling → exception.

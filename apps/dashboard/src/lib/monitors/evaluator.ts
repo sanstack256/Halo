@@ -1,7 +1,7 @@
-import { prisma } from "@/lib/prisma";
+import { prisma } from "../prisma";
 import { parseMonitorQuery, buildQueryWhereConditions } from "./query-parser";
-import { sendMonitorAlertEmail } from "@/lib/notifications/email-alert";
-import type { Monitor, MonitorAlert, MonitorStatus, Prisma } from "@/generated/prisma/client";
+import { sendMonitorAlertEmail } from "../notifications/email-alert";
+import type { Monitor, MonitorAlert, MonitorStatus, Prisma } from "../../generated/prisma/client";
 
 export interface EvaluationResult {
     monitorId: string;

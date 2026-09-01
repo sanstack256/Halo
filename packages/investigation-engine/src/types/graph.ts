@@ -164,7 +164,7 @@ export interface CausalChainStep {
     evidenceId: string;
     service: string;
     title: string;
-    role: "ROOT_CAUSE" | "TRIGGER" | "PROPAGATION" | "SYMPTOM" | "CONTEXT";
+    role: "ROOT_CAUSE" | "CANDIDATE_CAUSE" | "TRIGGER" | "CONTRIBUTOR" | "PROPAGATION" | "STRUCTURAL_CONTEXT" | "SYMPTOM" | "CONTEXT" | "UNRESOLVED";
     delayMs: number;
     edgeFromPrevious?: EvidenceEdge;
     provenance?: string;

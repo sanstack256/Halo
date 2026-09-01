@@ -157,7 +157,10 @@ export async function getProject(projectId: string) {
 
   return prisma.project.findFirst({
     where: {
-      id: projectId,
+      OR: [
+        { id: projectId },
+        { slug: projectId },
+      ],
       organizationId: organization.id,
     },
     include: {
@@ -182,7 +185,10 @@ export async function getProjectHeader(projectId: string) {
 
   return prisma.project.findFirst({
     where: {
-      id: projectId,
+      OR: [
+        { id: projectId },
+        { slug: projectId },
+      ],
       organizationId: organization.id,
     },
     select: {

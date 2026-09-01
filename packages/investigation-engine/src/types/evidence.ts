@@ -59,6 +59,10 @@ export interface Evidence {
 
     user?: EvidenceUser;
 
+    scope?: "PRIMARY" | "CONTEXT" | "BASELINE";
+
+    evidenceStatus?: "OBSERVED" | "SUPPORTED" | "INFERRED" | "UNCERTAIN" | "UNKNOWN" | "INSUFFICIENT_EVIDENCE";
+
     metadata: Record<string, unknown>;
 }
 

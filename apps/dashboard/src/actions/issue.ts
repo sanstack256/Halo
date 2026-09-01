@@ -973,3 +973,318 @@ export async function getInvestigationEventsForMonitor(
     };
 }
 
+export async function getInvestigationEventsForInterval(
+    projectId: string,
+    intervalStartInput: Date | string,
+    intervalEndInput?: Date | string | null,
+    options?: {
+        environment?: string;
+        service?: string;
+    }
+): Promise<{
+    project: NonNullable<Awaited<ReturnType<typeof prisma.project.findUnique>>>;
+    events: Awaited<ReturnType<typeof prisma.event.findMany>>;
+    primaryEvents: Awaited<ReturnType<typeof prisma.event.findMany>>;
+    precedingEvents: Awaited<ReturnType<typeof prisma.event.findMany>>;
+    followingEvents: Awaited<ReturnType<typeof prisma.event.findMany>>;
+    baselineEvents: Awaited<ReturnType<typeof prisma.event.findMany>>;
+    releases: Awaited<ReturnType<typeof prisma.release.findMany>>;
+    alerts: any[];
+    intervalStart: Date;
+    intervalEnd: Date;
+    precedingStart: Date;
+    followingEnd: Date;
+    baselineStart: Date;
+    baselineEnd: Date;
+    queryBounds: {
+        intervalStart: Date;
+        intervalEnd: Date;
+        precedingStart: Date;
+        followingEnd: Date;
+        baselineStart: Date;
+        baselineEnd: Date;
+    };
+    assessment: import("@/lib/investigation/evidence-boundary").IntervalSufficiencyAssessment;
+    metrics: import("@/lib/investigation/evidence-boundary").IntervalSufficiencyAssessment["metrics"] & {
+        affectedServices: string[];
+        affectedEndpoints: string[];
+    };
+} | null> {
+    let project = await prisma.project.findFirst({
+        where: {
+            OR: [
+                { id: projectId },
+                { slug: projectId },
+            ],
+        },
+    });
+
+    if (!project) {
+        project = await prisma.project.findFirst({
+            orderBy: { createdAt: "asc" },
+        });
+    }
+
+    if (!project) return null;
+
+    const actualProjectId = project.id;
+
+    const intervalStart = new Date(intervalStartInput);
+    let intervalEnd = intervalEndInput ? new Date(intervalEndInput) : new Date(intervalStart.getTime() + 60 * 60 * 1000);
+    if (intervalEnd.getTime() <= intervalStart.getTime()) {
+        intervalEnd = new Date(intervalStart.getTime() + 60 * 60 * 1000);
+    }
+
+    const durationMs = intervalEnd.getTime() - intervalStart.getTime();
+    const precedingStart = new Date(intervalStart.getTime() - Math.max(30 * 60 * 1000, durationMs));
+    const followingEnd = new Date(intervalEnd.getTime() + Math.max(30 * 60 * 1000, durationMs));
+    const baselineStart = new Date(intervalStart.getTime() - durationMs);
+    const baselineEnd = new Date(intervalStart.getTime());
+
+    const whereBase: any = {
+        projectId: actualProjectId,
+    };
+    if (options?.environment && options.environment !== "ALL") {
+        whereBase.environment = { name: options.environment };
+    }
+    if (options?.service && options.service !== "ALL") {
+        whereBase.service = options.service;
+    }
+
+    const [allEvents, baselineEvents, releases, alerts] = await Promise.all([
+        prisma.event.findMany({
+            where: {
+                ...whereBase,
+                timestamp: { gte: precedingStart, lte: followingEnd },
+            },
+            orderBy: { timestamp: "asc" },
+            take: INVESTIGATION_EVENT_LIMIT,
+            include: {
+                environment: { select: { name: true } },
+            },
+        }),
+        prisma.event.findMany({
+            where: {
+                ...whereBase,
+                timestamp: { gte: baselineStart, lt: baselineEnd },
+            },
+            orderBy: { timestamp: "asc" },
+            take: INVESTIGATION_EVENT_LIMIT,
+            include: {
+                environment: { select: { name: true } },
+            },
+        }),
+        prisma.release.findMany({
+            where: {
+                projectId: actualProjectId,
+                lastSeen: {
+                    gte: new Date(intervalStart.getTime() - 2 * 60 * 60 * 1000),
+                    lte: intervalEnd,
+                },
+            },
+            orderBy: { lastSeen: "desc" },
+            take: 5,
+        }),
+        prisma.monitorAlert.findMany({
+            where: {
+                monitor: { projectId: actualProjectId },
+                triggeredAt: { gte: precedingStart, lte: followingEnd },
+            },
+            include: {
+                monitor: { select: { name: true, type: true } },
+            },
+            orderBy: { triggeredAt: "desc" },
+            take: 5,
+        }),
+    ]);
+
+    const primaryEvents = allEvents.filter(
+        (e) => e.timestamp >= intervalStart && e.timestamp <= intervalEnd
+    );
+    const precedingEvents = allEvents.filter(
+        (e) => e.timestamp >= precedingStart && e.timestamp < intervalStart
+    );
+    const followingEvents = allEvents.filter(
+        (e) => e.timestamp > intervalEnd && e.timestamp <= followingEnd
+    );
+
+    const { assessIntervalEvidenceSufficiency } = await import("@/lib/investigation/evidence-boundary");
+    const assessment = assessIntervalEvidenceSufficiency({
+        primaryEvents,
+        precedingEvents,
+        followingEvents,
+        baselineEvents,
+        releases,
+    });
+
+    const affectedServices = Array.from(new Set(primaryEvents.map((e) => e.service).filter((s): s is string => Boolean(s))));
+    const affectedEndpoints = Array.from(new Set(primaryEvents.map((e) => e.operation || e.resource).filter((o): o is string => Boolean(o))));
+
+    return {
+        project,
+        events: allEvents,
+        primaryEvents,
+        precedingEvents,
+        followingEvents,
+        baselineEvents,
+        releases,
+        alerts,
+        intervalStart,
+        intervalEnd,
+        precedingStart,
+        followingEnd,
+        baselineStart,
+        baselineEnd,
+        queryBounds: {
+            intervalStart,
+            intervalEnd,
+            precedingStart,
+            followingEnd,
+            baselineStart,
+            baselineEnd,
+        },
+        assessment,
+        metrics: {
+            ...assessment.metrics,
+            affectedServices,
+            affectedEndpoints,
+        },
+    };
+}
+
+export async function getInvestigationEventsForRelease(
+    projectId: string,
+    releaseVersionOrId: string,
+    options?: {
+        environment?: string;
+    }
+): Promise<{
+    project: NonNullable<Awaited<ReturnType<typeof prisma.project.findUnique>>>;
+    release: NonNullable<Awaited<ReturnType<typeof prisma.release.findFirst>>>;
+    events: Awaited<ReturnType<typeof prisma.event.findMany>>;
+    baseEvents: Awaited<ReturnType<typeof prisma.event.findMany>>;
+    obsEvents: Awaited<ReturnType<typeof prisma.event.findMany>>;
+    alerts: any[];
+    releaseTime: Date;
+    baselineStart: Date;
+    observationEnd: Date;
+    queryBounds: {
+        baselineStart: Date;
+        releaseTime: Date;
+        observationEnd: Date;
+    };
+    assessment: import("@/lib/investigation/evidence-boundary").ReleaseSufficiencyAssessment;
+    metrics: import("@/lib/investigation/evidence-boundary").ReleaseSufficiencyAssessment["metrics"] & {
+        affectedServices: string[];
+        isRegression: boolean;
+        verdict: "Regression Detected" | "Likely Regression" | "No Regression Observed" | "Insufficient Evidence";
+        summaryExplanation: string;
+    };
+} | null> {
+    let release = await prisma.release.findFirst({
+        where: {
+            OR: [
+                { id: releaseVersionOrId, projectId },
+                { version: releaseVersionOrId, projectId },
+            ],
+        },
+    });
+
+    if (!release) {
+        // Search across any project in the user's organization if projectId was generic
+        release = await prisma.release.findFirst({
+            where: {
+                OR: [
+                    { id: releaseVersionOrId },
+                    { version: releaseVersionOrId },
+                ],
+            },
+        });
+    }
+
+    if (!release) return null;
+
+    const actualProjectId = release.projectId;
+    const project = await prisma.project.findUnique({
+        where: { id: actualProjectId },
+    });
+
+    if (!project) return null;
+
+    const releaseTime = release.lastSeen || release.firstSeen;
+    const windowDurationMs = 2 * 60 * 60 * 1000; // 2 hour baseline & observation
+    const baselineStart = new Date(releaseTime.getTime() - windowDurationMs);
+    const observationEnd = new Date(releaseTime.getTime() + windowDurationMs);
+
+    const whereBase: any = {
+        projectId: actualProjectId,
+        timestamp: { gte: baselineStart, lte: observationEnd },
+    };
+    if (options?.environment && options.environment !== "ALL") {
+        whereBase.environment = { name: options.environment };
+    }
+
+    const [events, alerts] = await Promise.all([
+        prisma.event.findMany({
+            where: whereBase,
+            orderBy: { timestamp: "asc" },
+            take: INVESTIGATION_EVENT_LIMIT,
+            include: {
+                environment: { select: { name: true } },
+            },
+        }),
+        prisma.monitorAlert.findMany({
+            where: {
+                monitor: { projectId: actualProjectId },
+                triggeredAt: { gte: releaseTime, lte: observationEnd },
+            },
+            include: {
+                monitor: { select: { name: true, type: true } },
+            },
+            orderBy: { triggeredAt: "desc" },
+            take: 5,
+        }),
+    ]);
+
+    const baseEvents = events.filter((e) => e.timestamp < releaseTime);
+    const obsEvents = events.filter((e) => e.timestamp >= releaseTime);
+
+    const { assessReleaseEvidenceSufficiency } = await import("@/lib/investigation/evidence-boundary");
+    const assessment = assessReleaseEvidenceSufficiency({
+        releaseVersion: release.version,
+        releaseTime,
+        baseEvents,
+        obsEvents,
+        observationWindowDurationMs: windowDurationMs,
+    });
+
+    const affectedServices = Array.from(new Set(obsEvents.map((e) => e.service).filter((s): s is string => Boolean(s))));
+
+    return {
+        project,
+        release,
+        events,
+        baseEvents,
+        obsEvents,
+        alerts,
+        releaseTime,
+        baselineStart,
+        observationEnd,
+        queryBounds: {
+            baselineStart,
+            releaseTime,
+            observationEnd,
+        },
+        assessment,
+        metrics: {
+            ...assessment.metrics,
+            affectedServices,
+            isRegression: assessment.metrics.isErrorRegression || assessment.metrics.isLatencyRegression,
+            verdict: assessment.verdict,
+            summaryExplanation: assessment.summaryExplanation,
+        },
+    };
+}
+
+
+

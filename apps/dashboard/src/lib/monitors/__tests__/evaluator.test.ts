@@ -1,15 +1,13 @@
+import { describe, it, expect } from "vitest";
 import assert from "node:assert";
 import { prisma } from "../../prisma";
 import { evaluateMonitor, evaluateMonitorsForProject } from "../evaluator";
 import { parseMonitorQuery, buildQueryWhereConditions } from "../query-parser";
 import { createEvent } from "../../../actions/event";
 
-async function runTests() {
-    console.log("==================================================");
-    console.log("STARTING MONITOR EVALUATOR TEST SUITE");
-    console.log("==================================================");
-
-    // Setup isolated test project and environment
+describe("Monitor Evaluator Test Suite", () => {
+    it("runs complete monitor evaluator workflow", async () => {
+        // Setup isolated test project and environment
     const testOrg = await prisma.organization.upsert({
         where: { slug: "eval-test-org" },
         create: { name: "Eval Test Org", slug: "eval-test-org" },
@@ -387,13 +385,5 @@ async function runTests() {
     });
 
     console.log("\n==================================================");
-    console.log("ALL MONITOR EVALUATOR TESTS (1-12) PASSED WITH 0 ERRORS!");
-    console.log("==================================================");
-}
-
-runTests()
-    .catch((err) => {
-        console.error("TEST FAILED:", err);
-        process.exit(1);
-    })
-    .finally(() => prisma.$disconnect());
+    });
+});

@@ -5,6 +5,10 @@ import { ArrowLeft } from "lucide-react";
 import { getProjectHeader } from "@/actions/project";
 import { ProjectNavigation } from "@/components/projects/project-navigation";
 
+import { getSession } from "@/lib/session";
+import { getOrganization } from "@/lib/organization";
+import { prisma } from "@/lib/prisma";
+
 type Props = {
     children: React.ReactNode;
     params: Promise<{
@@ -18,7 +22,22 @@ export default async function ProjectLayout({
 }: Props) {
     const { id } = await params;
 
-    const project = await getProjectHeader(id);
+    let targetId = id;
+    if (id === "current" || id === "ALL") {
+        const session = await getSession();
+        if (session) {
+            const org = await getOrganization(session.user.id);
+            if (org) {
+                const firstProj = await prisma.project.findFirst({
+                    where: { organizationId: org.id },
+                    orderBy: { createdAt: "asc" },
+                });
+                if (firstProj) targetId = firstProj.id;
+            }
+        }
+    }
+
+    const project = await getProjectHeader(targetId);
 
     if (!project) {
         notFound();

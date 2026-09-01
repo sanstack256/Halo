@@ -414,25 +414,34 @@ function calculateConfidence(
         evidenceDensity;
 
     /*
-     * A hypothesis with stronger contradiction than support
-     * should never receive a high confidence score merely because
-     * of evidence-density bonuses.
+     * ------------------------------------------------------------
+     * EVIDENCE SUFFICIENCY & MULTI-SIGNAL CALIBRATION
+     * ------------------------------------------------------------
+     *
+     * A hypothesis supported by only 1 signal must NOT be scored as VERY HIGH (85+) or 100%.
+     * High confidence requires at least 2 independent signals.
+     * Very High confidence requires at least 3 independent signals.
+     * If hypothesis status is UNCERTAIN, cap confidence at MEDIUM (50%).
      */
-    if (
-        negative >= positive &&
-        positive > 0
-    ) {
-        return Math.min(
-            49,
-            Math.round(
-                raw * 100,
-            ),
-        );
+    let score = Math.round(clamp01(raw) * 100);
+
+    if (negative >= positive && positive > 0) {
+        return Math.min(49, score);
     }
 
-    return Math.round(
-        clamp01(raw) * 100,
-    );
+    if (hypothesis.status === "UNCERTAIN") {
+        return Math.min(50, score);
+    }
+
+    if (evidenceCount <= 1) {
+        return Math.min(60, score); // MEDIUM at most
+    }
+
+    if (evidenceCount === 2) {
+        return Math.min(78, score); // HIGH at most
+    }
+
+    return score;
 }
 
 /**
