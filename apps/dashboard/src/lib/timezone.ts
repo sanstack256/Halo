@@ -48,16 +48,15 @@ export function getClientTimezone(): string {
         if (isValidTimezone(val)) return val;
     }
 
-    // 2. Check localStorage
+    // 2. Check localStorage (and re-sync cookie if missing)
     try {
         const stored = localStorage.getItem(TIMEZONE_COOKIE_NAME);
-        if (stored && isValidTimezone(stored)) return stored;
-    } catch {}
-
-    // 3. Fallback to system / UTC
-    try {
-        const sys = Intl.DateTimeFormat().resolvedOptions().timeZone;
-        if (isValidTimezone(sys)) return sys;
+        if (stored && isValidTimezone(stored)) {
+            document.cookie = `${TIMEZONE_COOKIE_NAME}=${encodeURIComponent(
+                stored
+            )}; path=/; max-age=31536000; SameSite=Lax`;
+            return stored;
+        }
     } catch {}
 
     return "UTC";

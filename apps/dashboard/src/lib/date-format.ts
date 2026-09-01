@@ -3,7 +3,7 @@
  * Prevents SSR / Client hydration mismatches by formatting deterministically with explicit IANA timezone support.
  */
 
-import { isValidTimezone } from "./timezone";
+import { isValidTimezone, getClientTimezone } from "./timezone";
 
 const MONTHS_SHORT = [
     "Jan", "Feb", "Mar", "Apr", "May", "Jun",
@@ -13,10 +13,14 @@ const MONTHS_SHORT = [
 /**
  * Gets the standard localized abbreviation or offset for a timezone (e.g. "UTC", "IST", "EDT", "EST").
  */
-export function getTimezoneAbbr(dateInput: Date | string | number, timeZone: string = "UTC"): string {
-    const tz = isValidTimezone(timeZone) ? timeZone : "UTC";
+export function getTimezoneAbbr(dateInput: Date | string | number, timeZone?: string): string {
+    const resolvedTz = timeZone || getClientTimezone();
+    const tz = isValidTimezone(resolvedTz) ? resolvedTz : "UTC";
     const d = new Date(dateInput);
     if (isNaN(d.getTime())) return tz;
+
+    if (tz === "Asia/Kolkata") return "IST";
+    if (tz === "UTC") return "UTC";
 
     try {
         const parts = new Intl.DateTimeFormat("en-US", {
@@ -24,7 +28,12 @@ export function getTimezoneAbbr(dateInput: Date | string | number, timeZone: str
             timeZoneName: "short",
         }).formatToParts(d);
         const namePart = parts.find((p) => p.type === "timeZoneName");
-        return namePart ? namePart.value : tz;
+        if (namePart) {
+            if (namePart.value === "GMT+1" && tz === "Europe/London") return "BST";
+            if (namePart.value === "GMT" && tz === "Europe/London") return "GMT";
+            return namePart.value;
+        }
+        return tz;
     } catch {
         return tz;
     }
@@ -35,12 +44,13 @@ export function getTimezoneAbbr(dateInput: Date | string | number, timeZone: str
  */
 export function formatDeterministicDate(
     dateInput: Date | string | number | null | undefined,
-    timeZone: string = "UTC"
+    timeZone?: string
 ): string {
     if (!dateInput) return "—";
     const d = new Date(dateInput);
     if (isNaN(d.getTime())) return "—";
-    const tz = isValidTimezone(timeZone) ? timeZone : "UTC";
+    const resolvedTz = timeZone || getClientTimezone();
+    const tz = isValidTimezone(resolvedTz) ? resolvedTz : "UTC";
 
     try {
         const formatter = new Intl.DateTimeFormat("en-US", {
@@ -63,13 +73,14 @@ export function formatDeterministicDate(
  */
 export function formatDeterministicTime(
     dateInput: Date | string | number | null | undefined,
-    timeZone: string = "UTC",
+    timeZone?: string,
     includeAbbr: boolean = true
 ): string {
     if (!dateInput) return "—";
     const d = new Date(dateInput);
     if (isNaN(d.getTime())) return "—";
-    const tz = isValidTimezone(timeZone) ? timeZone : "UTC";
+    const resolvedTz = timeZone || getClientTimezone();
+    const tz = isValidTimezone(resolvedTz) ? resolvedTz : "UTC";
 
     try {
         const formatter = new Intl.DateTimeFormat("en-US", {
@@ -96,13 +107,14 @@ export function formatDeterministicTime(
  */
 export function formatDeterministicDateTime(
     dateInput: Date | string | number | null | undefined,
-    timeZone: string = "UTC",
+    timeZone?: string,
     includeAbbr: boolean = true
 ): string {
     if (!dateInput) return "—";
     const d = new Date(dateInput);
     if (isNaN(d.getTime())) return "—";
-    const tz = isValidTimezone(timeZone) ? timeZone : "UTC";
+    const resolvedTz = timeZone || getClientTimezone();
+    const tz = isValidTimezone(resolvedTz) ? resolvedTz : "UTC";
 
     try {
         const datePart = formatDeterministicDate(d, tz);

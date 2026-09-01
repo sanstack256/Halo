@@ -14,6 +14,7 @@ import type {
     IntervalComparisonAnalysis,
 } from "./types";
 import { parseTimeRange, generateTimeBuckets, calculateMetricComparison } from "./time";
+import { formatDeterministicTime } from "../date-format";
 
 export interface SystemExplorerParams {
     organizationId: string;
@@ -603,6 +604,7 @@ export async function fetchSystemExplorerAnalytics(
         issues,
         alerts,
         serviceContributions,
+        userTimezone,
     });
 
     // 9. Provenance Metadata
@@ -665,6 +667,7 @@ function buildChangeExplanationAndEvidence(ctx: {
     issues: any[];
     alerts: any[];
     serviceContributions: ServiceContributionItem[];
+    userTimezone?: string;
 }): { explanation: ChangeExplanation; evidenceLedger: SharedEvidenceItem[] } {
     const evidenceLedger: SharedEvidenceItem[] = [];
 
@@ -763,9 +766,9 @@ function buildChangeExplanationAndEvidence(ctx: {
     let evidenceStrength: QualitativeConfidence = "Medium";
     let headline = `Error Surge of ${maxErrors} Events at ${peakBucket.formattedTime}`;
     let whatChanged = `Error volume increased to ${maxErrors} failures (${peakBucket.errorRate}% error rate) in ${primaryService}.`;
-    let when = `${peakBucket.formattedTime} (UTC)`;
-    let where = `Service: ${primaryService}`;
-    let magnitudeDescription = `${maxErrors} errors (${peakBucket.errorRate}% error rate)`;
+    const when = `${peakBucket.formattedTime} (${peakBucket.timeZoneAbbr || "UTC"})`;
+    const where = `Service: ${primaryService}`;
+    const magnitudeDescription = `${maxErrors} errors (${peakBucket.errorRate}% error rate)`;
 
     const supportingEvidence: string[] = [
         `Peak interval recorded ${maxErrors} error events (${peakBucket.errorRate}% error rate) out of ${peakBucket.requestCount} requests.`,
@@ -822,7 +825,7 @@ function buildChangeExplanationAndEvidence(ctx: {
         }
 
         supportingEvidence.push(
-            `Release ${primaryRel.version} deployed at ${primaryRel.lastSeen.toLocaleTimeString()} (${minsBefore}m before error peak).`
+            `Release ${primaryRel.version} deployed at ${formatDeterministicTime(primaryRel.lastSeen, ctx.userTimezone || "UTC")} (${minsBefore}m before error peak).`
         );
 
         evidenceLedger.push({

@@ -1,3 +1,6 @@
+import { formatDeterministicTime } from "@/lib/date-format";
+import { getClientTimezone } from "@/lib/timezone";
+
 type Breadcrumb = {
     timestamp?: string;
     category: string;
@@ -18,15 +21,15 @@ export default function Breadcrumbs({
             </h2>
 
             <div className="overflow-hidden rounded-xl border border-border bg-surface">
-
-                {breadcrumbs.map((breadcrumb, index) => (
+                {breadcrumbs.map((breadcrumb, i) => (
                     <div
-                        key={index}
+                        key={i}
                         className={`
-                            flex gap-4 px-6 py-5
-                            ${index !== breadcrumbs.length - 1
-                                ? "border-b border-border"
-                                : ""
+                            flex items-start gap-4 px-5 py-4
+                            ${
+                                i !== breadcrumbs.length - 1
+                                    ? "border-b border-border"
+                                    : ""
                             }
                         `}
                     >
@@ -40,16 +43,10 @@ export default function Breadcrumbs({
                                     {breadcrumb.category}
                                 </p>
 
-                                <span className="text-xs text-muted">
+                                <span className="text-xs text-muted font-mono">
                                     {breadcrumb.timestamp
-                                        ? new Date(
-                                            breadcrumb.timestamp
-                                        ).toLocaleTimeString([], {
-                                            hour: "2-digit",
-                                            minute: "2-digit",
-                                            second: "2-digit",
-                                        })
-                                        : "-"}
+                                        ? formatDeterministicTime(breadcrumb.timestamp, getClientTimezone())
+                                        : "—"}
                                 </span>
 
                             </div>

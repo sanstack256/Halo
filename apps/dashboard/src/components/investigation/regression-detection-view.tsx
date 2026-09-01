@@ -20,7 +20,8 @@ import {
     User,
     Zap,
 } from "lucide-react";
-import { formatDeterministicDateTime } from "@/lib/date-format";
+import { formatDeterministicDateTime, formatDeterministicTime } from "@/lib/date-format";
+import { getClientTimezone } from "@/lib/timezone";
 import type {
     RegressionAnalysisResult,
     RegressionCandidate,
@@ -204,7 +205,7 @@ export function RegressionDetectionView({ regression, projectId }: Props) {
                                     <span>Code Committed</span>
                                 </div>
                                 <div className="text-white font-semibold">
-                                    {new Date(activeCandidate.commitDate).toLocaleTimeString()}
+                                    {formatDeterministicTime(activeCandidate.commitDate, getClientTimezone())}
                                 </div>
                             </div>
 
@@ -215,7 +216,7 @@ export function RegressionDetectionView({ regression, projectId }: Props) {
                                 </div>
                                 <div className="text-white font-semibold">
                                     {activeCandidate.deploymentDate
-                                        ? new Date(activeCandidate.deploymentDate).toLocaleTimeString()
+                                        ? formatDeterministicTime(activeCandidate.deploymentDate, getClientTimezone())
                                         : "Unknown"}
                                 </div>
                             </div>
@@ -226,7 +227,7 @@ export function RegressionDetectionView({ regression, projectId }: Props) {
                                     <span>Incident First Seen</span>
                                 </div>
                                 <div className="text-white font-semibold">
-                                    {new Date(activeCandidate.timeline.incidentFirstSeen).toLocaleTimeString()}
+                                    {formatDeterministicTime(activeCandidate.timeline.incidentFirstSeen, getClientTimezone())}
                                     {activeCandidate.timeline.minutesBetweenDeployAndIncident != null && (
                                         <span className="text-[10px] text-amber-400 font-normal ml-1">
                                             (+{activeCandidate.timeline.minutesBetweenDeployAndIncident}m delta)

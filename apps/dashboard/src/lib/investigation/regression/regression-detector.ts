@@ -8,6 +8,7 @@ import type {
     RegressionConfidence,
 } from "@halo/investigation-engine";
 import { normalizeRepositoryFilePath } from "../runtime/github-source-utils";
+import { formatDeterministicTime } from "@/lib/date-format";
 
 export interface RegressionDetectionOptions {
     projectId: string;
@@ -215,7 +216,7 @@ export async function detectAutomaticRegression(
                                 deploymentTime,
                                 incidentFirstSeen,
                                 minutesBetweenDeployAndIncident: minutesDiff >= 0 ? minutesDiff : undefined,
-                                frequencyChangeSummary: `First observed at ${incidentFirstSeen.toLocaleTimeString()}`,
+                                frequencyChangeSummary: `First observed at ${formatDeterministicTime(incidentFirstSeen)}`,
                             },
                         });
                     }
