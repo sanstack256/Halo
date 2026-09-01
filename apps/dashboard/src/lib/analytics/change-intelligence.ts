@@ -17,6 +17,7 @@ export interface ChangeIntelligenceParams {
     environment?: string;
     timeRangeKey?: string;
     service?: string;
+    userTimezone?: string;
 }
 
 export async function fetchChangeIntelligenceAnalytics(
@@ -170,21 +171,30 @@ export async function fetchChangeIntelligenceAnalytics(
                 impactClassification = "Insufficient evidence";
                 evidenceStrength = "Insufficient Evidence";
                 regressionReason = "Insufficient telemetry observations during baseline and observation intervals.";
-            } else if (obsErrors > baseErrors && (obsErrorRate >= 10 || (errorRateDiff.relativeDiffPct || 0) > 100)) {
+            } else if (
+                (errorRateDiff.percentagePointsDiff || 0) > 0 &&
+                obsErrors > baseErrors &&
+                (obsErrorRate >= 10 || (errorRateDiff.relativeDiffPct || 0) > 50)
+            ) {
                 regressionDetected = true;
                 verdict = existedInBase ? "Likely Regression" : "Regression Detected";
                 regressionSeverity = obsErrorRate >= 20 || obsErrors > 10 ? "CRITICAL" : "HIGH";
-                regressionReason = `Error rate shifted from ${baseErrorRate.toFixed(1)}% to ${obsErrorRate.toFixed(1)}% (+${errorRateDiff.percentagePointsDiff}pp) following release.`;
+                regressionReason = `Error rate regressed from ${baseErrorRate.toFixed(1)}% to ${obsErrorRate.toFixed(1)}% (+${errorRateDiff.percentagePointsDiff}pp) following release.`;
                 impactClassification = existedInBase ? "Correlated" : "Strongly correlated";
                 evidenceStrength = existedInBase ? "Medium" : "High";
-            } else if (latencyDiff.relativeDiffPct && latencyDiff.relativeDiffPct > 50 && (obsAvgLatency || 0) > 100) {
+            } else if (
+                latencyDiff.relativeDiffPct !== null &&
+                latencyDiff.relativeDiffPct > 50 &&
+                (obsAvgLatency || 0) > (baseAvgLatency || 0) &&
+                (obsAvgLatency || 0) > 80
+            ) {
                 regressionDetected = true;
-                verdict = "Likely Regression";
-                regressionSeverity = "MEDIUM";
-                regressionReason = `Average response latency increased by +${latencyDiff.absoluteDiff}ms (${latencyDiff.relativeDiffPct}% increase).`;
-                impactClassification = "Correlated";
-                evidenceStrength = "Medium";
-            } else if (obsTotal > 0 && obsErrors === 0) {
+                verdict = "Regression Detected";
+                regressionSeverity = (latencyDiff.relativeDiffPct || 0) > 100 ? "HIGH" : "MEDIUM";
+                regressionReason = `Average response latency regressed by +${latencyDiff.absoluteDiff}ms from ${baseAvgLatency ?? 0}ms to ${obsAvgLatency}ms (${latencyDiff.relativeDiffPct}% increase).`;
+                impactClassification = "Strongly correlated";
+                evidenceStrength = "High";
+            } else if (obsTotal > 0 && (errorRateDiff.percentagePointsDiff || 0) <= 0) {
                 verdict = "No Regression Observed";
                 impactClassification = "Observed";
                 evidenceStrength = "High";
@@ -284,7 +294,8 @@ export async function fetchChangeIntelligenceAnalytics(
 
 export async function fetchChangeImpactDeepAnalysis(
     releaseId: string,
-    projectId: string
+    projectId: string,
+    userTimezone: string = "UTC"
 ): Promise<ChangeImpactDeepAnalysis | null> {
     const release = await prisma.release.findUnique({
         where: { id: releaseId },

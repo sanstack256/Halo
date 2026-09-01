@@ -18,6 +18,7 @@ import {
 import type { ReliabilityLabData, RecurringPatternItem } from "@/lib/analytics/types";
 import { RecurringPatternModal } from "./recurring-pattern-modal";
 import { formatDeterministicDateTime } from "@/lib/date-format";
+import { ReliabilityTrajectoryChart } from "./reliability-trajectory-chart";
 
 interface ReliabilityPostureViewProps {
     data: ReliabilityLabData;
@@ -27,29 +28,6 @@ interface ReliabilityPostureViewProps {
 export function ReliabilityPostureView({ data, projectId }: ReliabilityPostureViewProps) {
     const { posture, errorBudget, trajectory, contributors, recurringPatterns } = data;
     const [selectedPattern, setSelectedPattern] = useState<RecurringPatternItem | null>(null);
-
-    // SVG Trajectory calculations
-    const width = 840;
-    const height = 140;
-    const paddingLeft = 32;
-    const paddingRight = 32;
-    const paddingTop = 16;
-    const paddingBottom = 16;
-
-    const chartWidth = width - paddingLeft - paddingRight;
-    const chartHeight = height - paddingTop - paddingBottom;
-    const stepX = chartWidth / Math.max(1, trajectory.length - 1);
-
-    const getX = (i: number) => paddingLeft + i * stepX;
-    const getYAvail = (pct: number) => {
-        // scale between 90% and 100%
-        const normalized = Math.max(0, Math.min(1, (pct - 90) / 10));
-        return paddingTop + chartHeight - normalized * chartHeight;
-    };
-
-    const availPoints = trajectory
-        .map((t, i) => `${getX(i)},${getYAvail(t.availabilityPct)}`)
-        .join(" ");
 
     return (
         <div className="space-y-6">
@@ -89,27 +67,33 @@ export function ReliabilityPostureView({ data, projectId }: ReliabilityPostureVi
                     </div>
                     <div
                         className={`halo-kpi-value ${
-                            errorBudget.budgetRemainingPct < 20
+                            errorBudget.budgetRemainingPct !== null && errorBudget.budgetRemainingPct < 20
                                 ? "text-error"
-                                : errorBudget.budgetRemainingPct < 50
+                                : errorBudget.budgetRemainingPct !== null && errorBudget.budgetRemainingPct < 50
                                 ? "text-warning"
                                 : "text-text"
                         }`}
                     >
                         {posture.errorBudgetRemainingPct.value}
                     </div>
-                    <div className="w-full h-1.5 bg-[#06080d] rounded-full overflow-hidden border border-border mt-1">
-                        <div
-                            className={`h-full rounded-full ${
-                                errorBudget.budgetRemainingPct < 20
-                                    ? "bg-error"
-                                    : errorBudget.budgetRemainingPct < 50
-                                    ? "bg-warning"
-                                    : "bg-success"
-                            }`}
-                            style={{ width: `${errorBudget.budgetRemainingPct}%` }}
-                        />
-                    </div>
+                    {errorBudget.budgetRemainingPct !== null ? (
+                        <div className="w-full h-1.5 bg-[#06080d] rounded-full overflow-hidden border border-border mt-1">
+                            <div
+                                className={`h-full rounded-full ${
+                                    errorBudget.budgetRemainingPct < 20
+                                        ? "bg-error"
+                                        : errorBudget.budgetRemainingPct < 50
+                                        ? "bg-warning"
+                                        : "bg-success"
+                                }`}
+                                style={{ width: `${errorBudget.budgetRemainingPct}%` }}
+                            />
+                        </div>
+                    ) : (
+                        <div className="halo-kpi-sub">
+                            <span>No budget baseline</span>
+                        </div>
+                    )}
                 </div>
 
                 {/* 3. Burn Rate */}
@@ -120,9 +104,9 @@ export function ReliabilityPostureView({ data, projectId }: ReliabilityPostureVi
                     </div>
                     <div
                         className={`halo-kpi-value ${
-                            errorBudget.burnRate > 2.5
+                            errorBudget.burnRate !== null && errorBudget.burnRate > 2.5
                                 ? "text-error"
-                                : errorBudget.burnRate > 1.0
+                                : errorBudget.burnRate !== null && errorBudget.burnRate > 1.0
                                 ? "text-warning"
                                 : "text-text"
                         }`}
@@ -130,7 +114,13 @@ export function ReliabilityPostureView({ data, projectId }: ReliabilityPostureVi
                         {posture.burnRateMultiplier.value}
                     </div>
                     <div className="halo-kpi-sub">
-                        <span>{errorBudget.burnRate <= 1.0 ? "Sustainable pace" : "Elevated consumption"}</span>
+                        <span>
+                            {errorBudget.burnRate !== null
+                                ? errorBudget.burnRate <= 1.0
+                                    ? "Sustainable pace"
+                                    : "Elevated consumption"
+                                : "No consumption evidence"}
+                        </span>
                     </div>
                 </div>
 
@@ -185,9 +175,17 @@ export function ReliabilityPostureView({ data, projectId }: ReliabilityPostureVi
                             <span className="halo-panel-subtitle">SLO target baseline vs actual observed availability</span>
                         </div>
                     </div>
-                    <span className="halo-badge halo-badge-healthy font-mono text-[10px]">
-                        SLO Target: 99.9%
-                    </span>
+
+                    <div className="halo-chart-legend">
+                        <div className="halo-chart-legend-item">
+                            <span className="halo-chart-legend-indicator bg-accent" />
+                            <span className="font-medium text-text">Observed Availability</span>
+                        </div>
+                        <div className="halo-chart-legend-item">
+                            <span className="halo-chart-legend-indicator is-ref-target" />
+                            <span className="text-success font-medium">99.9% Target Baseline</span>
+                        </div>
+                    </div>
                 </div>
 
                 {trajectory.length === 0 ? (
@@ -195,91 +193,10 @@ export function ReliabilityPostureView({ data, projectId }: ReliabilityPostureVi
                         No trajectory points recorded in selected window.
                     </div>
                 ) : (
-                    <div className="space-y-2 bg-[#05080e] p-3 rounded-xl border border-border">
-                        <svg viewBox={`0 0 ${width} ${height}`} className="w-full h-36 select-none overflow-visible">
-                            {/* Subtle Gridlines */}
-                            <line
-                                x1={paddingLeft}
-                                y1={getYAvail(100)}
-                                x2={width - paddingRight}
-                                y2={getYAvail(100)}
-                                stroke="rgba(255,255,255,0.04)"
-                                strokeDasharray="3 3"
-                            />
-                            <line
-                                x1={paddingLeft}
-                                y1={getYAvail(95)}
-                                x2={width - paddingRight}
-                                y2={getYAvail(95)}
-                                stroke="rgba(255,255,255,0.04)"
-                                strokeDasharray="3 3"
-                            />
-                            <line
-                                x1={paddingLeft}
-                                y1={getYAvail(90)}
-                                x2={width - paddingRight}
-                                y2={getYAvail(90)}
-                                stroke="rgba(255,255,255,0.1)"
-                            />
-
-                            {/* 99.9% SLO Target Baseline */}
-                            <line
-                                x1={paddingLeft}
-                                y1={getYAvail(99.9)}
-                                x2={width - paddingRight}
-                                y2={getYAvail(99.9)}
-                                stroke="#22c55e"
-                                strokeWidth="1"
-                                strokeDasharray="4 4"
-                                opacity="0.6"
-                            />
-                            <text
-                                x={width - paddingRight + 6}
-                                y={getYAvail(99.9) + 3}
-                                fill="#22c55e"
-                                fontSize="9.5"
-                                fontFamily="monospace"
-                                fontWeight="600"
-                            >
-                                99.9%
-                            </text>
-
-                            {/* Trajectory Line */}
-                            <polyline
-                                fill="none"
-                                stroke="#5bb8ff"
-                                strokeWidth="2"
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                points={availPoints}
-                            />
-
-                            {/* Data points */}
-                            {trajectory.map((t, i) => {
-                                const x = getX(i);
-                                const y = getYAvail(t.availabilityPct);
-                                const hasError = t.errorRate > 0;
-
-                                return (
-                                    <circle
-                                        key={i}
-                                        cx={x}
-                                        cy={y}
-                                        r={hasError ? 3.5 : 2.5}
-                                        fill={hasError ? "#ef4444" : "#5bb8ff"}
-                                        stroke="#ffffff"
-                                        strokeWidth={hasError ? "1.5" : "0.5"}
-                                    />
-                                );
-                            })}
-                        </svg>
-
-                        <div className="flex justify-between text-[10px] font-mono text-text-muted border-t border-border/50 pt-1.5 px-1">
-                            <span>{trajectory[0]?.formattedTime} UTC</span>
-                            <span>{trajectory[Math.floor(trajectory.length / 2)]?.formattedTime} UTC</span>
-                            <span>{trajectory[trajectory.length - 1]?.formattedTime} UTC</span>
-                        </div>
-                    </div>
+                    <ReliabilityTrajectoryChart
+                        trajectory={trajectory}
+                        targetAvailabilityPct={99.9}
+                    />
                 )}
             </div>
 

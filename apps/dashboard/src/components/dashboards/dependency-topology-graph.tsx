@@ -13,6 +13,7 @@ import {
     Minus,
     Network,
     Plus,
+    RotateCcw,
     Server,
     ShieldAlert,
     Sparkles,
@@ -38,6 +39,8 @@ export function DependencyTopologyGraph({
 }: DependencyTopologyGraphProps) {
     const [selectedNodeId, setSelectedNodeId] = useState<string | null>(null);
     const [selectedEdgeId, setSelectedEdgeId] = useState<string | null>(null);
+    const [hoveredNodeId, setHoveredNodeId] = useState<string | null>(null);
+    const [hoveredEdgeId, setHoveredEdgeId] = useState<string | null>(null);
     const [filterCategory, setFilterCategory] = useState<"ALL" | "SERVICES" | "DATABASES" | "ERRORS">("ALL");
     const [zoomLevel, setZoomLevel] = useState<number>(1);
     const [panOffset, setPanOffset] = useState<{ x: number; y: number }>({ x: 0, y: 0 });
@@ -71,6 +74,27 @@ export function DependencyTopologyGraph({
     const selectedNode = nodes.find((n) => n.name === selectedNodeId || n.id === selectedNodeId);
     const selectedEdge = edges.find((e) => e.id === selectedEdgeId);
 
+    // Connected neighbors set when a node is selected or hovered
+    const activeTarget = selectedNodeId || hoveredNodeId;
+    const connectedEdges = useMemo(() => {
+        if (!activeTarget) return new Set<string>();
+        return new Set(
+            filteredEdges
+                .filter((e) => e.source === activeTarget || e.target === activeTarget)
+                .map((e) => e.id)
+        );
+    }, [activeTarget, filteredEdges]);
+
+    const connectedNodes = useMemo(() => {
+        if (!activeTarget) return new Set<string>();
+        const set = new Set<string>([activeTarget]);
+        filteredEdges.forEach((e) => {
+            if (e.source === activeTarget) set.add(e.target);
+            if (e.target === activeTarget) set.add(e.source);
+        });
+        return set;
+    }, [activeTarget, filteredEdges]);
+
     const handleMouseDown = (e: React.MouseEvent) => {
         setIsDragging(true);
         dragStartRef.current = { x: e.clientX - panOffset.x, y: e.clientY - panOffset.y };
@@ -100,25 +124,25 @@ export function DependencyTopologyGraph({
                         <h3 className="halo-panel-title">Observed Dependency Topology</h3>
                     </div>
                 </div>
-                <div className="h-44 flex flex-col items-center justify-center text-center border border-dashed border-border rounded-xl p-6">
-                    <Clock size={22} className="text-text-muted mb-2 opacity-50" />
-                    <p className="text-xs text-text font-medium">No dependency relationships observed</p>
-                    <p className="text-[11px] text-text-muted mt-1 max-w-sm">
-                        As distributed traces and cross-service calls are ingested, Halo will reconstruct the real live topology graph here without speculative edges.
+                <div className="h-56 flex flex-col items-center justify-center text-center border border-dashed border-border rounded-xl p-8">
+                    <div className="w-10 h-10 rounded-xl bg-accent-soft border border-accent/20 flex items-center justify-center text-accent mb-3">
+                        <Network size={22} />
+                    </div>
+                    <p className="text-sm text-text font-semibold">No dependency relationships observed</p>
+                    <p className="text-xs text-text-muted mt-1 max-w-md leading-relaxed">
+                        As distributed traces and cross-service calls are ingested, Halo dynamically reconstructs the real topology graph without synthetic or speculative edges.
                     </p>
                 </div>
             </div>
         );
     }
 
-    // Node dimension tokens
+    // Canvas layout dimensions
     const isSingleNode = filteredNodes.length === 1;
-    const NODE_WIDTH = isSingleNode ? 180 : 150;
-    const NODE_HEIGHT = isSingleNode ? 56 : 50;
-
-    // ViewBox dimensions
-    const baseWidth = 880;
-    const baseHeight = 380;
+    const NODE_WIDTH = isSingleNode ? 190 : 160;
+    const NODE_HEIGHT = isSingleNode ? 60 : 52;
+    const baseWidth = 960;
+    const baseHeight = 440;
 
     return (
         <div className="space-y-4">
@@ -130,12 +154,12 @@ export function DependencyTopologyGraph({
                         <div>
                             <h3 className="halo-panel-title">Observed Dependency Topology</h3>
                             <span className="halo-panel-subtitle">
-                                {filteredNodes.length} {filteredNodes.length === 1 ? "node" : "nodes"} · {filteredEdges.length} evidence {filteredEdges.length === 1 ? "edge" : "edges"}
+                                {filteredNodes.length} {filteredNodes.length === 1 ? "service node" : "service nodes"} · {filteredEdges.length} evidence {filteredEdges.length === 1 ? "link" : "links"} · {observedCallTotal.toLocaleString()} calls
                             </span>
                         </div>
                     </div>
 
-                    <div className="flex flex-wrap items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-3">
                         {/* Filter Tabs */}
                         <div className="halo-segment-control">
                             <button
@@ -168,32 +192,33 @@ export function DependencyTopologyGraph({
                             </button>
                         </div>
 
-                        {/* Zoom / Pan Controls Toolbar */}
-                        <div className="flex items-center gap-1 bg-[#080b11] p-1 rounded-lg border border-border">
+                        {/* Zoom / Pan / Reset Controls Toolbar */}
+                        <div className="halo-topology-toolbar">
                             <button
                                 type="button"
-                                onClick={() => setZoomLevel((z) => Math.min(2, z + 0.15))}
-                                className="p-1 rounded text-text-muted hover:text-text cursor-pointer transition-colors"
+                                onClick={() => setZoomLevel((z) => Math.min(2.5, z + 0.15))}
+                                className="halo-topology-btn"
                                 title="Zoom In"
                             >
                                 <Plus size={13} />
                             </button>
-                            <span className="text-[10px] font-mono text-text-muted px-1 select-none">
+                            <span className="text-[10px] font-mono text-text-muted px-1.5 select-none font-semibold">
                                 {Math.round(zoomLevel * 100)}%
                             </span>
                             <button
                                 type="button"
-                                onClick={() => setZoomLevel((z) => Math.max(0.5, z - 0.15))}
-                                className="p-1 rounded text-text-muted hover:text-text cursor-pointer transition-colors"
+                                onClick={() => setZoomLevel((z) => Math.max(0.4, z - 0.15))}
+                                className="halo-topology-btn"
                                 title="Zoom Out"
                             >
                                 <Minus size={13} />
                             </button>
+                            <div className="w-[1px] h-3.5 bg-border mx-0.5" />
                             <button
                                 type="button"
                                 onClick={handleFitToView}
-                                className="p-1 rounded text-text-muted hover:text-text ml-1 border-l border-border cursor-pointer transition-colors"
-                                title="Fit to View"
+                                className="halo-topology-btn"
+                                title="Fit / Center View"
                             >
                                 <Maximize2 size={13} />
                             </button>
@@ -201,15 +226,15 @@ export function DependencyTopologyGraph({
                     </div>
                 </div>
 
-                {/* SVG Topology Canvas */}
+                {/* SVG Topology Canvas Surface */}
                 <div
-                    className="relative w-full h-[360px] overflow-hidden bg-[#05080e] rounded-xl border border-border cursor-grab active:cursor-grabbing select-none"
+                    className="halo-topology-surface cursor-grab active:cursor-grabbing select-none"
                     onMouseDown={handleMouseDown}
                     onMouseMove={handleMouseMove}
                     onMouseUp={handleMouseUp}
                     onMouseLeave={handleMouseUp}
                 >
-                    {/* Subtle Canvas Dot Grid Background */}
+                    {/* Canvas Dot Grid Background */}
                     <div
                         className="absolute inset-0 pointer-events-none opacity-20"
                         style={{
@@ -218,51 +243,51 @@ export function DependencyTopologyGraph({
                         }}
                     />
 
-                    {/* Single Node Contextual Note (When only 1 node is observed) */}
+                    {/* Single Node Contextual Note */}
                     {isSingleNode && filteredEdges.length === 0 && (
-                        <div className="absolute bottom-3 left-1/2 -translate-x-1/2 bg-[#080c14]/90 border border-border px-3.5 py-1.5 rounded-full text-[11px] text-text-muted flex items-center gap-2 pointer-events-none z-10 backdrop-blur-sm">
-                            <Info size={12} className="text-accent" />
-                            <span>No observed downstream connections in the selected scope</span>
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-[#080c14]/90 border border-border px-4 py-2 rounded-full text-xs text-text-secondary flex items-center gap-2 pointer-events-none z-10 backdrop-blur-md shadow-xl">
+                            <Info size={13} className="text-accent" />
+                            <span>No observed dependency connections in the selected scope</span>
                         </div>
                     )}
 
                     <svg
                         viewBox={`0 0 ${baseWidth} ${baseHeight}`}
-                        className="w-full h-full"
+                        className="w-full h-full min-h-[440px] block"
                     >
                         <defs>
                             <marker
-                                id="arrow-default"
+                                id="topo-arrow-default"
                                 viewBox="0 0 10 10"
                                 refX="16"
                                 refY="5"
-                                markerWidth="5"
-                                markerHeight="5"
+                                markerWidth="6"
+                                markerHeight="6"
                                 orient="auto-start-reverse"
                             >
-                                <path d="M 0 1 L 10 5 L 0 9 z" fill="rgba(255,255,255,0.3)" />
+                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="rgba(255,255,255,0.3)" />
                             </marker>
                             <marker
-                                id="arrow-error"
+                                id="topo-arrow-error"
                                 viewBox="0 0 10 10"
                                 refX="16"
                                 refY="5"
-                                markerWidth="5"
-                                markerHeight="5"
+                                markerWidth="6"
+                                markerHeight="6"
                                 orient="auto-start-reverse"
                             >
-                                <path d="M 0 1 L 10 5 L 0 9 z" fill="#ef4444" />
+                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#ef4444" />
                             </marker>
                             <marker
-                                id="arrow-selected"
+                                id="topo-arrow-selected"
                                 viewBox="0 0 10 10"
                                 refX="16"
                                 refY="5"
-                                markerWidth="5"
-                                markerHeight="5"
+                                markerWidth="6"
+                                markerHeight="6"
                                 orient="auto-start-reverse"
                             >
-                                <path d="M 0 1 L 10 5 L 0 9 z" fill="#5bb8ff" />
+                                <path d="M 0 1.5 L 8 5 L 0 8.5 z" fill="#5bb8ff" />
                             </marker>
                         </defs>
 
@@ -273,14 +298,21 @@ export function DependencyTopologyGraph({
                                 const srcNode = nodes.find((n) => n.name === e.source);
                                 const dstNode = nodes.find((n) => n.name === e.target);
 
-                                const x1 = (srcNode?.x || 100) + NODE_WIDTH / 2;
-                                const y1 = srcNode?.y || 100;
-                                const x2 = (dstNode?.x || 400) - NODE_WIDTH / 2;
-                                const y2 = dstNode?.y || 100;
+                                const x1 = (srcNode?.x || 120) + NODE_WIDTH / 2;
+                                const y1 = srcNode?.y || 120;
+                                const x2 = (dstNode?.x || 500) - NODE_WIDTH / 2;
+                                const y2 = dstNode?.y || 120;
 
                                 const isSelected = selectedEdgeId === e.id;
+                                const isConnected = connectedEdges.has(e.id);
+                                const isDimmed = activeTarget !== null && !isConnected && !isSelected;
                                 const isError = e.errorRate > 0;
-                                const markerId = isSelected ? "arrow-selected" : isError ? "arrow-error" : "arrow-default";
+
+                                const markerId = isSelected
+                                    ? "topo-arrow-selected"
+                                    : isError
+                                    ? "topo-arrow-error"
+                                    : "topo-arrow-default";
 
                                 const dx = Math.abs(x2 - x1) * 0.5;
                                 const pathData = `M ${x1} ${y1} C ${x1 + dx} ${y1}, ${x2 - dx} ${y2}, ${x2} ${y2}`;
@@ -293,22 +325,26 @@ export function DependencyTopologyGraph({
                                             setSelectedEdgeId(e.id);
                                             setSelectedNodeId(null);
                                         }}
-                                        className="cursor-pointer group"
+                                        onMouseEnter={() => setHoveredEdgeId(e.id)}
+                                        onMouseLeave={() => setHoveredEdgeId(null)}
+                                        opacity={isDimmed ? 0.15 : 1}
+                                        className="cursor-pointer transition-opacity duration-200"
                                     >
-                                        <path d={pathData} fill="none" stroke="transparent" strokeWidth="16" />
+                                        {/* Wider invisible stroke for easier hover / clicking */}
+                                        <path d={pathData} fill="none" stroke="transparent" strokeWidth="18" />
                                         <path
                                             d={pathData}
                                             fill="none"
                                             stroke={
-                                                isSelected
+                                                isSelected || isConnected
                                                     ? "#5bb8ff"
                                                     : isError
-                                                    ? "rgba(239,68,68,0.75)"
+                                                    ? "rgba(239,68,68,0.8)"
                                                     : e.isCriticalPath
-                                                    ? "#fbbf24"
-                                                    : "rgba(255,255,255,0.2)"
+                                                    ? "#f59e0b"
+                                                    : "rgba(255,255,255,0.22)"
                                             }
-                                            strokeWidth={isSelected ? 2.5 : e.isCriticalPath ? 2 : 1.5}
+                                            strokeWidth={isSelected || isConnected ? 2.5 : e.isCriticalPath ? 2 : 1.5}
                                             strokeDasharray={e.evidence.type === "SERVICE_METADATA" ? "4 4" : undefined}
                                             markerEnd={`url(#${markerId})`}
                                         />
@@ -319,16 +355,20 @@ export function DependencyTopologyGraph({
                             {/* Collision-Free Nodes */}
                             {filteredNodes.map((n) => {
                                 // For single node scenario, center precisely in canvas
-                                const x = isSingleNode ? (baseWidth - NODE_WIDTH) / 2 : (n.x || 100) - NODE_WIDTH / 2;
-                                const y = isSingleNode ? (baseHeight - NODE_HEIGHT) / 2 : (n.y || 100) - NODE_HEIGHT / 2;
+                                const x = isSingleNode ? (baseWidth - NODE_WIDTH) / 2 : (n.x || 120) - NODE_WIDTH / 2;
+                                const y = isSingleNode ? (baseHeight - NODE_HEIGHT) / 2 : (n.y || 120) - NODE_HEIGHT / 2;
+
                                 const isSelected = selectedNodeId === n.name;
+                                const isHovered = hoveredNodeId === n.name;
+                                const isConnected = connectedNodes.has(n.name);
+                                const isDimmed = activeTarget !== null && !isConnected && !isSelected;
 
                                 // Blast radius status check
                                 const isDirect = blastRadius?.directlyAffected.some((x) => x.id === n.id);
                                 const isObservedProp = blastRadius?.observedPropagation.some((x) => x.id === n.id);
                                 const isPotentialExp = blastRadius?.potentialExposure.some((x) => x.id === n.id);
 
-                                let strokeColor = "rgba(255,255,255,0.14)";
+                                let strokeColor = "rgba(255,255,255,0.15)";
                                 let fillColor = "#080c14";
 
                                 if (isSelected || isDirect) {
@@ -345,7 +385,7 @@ export function DependencyTopologyGraph({
                                 } else if (n.health === "Degraded") {
                                     strokeColor = "#f59e0b";
                                 } else if (n.health === "Healthy") {
-                                    strokeColor = "rgba(34,197,94,0.4)";
+                                    strokeColor = "rgba(34,197,94,0.45)";
                                 }
 
                                 return (
@@ -357,7 +397,10 @@ export function DependencyTopologyGraph({
                                             setSelectedNodeId(n.name === selectedNodeId ? null : n.name);
                                             setSelectedEdgeId(null);
                                         }}
-                                        className="cursor-pointer group"
+                                        onMouseEnter={() => setHoveredNodeId(n.name)}
+                                        onMouseLeave={() => setHoveredNodeId(null)}
+                                        opacity={isDimmed ? 0.2 : 1}
+                                        className="cursor-pointer transition-opacity duration-200"
                                     >
                                         <rect
                                             width={NODE_WIDTH}
@@ -365,7 +408,7 @@ export function DependencyTopologyGraph({
                                             rx={10}
                                             fill={fillColor}
                                             stroke={strokeColor}
-                                            strokeWidth={isSelected ? 2 : 1}
+                                            strokeWidth={isSelected || isHovered ? 2 : 1}
                                             className="transition-colors"
                                         />
 
@@ -373,34 +416,34 @@ export function DependencyTopologyGraph({
                                         <rect
                                             x={10}
                                             y={10}
-                                            width={28}
-                                            height={28}
-                                            rx={6}
-                                            fill="rgba(91,184,255,0.1)"
-                                            stroke="rgba(91,184,255,0.2)"
+                                            width={30}
+                                            height={30}
+                                            rx={7}
+                                            fill={n.type === "DATABASE" ? "rgba(245,158,11,0.12)" : "rgba(91,184,255,0.12)"}
+                                            stroke={n.type === "DATABASE" ? "rgba(245,158,11,0.25)" : "rgba(91,184,255,0.25)"}
                                         />
 
                                         {/* Label */}
                                         <text
-                                            x={46}
-                                            y={23}
+                                            x={48}
+                                            y={24}
                                             fill="#ffffff"
-                                            fontSize={isSingleNode ? "12" : "11"}
-                                            fontFamily="sans-serif"
+                                            fontSize={isSingleNode ? "12.5" : "11.5"}
+                                            fontFamily="var(--font-sans), sans-serif"
                                             fontWeight="600"
                                         >
-                                            {n.name.length > 14 ? `${n.name.slice(0, 12)}…` : n.name}
+                                            {n.name.length > 14 ? `${n.name.slice(0, 13)}…` : n.name}
                                         </text>
 
-                                        {/* Telemetry Metrics */}
+                                        {/* Telemetry Metrics Line */}
                                         <text
-                                            x={46}
-                                            y={isSingleNode ? 39 : 37}
-                                            fill="#8c9baa"
-                                            fontSize="9.5"
-                                            fontFamily="monospace"
+                                            x={48}
+                                            y={isSingleNode ? 41 : 39}
+                                            fill="var(--text-muted)"
+                                            fontSize="10"
+                                            fontFamily="var(--font-mono), monospace"
                                         >
-                                            {n.totalCalls} calls · {n.errorRate}% err
+                                            {n.totalCalls.toLocaleString()} calls · {n.errorRate}% err
                                         </text>
 
                                         {/* Health Status Dot */}
@@ -430,7 +473,7 @@ export function DependencyTopologyGraph({
                     <div className="p-4 rounded-xl bg-surface border border-accent/40 space-y-3 animate-in fade-in">
                         <div className="flex items-center justify-between border-b border-border pb-2.5">
                             <div className="flex items-center gap-2">
-                                <Server size={14} className="text-accent" />
+                                <Server size={15} className="text-accent" />
                                 <span className="font-bold text-text text-sm font-sans">{selectedNode.name}</span>
                                 <span
                                     className={`halo-badge ${
@@ -472,7 +515,7 @@ export function DependencyTopologyGraph({
                             </div>
                             <div>
                                 <span className="text-[10px] font-sans uppercase font-semibold text-text-muted block">Call Volume</span>
-                                <span className="font-bold text-text">{selectedNode.totalCalls} calls</span>
+                                <span className="font-bold text-text">{selectedNode.totalCalls.toLocaleString()} calls</span>
                             </div>
                             <div>
                                 <span className="text-[10px] font-sans uppercase font-semibold text-text-muted block">Avg Latency</span>
@@ -486,7 +529,7 @@ export function DependencyTopologyGraph({
                     </div>
                 )}
 
-                {/* Edge Evidence & Provenance Inspector */}
+                {/* Edge Evidence & Link Inspector */}
                 {selectedEdge && (
                     <div className="p-4 rounded-xl bg-surface border border-accent/30 space-y-2 animate-in fade-in">
                         <div className="flex items-center justify-between">
@@ -508,7 +551,7 @@ export function DependencyTopologyGraph({
                             {selectedEdge.evidence.description}
                         </p>
                         <div className="flex items-center gap-3 text-xs font-mono text-text-muted pt-1">
-                            <span>Calls: {selectedEdge.callCount}</span>
+                            <span>Calls: {selectedEdge.callCount.toLocaleString()}</span>
                             <span>·</span>
                             <span>Errors: <strong className="text-error">{selectedEdge.errorCount}</strong> ({selectedEdge.errorRate}%)</span>
                             <span>·</span>

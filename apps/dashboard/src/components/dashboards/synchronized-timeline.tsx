@@ -149,7 +149,9 @@ export function SynchronizedTimeline({
                         </div>
                         <div>
                             <div className="flex items-center gap-2">
-                                <span className="font-bold text-text text-xs font-mono">{activePoint.formattedTime} (UTC)</span>
+                                <span className="font-bold text-text text-xs font-mono">
+                                    {activePoint.formattedTime} ({activePoint.timeZoneAbbr || "UTC"})
+                                </span>
                                 {selectedIndex !== null ? (
                                     <span className="halo-badge halo-badge-info text-[9px] py-0.5">
                                         Selected Interval

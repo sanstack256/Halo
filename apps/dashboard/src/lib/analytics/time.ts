@@ -1,4 +1,6 @@
 import type { TimeRangeKey, ComparisonMode } from "./types";
+import { getTimezoneAbbr } from "../date-format";
+import { isValidTimezone } from "../timezone";
 
 export interface ResolvedTimeRange {
     key: TimeRangeKey;
@@ -72,11 +74,12 @@ export function parseTimeRange(
 export function generateTimeBuckets(
     start: Date,
     end: Date,
-    bucketCount: number
-): Array<{ start: Date; end: Date; formattedTime: string }> {
+    bucketCount: number,
+    timeZone: string = "UTC"
+): Array<{ start: Date; end: Date; formattedTime: string; timeZoneAbbr: string }> {
     const totalDurationMs = end.getTime() - start.getTime();
     const intervalMs = totalDurationMs / bucketCount;
-    const buckets: Array<{ start: Date; end: Date; formattedTime: string }> = [];
+    const buckets: Array<{ start: Date; end: Date; formattedTime: string; timeZoneAbbr: string }> = [];
 
     for (let i = 0; i < bucketCount; i++) {
         const bStart = new Date(start.getTime() + i * intervalMs);
@@ -84,38 +87,71 @@ export function generateTimeBuckets(
         buckets.push({
             start: bStart,
             end: bEnd,
-            formattedTime: formatBucketTime(bStart, totalDurationMs),
+            formattedTime: formatBucketTime(bStart, totalDurationMs, timeZone),
+            timeZoneAbbr: getTimezoneAbbr(bStart, timeZone),
         });
     }
 
     return buckets;
 }
 
-export function formatBucketTime(date: Date, totalRangeMs: number): string {
+export function formatBucketTime(date: Date, totalRangeMs: number, timeZone: string = "UTC"): string {
+    const tz = isValidTimezone(timeZone) ? timeZone : "UTC";
     const hours24 = 24 * 60 * 60 * 1000;
-    if (totalRangeMs <= hours24) {
-        return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false });
-    } else {
-        return `${date.toLocaleDateString([], { month: "short", day: "numeric" })} ${date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit", hour12: false })}`;
+
+    try {
+        const timeFormatter = new Intl.DateTimeFormat("en-US", {
+            timeZone: tz,
+            hour: "2-digit",
+            minute: "2-digit",
+            hour12: false,
+        });
+        const timeStr = timeFormatter.format(date);
+
+        if (totalRangeMs <= hours24) {
+            return timeStr;
+        } else {
+            const monthDayFormatter = new Intl.DateTimeFormat("en-US", {
+                timeZone: tz,
+                month: "short",
+                day: "numeric",
+            });
+            return `${monthDayFormatter.format(date)} ${timeStr}`;
+        }
+    } catch {
+        const hours = String(date.getUTCHours()).padStart(2, "0");
+        const mins = String(date.getUTCMinutes()).padStart(2, "0");
+        return `${hours}:${mins}`;
     }
 }
 
 export function calculateMetricComparison(
-    current: number,
+    current: number | null,
     previous: number | null,
     isRateMetric: boolean = false,
     lowerIsBetter: boolean = true
 ): {
-    current: number;
+    current: number | null;
     previous: number | null;
     absoluteDiff: number | null;
     relativeDiffPct: number | null;
     percentagePointsDiff: number | null;
     isImprovement: boolean | null;
 } {
+    if (current === null || current === undefined) {
+        return {
+            current: null,
+            previous: previous !== null && previous !== undefined ? Math.round(previous * 100) / 100 : null,
+            absoluteDiff: null,
+            relativeDiffPct: null,
+            percentagePointsDiff: null,
+            isImprovement: null,
+        };
+    }
+
     if (previous === null || previous === undefined) {
         return {
-            current,
+            current: Math.round(current * 100) / 100,
             previous: null,
             absoluteDiff: null,
             relativeDiffPct: null,
@@ -131,10 +167,6 @@ export function calculateMetricComparison(
     if (previous !== 0) {
         relativeDiffPct = Math.round(((current - previous) / previous) * 1000) / 10;
     }
-    // When previous === 0, there is no finite relative change:
-    // any positive current value is an infinite multiplier over zero.
-    // We return null to signal "no meaningful ratio" rather than fabricating 100%.
-    // absoluteDiff still reflects the raw magnitude change.
 
     if (isRateMetric) {
         percentagePointsDiff = Math.round((current - previous) * 10) / 10;

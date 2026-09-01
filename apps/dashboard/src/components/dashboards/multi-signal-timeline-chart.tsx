@@ -13,6 +13,81 @@ interface MultiSignalTimelineChartProps {
     onSelectIndex: (index: number | null) => void;
 }
 
+/**
+ * Builds SVG path string with disconnected segments across null/missing observations.
+ */
+function buildSegmentedPath(points: Array<{ x: number; y: number | null }>): string {
+    let d = "";
+    let inSegment = false;
+    let segmentPoints: Array<{ x: number; y: number }> = [];
+
+    for (const pt of points) {
+        if (pt.y !== null && !isNaN(pt.y)) {
+            segmentPoints.push({ x: pt.x, y: pt.y });
+            inSegment = true;
+        } else {
+            if (inSegment && segmentPoints.length > 0) {
+                if (segmentPoints.length === 1) {
+                    const p = segmentPoints[0];
+                    d += `M ${(p.x - 4).toFixed(1)} ${p.y.toFixed(1)} L ${(p.x + 4).toFixed(1)} ${p.y.toFixed(1)} `;
+                } else {
+                    d += `M ${segmentPoints.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" L ")} `;
+                }
+                segmentPoints = [];
+                inSegment = false;
+            }
+        }
+    }
+
+    if (inSegment && segmentPoints.length > 0) {
+        if (segmentPoints.length === 1) {
+            const p = segmentPoints[0];
+            d += `M ${(p.x - 4).toFixed(1)} ${p.y.toFixed(1)} L ${(p.x + 4).toFixed(1)} ${p.y.toFixed(1)} `;
+        } else {
+            d += `M ${segmentPoints.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" L ")} `;
+        }
+    }
+
+    return d.trim();
+}
+
+/**
+ * Builds SVG area fill path with disconnected segments across null/missing observations.
+ */
+function buildSegmentedArea(
+    points: Array<{ x: number; y: number | null }>,
+    groundY: number
+): string {
+    let d = "";
+    let inSegment = false;
+    let segmentPoints: Array<{ x: number; y: number }> = [];
+
+    for (const pt of points) {
+        if (pt.y !== null && !isNaN(pt.y)) {
+            segmentPoints.push({ x: pt.x, y: pt.y });
+            inSegment = true;
+        } else {
+            if (inSegment && segmentPoints.length > 0) {
+                const first = segmentPoints[0];
+                const last = segmentPoints[segmentPoints.length - 1];
+                const coords = segmentPoints.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" L ");
+                d += `M ${first.x.toFixed(1)},${groundY.toFixed(1)} L ${coords} L ${last.x.toFixed(1)},${groundY.toFixed(1)} Z `;
+                segmentPoints = [];
+                inSegment = false;
+            }
+        }
+    }
+
+    if (inSegment && segmentPoints.length > 0) {
+        const first = segmentPoints[0];
+        const last = segmentPoints[segmentPoints.length - 1];
+        const coords = segmentPoints.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" L ");
+        d += `M ${first.x.toFixed(1)},${groundY.toFixed(1)} L ${coords} L ${last.x.toFixed(1)},${groundY.toFixed(1)} Z `;
+    }
+
+    return d.trim();
+}
+
 export function MultiSignalTimelineChart({
     timeline,
     markers = [],
@@ -39,12 +114,12 @@ export function MultiSignalTimelineChart({
         return () => observer.disconnect();
     }, []);
 
-    // Layout Dimensions
-    const height = 140;
-    const paddingLeft = 44;
-    const paddingRight = 24;
-    const paddingTop = 16;
-    const paddingBottom = 22;
+    // Layout Dimensions: Substantially increased vertical height for premium analytical clarity
+    const height = 240;
+    const paddingLeft = 48;
+    const paddingRight = 28;
+    const paddingTop = 20;
+    const paddingBottom = 26;
 
     const usableWidth = Math.max(containerWidth - paddingLeft - paddingRight, 100);
     const usableHeight = height - paddingTop - paddingBottom;
@@ -55,16 +130,24 @@ export function MultiSignalTimelineChart({
         if (timeline.length === 0) {
             return { timePoints: [], minTime: 0, maxTime: 0 };
         }
-        const parsed = timeline.map((p) => ({
+        const parsed = timeline.map((p, idx) => ({
             ...p,
             timeMs: new Date(p.timestamp).getTime(),
+            canonicalIndex: idx,
         }));
         const minT = parsed[0].timeMs;
         const maxT = parsed[parsed.length - 1].timeMs;
         return { timePoints: parsed, minTime: minT, maxTime: maxT };
     }, [timeline]);
 
-    // Calculate exact X coordinate for any timestamp
+    // Calculate exact X coordinate for any bucket index
+    const getXForIndex = (idx: number) => {
+        if (timePoints.length <= 1) {
+            return paddingLeft + usableWidth / 2;
+        }
+        return paddingLeft + (idx / (timePoints.length - 1)) * usableWidth;
+    };
+
     const getXForTime = (timeMs: number) => {
         if (minTime === maxTime || timePoints.length <= 1) {
             return paddingLeft + usableWidth / 2;
@@ -81,6 +164,7 @@ export function MultiSignalTimelineChart({
         if (activeSignal === "ERRORS") {
             const errs = timeline.map((p) => p.errorCount);
             const compErrs = timeline
+                .filter((p) => p.comparison && p.comparison.hasObservation !== false)
                 .map((p) => p.comparison?.errorCount)
                 .filter((v): v is number => typeof v === "number");
             if (compErrs.length > 0) hasValidComparison = true;
@@ -88,15 +172,19 @@ export function MultiSignalTimelineChart({
         } else if (activeSignal === "REQUESTS") {
             const reqs = timeline.map((p) => p.requestCount);
             const compReqs = timeline
+                .filter((p) => p.comparison && p.comparison.hasObservation !== false)
                 .map((p) => p.comparison?.requestCount)
                 .filter((v): v is number => typeof v === "number");
             if (compReqs.length > 0) hasValidComparison = true;
             max = Math.max(...reqs, ...compReqs, 1);
         } else if (activeSignal === "LATENCY") {
-            const lats = timeline.map((p) => p.p95LatencyMs || p.avgLatencyMs || 0);
+            const lats = timeline
+                .map((p) => (p.p95LatencyMs !== null ? p.p95LatencyMs : p.avgLatencyMs))
+                .filter((v): v is number => typeof v === "number" && v > 0);
             const compLats = timeline
+                .filter((p) => p.comparison && p.comparison.hasObservation !== false)
                 .map((p) => p.comparison?.avgLatencyMs)
-                .filter((v): v is number => typeof v === "number");
+                .filter((v): v is number => typeof v === "number" && v > 0);
             if (compLats.length > 0) hasValidComparison = true;
             max = Math.max(...lats, ...compLats, 10);
         }
@@ -105,9 +193,9 @@ export function MultiSignalTimelineChart({
     }, [timeline, activeSignal]);
 
     // Calculate exact Y coordinate with grounded baseline
-    const getYForValue = (val: number | null | undefined) => {
+    const getYForValue = (val: number | null | undefined): number | null => {
         if (val === null || val === undefined || isNaN(val)) {
-            return groundY;
+            return null;
         }
         const ratio = Math.max(0, Math.min(1, val / yMax));
         return paddingTop + usableHeight - ratio * usableHeight;
@@ -120,82 +208,77 @@ export function MultiSignalTimelineChart({
             gradId: "grad-errors",
             label: "Errors",
             unit: "errs",
-            formatVal: (p: TimeBucketPoint) => `${p.errorCount}`,
         },
         REQUESTS: {
             color: "#5bb8ff",
             gradId: "grad-requests",
             label: "Requests",
             unit: "reqs",
-            formatVal: (p: TimeBucketPoint) => `${p.requestCount}`,
         },
         LATENCY: {
             color: "#f59e0b",
             gradId: "grad-latency",
             label: "Latency P95",
             unit: "ms",
-            formatVal: (p: TimeBucketPoint) =>
-                p.p95LatencyMs !== null
-                    ? `${p.p95LatencyMs}ms`
-                    : p.avgLatencyMs !== null
-                    ? `${p.avgLatencyMs}ms`
-                    : "—",
         },
     }[activeSignal];
 
-    // Build Plot Points (X, Y)
+    // Canonical points mapping
     const pointsData = useMemo(() => {
         return timePoints.map((p, idx) => {
-            const x = getXForTime(p.timeMs);
-            let val = 0;
-            if (activeSignal === "ERRORS") val = p.errorCount;
-            else if (activeSignal === "REQUESTS") val = p.requestCount;
-            else if (activeSignal === "LATENCY") val = p.p95LatencyMs || p.avgLatencyMs || 0;
+            const x = getXForIndex(idx);
+            let val: number | null = 0;
+
+            if (activeSignal === "ERRORS") {
+                val = p.errorCount;
+            } else if (activeSignal === "REQUESTS") {
+                val = p.requestCount;
+            } else if (activeSignal === "LATENCY") {
+                val = p.p95LatencyMs !== null ? p.p95LatencyMs : p.avgLatencyMs;
+            }
 
             const y = getYForValue(val);
             return { x, y, val, original: p, index: idx };
         });
     }, [timePoints, activeSignal, yMax, usableWidth, containerWidth]);
 
-    // Build SVG Path Line & Area Strings
-    const { linePath, areaPath } = useMemo(() => {
-        if (pointsData.length === 0) return { linePath: "", areaPath: "" };
-        if (pointsData.length === 1) {
-            const pt = pointsData[0];
-            return {
-                linePath: `M ${pt.x - 10} ${pt.y} L ${pt.x + 10} ${pt.y}`,
-                areaPath: `M ${pt.x - 10} ${groundY} L ${pt.x - 10} ${pt.y} L ${pt.x + 10} ${pt.y} L ${pt.x + 10} ${groundY} Z`,
-            };
-        }
-
-        const pathCoords = pointsData.map((pt) => `${pt.x.toFixed(1)},${pt.y.toFixed(1)}`);
-        const line = `M ${pathCoords.join(" L ")}`;
-        const firstPt = pointsData[0];
-        const lastPt = pointsData[pointsData.length - 1];
-        const area = `M ${firstPt.x.toFixed(1)},${groundY} L ${pathCoords.join(" L ")} L ${lastPt.x.toFixed(1)},${groundY} Z`;
-
-        return { linePath: line, areaPath: area };
-    }, [pointsData, groundY]);
-
-    // Build Comparison Series (Only if comparison telemetry actually exists)
-    const compPoints = useMemo(() => {
+    // Comparison points mapping (preserving gaps where no telemetry was observed)
+    const compPointsData = useMemo(() => {
         if (!comparisonAvailable) return [];
-        return timePoints
-            .map((p) => {
-                if (!p.comparison) return null;
-                const x = getXForTime(p.timeMs);
-                let compVal = 0;
-                if (activeSignal === "ERRORS") compVal = p.comparison.errorCount;
-                else if (activeSignal === "REQUESTS") compVal = p.comparison.requestCount;
-                else if (activeSignal === "LATENCY") compVal = p.comparison.avgLatencyMs || 0;
+        return timePoints.map((p, idx) => {
+            const x = getXForIndex(idx);
+            if (!p.comparison || p.comparison.hasObservation === false) {
+                return { x, y: null, val: null, index: idx };
+            }
 
-                const y = getYForValue(compVal);
-                return `${x.toFixed(1)},${y.toFixed(1)}`;
-            })
-            .filter((pt): pt is string => pt !== null);
+            let compVal: number | null = null;
+            if (activeSignal === "ERRORS") {
+                compVal = p.comparison.errorCount;
+            } else if (activeSignal === "REQUESTS") {
+                compVal = p.comparison.requestCount;
+            } else if (activeSignal === "LATENCY") {
+                compVal = p.comparison.avgLatencyMs;
+            }
+
+            const y = getYForValue(compVal);
+            return { x, y, val: compVal, index: idx };
+        });
     }, [timePoints, activeSignal, yMax, comparisonAvailable, usableWidth, containerWidth]);
 
-    // Handle Pointer Hover to snap to nearest REAL telemetry point
+    // Primary SVG Path Line & Area Strings with gap preservation
+    const { linePath, areaPath } = useMemo(() => {
+        const line = buildSegmentedPath(pointsData);
+        const area = activeSignal !== "LATENCY" ? buildSegmentedArea(pointsData, groundY) : "";
+        return { linePath: line, areaPath: area };
+    }, [pointsData, groundY, activeSignal]);
+
+    // Comparison Path String with gap preservation
+    const compLinePath = useMemo(() => {
+        if (!comparisonAvailable || compPointsData.length === 0) return "";
+        return buildSegmentedPath(compPointsData);
+    }, [compPointsData, comparisonAvailable]);
+
+    // Handle Pointer Hover to snap to nearest canonical bucket
     const handleMouseMove = (e: React.MouseEvent<SVGSVGElement>) => {
         if (pointsData.length === 0 || !containerRef.current) return;
         const rect = containerRef.current.getBoundingClientRect();
@@ -219,9 +302,28 @@ export function MultiSignalTimelineChart({
         setHoveredIndex(null);
     };
 
-    // Active displayed point
+    // Active displayed bucket (hovered takes precedence, then selectedIndex)
     const activePointIdx = hoveredIndex !== null ? hoveredIndex : selectedIndex;
-    const activeDataPoint = activePointIdx !== null ? pointsData[activePointIdx] : null;
+    const activeDataPoint = activePointIdx !== null && activePointIdx < pointsData.length ? pointsData[activePointIdx] : null;
+    const activeCompPoint = activePointIdx !== null && activePointIdx < compPointsData.length ? compPointsData[activePointIdx] : null;
+
+    // Smart 2D non-overlapping tooltip positioning: placed with clear clearance both horizontally and vertically
+    const tooltipPosition = useMemo(() => {
+        if (hoveredIndex === null || !pointsData[hoveredIndex]) return null;
+        const pt = pointsData[hoveredIndex];
+        const tooltipWidth = 190;
+        const isRightHalf = pt.x > containerWidth * 0.52;
+
+        const left = isRightHalf
+            ? Math.max(12, pt.x - tooltipWidth - 20)
+            : Math.min(containerWidth - tooltipWidth - 12, pt.x + 20);
+
+        // If point has a high value near the top (pt.y <= 100px), position tooltip in lower half so it never covers the peak
+        // If point is low or zero at ground level (pt.y > 100px), position tooltip in upper half
+        const top = pt.y !== null && pt.y <= 100 ? 110 : 20;
+
+        return { left, top };
+    }, [hoveredIndex, pointsData, containerWidth]);
 
     return (
         <div ref={containerRef} className="halo-chart-surface">
@@ -236,7 +338,7 @@ export function MultiSignalTimelineChart({
                         onSelectIndex(hoveredIndex === selectedIndex ? null : hoveredIndex);
                     }
                 }}
-                className="cursor-crosshair overflow-visible block"
+                className="cursor-crosshair overflow-visible block select-none"
             >
                 <defs>
                     <linearGradient id="grad-errors" x1="0" y1="0" x2="0" y2="1">
@@ -264,10 +366,18 @@ export function MultiSignalTimelineChart({
                 />
                 <line
                     x1={paddingLeft}
-                    y1={paddingTop + usableHeight / 2}
+                    y1={paddingTop + usableHeight * 0.33}
                     x2={paddingLeft + usableWidth}
-                    y2={paddingTop + usableHeight / 2}
-                    stroke="rgba(255, 255, 255, 0.05)"
+                    y2={paddingTop + usableHeight * 0.33}
+                    stroke="rgba(255, 255, 255, 0.04)"
+                    strokeDasharray="3 3"
+                />
+                <line
+                    x1={paddingLeft}
+                    y1={paddingTop + usableHeight * 0.66}
+                    x2={paddingLeft + usableWidth}
+                    y2={paddingTop + usableHeight * 0.66}
+                    stroke="rgba(255, 255, 255, 0.04)"
                     strokeDasharray="3 3"
                 />
 
@@ -294,7 +404,7 @@ export function MultiSignalTimelineChart({
                 </text>
                 <text
                     x={paddingLeft - 8}
-                    y={paddingTop + usableHeight / 2 + 3}
+                    y={paddingTop + usableHeight * 0.5 + 3}
                     textAnchor="end"
                     fill="var(--text-muted)"
                     fontSize="9.5"
@@ -327,16 +437,32 @@ export function MultiSignalTimelineChart({
                     />
                 )}
 
-                {/* Comparison Series Line (Only when real comparison data exists) */}
-                {compPoints.length > 1 && (
-                    <polyline
+                {/* Comparison Baseline Series (Rendered with gaps where missing) */}
+                {compLinePath && (
+                    <path
+                        d={compLinePath}
                         fill="none"
-                        stroke="rgba(255, 255, 255, 0.3)"
+                        stroke="rgba(255, 255, 255, 0.42)"
                         strokeWidth="1.5"
                         strokeDasharray="4 4"
-                        points={compPoints.join(" ")}
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
                     />
                 )}
+
+                {/* Comparison Point Dots where observations exist */}
+                {compPointsData.map((cpt) => {
+                    if (cpt.y === null) return null;
+                    return (
+                        <circle
+                            key={`comp-${cpt.index}`}
+                            cx={cpt.x}
+                            cy={cpt.y}
+                            r={3}
+                            fill="rgba(255, 255, 255, 0.55)"
+                        />
+                    );
+                })}
 
                 {/* Primary Signal Area Fill */}
                 {areaPath && (
@@ -358,11 +484,11 @@ export function MultiSignalTimelineChart({
                     />
                 )}
 
-                {/* Telemetry Point Dots for Sparse / Key Observations */}
+                {/* Primary Telemetry Point Dots */}
                 {pointsData.map((pt) => {
+                    if (pt.y === null) return null;
                     const isSelected = selectedIndex === pt.index;
                     const isHovered = hoveredIndex === pt.index;
-                    const hasError = pt.original.errorCount > 0;
 
                     return (
                         <circle
@@ -390,14 +516,26 @@ export function MultiSignalTimelineChart({
                             strokeWidth="1.5"
                             strokeDasharray="3 3"
                         />
-                        <circle
-                            cx={activeDataPoint.x}
-                            cy={activeDataPoint.y}
-                            r="5"
-                            fill="#ffffff"
-                            stroke={signalConfig.color}
-                            strokeWidth="2"
-                        />
+                        {activeDataPoint.y !== null && (
+                            <circle
+                                cx={activeDataPoint.x}
+                                cy={activeDataPoint.y}
+                                r="5"
+                                fill="#ffffff"
+                                stroke={signalConfig.color}
+                                strokeWidth="2"
+                            />
+                        )}
+                        {activeCompPoint && activeCompPoint.y !== null && (
+                            <circle
+                                cx={activeCompPoint.x}
+                                cy={activeCompPoint.y}
+                                r="4"
+                                fill="#ffffff"
+                                stroke="rgba(255, 255, 255, 0.85)"
+                                strokeWidth="1.5"
+                            />
+                        )}
                     </>
                 )}
 
@@ -417,39 +555,43 @@ export function MultiSignalTimelineChart({
 
             {/* X-Axis Time Domain Labels */}
             <div
-                className="flex justify-between text-[10px] font-mono text-text-muted pt-1.5 border-t border-border/40"
+                className="flex justify-between text-[10px] font-mono text-text-muted pt-1.5 border-t border-border/40 select-none"
                 style={{ paddingLeft: `${paddingLeft}px`, paddingRight: `${paddingRight}px` }}
             >
-                <span>{timeline[0]?.formattedTime} UTC</span>
+                <span>
+                    {timeline[0]?.formattedTime} {timeline[0]?.timeZoneAbbr || "UTC"}
+                </span>
                 {timeline.length > 2 && (
-                    <span>{timeline[Math.floor(timeline.length / 2)]?.formattedTime} UTC</span>
+                    <span>
+                        {timeline[Math.floor(timeline.length / 2)]?.formattedTime} {timeline[0]?.timeZoneAbbr || "UTC"}
+                    </span>
                 )}
-                <span>{timeline[timeline.length - 1]?.formattedTime} UTC</span>
+                <span>
+                    {timeline[timeline.length - 1]?.formattedTime} {timeline[0]?.timeZoneAbbr || "UTC"}
+                </span>
             </div>
 
-            {/* Floating High-Precision Tooltip */}
-            {hoveredIndex !== null && pointsData[hoveredIndex] && (
+            {/* Floating High-Precision Tooltip (2D offset to never overlap the active graph line) */}
+            {hoveredIndex !== null && pointsData[hoveredIndex] && tooltipPosition && (
                 <div
                     className="halo-chart-tooltip font-sans"
                     style={{
-                        left: `${Math.min(
-                            Math.max(pointsData[hoveredIndex].x - 70, 10),
-                            containerWidth - 160
-                        )}px`,
-                        top: "10px",
+                        transform: `translate3d(${tooltipPosition.left}px, ${tooltipPosition.top}px, 0)`,
                     }}
                 >
-                    <div className="text-[11px] font-mono font-bold text-text border-b border-border/60 pb-1 mb-1.5 flex items-center justify-between">
-                        <span>{pointsData[hoveredIndex].original.formattedTime} UTC</span>
-                        <span className="text-[9px] px-1 py-0.2 rounded bg-[#080b11] border border-border text-text-muted font-normal">
-                            Snapshot
+                    <div className="halo-chart-tooltip-header">
+                        <span>
+                            {pointsData[hoveredIndex].original.formattedTime} ({pointsData[hoveredIndex].original.timeZoneAbbr || "UTC"})
+                        </span>
+                        <span className="text-[9px] px-1 py-0.2 rounded bg-[#080b11] border border-border text-text-muted font-normal font-mono">
+                            Interval {hoveredIndex + 1}/{pointsData.length}
                         </span>
                     </div>
-                    <div className="space-y-1 text-xs">
-                        <div className="flex items-center justify-between gap-3">
-                            <span className="text-text-muted text-[11px]">Errors</span>
+                    <div className="halo-chart-tooltip-body">
+                        <div className="halo-chart-tooltip-row">
+                            <span className="halo-chart-tooltip-label">Errors</span>
                             <span
-                                className={`font-mono font-semibold ${
+                                className={`halo-chart-tooltip-val ${
                                     pointsData[hoveredIndex].original.errorCount > 0
                                         ? "text-error"
                                         : "text-text"
@@ -461,22 +603,42 @@ export function MultiSignalTimelineChart({
                                 </span>
                             </span>
                         </div>
-                        <div className="flex items-center justify-between gap-3">
-                            <span className="text-text-muted text-[11px]">Requests</span>
-                            <span className="font-mono font-semibold text-text">
-                                {pointsData[hoveredIndex].original.requestCount}
+                        <div className="halo-chart-tooltip-row">
+                            <span className="halo-chart-tooltip-label">Requests</span>
+                            <span className="halo-chart-tooltip-val">
+                                {pointsData[hoveredIndex].original.requestCount.toLocaleString()}
                             </span>
                         </div>
-                        <div className="flex items-center justify-between gap-3">
-                            <span className="text-text-muted text-[11px]">Latency P95</span>
-                            <span className="font-mono font-semibold text-warning">
+                        <div className="halo-chart-tooltip-row">
+                            <span className="halo-chart-tooltip-label">Latency P95</span>
+                            <span className="halo-chart-tooltip-val text-warning">
                                 {pointsData[hoveredIndex].original.p95LatencyMs !== null
                                     ? `${pointsData[hoveredIndex].original.p95LatencyMs}ms`
                                     : pointsData[hoveredIndex].original.avgLatencyMs !== null
                                     ? `${pointsData[hoveredIndex].original.avgLatencyMs}ms`
-                                    : "—"}
+                                    : "No observation"}
                             </span>
                         </div>
+
+                        {/* Baseline Comparison */}
+                        {pointsData[hoveredIndex].original.comparison !== undefined && (
+                            <div className="halo-chart-tooltip-row pt-1 mt-0.5 border-t border-border/40">
+                                <span className="halo-chart-tooltip-label">Previous Baseline</span>
+                                <span className="halo-chart-tooltip-val text-text-muted">
+                                    {pointsData[hoveredIndex].original.comparison?.hasObservation === false ? (
+                                        "No observation"
+                                    ) : activeSignal === "ERRORS" ? (
+                                        `${pointsData[hoveredIndex].original.comparison?.errorCount} errs (${pointsData[hoveredIndex].original.comparison?.errorRate}%)`
+                                    ) : activeSignal === "REQUESTS" ? (
+                                        `${pointsData[hoveredIndex].original.comparison?.requestCount.toLocaleString()} reqs`
+                                    ) : pointsData[hoveredIndex].original.comparison?.avgLatencyMs !== null ? (
+                                        `${pointsData[hoveredIndex].original.comparison?.avgLatencyMs}ms`
+                                    ) : (
+                                        "No observation"
+                                    )}
+                                </span>
+                            </div>
+                        )}
                     </div>
                 </div>
             )}

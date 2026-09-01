@@ -1,7 +1,9 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { Check, Loader2, Save, User } from "lucide-react";
+import { getClientTimezone, setClientTimezone, SUPPORTED_TIMEZONES } from "@/lib/timezone";
 
 type AccountDetailsClientProps = {
     user: {
@@ -13,15 +15,18 @@ type AccountDetailsClientProps = {
 };
 
 export function AccountDetailsClient({ user }: AccountDetailsClientProps) {
+    const router = useRouter();
     const [name, setName] = useState(user.name);
     const [language, setLanguage] = useState("en");
-    const [timezone, setTimezone] = useState(
-        Intl.DateTimeFormat().resolvedOptions().timeZone ?? "UTC"
-    );
+    const [timezone, setTimezone] = useState("UTC");
     const [use24h, setUse24h] = useState(false);
     const [stackOrder, setStackOrder] = useState("default");
     const [isSaving, setIsSaving] = useState(false);
     const [savedSuccess, setSavedSuccess] = useState(false);
+
+    useEffect(() => {
+        setTimezone(getClientTimezone());
+    }, []);
 
     // Derive initials from the real name
     const initials = name
@@ -34,10 +39,14 @@ export function AccountDetailsClient({ user }: AccountDetailsClientProps) {
     async function handleSave(e: React.FormEvent) {
         e.preventDefault();
         setIsSaving(true);
-        // Preferences (language, timezone, etc.) are persisted via server action in a future iteration.
-        await new Promise((r) => setTimeout(r, 600));
+
+        // Persist timezone preference to canonical cookie & localStorage
+        setClientTimezone(timezone);
+
+        await new Promise((r) => setTimeout(r, 400));
         setSavedSuccess(true);
         setIsSaving(false);
+        router.refresh();
         setTimeout(() => setSavedSuccess(false), 3000);
     }
 
@@ -149,13 +158,11 @@ export function AccountDetailsClient({ user }: AccountDetailsClientProps) {
                             onChange={(e) => setTimezone(e.target.value)}
                             className="w-full px-3.5 py-2.5 rounded-lg border border-border-strong bg-surface-elevated text-sm text-white focus:outline-none focus:border-accent"
                         >
-                            <option value="UTC">UTC</option>
-                            <option value="America/New_York">America/New_York</option>
-                            <option value="America/Los_Angeles">America/Los_Angeles</option>
-                            <option value="Europe/London">Europe/London</option>
-                            <option value="Asia/Kolkata">Asia/Kolkata</option>
-                            <option value="Asia/Tokyo">Asia/Tokyo</option>
-                            <option value="Australia/Sydney">Australia/Sydney</option>
+                            {SUPPORTED_TIMEZONES.map((tz) => (
+                                <option key={tz.value} value={tz.value}>
+                                    {tz.label}
+                                </option>
+                            ))}
                         </select>
                     </div>
 

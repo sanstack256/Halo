@@ -14,6 +14,7 @@ export interface ReliabilityLabParams {
     environment?: string;
     timeRangeKey?: string;
     service?: string;
+    userTimezone?: string;
 }
 
 export async function fetchReliabilityLabAnalytics(
@@ -150,32 +151,38 @@ export async function fetchReliabilityLabAnalytics(
     const totalRequests = events.length;
     const totalErrors = events.filter((e) => e.type === "ERROR").length;
     const errorRatePct = totalRequests > 0 ? (totalErrors / totalRequests) * 100 : 0;
-    const actualAvailability =
-        totalRequests > 0 ? Math.max(0, Math.min(100, 100 - errorRatePct)) : 100.0;
+    const hasSufficientTelemetry = totalRequests >= 5;
+
+    const actualAvailability: number | null =
+        totalRequests > 0 ? Math.max(0, Math.min(100, 100 - errorRatePct)) : null;
 
     const targetAvailability = 99.9;
     const allowedFailureRatePct = 100 - targetAvailability; // 0.1%
 
-    const budgetConsumedPct =
-        allowedFailureRatePct > 0 ? (errorRatePct / allowedFailureRatePct) * 100 : 0;
-    const budgetRemainingPct = Math.max(0, Math.min(100, Math.round((100 - budgetConsumedPct) * 10) / 10));
-    const burnRate =
-        allowedFailureRatePct > 0 ? Math.round((errorRatePct / allowedFailureRatePct) * 10) / 10 : 0;
+    const budgetConsumedPct: number | null =
+        totalRequests > 0 && allowedFailureRatePct > 0 ? (errorRatePct / allowedFailureRatePct) * 100 : null;
+    const budgetRemainingPct: number | null =
+        budgetConsumedPct !== null ? Math.max(0, Math.min(100, Math.round((100 - budgetConsumedPct) * 10) / 10)) : null;
+    const burnRate: number | null =
+        totalRequests > 0 && allowedFailureRatePct > 0 ? Math.round((errorRatePct / allowedFailureRatePct) * 10) / 10 : null;
 
     const budgetStatus: ReliabilityLabData["errorBudget"]["budgetStatus"] =
-        budgetRemainingPct === 0 ? "Exhausted" : budgetConsumedPct > 50 ? "Consumed" : "Remaining";
-
-    // NOTE: Halo does not currently have a project-level SLO configuration model.
-    // The 99.9% target is a default industry reference value, not a stored project setting.
-    // isConfigured reflects this: callers should present it as a reference baseline,
-    // not as a user-configured SLO target.
+        totalRequests === 0
+            ? "Insufficient Evidence"
+            : (budgetRemainingPct || 0) === 0
+            ? "Exhausted"
+            : (budgetConsumedPct || 0) > 50
+            ? "Consumed"
+            : "Remaining";
 
     const burnRateAssessment =
-        burnRate === 0
+        totalRequests === 0
+            ? "Insufficient telemetry to evaluate SLO consumption"
+            : burnRate === 0
             ? "Zero budget burn during window"
-            : burnRate <= 1.0
+            : (burnRate || 0) <= 1.0
             ? "Sustainable consumption within SLO target"
-            : burnRate <= 2.5
+            : (burnRate || 0) <= 2.5
             ? "Elevated consumption — 2.5x standard burn"
             : "Critical burn — error budget exhausted / depleted rapidly";
 
@@ -183,31 +190,44 @@ export async function fetchReliabilityLabAnalytics(
     const compTotal = compEvents.length;
     const compErrors = compEvents.filter((e) => e.type === "ERROR").length;
     const compErrorRate = compTotal > 0 ? (compErrors / compTotal) * 100 : 0;
-    const compAvailability = compTotal > 0 ? 100 - compErrorRate : 100.0;
+    const compAvailability: number | null = compTotal > 0 ? 100 - compErrorRate : null;
 
     const availComparison = calculateMetricComparison(actualAvailability, compAvailability, true, false);
     const budgetComparison = calculateMetricComparison(budgetRemainingPct, null, true, false);
-    const consumedComparison = calculateMetricComparison(Math.min(100, budgetConsumedPct), null, true, true);
+    const consumedComparison = calculateMetricComparison(
+        budgetConsumedPct !== null ? Math.min(100, budgetConsumedPct) : null,
+        null,
+        true,
+        true
+    );
 
     // Crash free sessions
     const totalSessions = sessions.length;
     const crashedSessions = sessions.filter((s) => s.crashedAt !== null).length;
-    const crashFreePct =
-        totalSessions > 0 ? Math.round(((totalSessions - crashedSessions) / totalSessions) * 1000) / 10 : 100.0;
+    const crashFreePct: number | null =
+        totalSessions > 0 ? Math.round(((totalSessions - crashedSessions) / totalSessions) * 1000) / 10 : null;
 
     // Incident frequency per day
     const durationDays = (timeRange.end.getTime() - timeRange.start.getTime()) / (24 * 60 * 60 * 1000);
-    const incidentFreqPerDay =
-        durationDays > 0 ? Math.round((issues.length / durationDays) * 10) / 10 : issues.length;
+    const incidentFreqPerDay: number | null =
+        issues.length > 0
+            ? durationDays > 0
+                ? Math.round((issues.length / durationDays) * 10) / 10
+                : issues.length
+            : totalRequests > 0
+            ? 0.0
+            : null;
 
     // Overall trend
     let overallTrend: TrendDirection = "Stable";
-    if (errorRatePct > compErrorRate + 1.0) overallTrend = "Degrading";
-    else if (errorRatePct < compErrorRate - 1.0) overallTrend = "Improving";
+    if (totalRequests === 0) overallTrend = "Stable";
+    else if (compTotal > 0 && errorRatePct > compErrorRate + 1.0) overallTrend = "Degrading";
+    else if (compTotal > 0 && errorRatePct < compErrorRate - 1.0) overallTrend = "Improving";
     else if (errorRatePct > 5.0) overallTrend = "Volatile";
 
-    // 4. Build Trajectory Timeline Buckets
-    const rawBuckets = generateTimeBuckets(timeRange.start, timeRange.end, timeRange.bucketCount);
+    // 4. Build Trajectory Timeline Buckets (Timezone-Aware)
+    const userTimezone = params.userTimezone || "UTC";
+    const rawBuckets = generateTimeBuckets(timeRange.start, timeRange.end, timeRange.bucketCount, userTimezone);
     const trajectory = rawBuckets.map((bucket) => {
         const bStartMs = bucket.start.getTime();
         const bEndMs = bucket.end.getTime();
@@ -220,7 +240,7 @@ export async function fetchReliabilityLabAnalytics(
         const bErrors = bEvents.filter((e) => e.type === "ERROR").length;
         const bTotal = bEvents.length;
         const bErrorRate = bTotal > 0 ? Math.round((bErrors / bTotal) * 1000) / 10 : 0;
-        const bAvail = bTotal > 0 ? Math.max(0, Math.min(100, Math.round((100 - bErrorRate) * 10) / 10)) : 100.0;
+        const bAvail = bTotal > 0 ? Math.max(0, Math.min(100, Math.round((100 - bErrorRate) * 10) / 10)) : null;
 
         const bIncidents = issues.filter((i) => {
             const t = i.lastSeen.getTime();
@@ -240,11 +260,13 @@ export async function fetchReliabilityLabAnalytics(
         return {
             timestamp: bucket.start.toISOString(),
             formattedTime: bucket.formattedTime,
+            timeZoneAbbr: bucket.timeZoneAbbr,
             availabilityPct: bAvail,
             errorRate: bErrorRate,
             incidentCount: bIncidents,
             releaseCount: bReleases,
             monitorTriggerCount: bAlerts,
+            hasObservation: bTotal > 0,
         };
     });
 
@@ -425,69 +447,102 @@ export async function fetchReliabilityLabAnalytics(
         posture: {
             availabilityPct: {
                 title: "Availability",
-                value: `${actualAvailability.toFixed(2)}%`,
-                unit: "%",
+                value: actualAvailability !== null ? `${actualAvailability.toFixed(2)}%` : "Insufficient evidence",
+                unit: actualAvailability !== null ? "%" : undefined,
                 target: targetAvailability,
-                status: actualAvailability >= 99.9 ? "HEALTHY" : actualAvailability >= 99.0 ? "DEGRADED" : "CRITICAL",
+                status:
+                    actualAvailability !== null
+                        ? actualAvailability >= 99.9
+                            ? "HEALTHY"
+                            : actualAvailability >= 99.0
+                            ? "DEGRADED"
+                            : "CRITICAL"
+                        : "UNAVAILABLE",
                 definition: "Proportion of total telemetry events completed without unhandled errors.",
                 methodology: "Availability = (1 - (errorCount / requestCount)) * 100",
                 comparison: availComparison,
             },
             errorBudgetRemainingPct: {
                 title: "Error Budget Remaining",
-                value: `${budgetRemainingPct}%`,
-                unit: "%",
+                value: budgetRemainingPct !== null ? `${budgetRemainingPct}%` : "Insufficient evidence",
+                unit: budgetRemainingPct !== null ? "%" : undefined,
                 target: 100,
-                status: budgetRemainingPct > 50 ? "HEALTHY" : budgetRemainingPct > 20 ? "DEGRADED" : "CRITICAL",
+                status:
+                    budgetRemainingPct !== null
+                        ? budgetRemainingPct > 50
+                            ? "HEALTHY"
+                            : budgetRemainingPct > 20
+                            ? "DEGRADED"
+                            : "CRITICAL"
+                        : "UNAVAILABLE",
                 definition: "Remaining allowed failure capacity against the 99.9% SLO target.",
                 methodology: "Budget Remaining = max(0, 100 - ((errorRate / 0.1) * 100))",
                 comparison: budgetComparison,
             },
             errorBudgetConsumedPct: {
                 title: "Error Budget Consumed",
-                value: `${Math.min(100, Math.round(budgetConsumedPct * 10) / 10)}%`,
-                unit: "%",
+                value: budgetConsumedPct !== null ? `${Math.min(100, Math.round(budgetConsumedPct * 10) / 10)}%` : "Insufficient evidence",
+                unit: budgetConsumedPct !== null ? "%" : undefined,
                 target: 0,
-                status: budgetConsumedPct < 50 ? "HEALTHY" : budgetConsumedPct < 80 ? "DEGRADED" : "CRITICAL",
+                status:
+                    budgetConsumedPct !== null
+                        ? budgetConsumedPct < 50
+                            ? "HEALTHY"
+                            : budgetConsumedPct < 80
+                            ? "DEGRADED"
+                            : "CRITICAL"
+                        : "UNAVAILABLE",
                 definition: "Proportion of the allowed 0.1% failure margin consumed by actual errors.",
                 methodology: "Budget Consumed = (actualFailureRate / allowedFailureRate) * 100",
                 comparison: consumedComparison,
             },
             burnRateMultiplier: {
                 title: "Burn Rate",
-                value: `${burnRate}x`,
-                status: burnRate <= 1.0 ? "HEALTHY" : burnRate <= 2.5 ? "DEGRADED" : "CRITICAL",
+                value: burnRate !== null ? `${burnRate}x` : "Insufficient evidence",
+                status:
+                    burnRate !== null
+                        ? burnRate <= 1.0
+                            ? "HEALTHY"
+                            : burnRate <= 2.5
+                            ? "DEGRADED"
+                            : "CRITICAL"
+                        : "UNAVAILABLE",
                 definition: "Rate of error budget consumption relative to standard 30-day budget pace.",
                 methodology: "Burn Rate = observed failure rate / allowed failure rate",
             },
             crashFreeSessionPct: {
                 title: "Crash-Free Sessions",
-                value: `${crashFreePct}%`,
-                unit: "%",
+                value: crashFreePct !== null ? `${crashFreePct}%` : "Insufficient evidence",
+                unit: crashFreePct !== null ? "%" : undefined,
                 target: 99.5,
-                status: crashFreePct >= 99.5 ? "HEALTHY" : "DEGRADED",
+                status: crashFreePct !== null ? (crashFreePct >= 99.5 ? "HEALTHY" : "DEGRADED") : "UNAVAILABLE",
                 definition: "Percentage of client telemetry sessions that concluded without a fatal crash event.",
                 methodology: "Crash Free % = ((totalSessions - crashedSessions) / totalSessions) * 100",
             },
             incidentFrequencyPerDay: {
                 title: "Incident Frequency",
-                value: `${incidentFreqPerDay}/day`,
-                status: incidentFreqPerDay === 0 ? "HEALTHY" : incidentFreqPerDay <= 2 ? "DEGRADED" : "CRITICAL",
+                value: incidentFreqPerDay !== null ? `${incidentFreqPerDay}/day` : "Insufficient evidence",
+                status:
+                    incidentFreqPerDay !== null
+                        ? incidentFreqPerDay === 0
+                            ? "HEALTHY"
+                            : incidentFreqPerDay <= 2
+                            ? "DEGRADED"
+                            : "CRITICAL"
+                        : "UNAVAILABLE",
                 definition: "Normalized rate of new unique issue creations per 24 hours.",
                 methodology: "Incidents Per Day = unique issues / time window days",
             },
             overallTrend,
         },
         errorBudget: {
-            // isConfigured: false — Halo has no project-level SLO config model in the schema.
-            // The 99.9% target is the default industry-reference value, not a stored configuration.
             isConfigured: false,
             budgetStatus,
             targetAvailability,
             actualAvailability,
             allowedFailureRatePct,
-            actualFailureRatePct: Math.round(errorRatePct * 100) / 100,
-            budgetConsumedPct: Math.min(100, Math.round(budgetConsumedPct * 10) / 10),
+            actualFailureRatePct: totalRequests > 0 ? Math.round(errorRatePct * 100) / 100 : null,
+            budgetConsumedPct: budgetConsumedPct !== null ? Math.min(100, Math.round(budgetConsumedPct * 10) / 10) : null,
             budgetRemainingPct,
             burnRate,
             burnRateAssessment,
@@ -505,43 +560,43 @@ function createEmptyReliabilityData(timeRange: any, params: ReliabilityLabParams
         posture: {
             availabilityPct: {
                 title: "Availability",
-                value: "Unavailable",
+                value: "Insufficient evidence",
                 status: "UNAVAILABLE",
                 definition: "Proportion of total telemetry events completed without unhandled errors.",
                 methodology: "Availability = (1 - (errorCount / requestCount)) * 100",
             },
             errorBudgetRemainingPct: {
                 title: "Error Budget Remaining",
-                value: "Unavailable",
+                value: "Insufficient evidence",
                 status: "UNAVAILABLE",
                 definition: "Remaining allowed failure capacity against the 99.9% SLO target.",
                 methodology: "Budget Remaining = max(0, 100 - ((errorRate / 0.1) * 100))",
             },
             errorBudgetConsumedPct: {
                 title: "Error Budget Consumed",
-                value: "0%",
-                status: "HEALTHY",
+                value: "Insufficient evidence",
+                status: "UNAVAILABLE",
                 definition: "Proportion of error budget consumed.",
                 methodology: "Budget Consumed = (errorRate / allowedRate) * 100",
             },
             burnRateMultiplier: {
                 title: "Burn Rate",
-                value: "0.0x",
-                status: "HEALTHY",
+                value: "Insufficient evidence",
+                status: "UNAVAILABLE",
                 definition: "Rate of error budget consumption relative to standard pace.",
                 methodology: "Burn Rate = observed failure rate / allowed failure rate",
             },
             crashFreeSessionPct: {
                 title: "Crash-Free Sessions",
-                value: "100%",
-                status: "HEALTHY",
+                value: "Insufficient evidence",
+                status: "UNAVAILABLE",
                 definition: "Percentage of client telemetry sessions without a crash.",
                 methodology: "Telemetry session crash ratio.",
             },
             incidentFrequencyPerDay: {
                 title: "Incident Frequency",
-                value: "0/day",
-                status: "HEALTHY",
+                value: "Insufficient evidence",
+                status: "UNAVAILABLE",
                 definition: "Normalized rate of new issues created per day.",
                 methodology: "Unique issues / days.",
             },
@@ -549,14 +604,14 @@ function createEmptyReliabilityData(timeRange: any, params: ReliabilityLabParams
         },
         errorBudget: {
             isConfigured: false,
-            budgetStatus: "Remaining",
+            budgetStatus: "Insufficient Evidence",
             targetAvailability: 99.9,
-            actualAvailability: 100,
+            actualAvailability: null,
             allowedFailureRatePct: 0.1,
-            actualFailureRatePct: 0,
-            budgetConsumedPct: 0,
-            budgetRemainingPct: 100,
-            burnRate: 0,
+            actualFailureRatePct: null,
+            budgetConsumedPct: null,
+            budgetRemainingPct: null,
+            burnRate: null,
             burnRateAssessment: "No active telemetry to evaluate error budget.",
         },
         trajectory: [],

@@ -70,7 +70,7 @@ export interface DataProvenance {
 }
 
 export interface MetricComparison {
-    current: number;
+    current: number | null;
     previous: number | null;
     absoluteDiff: number | null;
     /** Relative percentage change, e.g. +25% or -10% */
@@ -83,6 +83,7 @@ export interface MetricComparison {
 export interface TimeBucketPoint {
     timestamp: string;
     formattedTime: string;
+    timeZoneAbbr?: string;
     errorCount: number;
     requestCount: number;
     errorRate: number;
@@ -100,6 +101,7 @@ export interface TimeBucketPoint {
         requestCount: number;
         errorRate: number;
         avgLatencyMs: number | null;
+        hasObservation?: boolean;
     };
 }
 
@@ -553,24 +555,26 @@ export interface ReliabilityLabData {
     };
     errorBudget: {
         isConfigured: boolean;
-        budgetStatus: "Remaining" | "Consumed" | "Exhausted";
+        budgetStatus: "Remaining" | "Consumed" | "Exhausted" | "Insufficient Evidence";
         targetAvailability: number;
-        actualAvailability: number;
+        actualAvailability: number | null;
         allowedFailureRatePct: number;
-        actualFailureRatePct: number;
-        budgetConsumedPct: number;
-        budgetRemainingPct: number;
-        burnRate: number;
+        actualFailureRatePct: number | null;
+        budgetConsumedPct: number | null;
+        budgetRemainingPct: number | null;
+        burnRate: number | null;
         burnRateAssessment: string;
     };
     trajectory: Array<{
         timestamp: string;
         formattedTime: string;
-        availabilityPct: number;
+        timeZoneAbbr?: string;
+        availabilityPct: number | null;
         errorRate: number;
         incidentCount: number;
         releaseCount: number;
         monitorTriggerCount: number;
+        hasObservation?: boolean;
     }>;
     contributors: Array<{
         service: string;

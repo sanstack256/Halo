@@ -17,6 +17,7 @@ export interface ServiceLandscapeParams {
     environment?: string;
     timeRangeKey?: string;
     service?: string;
+    userTimezone?: string;
 }
 
 export async function fetchServiceLandscapeAnalytics(
@@ -455,7 +456,8 @@ export async function fetchServiceLandscapeAnalytics(
 export async function fetchServiceDetailedContext(
     serviceName: string,
     projectId: string,
-    timeRangeKey: string = "24h"
+    timeRangeKey: string = "24h",
+    userTimezone: string = "UTC"
 ): Promise<ServiceDetailedContext | null> {
     const timeRange = parseTimeRange(timeRangeKey, "PREVIOUS_PERIOD");
 

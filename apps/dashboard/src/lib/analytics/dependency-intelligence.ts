@@ -17,6 +17,7 @@ export interface DependencyIntelligenceParams {
     projectId?: string;
     environment?: string;
     timeRangeKey?: string;
+    userTimezone?: string;
 }
 
 export async function fetchDependencyIntelligenceAnalytics(

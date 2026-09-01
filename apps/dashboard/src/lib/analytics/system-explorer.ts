@@ -22,6 +22,7 @@ export interface SystemExplorerParams {
     timeRangeKey?: string;
     comparisonMode?: "PREVIOUS_PERIOD" | "NONE";
     service?: string;
+    userTimezone?: string;
 }
 
 export async function fetchSystemExplorerAnalytics(
@@ -198,7 +199,8 @@ export async function fetchSystemExplorerAnalytics(
     ]);
 
     // 4. Generate Synchronized Time Buckets
-    const rawBuckets = generateTimeBuckets(timeRange.start, timeRange.end, timeRange.bucketCount);
+    const userTimezone = params.userTimezone || "UTC";
+    const rawBuckets = generateTimeBuckets(timeRange.start, timeRange.end, timeRange.bucketCount, userTimezone);
     const durationMs = timeRange.end.getTime() - timeRange.start.getTime();
 
     // Map events into buckets
@@ -281,8 +283,8 @@ export async function fetchSystemExplorerAnalytics(
                 return t >= compBStartMs && t < compBEndMs;
             });
 
-            const compErrors = compBucketEvents.filter((e) => e.type === "ERROR").length;
             const compReqs = compBucketEvents.length;
+            const compErrors = compBucketEvents.filter((e) => e.type === "ERROR").length;
             const compErrorRate = compReqs > 0 ? Math.round((compErrors / compReqs) * 1000) / 10 : 0;
 
             const compDurations = compBucketEvents
@@ -298,12 +300,14 @@ export async function fetchSystemExplorerAnalytics(
                 requestCount: compReqs,
                 errorRate: compErrorRate,
                 avgLatencyMs: compAvgLatency,
+                hasObservation: compReqs > 0,
             };
         }
 
         return {
             timestamp: bucket.start.toISOString(),
             formattedTime: bucket.formattedTime,
+            timeZoneAbbr: bucket.timeZoneAbbr,
             errorCount,
             requestCount,
             errorRate,
@@ -423,15 +427,41 @@ export async function fetchSystemExplorerAnalytics(
             : null;
 
     const hasComparison = Boolean(timeRange.comparisonStart);
+    const hasObservedComparison = hasComparison && comparisonEvents.length > 0;
 
     const summaryMetrics = {
-        totalRequests: calculateMetricComparison(totalRequestsCurrent, hasComparison ? totalRequestsPrev : null, false, false),
-        totalErrors: calculateMetricComparison(totalErrorsCurrent, hasComparison ? totalErrorsPrev : null, false, true),
-        errorRate: calculateMetricComparison(errorRateCurrent, hasComparison ? errorRatePrev : null, true, true),
-        avgLatencyMs: calculateMetricComparison(avgLatencyCurrent || 0, hasComparison && avgLatencyPrev !== null ? avgLatencyPrev : null, false, true),
-        p50LatencyMs: calculateMetricComparison(p50LatencyCurrent || 0, null, false, true),
-        p95LatencyMs: calculateMetricComparison(p95LatencyCurrent || 0, hasComparison && p95LatencyPrev !== null ? p95LatencyPrev : null, false, true),
-        p99LatencyMs: calculateMetricComparison(p99LatencyCurrent || 0, null, false, true),
+        totalRequests: calculateMetricComparison(
+            totalRequestsCurrent,
+            hasObservedComparison ? totalRequestsPrev : null,
+            false,
+            false
+        ),
+        totalErrors: calculateMetricComparison(
+            totalErrorsCurrent,
+            hasObservedComparison ? totalErrorsPrev : null,
+            false,
+            true
+        ),
+        errorRate: calculateMetricComparison(
+            errorRateCurrent,
+            hasObservedComparison ? errorRatePrev : null,
+            true,
+            true
+        ),
+        avgLatencyMs: calculateMetricComparison(
+            avgLatencyCurrent,
+            hasObservedComparison && avgLatencyPrev !== null ? avgLatencyPrev : null,
+            false,
+            true
+        ),
+        p50LatencyMs: calculateMetricComparison(p50LatencyCurrent, null, false, true),
+        p95LatencyMs: calculateMetricComparison(
+            p95LatencyCurrent,
+            hasObservedComparison && p95LatencyPrev !== null ? p95LatencyPrev : null,
+            false,
+            true
+        ),
+        p99LatencyMs: calculateMetricComparison(p99LatencyCurrent, null, false, true),
         activeIncidentsCount: issues.filter((i) => i.status === "OPEN").length,
         monitorsFiringCount: activeMonitorsFiring,
     };

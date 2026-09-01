@@ -76,6 +76,8 @@ export async function getDashboardFilterContext(): Promise<DashboardFilterContex
     };
 }
 
+import { getServerTimezone } from "@/lib/timezone-server";
+
 export async function getSystemExplorerAnalytics(params: Omit<SystemExplorerParams, "organizationId">) {
     const session = await getSession();
     if (!session) throw new Error("Unauthorized");
@@ -83,9 +85,12 @@ export async function getSystemExplorerAnalytics(params: Omit<SystemExplorerPara
     const organization = await getOrganization(session.user.id);
     if (!organization) throw new Error("No organization found");
 
+    const userTimezone = await getServerTimezone();
+
     return fetchSystemExplorerAnalytics({
         ...params,
         organizationId: organization.id,
+        userTimezone,
     });
 }
 
@@ -96,9 +101,12 @@ export async function getServiceLandscapeAnalytics(params: Omit<ServiceLandscape
     const organization = await getOrganization(session.user.id);
     if (!organization) throw new Error("No organization found");
 
+    const userTimezone = await getServerTimezone();
+
     return fetchServiceLandscapeAnalytics({
         ...params,
         organizationId: organization.id,
+        userTimezone,
     });
 }
 
@@ -106,7 +114,8 @@ export async function getServiceDetailedContextAction(serviceName: string, proje
     const session = await getSession();
     if (!session) throw new Error("Unauthorized");
 
-    return fetchServiceDetailedContext(serviceName, projectId, timeRangeKey);
+    const userTimezone = await getServerTimezone();
+    return fetchServiceDetailedContext(serviceName, projectId, timeRangeKey, userTimezone);
 }
 
 export async function getChangeIntelligenceAnalytics(params: Omit<ChangeIntelligenceParams, "organizationId">) {
@@ -116,9 +125,12 @@ export async function getChangeIntelligenceAnalytics(params: Omit<ChangeIntellig
     const organization = await getOrganization(session.user.id);
     if (!organization) throw new Error("No organization found");
 
+    const userTimezone = await getServerTimezone();
+
     return fetchChangeIntelligenceAnalytics({
         ...params,
         organizationId: organization.id,
+        userTimezone,
     });
 }
 
@@ -126,7 +138,8 @@ export async function getChangeImpactDeepAnalysisAction(releaseId: string, proje
     const session = await getSession();
     if (!session) throw new Error("Unauthorized");
 
-    return fetchChangeImpactDeepAnalysis(releaseId, projectId);
+    const userTimezone = await getServerTimezone();
+    return fetchChangeImpactDeepAnalysis(releaseId, projectId, userTimezone);
 }
 
 export async function getDependencyIntelligenceAnalytics(params: Omit<DependencyIntelligenceParams, "organizationId">) {
@@ -136,9 +149,12 @@ export async function getDependencyIntelligenceAnalytics(params: Omit<Dependency
     const organization = await getOrganization(session.user.id);
     if (!organization) throw new Error("No organization found");
 
+    const userTimezone = await getServerTimezone();
+
     return fetchDependencyIntelligenceAnalytics({
         ...params,
         organizationId: organization.id,
+        userTimezone,
     });
 }
 
@@ -149,8 +165,11 @@ export async function getReliabilityLabAnalytics(params: Omit<ReliabilityLabPara
     const organization = await getOrganization(session.user.id);
     if (!organization) throw new Error("No organization found");
 
+    const userTimezone = await getServerTimezone();
+
     return fetchReliabilityLabAnalytics({
         ...params,
         organizationId: organization.id,
+        userTimezone,
     });
 }

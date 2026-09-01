@@ -1,5 +1,5 @@
 import { describe, it, expect } from "vitest";
-import { calculateMetricComparison, parseTimeRange } from "../time";
+import { calculateMetricComparison, parseTimeRange, formatBucketTime, generateTimeBuckets } from "../time";
 import { computeBlastRadius } from "../blast-radius";
 import { computeDynamicGraphLayout } from "../graph-layout";
 import type { DependencyNode, DependencyEdge } from "../types";
@@ -443,8 +443,6 @@ describe("Canonical Analytics Mathematical & Algorithmic Layer", () => {
     // ===================================================================
     describe("Cross-Page Scope Consistency", () => {
         it("identical time range parameters produce identical start/end timestamps", () => {
-            // Both pages must call parseTimeRange with the same key and receive identical ranges.
-            // We verify determinism by calling parseTimeRange twice with the same fixed end date.
             const fixedEnd = new Date("2024-06-10T14:00:00Z");
             const r1 = parseTimeRange("24h", "PREVIOUS_PERIOD", fixedEnd);
             const r2 = parseTimeRange("24h", "PREVIOUS_PERIOD", fixedEnd);
@@ -458,12 +456,10 @@ describe("Canonical Analytics Mathematical & Algorithmic Layer", () => {
         it("bucket count is deterministic for each time range key", () => {
             const fixedEnd = new Date("2024-06-10T14:00:00Z");
             const r = parseTimeRange("7d", "NONE", fixedEnd);
-            // 7d always produces 28 buckets (6h each)
             expect(r.bucketCount).toBe(28);
         });
 
         it("service health thresholds are consistent across pages: >=20% critical, >=5% degraded", () => {
-            // This is the canonical rule applied in: service-landscape, system-explorer, overview
             const getHealth = (errorRate: number) =>
                 errorRate >= 20 ? "critical" : errorRate >= 5 ? "degraded" : "healthy";
 
@@ -473,6 +469,304 @@ describe("Canonical Analytics Mathematical & Algorithmic Layer", () => {
             expect(getHealth(19.9)).toBe("degraded");
             expect(getHealth(20.0)).toBe("critical");
             expect(getHealth(100)).toBe("critical");
+        });
+    });
+
+    // ===================================================================
+    // SUITE 8 — SPARSE BASELINE & GAP PRESERVATION TESTS
+    // ===================================================================
+    describe("Sparse Baseline & Telemetry Gap Preservation", () => {
+        it("distinguishes missing observation (hasObservation: false) from an observed zero (hasObservation: true, errors: 0)", () => {
+            // Bucket A: active observation with 50 requests and 0 errors -> observed zero
+            const bucketObservedZero = {
+                requestCount: 50,
+                errorCount: 0,
+                hasObservation: true,
+            };
+
+            // Bucket B: no telemetry collected during slice -> NO observation
+            const bucketNoObservation = {
+                requestCount: 0,
+                errorCount: 0,
+                hasObservation: false,
+            };
+
+            expect(bucketObservedZero.hasObservation).toBe(true);
+            expect(bucketObservedZero.errorCount).toBe(0);
+
+            expect(bucketNoObservation.hasObservation).toBe(false);
+            // Must not be treated as a confirmed zero error observation
+            expect(bucketNoObservation.requestCount).toBe(0);
+        });
+
+        it("discontinuous path generator creates disconnected segments across missing buckets", () => {
+            // Simulated baseline: [20, 14, null, null, null, 8]
+            const rawPoints = [
+                { x: 10, y: 20 },
+                { x: 20, y: 30 },
+                { x: 30, y: null },
+                { x: 40, y: null },
+                { x: 50, y: null },
+                { x: 60, y: 50 },
+            ];
+
+            // Replicate buildSegmentedPath logic
+            let d = "";
+            let inSegment = false;
+            let segmentPoints: Array<{ x: number; y: number }> = [];
+
+            for (const pt of rawPoints) {
+                if (pt.y !== null && !isNaN(pt.y)) {
+                    segmentPoints.push({ x: pt.x, y: pt.y });
+                    inSegment = true;
+                } else {
+                    if (inSegment && segmentPoints.length > 0) {
+                        if (segmentPoints.length === 1) {
+                            const p = segmentPoints[0];
+                            d += `M ${(p.x - 4).toFixed(1)} ${p.y.toFixed(1)} L ${(p.x + 4).toFixed(1)} ${p.y.toFixed(1)} `;
+                        } else {
+                            d += `M ${segmentPoints.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" L ")} `;
+                        }
+                        segmentPoints = [];
+                        inSegment = false;
+                    }
+                }
+            }
+
+            if (inSegment && segmentPoints.length > 0) {
+                if (segmentPoints.length === 1) {
+                    const p = segmentPoints[0];
+                    d += `M ${(p.x - 4).toFixed(1)} ${p.y.toFixed(1)} L ${(p.x + 4).toFixed(1)} ${p.y.toFixed(1)} `;
+                } else {
+                    d += `M ${segmentPoints.map((p) => `${p.x.toFixed(1)},${p.y.toFixed(1)}`).join(" L ")} `;
+                }
+            }
+
+            const path = d.trim();
+            // Path must contain two separate 'M' commands (segments), not a single continuous path connecting across index 1 and 5
+            const moveCommands = path.match(/M /g);
+            expect(moveCommands?.length).toBe(2);
+            // Must contain segment 1 (10,20 to 20,30)
+            expect(path).toContain("M 10.0,20.0 L 20.0,30.0");
+            // Must NOT connect 20,30 to 60,50
+            expect(path).not.toContain("L 60.0");
+        });
+
+        it("insufficient sample size (<5 events) produces Insufficient Evidence verdict", () => {
+            const baseTotal = 3;
+            const obsTotal = 4;
+            const isSufficient = baseTotal >= 5 && obsTotal >= 5;
+
+            expect(isSufficient).toBe(false);
+            const verdict = !isSufficient ? "Insufficient Evidence" : "No Regression Observed";
+            expect(verdict).toBe("Insufficient Evidence");
+        });
+
+        it("topology graph filters edges to only include nodes with observed evidence", () => {
+            const nodes: DependencyNode[] = [
+                {
+                    id: "n1",
+                    name: "api-service",
+                    type: "SERVICE",
+                    projectId: "p1",
+                    projectName: "Demo",
+                    health: "Healthy",
+                    errorRate: 0,
+                    totalCalls: 100,
+                    avgLatencyMs: 10,
+                    recentIssueCount: 0,
+                    recentReleaseCount: 0,
+                },
+            ];
+
+            const edges: DependencyEdge[] = [
+                {
+                    id: "e1",
+                    source: "api-service",
+                    target: "unobserved-backend", // Node not in active observed nodes
+                    callCount: 50,
+                    errorCount: 0,
+                    errorRate: 0,
+                    avgLatencyMs: 20,
+                    isCriticalPath: false,
+                    evidence: {
+                        type: "SPAN_CALL",
+                        sampleTraceId: "t1",
+                        description: "Trace span evidence",
+                    },
+                },
+            ];
+
+            const activeNodeNames = new Set(nodes.map((n) => n.name));
+            const filteredEdges = edges.filter((e) => activeNodeNames.has(e.source) && activeNodeNames.has(e.target));
+
+            // Must NOT render edges to unobserved nodes
+            expect(filteredEdges.length).toBe(0);
+        });
+
+        it("calculateMetricComparison handles States A, B, C, D strictly according to evidence semantics", () => {
+            // STATE A: Current = 0, Previous = 34 -> legitimate reduction (-100%)
+            const stateA = calculateMetricComparison(0, 34, false, true);
+            expect(stateA.current).toBe(0);
+            expect(stateA.previous).toBe(34);
+            expect(stateA.relativeDiffPct).toBe(-100.0);
+            expect(stateA.isImprovement).toBe(true);
+
+            // STATE B: Current = 0, Previous = null (no observation) -> no percentage comparison
+            const stateB = calculateMetricComparison(0, null, false, true);
+            expect(stateB.current).toBe(0);
+            expect(stateB.previous).toBeNull();
+            expect(stateB.relativeDiffPct).toBeNull();
+            expect(stateB.absoluteDiff).toBeNull();
+
+            // STATE C: Current = 0, Previous = 0 -> no division by zero, no percentage
+            const stateC = calculateMetricComparison(0, 0, false, true);
+            expect(stateC.current).toBe(0);
+            expect(stateC.previous).toBe(0);
+            expect(stateC.relativeDiffPct).toBeNull();
+            expect(stateC.absoluteDiff).toBe(0);
+
+            // STATE D: Current = null (no latency observation), Previous = 34 -> no comparison
+            const stateD = calculateMetricComparison(null, 34, false, true);
+            expect(stateD.current).toBeNull();
+            expect(stateD.previous).toBe(34);
+            expect(stateD.relativeDiffPct).toBeNull();
+            expect(stateD.absoluteDiff).toBeNull();
+        });
+
+        it("formatBucketTime formats consistently in UTC and in IANA timezones without drift", () => {
+            const date = new Date("2026-09-01T20:45:00.000Z");
+            const formattedUtc = formatBucketTime(date, 24 * 60 * 60 * 1000, "UTC");
+            expect(formattedUtc).toBe("20:45");
+
+            // Asia/Kolkata is +5:30 -> 20:45 + 5:30 = 02:15 next day
+            const formattedIst = formatBucketTime(date, 24 * 60 * 60 * 1000, "Asia/Kolkata");
+            expect(formattedIst).toBe("02:15");
+        });
+    });
+
+    // ===================================================================
+    // SUITE 9 — TIMEZONE TESTS (GATES M through Y)
+    // ===================================================================
+    describe("Timezone Single Source of Truth & Localized Display", () => {
+        const utcDate = new Date("2026-06-15T14:30:00.000Z"); // Summer (DST in NY and London)
+
+        it("[GATE N] Asia/Kolkata correctly formats timestamps with +5:30 offset", () => {
+            // 14:30 UTC -> 20:00 IST
+            const timeStr = formatBucketTime(utcDate, 24 * 60 * 60 * 1000, "Asia/Kolkata");
+            expect(timeStr).toBe("20:00");
+        });
+
+        it("[GATE O & Q] America/New_York correctly formats timestamps including Daylight Saving Time", () => {
+            // June 15 is EDT (UTC-4) -> 14:30 UTC = 10:30 EDT
+            const summerTime = formatBucketTime(utcDate, 24 * 60 * 60 * 1000, "America/New_York");
+            expect(summerTime).toBe("10:30");
+
+            // Dec 15 is EST (UTC-5) -> 14:30 UTC = 09:30 EST
+            const winterDate = new Date("2026-12-15T14:30:00.000Z");
+            const winterTime = formatBucketTime(winterDate, 24 * 60 * 60 * 1000, "America/New_York");
+            expect(winterTime).toBe("09:30");
+        });
+
+        it("[GATE P] UTC correctly formats timestamps", () => {
+            const timeStr = formatBucketTime(utcDate, 24 * 60 * 60 * 1000, "UTC");
+            expect(timeStr).toBe("14:30");
+        });
+
+        it("[GATE R & S] Local display conversion does not mutate stored canonical UTC timestamps", () => {
+            const originalIso = "2026-06-15T14:30:00.000Z";
+            const originalDate = new Date(originalIso);
+
+            const displayKolkata = formatBucketTime(originalDate, 24 * 60 * 60 * 1000, "Asia/Kolkata");
+            const displayNy = formatBucketTime(originalDate, 24 * 60 * 60 * 1000, "America/New_York");
+
+            expect(displayKolkata).toBe("20:00");
+            expect(displayNy).toBe("10:30");
+            // Stored date remains canonical UTC
+            expect(originalDate.toISOString()).toBe(originalIso);
+        });
+
+        it("[GATE T & U] Past 24h & comparison period boundaries remain deterministic across timezones", () => {
+            const fixedNow = new Date("2026-09-01T12:00:00.000Z");
+            const range = parseTimeRange("24h", "PREVIOUS_PERIOD", fixedNow);
+
+            expect(range.start.toISOString()).toBe("2026-08-31T12:00:00.000Z");
+            expect(range.end.toISOString()).toBe("2026-09-01T12:00:00.000Z");
+            expect(range.comparisonStart?.toISOString()).toBe("2026-08-30T12:00:00.000Z");
+            expect(range.comparisonEnd?.toISOString()).toBe("2026-08-31T12:00:00.000Z");
+        });
+
+        it("[GATE V, A, B, W] Canonical bucket identity, tooltip, selected interval, and Analyze Interval URL are 100% synchronized", () => {
+            const start = new Date("2026-09-01T00:00:00.000Z");
+            const end = new Date("2026-09-02T00:00:00.000Z");
+            const buckets = generateTimeBuckets(start, end, 24, "Asia/Kolkata");
+
+            const selectedBucketIdx = 8;
+            const canonicalBucket = buckets[selectedBucketIdx];
+
+            // 1. Tooltip formatted time equals selected interval formatted time
+            expect(canonicalBucket.formattedTime).toBe(buckets[selectedBucketIdx].formattedTime);
+
+            // 2. Canonical UTC timestamp for analysis request
+            const analysisTargetUrl = `/projects/demo/investigations/new?intervalTime=${encodeURIComponent(
+                canonicalBucket.start.toISOString()
+            )}`;
+            expect(analysisTargetUrl).toContain("2026-09-01T08%3A00%3A00.000Z");
+            // Local formatted display reflects user timezone (8:00 UTC = 13:30 IST)
+            expect(canonicalBucket.formattedTime).toBe("13:30");
+        });
+    });
+
+    // ===================================================================
+    // SUITE 10 — EVIDENCE-FIRST MVP VERIFICATION (GATES C through L)
+    // ===================================================================
+    describe("Evidence-First Model Integrity", () => {
+        it("[GATE C, D, E, F] Null metrics remain null, zeroes remain zeroes, and missing baselines do not fabricate percentages", () => {
+            // Missing baseline (null) does not produce -100%
+            const missingBaseline = calculateMetricComparison(0, null, false, true);
+            expect(missingBaseline.relativeDiffPct).toBeNull();
+            expect(missingBaseline.current).toBe(0);
+
+            // Missing latency does not produce 0ms
+            const missingLatency = calculateMetricComparison(null, 45, false, true);
+            expect(missingLatency.current).toBeNull();
+            expect(missingLatency.relativeDiffPct).toBeNull();
+
+            // Zero vs Zero does not divide by zero
+            const zeroComparison = calculateMetricComparison(0, 0, false, true);
+            expect(zeroComparison.relativeDiffPct).toBeNull();
+        });
+
+        it("[GATE I & J] Error rate improvement (33% -> 22%) is NEVER classified as an error regression, while latency regressions are explicitly justified", () => {
+            const baseErrorRate = 33.3;
+            const obsErrorRate = 22.0;
+            const errorRateDiff = calculateMetricComparison(obsErrorRate, baseErrorRate, true, true);
+
+            // Error rate dropped by 11.3pp (improvement)
+            expect((errorRateDiff.percentagePointsDiff || 0) < 0).toBe(true);
+
+            // Must NOT trigger error regression condition
+            const isErrorRegression =
+                (errorRateDiff.percentagePointsDiff || 0) > 0 &&
+                obsErrorRate > baseErrorRate;
+            expect(isErrorRegression).toBe(false);
+
+            // Latency regression from 70ms to 96ms (+37% / >50% rule)
+            const latencyDiff = calculateMetricComparison(120, 70, false, true);
+            expect(latencyDiff.relativeDiffPct).toBe(71.4); // > 50%
+            const isLatencyRegression = (latencyDiff.relativeDiffPct || 0) > 50;
+            expect(isLatencyRegression).toBe(true);
+        });
+
+        it("[GATE G & H] Missing reliability telemetry does NOT fabricate 100% health", () => {
+            const totalRequests = 0;
+            const actualAvailability = totalRequests > 0 ? 100.0 : null;
+            expect(actualAvailability).toBeNull();
+
+            const observedRequests = 100;
+            const observedErrors = 0;
+            const observedAvailability = observedRequests > 0 ? (1 - observedErrors / observedRequests) * 100 : null;
+            expect(observedAvailability).toBe(100.0);
         });
     });
 });

@@ -89,7 +89,9 @@ export function SystemExplorerClient({
                 <div className="halo-kpi-card">
                     <span className="halo-kpi-eyebrow">Total Requests</span>
                     <div className="halo-kpi-value">
-                        {summaryMetrics.totalRequests.current.toLocaleString()}
+                        {summaryMetrics.totalRequests.current !== null
+                            ? summaryMetrics.totalRequests.current.toLocaleString()
+                            : "—"}
                     </div>
                     <div className="halo-kpi-sub">
                         {summaryMetrics.totalRequests.relativeDiffPct !== null ? (
@@ -117,10 +119,12 @@ export function SystemExplorerClient({
                     <span className="halo-kpi-eyebrow">Total Errors</span>
                     <div
                         className={`halo-kpi-value ${
-                            summaryMetrics.totalErrors.current > 0 ? "text-error" : "text-white"
+                            (summaryMetrics.totalErrors.current ?? 0) > 0 ? "text-error" : "text-white"
                         }`}
                     >
-                        {summaryMetrics.totalErrors.current.toLocaleString()}
+                        {summaryMetrics.totalErrors.current !== null
+                            ? summaryMetrics.totalErrors.current.toLocaleString()
+                            : "—"}
                     </div>
                     <div className="halo-kpi-sub">
                         {summaryMetrics.totalErrors.relativeDiffPct !== null ? (
@@ -148,14 +152,16 @@ export function SystemExplorerClient({
                     <span className="halo-kpi-eyebrow">Error Rate</span>
                     <div
                         className={`halo-kpi-value ${
-                            summaryMetrics.errorRate.current >= 20
+                            (summaryMetrics.errorRate.current ?? 0) >= 20
                                 ? "text-error"
-                                : summaryMetrics.errorRate.current >= 5
+                                : (summaryMetrics.errorRate.current ?? 0) >= 5
                                 ? "text-warning"
                                 : "text-white"
                         }`}
                     >
-                        {summaryMetrics.errorRate.current}%
+                        {summaryMetrics.errorRate.current !== null
+                            ? `${summaryMetrics.errorRate.current}%`
+                            : "—"}
                     </div>
                     <div className="halo-kpi-sub">
                         {summaryMetrics.errorRate.percentagePointsDiff !== null ? (

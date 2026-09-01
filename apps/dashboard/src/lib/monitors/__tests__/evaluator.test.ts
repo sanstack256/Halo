@@ -1,8 +1,8 @@
 import assert from "node:assert";
-import { prisma } from "@/lib/prisma";
-import { evaluateMonitor, evaluateMonitorsForProject } from "@/lib/monitors/evaluator";
-import { parseMonitorQuery, buildQueryWhereConditions } from "@/lib/monitors/query-parser";
-import { createEvent } from "@/actions/event";
+import { prisma } from "../../prisma";
+import { evaluateMonitor, evaluateMonitorsForProject } from "../evaluator";
+import { parseMonitorQuery, buildQueryWhereConditions } from "../query-parser";
+import { createEvent } from "../../../actions/event";
 
 async function runTests() {
     console.log("==================================================");
