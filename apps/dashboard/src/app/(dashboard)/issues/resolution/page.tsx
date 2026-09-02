@@ -1,7 +1,7 @@
 import { getSession } from "@/lib/session";
 import { getOrganization } from "@/lib/organization";
-import { getTriageProjection } from "@/lib/issues/issue-intelligence";
-import { TriageView } from "@/components/issues/triage-view";
+import { getResolutionProjection } from "@/lib/issues/issue-intelligence";
+import { ResolutionView } from "@/components/issues/resolution-view";
 
 interface Props {
     searchParams: Promise<{
@@ -13,7 +13,7 @@ interface Props {
     }>;
 }
 
-export default async function IssuesTriagePage({ searchParams }: Props) {
+export default async function IssuesResolutionPage({ searchParams }: Props) {
     const session = await getSession();
     const params = await searchParams;
 
@@ -23,7 +23,7 @@ export default async function IssuesTriagePage({ searchParams }: Props) {
         if (organization) orgId = organization.id;
     }
 
-    const data = await getTriageProjection({
+    const data = await getResolutionProjection({
         organizationId: orgId,
         projectId: params.project,
         service: params.service,
@@ -32,5 +32,5 @@ export default async function IssuesTriagePage({ searchParams }: Props) {
         search: params.search,
     });
 
-    return <TriageView data={data} />;
+    return <ResolutionView data={data} />;
 }
