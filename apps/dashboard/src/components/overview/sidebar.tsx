@@ -131,9 +131,7 @@ const primaryNavigation: PrimarySection[] = [
             {
                 items: [
                     { label: "All Services", href: "/services", icon: Server },
-                    { label: "Healthy", href: "/services/healthy", icon: Activity },
-                    { label: "Degraded", href: "/services/degraded", icon: BellRing },
-                    { label: "Critical", href: "/services/critical", icon: ShieldAlert },
+                    { label: "Health", href: "/services/health", icon: Activity },
                     { label: "Dependencies", href: "/services/dependencies", icon: Network },
                 ],
             },

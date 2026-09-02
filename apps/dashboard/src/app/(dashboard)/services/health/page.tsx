@@ -1,13 +1,12 @@
 import { Suspense } from "react";
-import { getServicesInventory } from "@/actions/services";
-import { ServicesInventoryClient } from "@/components/services/services-inventory-client";
+import { getServiceHealthView } from "@/actions/services";
+import { ServiceHealthClient } from "@/components/services/service-health-client";
 
-export default async function ServicesPage(props: {
+export default async function ServiceHealthPage(props: {
     searchParams: Promise<{
         search?: string;
         health?: string;
         environment?: string;
-        owner?: string;
         timeRange?: string;
         timeRangeKey?: string;
     }>;
@@ -15,25 +14,22 @@ export default async function ServicesPage(props: {
     const searchParams = await props.searchParams;
     const timeRangeKey = searchParams.timeRange || searchParams.timeRangeKey || "24h";
 
-    const data = await getServicesInventory({
+    const data = await getServiceHealthView({
         search: searchParams.search,
         health: searchParams.health as any,
         environment: searchParams.environment,
-        owner: searchParams.owner,
         timeRangeKey,
     });
 
     const environments = Array.from(new Set(data.services.map((s) => s.environment))).filter(Boolean);
-    const owners = Array.from(new Set(data.services.map((s) => s.owner))).filter((o) => o !== "Unassigned");
 
     return (
-        <Suspense fallback={<div className="p-12 text-center text-xs font-mono text-zinc-500">Loading services inventory...</div>}>
-            <ServicesInventoryClient
+        <Suspense fallback={<div className="p-12 text-center text-xs font-mono text-zinc-500">Loading service health...</div>}>
+            <ServiceHealthClient
                 initialServices={data.services}
                 summary={data.summary}
                 timeRangeKey={data.timeRange.key}
                 environments={environments}
-                owners={owners}
             />
         </Suspense>
     );

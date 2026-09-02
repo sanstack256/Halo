@@ -113,7 +113,8 @@ export default async function InvestigationPage({
         intervalStart ||
         release ||
         releaseId ||
-        releaseVersion
+        releaseVersion ||
+        service
     );
 
     if (!hasTarget) {
@@ -172,17 +173,105 @@ export default async function InvestigationPage({
                 alert: monitorResult.alert,
                 investigationRecord: monitorResult.investigationRecord,
             };
-        } else {
+        } else if (issueId) {
             // Issue Occurrence Investigation Path
             const [issueResult, replay] = await Promise.all([
-                investigateIssueOccurrence(issueId!, id, eventId),
-                getReplaySessionForOccurrence(issueId!, eventId, id),
+                investigateIssueOccurrence(issueId, id, eventId),
+                getReplaySessionForOccurrence(issueId, eventId, id),
             ]);
             investigation = issueResult.investigation;
             incidentAnchorId = issueResult.incidentAnchorId;
             incidentAnchorTimestamp = issueResult.incidentAnchorTimestamp;
             historicalOccurrenceCount = issueResult.historicalOccurrenceCount;
             resolvedReplay = replay;
+        } else if (service) {
+            // Service Investigation Path (From Services / Health / Degradation CTA)
+            const { prisma } = await import("@/lib/prisma");
+
+            // 1. Check active firing alert for service
+            const activeAlert = await prisma.monitorAlert.findFirst({
+                where: {
+                    status: "OPEN",
+                    monitor: { projectId: id },
+                    OR: [
+                        { conditionSummary: { contains: service, mode: "insensitive" } },
+                        { monitor: { query: { contains: service, mode: "insensitive" } } },
+                        { monitor: { name: { contains: service, mode: "insensitive" } } },
+                    ],
+                },
+                include: { monitor: true },
+                orderBy: { triggeredAt: "desc" },
+            });
+
+            if (activeAlert) {
+                const monitorResult = await investigateMonitorOccurrence(activeAlert.monitorId, id, activeAlert.id);
+                investigation = monitorResult.investigation;
+                incidentAnchorId = monitorResult.incidentAnchorId;
+                incidentAnchorTimestamp = monitorResult.incidentAnchorTimestamp;
+                monitorContext = {
+                    monitor: monitorResult.monitor,
+                    alert: monitorResult.alert,
+                    investigationRecord: monitorResult.investigationRecord,
+                };
+            } else {
+                // 2. Check open issue for service
+                const activeIssue = await prisma.issue.findFirst({
+                    where: {
+                        projectId: id,
+                        status: "OPEN",
+                        title: { contains: service, mode: "insensitive" },
+                    },
+                    orderBy: { lastSeen: "desc" },
+                });
+
+                if (activeIssue) {
+                    const [issueResult, replay] = await Promise.all([
+                        investigateIssueOccurrence(activeIssue.id, id),
+                        getReplaySessionForOccurrence(activeIssue.id, undefined, id),
+                    ]);
+                    investigation = issueResult.investigation;
+                    incidentAnchorId = issueResult.incidentAnchorId;
+                    incidentAnchorTimestamp = issueResult.incidentAnchorTimestamp;
+                    historicalOccurrenceCount = issueResult.historicalOccurrenceCount;
+                    resolvedReplay = replay;
+                } else {
+                    // 3. Fallback: Run interval investigation around service's latest telemetry
+                    const latestEvent = await prisma.event.findFirst({
+                        where: { projectId: id, service },
+                        orderBy: { timestamp: "desc" },
+                    });
+
+                    if (!latestEvent) {
+                        return (
+                            <NoEventsInvestigationModal
+                                projectId={id}
+                                errorMessage={`No telemetry events found for service "${service}".`}
+                            />
+                        );
+                    }
+
+                    const end = latestEvent.timestamp;
+                    const start = new Date(end.getTime() - 2 * 3600 * 1000);
+                    const intervalResult = await investigateInterval({
+                        projectId: id,
+                        intervalStart: start,
+                        intervalEnd: end,
+                        environment,
+                        service,
+                    });
+                    investigation = intervalResult.investigation;
+                    incidentAnchorId = intervalResult.incidentAnchorId;
+                    incidentAnchorTimestamp = intervalResult.incidentAnchorTimestamp;
+                    intervalContext = intervalResult.intervalContext;
+                }
+            }
+        } else {
+            return (
+                <NoEventsInvestigationModal
+                    projectId={id}
+                    errorMessage="Please select an interval, release, active issue, or monitor trigger to start an investigation."
+                />
+            );
         }
 
         // Attempt async GitHub source resolution for the primary failing frame
