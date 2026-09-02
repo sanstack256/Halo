@@ -230,23 +230,23 @@ export function ServicesInventoryClient({
                 </div>
             </div>
 
-            {/* Summary Strip */}
-            <div className="grid grid-cols-2 sm:grid-cols-5 gap-3">
+            {/* Summary Strip (Structured Interactive Metric Strip) */}
+            <div className="halo-metric-strip grid-cols-2 sm:grid-cols-5">
                 <button
                     onClick={() => {
                         setSelectedHealth("ALL");
                         updateFilter("health", "ALL");
                     }}
-                    className={`p-3.5 rounded-xl border text-left transition-all ${
+                    className={`halo-metric-cell text-left transition-all ${
                         selectedHealth === "ALL"
-                            ? "bg-surface-elevated border-accent/40 shadow-sm"
-                            : "bg-surface border-border hover:border-border-strong"
+                            ? "bg-surface-elevated ring-1 ring-inset ring-accent/40"
+                            : "hover:bg-surface-elevated"
                     }`}
                 >
-                    <span className="text-[10px] text-zinc-500 uppercase tracking-wider block font-mono font-semibold">
+                    <span className="text-[10px] text-muted uppercase tracking-wider block font-mono font-semibold">
                         Total Services
                     </span>
-                    <span className="text-2xl font-bold text-white font-mono mt-1 block">{summary.total}</span>
+                    <span className="text-2xl font-bold text-white font-sans mt-1 block">{summary.total}</span>
                 </button>
 
                 <button
@@ -254,19 +254,19 @@ export function ServicesInventoryClient({
                         setSelectedHealth("Healthy");
                         updateFilter("health", "Healthy");
                     }}
-                    className={`p-3.5 rounded-xl border text-left transition-all ${
+                    className={`halo-metric-cell text-left transition-all ${
                         selectedHealth === "Healthy"
-                            ? "bg-emerald-500/10 border-emerald-500/40 shadow-sm"
-                            : "bg-surface border-border hover:border-border-strong"
+                            ? "bg-surface-elevated ring-1 ring-inset ring-emerald-500/40"
+                            : "hover:bg-surface-elevated"
                     }`}
                 >
                     <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-emerald-400/80 uppercase tracking-wider font-mono font-semibold">
+                        <span className="text-[10px] text-emerald-400/90 uppercase tracking-wider font-mono font-semibold">
                             Healthy
                         </span>
                         <span className="w-2 h-2 rounded-full bg-emerald-400" />
                     </div>
-                    <span className="text-2xl font-bold text-emerald-400 font-mono mt-1 block">{summary.healthy}</span>
+                    <span className="text-2xl font-bold text-emerald-400 font-sans mt-1 block">{summary.healthy}</span>
                 </button>
 
                 <button
@@ -274,19 +274,19 @@ export function ServicesInventoryClient({
                         setSelectedHealth("Degraded");
                         updateFilter("health", "Degraded");
                     }}
-                    className={`p-3.5 rounded-xl border text-left transition-all ${
+                    className={`halo-metric-cell text-left transition-all ${
                         selectedHealth === "Degraded"
-                            ? "bg-amber-500/10 border-amber-500/40 shadow-sm"
-                            : "bg-surface border-border hover:border-border-strong"
+                            ? "bg-surface-elevated ring-1 ring-inset ring-amber-500/40"
+                            : "hover:bg-surface-elevated"
                     }`}
                 >
                     <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-amber-400/80 uppercase tracking-wider font-mono font-semibold">
+                        <span className="text-[10px] text-amber-400/90 uppercase tracking-wider font-mono font-semibold">
                             Degraded
                         </span>
                         <span className="w-2 h-2 rounded-full bg-amber-400" />
                     </div>
-                    <span className="text-2xl font-bold text-amber-400 font-mono mt-1 block">{summary.degraded}</span>
+                    <span className="text-2xl font-bold text-amber-400 font-sans mt-1 block">{summary.degraded}</span>
                 </button>
 
                 <button
@@ -294,19 +294,19 @@ export function ServicesInventoryClient({
                         setSelectedHealth("Critical");
                         updateFilter("health", "Critical");
                     }}
-                    className={`p-3.5 rounded-xl border text-left transition-all ${
+                    className={`halo-metric-cell text-left transition-all ${
                         selectedHealth === "Critical"
-                            ? "bg-red-500/10 border-red-500/40 shadow-sm"
-                            : "bg-surface border-border hover:border-border-strong"
+                            ? "bg-surface-elevated ring-1 ring-inset ring-red-500/40"
+                            : "hover:bg-surface-elevated"
                     }`}
                 >
                     <div className="flex items-center justify-between">
-                        <span className="text-[10px] text-red-400/80 uppercase tracking-wider font-mono font-semibold">
+                        <span className="text-[10px] text-red-400/90 uppercase tracking-wider font-mono font-semibold">
                             Critical
                         </span>
-                        <span className="w-2 h-2 rounded-full bg-red-400 animate-pulse" />
+                        <span className="w-2 h-2 rounded-full bg-red-400" />
                     </div>
-                    <span className="text-2xl font-bold text-red-400 font-mono mt-1 block">{summary.critical}</span>
+                    <span className="text-2xl font-bold text-red-400 font-sans mt-1 block">{summary.critical}</span>
                 </button>
 
                 <button
@@ -314,19 +314,19 @@ export function ServicesInventoryClient({
                         setSelectedHealth("Unknown");
                         updateFilter("health", "Unknown");
                     }}
-                    className={`p-3.5 rounded-xl border text-left transition-all ${
+                    className={`halo-metric-cell text-left transition-all ${
                         selectedHealth === "Unknown"
-                            ? "bg-zinc-800/80 border-zinc-600 shadow-sm"
-                            : "bg-surface border-border hover:border-border-strong"
+                            ? "bg-surface-elevated ring-1 ring-inset ring-zinc-500/40"
+                            : "hover:bg-surface-elevated"
                     }`}
                 >
                     <div className="flex items-center justify-between">
                         <span className="text-[10px] text-zinc-400 uppercase tracking-wider font-mono font-semibold">
                             Unknown
                         </span>
-                        <HelpCircle className="w-3.5 h-3.5 text-zinc-500" />
+                        <HelpCircle size={12} className="text-zinc-500" />
                     </div>
-                    <span className="text-2xl font-bold text-zinc-400 font-mono mt-1 block">{summary.unknown}</span>
+                    <span className="text-2xl font-bold text-zinc-300 font-sans mt-1 block">{summary.unknown}</span>
                 </button>
             </div>
 

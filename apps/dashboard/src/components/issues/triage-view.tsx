@@ -112,42 +112,53 @@ export function TriageView({ data }: TriageViewProps) {
             >
                 <div className="p-4 flex flex-col lg:flex-row lg:items-center justify-between gap-3">
                     <div className="space-y-1.5 flex-1 min-w-0">
-                        {/* Title and Badges */}
-                        <div className="flex items-center gap-2 flex-wrap">
-                            <span className="font-mono text-xs text-white font-bold truncate max-w-xl">
+                        {/* Title and Primary Status */}
+                        <div className="flex items-center gap-2.5 flex-wrap">
+                            <span className="font-sans text-sm text-[#f2f5f8] font-medium truncate max-w-xl">
                                 {c.title}
                             </span>
                             {getReadinessBadge(c.readiness.status)}
-                            {getSurgeBadge(c.surge)}
+                            {c.surge.status === "SURGE_OBSERVED" && (
+                                <span className="inline-flex items-center gap-1 text-[10px] font-mono px-2 py-0.5 rounded-md bg-red-500/10 text-red-400 border border-red-500/20 font-semibold">
+                                    <TrendingUp size={11} />
+                                    +{c.surge.changePct}%
+                                </span>
+                            )}
                             {c.severity === "FATAL" && (
-                                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-red-500/15 text-red-400 border border-red-500/30 uppercase font-bold">
+                                <span className="text-[9px] font-mono px-1.5 py-0.5 rounded-md bg-red-500/15 text-red-400 border border-red-500/30 uppercase font-semibold">
                                     FATAL
                                 </span>
                             )}
                         </div>
 
                         {/* Metadata row */}
-                        <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-400 flex-wrap">
-                            <span className="text-accent font-semibold">{c.service}</span>
+                        <div className="flex items-center gap-2 text-xs font-sans text-secondary flex-wrap">
+                            <span className="text-accent font-medium font-mono text-[11px]">{c.service}</span>
                             <span>•</span>
                             <span>{c.projectName}</span>
                             <span>•</span>
                             <span>{c.environment}</span>
                             <span>•</span>
                             <span>
-                                {c.recentEventCount} event{c.recentEventCount === 1 ? "" : "s"} in window
+                                {c.recentEventCount} event{c.recentEventCount === 1 ? "" : "s"}
                             </span>
+                            {c.surge.status === "NO_COMPARABLE_BASELINE" && (
+                                <>
+                                    <span>•</span>
+                                    <span className="text-muted">No baseline</span>
+                                </>
+                            )}
                             <span>•</span>
-                            <span className="text-zinc-500 flex items-center gap-1">
+                            <span className="text-muted flex items-center gap-1 font-mono text-[11px]">
                                 <Clock size={11} />
                                 {c.hoursSinceLastSeen === 0 ? "Just now" : `${c.hoursSinceLastSeen}h ago`}
                             </span>
                         </div>
 
                         {/* Triage Reason */}
-                        <div className="text-[11px] font-mono text-zinc-400 flex items-center gap-1.5 pt-0.5">
-                            <span className="text-[10px] text-zinc-500 uppercase font-semibold">TRIAGE REASON:</span>
-                            <span className="text-zinc-300">{c.whyThisIsHere}</span>
+                        <div className="text-xs font-sans text-secondary flex items-baseline gap-1.5 pt-0.5">
+                            <span className="text-[11px] text-muted font-medium shrink-0">Triage reason:</span>
+                            <span className="text-primary">{c.whyThisIsHere}</span>
                         </div>
                     </div>
 
@@ -262,27 +273,27 @@ export function TriageView({ data }: TriageViewProps) {
                 </p>
             </div>
 
-            {/* Queue Summary Strip (Metric Strip, No Card Soup) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-                <div className="p-3.5 rounded-xl bg-surface border border-red-500/20 space-y-1">
-                    <span className="text-[10px] text-red-400 uppercase font-semibold block">Investigate Now</span>
-                    <span className="text-2xl font-bold text-red-400 block">{summary.investigateNow}</span>
-                    <span className="text-[11px] text-zinc-500">Active recent escalation</span>
+            {/* Queue Summary Strip (Structured Analytical Surface) */}
+            <div className="halo-metric-strip grid-cols-2 sm:grid-cols-4">
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-red-400 uppercase font-semibold block font-mono">Investigate Now</span>
+                    <span className="text-2xl font-bold text-red-400 block font-sans">{summary.investigateNow}</span>
+                    <span className="text-[11px] text-muted font-sans">Active recent escalation</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-amber-500/20 space-y-1">
-                    <span className="text-[10px] text-amber-400 uppercase font-semibold block">Worth Investigating</span>
-                    <span className="text-2xl font-bold text-amber-400 block">{summary.worthInvestigating}</span>
-                    <span className="text-[11px] text-zinc-500">Steady recent activity</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-amber-400 uppercase font-semibold block font-mono">Worth Investigating</span>
+                    <span className="text-2xl font-bold text-amber-400 block font-sans">{summary.worthInvestigating}</span>
+                    <span className="text-[11px] text-muted font-sans">Steady recent activity</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-400 uppercase font-semibold block">Needs Evidence</span>
-                    <span className="text-2xl font-bold text-zinc-300 block">{summary.needsEvidence}</span>
-                    <span className="text-[11px] text-zinc-500">Telemetry blockers present</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-secondary uppercase font-semibold block font-mono">Needs Evidence</span>
+                    <span className="text-2xl font-bold text-primary block font-sans">{summary.needsEvidence}</span>
+                    <span className="text-[11px] text-muted font-sans">Telemetry blockers present</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Stable / Monitor</span>
-                    <span className="text-2xl font-bold text-zinc-400 block">{summary.stableMonitor}</span>
-                    <span className="text-[11px] text-zinc-500">Low frequency or stale</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-muted uppercase font-semibold block font-mono">Stable / Monitor</span>
+                    <span className="text-2xl font-bold text-secondary block font-sans">{summary.stableMonitor}</span>
+                    <span className="text-[11px] text-muted font-sans">Low frequency or stale</span>
                 </div>
             </div>
 

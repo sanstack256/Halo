@@ -265,11 +265,11 @@ export function EvidenceGraphView({ graph, title = "Interactive Evidence Graph",
                                     setSelectedNodeId(isSelected ? null : node.id);
                                     setSelectedEdgeId(null);
                                 }}
-                                className={`p-3.5 rounded-xl border cursor-pointer transition-all space-y-2 select-none relative ${
+                                className={`p-3.5 rounded-xl border cursor-pointer transition-colors space-y-2 select-none relative ${
                                     isSelected
-                                        ? "bg-accent/20 border-accent text-white ring-2 ring-accent shadow-lg scale-[1.02]"
+                                        ? "bg-accent/15 border-accent text-white ring-1 ring-accent"
                                         : isAnchor
-                                        ? `${colors.bg} ${colors.border} ring-1 ${colors.ring} hover:border-accent/60 shadow`
+                                        ? `${colors.bg} ${colors.border} ring-1 ${colors.ring} hover:border-accent/60`
                                         : `${colors.bg} ${colors.border} hover:border-white/30`
                                 }`}
                             >

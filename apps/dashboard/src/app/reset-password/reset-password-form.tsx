@@ -126,12 +126,8 @@ export default function ResetPasswordForm() {
                             py-3
                             font-medium
                             text-primary-foreground
-                            shadow-[0_0_18px_var(--primary-glow)]
-                            transition-all
-                            duration-200
-                            hover:-translate-y-px
+                            transition-colors
                             hover:bg-primary-hover
-                            active:translate-y-0
                             disabled:cursor-not-allowed
                             disabled:opacity-50
                         "

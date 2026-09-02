@@ -132,10 +132,10 @@ export function EventDetailView({ projectId, event }: Props) {
                         {event.issueId && (
                             <Link
                                 href={`/projects/${projectId}/investigations/new?issueId=${event.issueId}&eventId=${event.id}`}
-                                className="halo-btn halo-btn-sm halo-btn-primary inline-flex items-center gap-1.5 shadow-lg shadow-accent/20"
+                                className="halo-btn halo-btn-sm halo-btn-primary inline-flex items-center gap-1.5"
                             >
                                 <Sparkles size={14} />
-                                <span>Investigate Event</span>
+                                <span>Investigate</span>
                             </Link>
                         )}
                         {(event.issue?.id || event.issueId) && (

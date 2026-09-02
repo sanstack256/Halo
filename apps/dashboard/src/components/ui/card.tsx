@@ -18,7 +18,6 @@ const cardVariants = cva(
 
         elevated: [
           "bg-[#0b1018]",
-          "shadow-[0_12px_32px_rgba(0,0,0,0.3)]",
         ],
 
         interactive: [

@@ -48,22 +48,22 @@ export function EvolutionView({ data }: EvolutionViewProps) {
                 </span>
             </div>
 
-            {/* Summary Bar per Section 12 */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
-                <div className="p-3.5 rounded-xl bg-surface border border-amber-500/20 space-y-1">
-                    <span className="text-[10px] text-amber-400 uppercase font-semibold block">Behavioral Transitions</span>
-                    <span className="text-2xl font-bold text-amber-400 block">{summary.behaviorShiftsDetected}</span>
-                    <span className="text-[11px] text-zinc-400">Empirical property shifts</span>
+            {/* Summary Bar (Structured Analytical Surface) */}
+            <div className="halo-metric-strip grid-cols-1 sm:grid-cols-3">
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-amber-400 uppercase font-semibold block font-mono">Behavioral Transitions</span>
+                    <span className="text-2xl font-bold text-amber-400 block font-sans">{summary.behaviorShiftsDetected}</span>
+                    <span className="text-[11px] text-muted font-sans">Empirical property shifts</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-400 uppercase font-semibold block">Stable Observed States</span>
-                    <span className="text-2xl font-bold text-white block">{summary.stableObservedStates}</span>
-                    <span className="text-[11px] text-zinc-400">No verified behavioral transitions</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-secondary uppercase font-semibold block font-mono">Stable Observed States</span>
+                    <span className="text-2xl font-bold text-white block font-sans">{summary.stableObservedStates}</span>
+                    <span className="text-[11px] text-muted font-sans">No verified behavioral transitions</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase font-semibold block">Continuity Gaps</span>
-                    <span className="text-2xl font-bold text-zinc-300 block">{summary.telemetryGapsDetected}</span>
-                    <span className="text-[11px] text-zinc-400">Interrupted telemetry intervals</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-muted uppercase font-semibold block font-mono">Continuity Gaps</span>
+                    <span className="text-2xl font-bold text-secondary block font-sans">{summary.telemetryGapsDetected}</span>
+                    <span className="text-[11px] text-muted font-sans">Interrupted telemetry intervals</span>
                 </div>
             </div>
 
@@ -119,15 +119,15 @@ export function EvolutionView({ data }: EvolutionViewProps) {
                                         <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2 border-b border-border/80 pb-2.5">
                                             <div className="space-y-0.5">
                                                 <div className="flex items-center gap-2 flex-wrap">
-                                                    <h3 className="text-sm font-bold text-white">{evo.title}</h3>
-                                                    <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">
+                                                    <h3 className="text-sm font-semibold text-white font-sans">{evo.title}</h3>
+                                                    <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-500/10 text-amber-400 border border-amber-500/20 font-semibold">
                                                         {evo.dnaStatesRecorded} Behavioral States Observed
                                                     </span>
                                                 </div>
-                                                <div className="text-[11px] text-zinc-400 flex items-center gap-2 flex-wrap">
-                                                    <span>Service: <strong className="text-zinc-200">{evo.service}</strong></span>
+                                                <div className="text-xs font-sans text-secondary flex items-center gap-2 flex-wrap">
+                                                    <span>Service: <strong className="text-zinc-200 font-mono text-[11px]">{evo.service}</strong></span>
                                                     <span>•</span>
-                                                    <span className="text-zinc-400">{evo.transitionSummary}</span>
+                                                    <span className="text-secondary">{evo.transitionSummary}</span>
                                                 </div>
                                             </div>
                                         </div>

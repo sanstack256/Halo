@@ -176,38 +176,38 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
 
                     <Link
                         href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}${activeEvent ? `&eventId=${activeEvent.id}` : ""}`}
-                        className="halo-btn halo-btn-sm halo-btn-primary flex items-center gap-1.5 shadow-lg shadow-accent/20"
+                        className="halo-btn halo-btn-sm halo-btn-primary flex items-center gap-1.5"
                     >
                         <Sparkles size={14} />
-                        <span>Investigate Occurrence</span>
+                        <span>Investigate</span>
                     </Link>
                 </div>
             </div>
 
-            {/* Quick Aggregate Stats Grid */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Total Occurrences</span>
-                    <span className="text-base font-bold text-white block">{issue.eventCount}</span>
+            {/* Quick Aggregate Stats Grid (Structured Analytical Surface) */}
+            <div className="halo-metric-strip grid-cols-2 sm:grid-cols-4">
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-muted uppercase font-semibold block font-mono">Total Occurrences</span>
+                    <span className="text-xl font-bold text-white block font-sans">{issue.eventCount}</span>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Affected Services</span>
-                    <span className="text-accent font-bold truncate block">
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-muted uppercase font-semibold block font-mono">Affected Services</span>
+                    <span className="text-sm font-semibold text-accent truncate block font-sans">
                         {affectedServices.join(", ") || "web-client"}
                     </span>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Environments</span>
-                    <span className="text-zinc-300 truncate block">
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-muted uppercase font-semibold block font-mono">Environments</span>
+                    <span className="text-sm font-medium text-secondary truncate block font-sans">
                         {affectedEnvs.join(", ") || "production"}
                     </span>
                 </div>
 
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block font-sans">Releases Affected</span>
-                    <span className="text-indigo-400 truncate block">
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-muted uppercase font-semibold block font-mono">Releases Affected</span>
+                    <span className="text-sm font-medium text-indigo-400 truncate block font-sans">
                         {affectedReleases.length > 0 ? affectedReleases.join(", ") : "Unspecified"}
                     </span>
                 </div>
@@ -366,10 +366,10 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                         </p>
                         <Link
                             href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}${activeEvent ? `&eventId=${activeEvent.id}` : ""}`}
-                            className="halo-btn halo-btn-primary w-full justify-center shadow-lg shadow-accent/20"
+                            className="halo-btn halo-btn-primary w-full justify-center"
                         >
                             <Sparkles size={14} />
-                            <span>Investigate Issue</span>
+                            <span>Investigate</span>
                         </Link>
                     </div>
 

@@ -144,7 +144,7 @@ export function MonitorEvaluationChart({ data }: MonitorEvaluationChartProps) {
                         const isResolved = p.status === "RESOLVED";
 
                         const colorClass = isFiring
-                            ? "bg-red-400 border-red-500 shadow-[0_0_10px_rgba(248,113,113,0.6)]"
+                            ? "bg-red-400 border-red-500"
                             : isAck
                             ? "bg-amber-400 border-amber-500"
                             : "bg-emerald-400 border-emerald-500";

@@ -93,37 +93,37 @@ export function ResolutionView({ data }: ResolutionViewProps) {
                 </span>
             </div>
 
-            {/* Summary Strip (Calibrated KPI Strip) */}
-            <div className="grid grid-cols-2 sm:grid-cols-6 gap-2.5 text-xs font-mono">
-                <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block">Evaluated</span>
-                    <span className="text-2xl font-bold text-white block">{summary.totalEvaluated}</span>
-                    <span className="text-[10px] text-zinc-500">Window: {timeRange.key}</span>
+            {/* Summary Strip (Structured Analytical Surface) */}
+            <div className="halo-metric-strip grid-cols-2 sm:grid-cols-6">
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-muted uppercase font-semibold block font-mono">Evaluated</span>
+                    <span className="text-2xl font-bold text-white block font-sans">{summary.totalEvaluated}</span>
+                    <span className="text-[10px] text-muted font-sans">Window: {timeRange.key}</span>
                 </div>
-                <div className="p-3 rounded-xl bg-surface border border-emerald-500/20 space-y-1">
-                    <span className="text-[10px] text-emerald-400 uppercase font-semibold block">Recovered</span>
-                    <span className="text-2xl font-bold text-emerald-400 block">{summary.recovered}</span>
-                    <span className="text-[10px] text-zinc-400">Verified exposure</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-emerald-400 uppercase font-semibold block font-mono">Recovered</span>
+                    <span className="text-2xl font-bold text-emerald-400 block font-sans">{summary.recovered}</span>
+                    <span className="text-[10px] text-muted font-sans">Verified exposure</span>
                 </div>
-                <div className="p-3 rounded-xl bg-surface border border-purple-500/20 space-y-1">
-                    <span className="text-[10px] text-purple-400 uppercase font-semibold block">Unisolated</span>
-                    <span className="text-2xl font-bold text-purple-400 block">{summary.changeNotIsolated}</span>
-                    <span className="text-[10px] text-zinc-400">Multi-deployments</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-purple-400 uppercase font-semibold block font-mono">Unisolated</span>
+                    <span className="text-2xl font-bold text-white block font-sans">{summary.changeNotIsolated}</span>
+                    <span className="text-[10px] text-muted font-sans">Multi-deployments</span>
                 </div>
-                <div className="p-3 rounded-xl bg-surface border border-amber-500/20 space-y-1">
-                    <span className="text-[10px] text-amber-400 uppercase font-semibold block">Partial</span>
-                    <span className="text-2xl font-bold text-amber-400 block">{summary.partiallyRecovered}</span>
-                    <span className="text-[10px] text-zinc-400">Residual failures</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-amber-400 uppercase font-semibold block font-mono">Partial</span>
+                    <span className="text-2xl font-bold text-amber-400 block font-sans">{summary.partiallyRecovered}</span>
+                    <span className="text-[10px] text-muted font-sans">Residual failures</span>
                 </div>
-                <div className="p-3 rounded-xl bg-surface border border-red-500/20 space-y-1">
-                    <span className="text-[10px] text-red-400 uppercase font-semibold block">Still Observed</span>
-                    <span className="text-2xl font-bold text-red-400 block">{summary.stillObserved}</span>
-                    <span className="text-[10px] text-zinc-400">Active errors</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-red-400 uppercase font-semibold block font-mono">Still Observed</span>
+                    <span className="text-2xl font-bold text-red-400 block font-sans">{summary.stillObserved}</span>
+                    <span className="text-[10px] text-muted font-sans">Active errors</span>
                 </div>
-                <div className="p-3 rounded-xl bg-surface border border-zinc-700/60 space-y-1">
-                    <span className="text-[10px] text-zinc-400 uppercase font-semibold block">Insufficient</span>
-                    <span className="text-2xl font-bold text-zinc-300 block">{summary.insufficientEvidence}</span>
-                    <span className="text-[10px] text-zinc-500">Unverified traffic</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-secondary uppercase font-semibold block font-mono">Insufficient</span>
+                    <span className="text-2xl font-bold text-secondary block font-sans">{summary.insufficientEvidence}</span>
+                    <span className="text-[10px] text-muted font-sans">Unverified traffic</span>
                 </div>
             </div>
 
@@ -148,13 +148,13 @@ export function ResolutionView({ data }: ResolutionViewProps) {
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                     <div className="space-y-1 min-w-0">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <h2 className="text-sm font-bold text-white font-mono truncate">{c.title}</h2>
+                                            <h2 className="text-sm font-semibold text-white font-sans truncate">{c.title}</h2>
                                             {getStatusBadge(c.assessment.status)}
                                         </div>
-                                        <div className="text-xs font-mono text-zinc-400 flex items-center gap-2 flex-wrap">
-                                            <span>Service: <strong className="text-zinc-200">{c.service}</strong></span>
+                                        <div className="text-xs font-sans text-secondary flex items-center gap-2 flex-wrap">
+                                            <span>Service: <strong className="text-zinc-200 font-mono text-[11px]">{c.service}</strong></span>
                                             <span>•</span>
-                                            <span className="flex items-center gap-1 text-purple-400">
+                                            <span className="flex items-center gap-1 text-purple-400 font-mono text-[11px]">
                                                 <GitCommit size={11} />
                                                 <span>{c.changeReference.identifier}</span>
                                             </span>

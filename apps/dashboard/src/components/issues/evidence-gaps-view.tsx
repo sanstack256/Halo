@@ -38,29 +38,29 @@ export function EvidenceGapsView({ data }: EvidenceGapsViewProps) {
                 </span>
             </div>
 
-            {/* Disambiguated Counts Summary Bar per Section 13 */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block">Active Blocker Gaps</span>
-                    <span className="text-2xl font-bold text-white block">{summary.totalGaps}</span>
-                    <span className="text-[11px] text-zinc-400">Window: {timeRange.key}</span>
+            {/* Disambiguated Counts Summary Bar (Structured Analytical Surface) */}
+            <div className="halo-metric-strip grid-cols-2 sm:grid-cols-4">
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-muted uppercase font-semibold block font-mono">Active Blocker Gaps</span>
+                    <span className="text-2xl font-bold text-white block font-sans">{summary.totalGaps}</span>
+                    <span className="text-[11px] text-muted font-sans">Window: {timeRange.key}</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-400 uppercase font-semibold block">BLOCKED ISSUES</span>
-                    <span className="text-2xl font-bold text-white block">{summary.totalBlockedIssues}</span>
-                    <span className="text-[11px] text-zinc-500 truncate block">Distinct issues with missing telemetry</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-secondary uppercase font-semibold block font-mono">Blocked Issues</span>
+                    <span className="text-2xl font-bold text-white block font-sans">{summary.totalBlockedIssues}</span>
+                    <span className="text-[11px] text-muted truncate block font-sans">Distinct issues with missing telemetry</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-amber-500/20 space-y-1">
-                    <span className="text-[10px] text-amber-400 uppercase font-semibold block">BLOCKED CAPABILITIES</span>
-                    <span className="text-2xl font-bold text-amber-400 block">{summary.totalBlockedInvestigationCapabilities}</span>
-                    <span className="text-[11px] text-zinc-500 truncate block">Investigation capabilities interrupted</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-amber-400 uppercase font-semibold block font-mono">Blocked Capabilities</span>
+                    <span className="text-2xl font-bold text-amber-400 block font-sans">{summary.totalBlockedInvestigationCapabilities}</span>
+                    <span className="text-[11px] text-muted truncate block font-sans">Investigation capabilities interrupted</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-accent/20 space-y-1">
-                    <span className="text-[10px] text-accent uppercase font-semibold block">Top Priority Target</span>
-                    <span className="text-sm font-bold text-white block truncate" title={summary.highestLeverageGapTitle || "None"}>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-accent uppercase font-semibold block font-mono">Top Priority Target</span>
+                    <span className="text-sm font-bold text-white block truncate font-sans" title={summary.highestLeverageGapTitle || "None"}>
                         {summary.highestLeverageGapTitle || "None"}
                     </span>
-                    <span className="text-[11px] text-zinc-400 truncate block">
+                    <span className="text-[11px] text-muted truncate block font-sans">
                         Highest cross-issue yield
                     </span>
                 </div>
@@ -99,15 +99,15 @@ export function EvidenceGapsView({ data }: EvidenceGapsViewProps) {
                                         </span>
                                     </div>
 
-                                    <h3 className="text-sm font-bold text-white font-mono">{gap.title}</h3>
-                                    <p className="text-xs font-mono text-zinc-400">{gap.description}</p>
+                                    <h3 className="text-sm font-semibold text-white font-sans">{gap.title}</h3>
+                                    <p className="text-xs font-sans text-secondary leading-relaxed">{gap.description}</p>
                                 </div>
 
-                                <div className="space-y-2 pt-2 border-t border-border/60 text-xs font-mono">
+                                <div className="space-y-2 pt-2 border-t border-border/60 text-xs">
                                     {/* Meaningful explanation without gamified points */}
                                     <div className="p-2.5 rounded-lg bg-[#06080d] border border-border">
-                                        <span className="text-[10px] text-accent uppercase font-bold block">
-                                            WHY THIS RANKS HIGH
+                                        <span className="text-[11px] text-accent font-medium font-sans block">
+                                            Why This Ranks High
                                         </span>
                                         <span className="text-zinc-300 block text-[11px] mt-0.5">
                                             {gap.whyThisRanksHigh}

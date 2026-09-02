@@ -119,17 +119,17 @@ export function ServiceHealthClient({
                 </div>
             </div>
 
-            {/* Health Distribution Breakdown */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
+            {/* Health Distribution Breakdown (Structured Interactive Metric Strip) */}
+            <div className="halo-metric-strip grid-cols-2 sm:grid-cols-4">
                 <button
                     onClick={() => {
                         setSelectedHealth(selectedHealth === "Healthy" ? "ALL" : "Healthy");
                         updateFilter("health", selectedHealth === "Healthy" ? "ALL" : "Healthy");
                     }}
-                    className={`p-4 rounded-xl text-left border transition-all ${
+                    className={`halo-metric-cell text-left transition-all ${
                         selectedHealth === "Healthy"
-                            ? "bg-emerald-500/15 border-emerald-500/40 shadow-sm"
-                            : "bg-surface border-emerald-500/20 hover:border-emerald-500/40"
+                            ? "bg-surface-elevated ring-1 ring-inset ring-emerald-500/40"
+                            : "hover:bg-surface-elevated"
                     } space-y-2`}
                 >
                     <div className="flex items-center justify-between">
@@ -139,12 +139,12 @@ export function ServiceHealthClient({
                         <CheckCircle2 size={16} className="text-emerald-400" />
                     </div>
                     <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-bold text-white font-mono">{summary.healthy}</span>
+                        <span className="text-3xl font-bold text-white font-sans">{summary.healthy}</span>
                         <span className="text-xs text-secondary font-mono">
                             ({summary.total > 0 ? Math.round((summary.healthy / summary.total) * 100) : 0}%)
                         </span>
                     </div>
-                    <p className="text-[11px] text-zinc-400 leading-tight">
+                    <p className="text-[11px] text-muted leading-tight font-sans">
                         Operating normally within baseline error and latency thresholds.
                     </p>
                 </button>
@@ -154,10 +154,10 @@ export function ServiceHealthClient({
                         setSelectedHealth(selectedHealth === "Degraded" ? "ALL" : "Degraded");
                         updateFilter("health", selectedHealth === "Degraded" ? "ALL" : "Degraded");
                     }}
-                    className={`p-4 rounded-xl text-left border transition-all ${
+                    className={`halo-metric-cell text-left transition-all ${
                         selectedHealth === "Degraded"
-                            ? "bg-amber-500/15 border-amber-500/40 shadow-sm"
-                            : "bg-surface border-amber-500/20 hover:border-amber-500/40"
+                            ? "bg-surface-elevated ring-1 ring-inset ring-amber-500/40"
+                            : "hover:bg-surface-elevated"
                     } space-y-2`}
                 >
                     <div className="flex items-center justify-between">
@@ -167,12 +167,12 @@ export function ServiceHealthClient({
                         <AlertTriangle size={16} className="text-amber-400" />
                     </div>
                     <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-bold text-amber-400 font-mono">{summary.degraded}</span>
+                        <span className="text-3xl font-bold text-amber-400 font-sans">{summary.degraded}</span>
                         <span className="text-xs text-secondary font-mono">
                             ({summary.total > 0 ? Math.round((summary.degraded / summary.total) * 100) : 0}%)
                         </span>
                     </div>
-                    <p className="text-[11px] text-zinc-400 leading-tight">
+                    <p className="text-[11px] text-muted leading-tight font-sans">
                         Elevated failure rates or significant latency regression vs baseline.
                     </p>
                 </button>
@@ -182,10 +182,10 @@ export function ServiceHealthClient({
                         setSelectedHealth(selectedHealth === "Critical" ? "ALL" : "Critical");
                         updateFilter("health", selectedHealth === "Critical" ? "ALL" : "Critical");
                     }}
-                    className={`p-4 rounded-xl text-left border transition-all ${
+                    className={`halo-metric-cell text-left transition-all ${
                         selectedHealth === "Critical"
-                            ? "bg-red-500/15 border-red-500/40 shadow-sm"
-                            : "bg-surface border-red-500/20 hover:border-red-500/40"
+                            ? "bg-surface-elevated ring-1 ring-inset ring-red-500/40"
+                            : "hover:bg-surface-elevated"
                     } space-y-2`}
                 >
                     <div className="flex items-center justify-between">
@@ -195,12 +195,12 @@ export function ServiceHealthClient({
                         <ShieldAlert size={16} className="text-red-400" />
                     </div>
                     <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-bold text-red-400 font-mono">{summary.critical}</span>
+                        <span className="text-3xl font-bold text-red-400 font-sans">{summary.critical}</span>
                         <span className="text-xs text-secondary font-mono">
                             ({summary.total > 0 ? Math.round((summary.critical / summary.total) * 100) : 0}%)
                         </span>
                     </div>
-                    <p className="text-[11px] text-zinc-400 leading-tight">
+                    <p className="text-[11px] text-muted leading-tight font-sans">
                         Critical failure rate ≥ 20%, fatal exceptions, or active firing monitors.
                     </p>
                 </button>
@@ -210,10 +210,10 @@ export function ServiceHealthClient({
                         setSelectedHealth(selectedHealth === "Unknown" ? "ALL" : "Unknown");
                         updateFilter("health", selectedHealth === "Unknown" ? "ALL" : "Unknown");
                     }}
-                    className={`p-4 rounded-xl text-left border transition-all ${
+                    className={`halo-metric-cell text-left transition-all ${
                         selectedHealth === "Unknown"
-                            ? "bg-zinc-800 border-zinc-500 shadow-sm"
-                            : "bg-surface border-zinc-700/50 hover:border-zinc-500"
+                            ? "bg-surface-elevated ring-1 ring-inset ring-zinc-500/40"
+                            : "hover:bg-surface-elevated"
                     } space-y-2`}
                 >
                     <div className="flex items-center justify-between">
@@ -223,13 +223,13 @@ export function ServiceHealthClient({
                         <HelpCircle size={16} className="text-zinc-500" />
                     </div>
                     <div className="flex items-baseline gap-2">
-                        <span className="text-3xl font-bold text-zinc-400 font-mono">{summary.unknown}</span>
+                        <span className="text-3xl font-bold text-zinc-300 font-sans">{summary.unknown}</span>
                         <span className="text-xs text-secondary font-mono">
                             ({summary.total > 0 ? Math.round((summary.unknown / summary.total) * 100) : 0}%)
                         </span>
                     </div>
-                    <p className="text-[11px] text-zinc-400 leading-tight">
-                        Insufficient telemetry observed in the selected operational window.
+                    <p className="text-[11px] text-muted leading-tight font-sans">
+                        Insufficient telemetry or unmonitored service running without signals.
                     </p>
                 </button>
             </div>

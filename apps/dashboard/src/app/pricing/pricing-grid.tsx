@@ -103,11 +103,11 @@ export function PricingGrid() {
                     return (
                         <div
                             key={planId}
-                            className={`relative rounded-2xl border p-8 flex flex-col gap-6 ${cardStyle} ${isRecommended ? "md:-translate-y-2 md:shadow-2xl md:shadow-blue-500/10" : ""}`}
+                            className={`relative rounded-2xl border p-8 flex flex-col gap-6 ${cardStyle} ${isRecommended ? "md:-translate-y-2 border-accent/40" : ""}`}
                         >
                             {isRecommended && (
                                 <div className="absolute -top-3.5 left-1/2 -translate-x-1/2">
-                                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-blue-500 text-white text-xs font-semibold shadow-lg shadow-blue-500/30">
+                                    <span className="inline-flex items-center gap-1.5 px-3.5 py-1 rounded-full bg-accent text-[#05070b] text-xs font-semibold">
                                         <Zap size={11} />
                                         Recommended
                                     </span>
@@ -163,7 +163,7 @@ export function PricingGrid() {
                                 href="/sign-up"
                                 className={`w-full text-center py-2.5 px-4 rounded-xl text-sm font-semibold transition-all ${
                                     isRecommended
-                                        ? "bg-blue-500 hover:bg-blue-400 text-white shadow-lg shadow-blue-500/20"
+                                        ? "bg-accent hover:bg-accent-hover text-[#05070b]"
                                         : "bg-white/6 hover:bg-white/10 border border-white/10 text-white"
                                 }`}
                             >

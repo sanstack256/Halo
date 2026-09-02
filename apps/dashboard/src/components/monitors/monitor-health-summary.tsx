@@ -34,7 +34,7 @@ export function MonitorHealthSummary({ data }: MonitorHealthSummaryProps) {
                 <div className="flex items-center justify-between text-xs text-[var(--text-muted)] font-mono">
                     <span className="uppercase tracking-wider">Health Status</span>
                     {isHealthy && <CheckCircle2 size={13} className="text-emerald-400" />}
-                    {isFiring && <Flame size={13} className="text-red-400 animate-pulse" />}
+                    {isFiring && <Flame size={13} className="text-red-400" />}
                     {isMuted && <Radio size={13} className="text-amber-400" />}
                     {isDisabled && <Clock size={13} className="text-zinc-500" />}
                 </div>
@@ -42,13 +42,13 @@ export function MonitorHealthSummary({ data }: MonitorHealthSummaryProps) {
                 <div className="flex items-center gap-2">
                     {isHealthy && (
                         <div className="flex items-center gap-2">
-                            <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 shadow-[0_0_8px_rgba(52,211,153,0.4)]" />
+                            <span className="w-2 h-2 rounded-full bg-emerald-400" />
                             <span className="text-sm font-semibold text-white">Healthy</span>
                         </div>
                     )}
                     {isFiring && (
                         <div className="flex items-center gap-2">
-                            <span className="w-2.5 h-2.5 rounded-full bg-red-500 animate-ping shadow-[0_0_8px_rgba(239,68,68,0.5)]" />
+                            <span className="w-2 h-2 rounded-full bg-red-400" />
                             <span className="text-sm font-semibold text-red-400">Firing Alert</span>
                         </div>
                     )}

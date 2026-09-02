@@ -72,33 +72,33 @@ export function ImpactView({ data }: ImpactViewProps) {
                 </span>
             </div>
 
-            {/* Global Summary Bar (Calibrated KPI Strip) */}
-            <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block">Evaluated Issues</span>
-                    <span className="text-2xl font-bold text-white block">{summary.totalEvaluatedIssues}</span>
-                    <span className="text-[11px] text-zinc-400">Window: {timeRange.key}</span>
+            {/* Global Summary Bar (Structured Analytical Surface) */}
+            <div className="halo-metric-strip grid-cols-2 sm:grid-cols-4">
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-muted uppercase font-semibold block font-mono">Evaluated Issues</span>
+                    <span className="text-2xl font-bold text-white block font-sans">{summary.totalEvaluatedIssues}</span>
+                    <span className="text-[11px] text-muted font-sans">Window: {timeRange.key}</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block">Correlated Requests</span>
-                    <span className="text-2xl font-bold text-accent block">
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-accent uppercase font-semibold block font-mono">Correlated Requests</span>
+                    <span className="text-2xl font-bold text-accent block font-sans">
                         {summary.totalObservedRequests !== null ? summary.totalObservedRequests.toLocaleString() : "UNKNOWN"}
                     </span>
-                    <span className="text-[11px] text-zinc-500 truncate block">
+                    <span className="text-[11px] text-muted truncate block font-sans">
                         {summary.totalObservedRequests !== null ? "Captured request IDs" : "Request context not captured"}
                     </span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block">OBSERVED SERVICES</span>
-                    <span className="text-2xl font-bold text-purple-400 block">{summary.totalObservedServices}</span>
-                    <span className="text-[11px] text-zinc-400 truncate block">Distinct services in telemetry</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-secondary uppercase font-semibold block font-mono">Observed Services</span>
+                    <span className="text-2xl font-bold text-white block font-sans">{summary.totalObservedServices}</span>
+                    <span className="text-[11px] text-muted truncate block font-sans">Distinct services in telemetry</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block">Linked Sessions</span>
-                    <span className={`text-2xl font-bold block ${summary.totalObservedSessions !== null ? "text-white" : "text-zinc-400"}`}>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-muted uppercase font-semibold block font-mono">Linked Sessions</span>
+                    <span className={`text-2xl font-bold block font-sans ${summary.totalObservedSessions !== null ? "text-white" : "text-muted"}`}>
                         {summary.totalObservedSessions !== null ? summary.totalObservedSessions.toLocaleString() : "UNKNOWN"}
                     </span>
-                    <span className="text-[11px] text-zinc-500 truncate block" title={summary.sessionLinkageDetail}>
+                    <span className="text-[11px] text-muted truncate block font-sans" title={summary.sessionLinkageDetail}>
                         {summary.sessionLinkageDetail}
                     </span>
                 </div>
@@ -129,14 +129,14 @@ export function ImpactView({ data }: ImpactViewProps) {
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div className="space-y-1 min-w-0">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <h2 className="text-sm font-bold text-white font-mono truncate">{imp.title}</h2>
-                                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-elevated text-zinc-300 border border-border">
+                                            <h2 className="text-sm font-semibold text-white font-sans truncate">{imp.title}</h2>
+                                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-surface-elevated text-zinc-300 border border-border">
                                                 {imp.environment}
                                             </span>
                                         </div>
-                                        <div className="text-xs font-mono text-zinc-400 flex items-center gap-2 flex-wrap">
+                                        <div className="text-xs font-sans text-secondary flex items-center gap-2 flex-wrap">
                                             <span>
-                                                <strong className="text-white">{imp.layers[0]?.count || 0}</strong> occurrences
+                                                <strong className="text-white font-mono text-[11px]">{imp.layers[0]?.count || 0}</strong> occurrences
                                             </span>
                                             <span>•</span>
                                             <span>

@@ -90,7 +90,7 @@ export default async function OverviewPage() {
                                             href={`/projects/${alert.projectId}/investigations/new?issueId=${alert.issueId}`}
                                             className="halo-btn halo-btn-primary"
                                         >
-                                            Start Root Cause Investigation <ArrowUpRight size={14} />
+                                            Investigate Incident <ArrowUpRight size={14} />
                                         </Link>
                                     </div>
                                 </div>
@@ -130,7 +130,7 @@ export default async function OverviewPage() {
                             </div>
 
                             <div className="halo-stat-card">
-                                <div className="halo-stat-label">24h Impacted Users</div>
+                                <div className="halo-stat-label">Sessions with Linked Failures</div>
                                 <div className="halo-stat-value">~{data.systemHealth.impactedUsers24h}</div>
                                 <div className="halo-stat-sub">{data.systemHealth.totalErrors24h} error occurrences</div>
                             </div>
@@ -196,7 +196,7 @@ export default async function OverviewPage() {
                                                     : `/projects/${disc.projectId}/investigations/new`}
                                                 className="halo-btn halo-btn-sm halo-btn-primary"
                                             >
-                                                Open Discovery <ArrowUpRight size={13} />
+                                                Investigate <ArrowUpRight size={13} />
                                             </Link>
                                         </div>
                                     </div>

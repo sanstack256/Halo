@@ -66,22 +66,22 @@ export function PatternsView({ data }: PatternsViewProps) {
                 </span>
             </div>
 
-            {/* Summary Bar */}
-            <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 text-xs font-mono">
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block">Discovered Patterns</span>
-                    <span className="text-2xl font-bold text-white block">{summary.totalPatterns}</span>
-                    <span className="text-[11px] text-zinc-400">Time window: {timeRange.key}</span>
+            {/* Summary Bar (Structured Analytical Surface) */}
+            <div className="halo-metric-strip grid-cols-1 sm:grid-cols-3">
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-muted uppercase font-semibold block font-mono">Discovered Patterns</span>
+                    <span className="text-2xl font-bold text-white block font-sans">{summary.totalPatterns}</span>
+                    <span className="text-[11px] text-muted font-sans">Time window: {timeRange.key}</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block">Clustered Issues</span>
-                    <span className="text-2xl font-bold text-accent block">{summary.totalAffectedIssues}</span>
-                    <span className="text-[11px] text-zinc-400">Issues sharing multi-dimensional behavior</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-accent uppercase font-semibold block font-mono">Clustered Issues</span>
+                    <span className="text-2xl font-bold text-accent block font-sans">{summary.totalAffectedIssues}</span>
+                    <span className="text-[11px] text-muted font-sans">Issues sharing multi-dimensional behavior</span>
                 </div>
-                <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
-                    <span className="text-[10px] text-zinc-500 uppercase block">Cross-Service Patterns</span>
-                    <span className="text-2xl font-bold text-purple-400 block">{summary.crossServicePatterns}</span>
-                    <span className="text-[11px] text-zinc-400">Traversing service boundaries</span>
+                <div className="halo-metric-cell space-y-1">
+                    <span className="text-[10px] text-secondary uppercase font-semibold block font-mono">Cross-Service Patterns</span>
+                    <span className="text-2xl font-bold text-white block font-sans">{summary.crossServicePatterns}</span>
+                    <span className="text-[11px] text-muted font-sans">Traversing service boundaries</span>
                 </div>
             </div>
 
@@ -116,16 +116,16 @@ export function PatternsView({ data }: PatternsViewProps) {
                                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                                     <div className="space-y-1">
                                         <div className="flex items-center gap-2 flex-wrap">
-                                            <h2 className="text-sm font-bold text-white font-mono">{p.name}</h2>
+                                            <h2 className="text-sm font-semibold text-white font-sans">{p.name}</h2>
                                             {getStrengthBadge(p.evidenceStrength)}
-                                            <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-surface-elevated text-zinc-300 border border-border">
+                                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-surface-elevated text-zinc-300 border border-border">
                                                 {p.issuesCount} distinct issues • {p.occurrencesCount} occurrences
                                             </span>
                                         </div>
-                                        <div className="text-xs font-mono text-zinc-400 flex items-center gap-2 flex-wrap">
-                                            <span>Signature: <code className="text-zinc-200">{p.behavioralSignature}</code></span>
+                                        <div className="text-xs font-sans text-secondary flex items-center gap-2 flex-wrap">
+                                            <span>Signature: <code className="text-zinc-200 font-mono text-[11px]">{p.behavioralSignature}</code></span>
                                             <span>•</span>
-                                            <span>Services: <strong className="text-white">{p.affectedServices.join(", ")}</strong></span>
+                                            <span>Services: <strong className="text-white font-mono text-[11px]">{p.affectedServices.join(", ")}</strong></span>
                                         </div>
                                     </div>
 
@@ -140,20 +140,20 @@ export function PatternsView({ data }: PatternsViewProps) {
                                 </div>
 
                                 {/* Common Observed Behavior & Why this qualifies as a pattern */}
-                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs font-mono">
-                                    <div className="p-2.5 rounded-lg bg-[#06080d] border border-border/80 space-y-1">
-                                        <span className="text-[10px] font-bold uppercase text-accent block">
-                                            COMMON OBSERVED BEHAVIOR
+                                <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs">
+                                    <div className="p-3 rounded-lg bg-[#06080d] border border-border/80 space-y-1">
+                                        <span className="text-[11px] font-medium text-accent block font-sans">
+                                            Common Observed Behavior
                                         </span>
-                                        <span className="text-zinc-300 block text-[11px]">
+                                        <span className="text-secondary block text-xs font-sans leading-relaxed">
                                             {p.commonObservedBehavior}
                                         </span>
                                     </div>
-                                    <div className="p-2.5 rounded-lg bg-[#06080d] border border-border/80 space-y-1">
-                                        <span className="text-[10px] font-bold uppercase text-purple-400 block">
-                                            WHY THIS QUALIFIES AS A PATTERN
+                                    <div className="p-3 rounded-lg bg-[#06080d] border border-border/80 space-y-1">
+                                        <span className="text-[11px] font-medium text-primary block font-sans">
+                                            Pattern Qualification Rationale
                                         </span>
-                                        <span className="text-zinc-300 block text-[11px]">
+                                        <span className="text-secondary block text-xs font-sans leading-relaxed">
                                             {p.whyThisIsAPattern}
                                         </span>
                                     </div>

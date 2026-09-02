@@ -297,19 +297,11 @@ export default function ProjectOverview({
 
                 </div>
 
-                <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
+                <div className="halo-metric-strip grid-cols-1 md:grid-cols-3">
 
                     {/* Crash Free */}
 
-                    <div
-                        className="
-                            rounded-xl
-                            border
-                            border-border
-                            bg-surface
-                            p-6
-                        "
-                    >
+                    <div className="halo-metric-cell p-6">
                         <div className="flex items-center gap-2 text-secondary">
 
                             <CheckCircle2 className="h-4 w-4" />
@@ -320,7 +312,7 @@ export default function ProjectOverview({
 
                         </div>
 
-                        <p className="mt-5 text-3xl font-semibold tracking-tight text-primary">
+                        <p className="mt-5 text-3xl font-semibold tracking-tight text-primary font-sans">
                             {metrics.crashFreeSessions.total > 0
                                 ? `${metrics.crashFreeSessions.percentage.toFixed(1)}%`
                                 : "—"}
@@ -335,15 +327,7 @@ export default function ProjectOverview({
 
                     {/* Apdex */}
 
-                    <div
-                        className="
-                            rounded-xl
-                            border
-                            border-border
-                            bg-surface
-                            p-6
-                        "
-                    >
+                    <div className="halo-metric-cell p-6">
                         <div className="flex items-center justify-between">
 
                             <div className="flex items-center gap-2 text-secondary">
@@ -364,7 +348,7 @@ export default function ProjectOverview({
 
                         </div>
 
-                        <p className="mt-5 text-3xl font-semibold tracking-tight text-primary">
+                        <p className="mt-5 text-3xl font-semibold tracking-tight text-primary font-sans">
                             {formatApdex(
                                 metrics.apdex.score,
                             )}
@@ -379,15 +363,7 @@ export default function ProjectOverview({
 
                     {/* P95 */}
 
-                    <div
-                        className="
-                            rounded-xl
-                            border
-                            border-border
-                            bg-surface
-                            p-6
-                        "
-                    >
+                    <div className="halo-metric-cell p-6">
                         <div className="flex items-center gap-2 text-secondary">
 
                             <Zap className="h-4 w-4" />
@@ -398,7 +374,7 @@ export default function ProjectOverview({
 
                         </div>
 
-                        <p className="mt-5 text-3xl font-semibold tracking-tight text-primary">
+                        <p className="mt-5 text-3xl font-semibold tracking-tight text-primary font-sans">
                             {formatLatency(
                                 metrics.performance.p95,
                             )}

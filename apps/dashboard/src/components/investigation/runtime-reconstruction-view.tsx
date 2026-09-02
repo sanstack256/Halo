@@ -224,7 +224,7 @@ export function RuntimeReconstructionView({ reconstruction }: Props) {
                                 <div
                                     className={`px-3 py-1.5 rounded-lg border flex items-center gap-2 ${
                                         step.isFailingSite
-                                            ? "bg-red-500/10 border-red-500/30 text-red-300 font-bold shadow-sm shadow-red-500/10"
+                                            ? "bg-red-500/10 border-red-500/30 text-red-300 font-semibold"
                                             : CLASSIFICATION_STYLE[step.classification] || CLASSIFICATION_STYLE.Unknown
                                     }`}
                                 >

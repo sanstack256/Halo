@@ -310,7 +310,7 @@ export function MonitorsClient({
                                 setCurrentPage(1);
                             }}
                             placeholder="Search monitors by name, target, URL..."
-                            className="w-full h-8 pl-8 pr-7 rounded-lg border border-border bg-[#080b11] text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-accent font-mono"
+                            className="w-full h-9 pl-8 pr-7 rounded-lg border border-border bg-[#080b11] text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-accent font-sans"
                         />
                         {searchQuery && (
                             <button

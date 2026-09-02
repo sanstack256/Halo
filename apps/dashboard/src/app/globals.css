@@ -219,12 +219,8 @@ a:hover {
 ===================================================== */
 
 *:focus-visible {
-
-  outline: none;
-
-  box-shadow:
-    0 0 0 2px rgba(91,184,255,.18);
-
+  outline: 2px solid var(--accent);
+  outline-offset: 1px;
 }
 
 /* =====================================================
@@ -1960,14 +1956,44 @@ HALO INVESTIGATION
 
 .halo-stat-row {
     display: grid;
-    gap: 10px;
+    gap: 1px;
+    background: var(--border-subtle);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-card);
+    overflow: hidden;
 }
 
 .halo-stat-card {
-    padding: 18px 20px;
-    border: 1px solid var(--border);
-    border-radius: var(--radius-card);
+    padding: 16px 20px;
     background: var(--surface);
+    transition: background var(--transition-fast);
+}
+
+.halo-stat-card:hover {
+    background: var(--surface-elevated);
+}
+
+/* Structured Unified Metric Strip (Eliminates Card Soup) */
+.halo-metric-strip {
+    display: grid;
+    gap: 1px;
+    background: var(--border-subtle);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-card);
+    overflow: hidden;
+}
+
+.halo-metric-cell {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    padding: 14px 16px;
+    background: var(--surface);
+    transition: background var(--transition-fast);
+}
+
+.halo-metric-cell:hover {
+    background: var(--surface-elevated);
 }
 
 .halo-stat-label {
@@ -3041,9 +3067,8 @@ HALO INVESTIGATION
     flex-wrap: wrap;
     padding: 8px 12px;
     background: var(--surface);
-    border: 1px solid var(--border-strong);
+    border: 1px solid var(--border-default);
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
 }
 
 .halo-filter-group {
@@ -3091,28 +3116,29 @@ HALO INVESTIGATION
     font-weight: 600;
 }
 
-/* KPI Metric Cards */
+/* KPI Metric Cards (Segmented Analytical Surface) */
 .halo-kpi-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(170px, 1fr));
-    gap: 10px;
+    gap: 1px;
+    background: var(--border-subtle);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-card);
+    overflow: hidden;
 }
 
 .halo-kpi-card {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    padding: 12px 14px;
+    padding: 14px 16px;
     background: var(--surface);
-    border: 1px solid var(--border);
-    border-radius: 12px;
-    transition: border-color var(--transition-fast), background var(--transition-fast);
+    transition: background var(--transition-fast);
     position: relative;
 }
 
 .halo-kpi-card:hover {
-    border-color: var(--border-strong);
-    background: #090e15;
+    background: var(--surface-elevated);
 }
 
 .halo-kpi-eyebrow {
