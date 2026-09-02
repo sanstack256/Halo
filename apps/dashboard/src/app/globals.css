@@ -8,21 +8,31 @@
 
   --color-surface: var(--surface);
   --color-surface-elevated: var(--surface-elevated);
+  --color-surface-raised: var(--surface-raised);
   --color-surface-interactive: var(--surface-interactive);
 
-  --color-border: var(--border);
+  --color-border-subtle: var(--border-subtle);
+  --color-border-default: var(--border-default);
+  --color-border-strong: var(--border-strong);
+  --color-border: var(--border-default);
+
+  --color-text-primary: var(--text-primary);
+  --color-text-secondary: var(--text-secondary);
+  --color-text-muted: var(--text-muted);
+  --color-text-disabled: var(--text-disabled);
+  --color-text: var(--text-primary);
 
   --color-accent: var(--accent);
   --color-accent-hover: var(--accent-hover);
+  --color-accent-strong: var(--accent-strong);
+  --color-accent-subtle: var(--accent-subtle);
+  --color-accent-muted: var(--accent-muted);
   --color-accent-foreground: var(--accent-foreground);
-
-  --color-text: var(--text);
-  --color-text-secondary: var(--text-secondary);
-  --color-text-muted: var(--text-muted);
 
   --color-success: var(--success);
   --color-warning: var(--warning);
-  --color-error: var(--error);
+  --color-danger: var(--danger);
+  --color-error: var(--danger);
   --color-info: var(--info);
 
   /* ========= TYPOGRAPHY ========= */
@@ -37,80 +47,61 @@
 
 :root {
 
-  /* ========= BACKGROUNDS ========= */
+  /* ========= AUTHORITATIVE COLOR TOKENS ========= */
 
   --background: #05070b;
 
-  --surface: #080c12;
---surface-elevated: #0b1018;
---surface-interactive: #101827;
+  --surface: #080b11;
+  --surface-elevated: #0b0f16;
+  --surface-raised: #0e131b;
+  --surface-interactive: #0b0f16;
 
-  /* ========= BRAND ========= */
+  --border-subtle: #111722;
+  --border-default: #171e29;
+  --border-strong: #222b38;
+  --border: var(--border-default);
 
-  --accent: #5bb8ff;
+  --text-primary: #f2f5f8;
+  --text-secondary: #a8b1be;
+  --text-muted: #697381;
+  --text-disabled: #454d59;
+  --text: var(--text-primary);
 
-  --accent-hover: #7ac8ff;
+  --accent: #5bbcff;
+  --accent-hover: #72c7ff;
+  --accent-strong: #39aef5;
+  --accent-subtle: rgba(91, 188, 255, 0.10);
+  --accent-muted: rgba(91, 188, 255, 0.06);
+  --accent-foreground: #05070b;
+  --accent-soft: rgba(91, 188, 255, 0.10);
+  --accent-glow: none;
 
-  --accent-foreground: #07121c;
+  --success: #35d08a;
+  --warning: #f2b84b;
+  --danger: #ff5c67;
+  --error: #ff5c67;
+  --info: #5bbcff;
 
-  --accent-soft: rgba(91,184,255,.08);
+  /* ========= RADIUS (Rulebook Standard: 6, 8, 12, 16px) ========= */
 
-  --accent-glow: rgba(91,184,255,.16);
-
-  /* ========= TEXT ========= */
-
-  --text: #f6f8fb;
-
-  --text-secondary: #a5b4c6;
-
-  --text-muted: #6d7b8c;
-
-  /* ========= SEMANTIC ========= */
-
-  --success: #22c55e;
-
-  --warning: #f59e0b;
-
-  --error: #ef4444;
-
-  --info: #5bb8ff;
-
-  /* ========= BORDER ========= */
-
-  --border: rgba(255,255,255,.035);
-
-  --border-strong: rgba(255,255,255,.06);
-
-  /* ========= RADIUS ========= */
-
-  --radius-card: 20px;
-
-  --radius-input: 14px;
-
-  --radius-button: 14px;
-
+  --radius-sm: 6px;
+  --radius-input: 8px;
+  --radius-button: 8px;
+  --radius-card: 12px;
+  --radius-panel: 16px;
   --radius-pill: 999px;
 
-  /* ========= SHADOW ========= */
+  /* ========= SHADOW (No decorative glow) ========= */
 
-  --shadow-soft:
-    0 20px 60px rgba(0,0,0,.30);
-
-  --shadow-card:
-    0 0 0 1px rgba(255,255,255,.02),
-    0 20px 60px rgba(0,0,0,.30);
-
-  --shadow-glow:
-    0 0 0 1px rgba(91,184,255,.05),
-    0 0 30px rgba(91,184,255,.08);
+  --shadow-soft: 0 12px 32px rgba(0,0,0,.35);
+  --shadow-card: none;
+  --shadow-glow: none;
 
   /* ========= TRANSITIONS ========= */
 
   --transition-fast: 140ms ease;
-
   --transition-normal: 220ms ease;
-
-  --transition-slow: 350ms ease;
+  --transition-slow: 300ms ease;
 }
 
 /* =====================================================
@@ -139,26 +130,7 @@ body {
 
   -moz-osx-font-smoothing: grayscale;
 
-  background:
-
-    radial-gradient(
-      900px circle at 10% -20%,
-      rgba(91,184,255,.075),
-      transparent 55%
-    ),
-
-    radial-gradient(
-      700px circle at 100% 100%,
-      rgba(91,184,255,.04),
-      transparent 60%
-    ),
-
-    linear-gradient(
-      180deg,
-      #05070b 0%,
-      #06080d 100%
-    );
-
+  background: #05070b;
 }
 
 /* =====================================================
@@ -1036,8 +1008,8 @@ HALO INVESTIGATION
     height: 100%;
     flex-direction: column;
     align-items: center;
-    border-right: 1px solid var(--border);
-    background: var(--surface);
+    border-right: 1px solid var(--border-subtle);
+    background: #05070b;
 }
 
 .halo-sidebar-logo {
@@ -1050,7 +1022,7 @@ HALO INVESTIGATION
     border-radius: 11px;
     color: var(--accent-foreground);
     background: var(--accent);
-    box-shadow: var(--shadow-glow);
+    box-shadow: none;
 }
 
 .halo-sidebar-logo:hover {
@@ -1098,7 +1070,7 @@ HALO INVESTIGATION
 
 .halo-sidebar-primary-link.is-active {
     color: var(--accent);
-    background: var(--accent-soft);
+    background: var(--surface-elevated);
 }
 
 .halo-sidebar-primary-link.is-active::before {
@@ -1109,7 +1081,7 @@ HALO INVESTIGATION
     height: 24px;
     border-radius: 0 3px 3px 0;
     background: var(--accent);
-    box-shadow: 0 0 14px var(--accent-glow);
+    box-shadow: none;
 }
 
 .halo-sidebar-primary-label {
@@ -1159,7 +1131,8 @@ HALO INVESTIGATION
     width: 210px;
     height: 100%;
     flex-direction: column;
-    background: rgba(8, 12, 18, .96);
+    background: #05070b;
+    border-right: 1px solid var(--border-subtle);
     transition: width 0.2s ease, opacity 0.2s ease;
     overflow: hidden;
     opacity: 1;
@@ -1251,8 +1224,8 @@ HALO INVESTIGATION
 
 .halo-sidebar-secondary-link.is-active {
     color: var(--accent);
-    background: var(--accent-soft);
-    border-color: rgba(91, 184, 255, .08);
+    background: var(--surface-elevated);
+    border-color: var(--border-default);
 }
 
 .halo-sidebar-secondary-divider {
@@ -1370,8 +1343,7 @@ HALO INVESTIGATION
     justify-content: space-between;
     padding: 0 20px;
     border-bottom: 1px solid var(--border);
-    background: rgba(5, 7, 11, .78);
-    backdrop-filter: blur(18px);
+    background: #05070b;
 }
 
 .halo-topbar-breadcrumbs {
@@ -1531,14 +1503,9 @@ HALO INVESTIGATION
 
 .halo-verdict {
     margin-bottom: 38px;
-    border-color: var(--border-strong);
-    background:
-        linear-gradient(
-            180deg,
-            rgba(91,184,255,.025),
-            transparent 45%
-        ),
-        var(--surface);
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-card);
+    background: var(--surface-elevated);
 }
 
 .halo-verdict-header {
@@ -1580,15 +1547,14 @@ HALO INVESTIGATION
 /* ---------- Generic cards ---------- */
 
 .halo-card {
-    border-color: var(--border);
-    border-radius: 16px;
-    box-shadow:
-        0 0 0 1px rgba(255,255,255,.012),
-        0 12px 35px rgba(0,0,0,.20);
+    border: 1px solid var(--border-subtle);
+    border-radius: var(--radius-card);
+    background: var(--surface-elevated);
+    box-shadow: none;
 }
 
 .halo-card:hover {
-    border-color: var(--border-strong);
+    border-color: var(--border-default);
 }
 
 /* ---------- Grids ---------- */
@@ -1803,6 +1769,13 @@ HALO INVESTIGATION
 .halo-btn-sm {
     padding: 6px 12px;
     font-size: 12px;
+}
+
+.halo-btn-xs {
+    padding: 4px 10px;
+    font-size: 11px;
+    height: 28px;
+    gap: 5px;
 }
 
 .halo-btn-primary {
@@ -2413,22 +2386,22 @@ HALO INVESTIGATION
 .halo-investigate-input {
     width: 100%;
     padding: 18px 140px 18px 20px;
-    border-radius: 18px;
-    border: 1px solid var(--border-strong);
+    border-radius: var(--radius-card);
+    border: 1px solid var(--border-default);
     background: var(--surface);
-    color: var(--text);
+    color: var(--text-primary);
     font-size: 15px;
     font-family: var(--font-sans);
     resize: none;
     outline: none;
-    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+    transition: border-color var(--transition-fast);
     line-height: 1.6;
     min-height: 72px;
 }
 
 .halo-investigate-input:focus {
-    border-color: rgba(91,184,255,.35);
-    box-shadow: 0 0 0 3px rgba(91,184,255,.08);
+    border-color: var(--accent);
+    box-shadow: none;
 }
 
 .halo-investigate-input::placeholder {
@@ -2762,14 +2735,14 @@ HALO INVESTIGATION
     align-items: center;
     justify-content: space-between;
     gap: 8px;
-    height: 32px;
-    padding: 0 10px;
-    background-color: #080b11;
+    height: 36px;
+    padding: 0 12px;
+    background-color: var(--surface);
     color: var(--text-secondary);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    border-radius: 8px;
+    border: 1px solid var(--border-default);
+    border-radius: var(--radius-input);
     font-size: 12px;
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-weight: 500;
     cursor: pointer;
     outline: none;
@@ -2777,31 +2750,31 @@ HALO INVESTIGATION
 }
 
 .halo-select-btn:hover {
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
+    border-color: var(--border-strong);
+    color: var(--text-primary);
 }
 
 .halo-select-btn.is-open-downward {
     border-bottom-left-radius: 0 !important;
     border-bottom-right-radius: 0 !important;
     border-bottom-color: transparent !important;
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
-    background-color: #080b11;
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+    background-color: var(--surface);
 }
 
 .halo-select-btn.is-open-upward {
     border-top-left-radius: 0 !important;
     border-top-right-radius: 0 !important;
     border-top-color: transparent !important;
-    border-color: rgba(255, 255, 255, 0.2);
-    color: #ffffff;
-    background-color: #080b11;
+    border-color: var(--border-strong);
+    color: var(--text-primary);
+    background-color: var(--surface);
 }
 
 .halo-select-dropdown {
-    background-color: #080b11 !important;
-    border: 1px solid rgba(255, 255, 255, 0.2) !important;
+    background-color: var(--surface) !important;
+    border: 1px solid var(--border-strong) !important;
     box-shadow: 0 10px 25px rgba(0, 0, 0, 0.6) !important;
     padding: 2px !important;
     backdrop-filter: none !important;
@@ -2817,12 +2790,12 @@ HALO INVESTIGATION
     width: 100%;
     padding: 6px 10px;
     font-size: 12px;
-    font-family: var(--font-mono);
+    font-family: var(--font-sans);
     font-weight: 500;
-    color: #ffffff;
+    color: var(--text-primary);
     background: transparent;
     border: none;
-    border-radius: 5px;
+    border-radius: 6px;
     cursor: pointer;
     text-align: left;
     outline: none;
@@ -2832,8 +2805,14 @@ HALO INVESTIGATION
 
 .halo-select-dropdown-item:hover,
 .halo-select-dropdown-item:focus-visible {
-    color: #ffffff;
-    background-color: rgba(255, 255, 255, 0.06);
+    color: var(--text-primary);
+    background-color: var(--surface-elevated);
+}
+
+.halo-select-dropdown-item.is-selected {
+    color: var(--accent);
+    font-weight: 600;
+    background-color: var(--accent-subtle);
 }
 
 .halo-select-dropdown-item.is-selected {
@@ -2928,8 +2907,8 @@ HALO INVESTIGATION
 }
 
 .halo-select {
-    height: 32px;
-    padding: 0 28px 0 10px;
+    height: 36px;
+    padding: 0 28px 0 12px;
     background-color: #080b11;
     color: var(--text);
     border: 1px solid rgba(255, 255, 255, 0.1);
@@ -3341,12 +3320,11 @@ HALO INVESTIGATION
     left: 0;
     pointer-events: none;
     z-index: 50;
-    background: rgba(8, 12, 20, 0.96);
+    background: #080c14;
     border: 1px solid var(--border-strong);
-    border-radius: 9px;
+    border-radius: 8px;
     padding: 10px 13px;
-    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85), 0 0 0 1px rgba(255, 255, 255, 0.08);
-    backdrop-filter: blur(16px);
+    box-shadow: 0 16px 36px rgba(0, 0, 0, 0.85);
     min-width: 180px;
     transition: transform 140ms cubic-bezier(0.18, 0.9, 0.25, 1), opacity 150ms ease;
     will-change: transform, opacity;

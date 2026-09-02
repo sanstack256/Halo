@@ -27,6 +27,15 @@ import type {
     ServiceDependencyEdge,
     HealthStatus,
 } from "@/lib/services/service-registry";
+import { HaloSelect, type HaloSelectOption } from "@/components/ui/halo-select";
+
+const TIME_RANGE_OPTIONS: HaloSelectOption[] = [
+    { value: "1h", label: "Last 1 hour" },
+    { value: "6h", label: "Last 6 hours" },
+    { value: "24h", label: "Last 24 hours" },
+    { value: "7d", label: "Last 7 days" },
+    { value: "30d", label: "Last 30 days" },
+];
 
 interface ServiceDependenciesClientProps {
     initialNodes: ServiceDependencyNode[];
@@ -166,24 +175,15 @@ export function ServiceDependenciesClient({
 
                 <div className="flex items-center gap-3 flex-wrap">
                     {/* Time Range Selector */}
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface border border-border text-xs font-mono">
-                        <Calendar size={13} className="text-muted" />
-                        <span className="text-zinc-400">Window:</span>
-                        <select
-                            value={selectedTimeRange}
-                            onChange={(e) => {
-                                setSelectedTimeRange(e.target.value);
-                                updateFilter("timeRange", e.target.value);
-                            }}
-                            className="bg-transparent text-white font-semibold focus:outline-none cursor-pointer"
-                        >
-                            <option value="1h" className="bg-[#0b1018]">Last 1 hour</option>
-                            <option value="6h" className="bg-[#0b1018]">Last 6 hours</option>
-                            <option value="24h" className="bg-[#0b1018]">Last 24 hours</option>
-                            <option value="7d" className="bg-[#0b1018]">Last 7 days</option>
-                            <option value="30d" className="bg-[#0b1018]">Last 30 days</option>
-                        </select>
-                    </div>
+                    <HaloSelect
+                        value={selectedTimeRange}
+                        onChange={(val) => {
+                            setSelectedTimeRange(val);
+                            updateFilter("timeRange", val);
+                        }}
+                        options={TIME_RANGE_OPTIONS}
+                        ariaLabel="Filter by time window"
+                    />
 
                     {/* View Mode Toggle */}
                     <div className="inline-flex p-1 rounded-xl bg-surface border border-border">
@@ -236,41 +236,39 @@ export function ServiceDependenciesClient({
                     />
                 </div>
 
-                <div className="flex items-center gap-2">
-                    <select
+                <div className="flex items-center gap-2 flex-wrap">
+                    <HaloSelect
                         value={selectedType}
-                        onChange={(e) => setSelectedType(e.target.value)}
-                        className="px-2.5 py-1.5 rounded-lg bg-surface-elevated border border-border text-xs text-zinc-300 focus:outline-none focus:border-accent font-mono"
-                    >
-                        <option value="ALL">All Nodes ({initialNodes.length})</option>
-                        <option value="services_only">Internal Services ({internalServicesCount})</option>
-                        <option value="external_only">External Resources ({externalResourcesCount})</option>
-                        <option value="database">Databases</option>
-                        <option value="cache">Caches</option>
-                        <option value="queue">Queues</option>
-                        <option value="external_api">External APIs</option>
-                    </select>
+                        onChange={(val) => setSelectedType(val)}
+                        options={[
+                            { value: "ALL", label: `All Nodes (${initialNodes.length})` },
+                            { value: "services_only", label: `Internal Services (${internalServicesCount})` },
+                            { value: "external_only", label: `External Resources (${externalResourcesCount})` },
+                            { value: "database", label: "Databases" },
+                            { value: "cache", label: "Caches" },
+                            { value: "queue", label: "Queues" },
+                            { value: "external_api", label: "External APIs" },
+                        ]}
+                        ariaLabel="Filter by node type"
+                    />
 
-                    <select
+                    <HaloSelect
                         value={selectedEnv}
-                        onChange={(e) => {
-                            setSelectedEnv(e.target.value);
-                            updateFilter("environment", e.target.value);
+                        onChange={(val) => {
+                            setSelectedEnv(val);
+                            updateFilter("environment", val);
                         }}
-                        className="px-2.5 py-1.5 rounded-lg bg-surface-elevated border border-border text-xs text-zinc-300 focus:outline-none focus:border-accent font-mono"
-                    >
-                        <option value="ALL">All Environments</option>
-                        {environments.map((env) => (
-                            <option key={env} value={env}>
-                                {env}
-                            </option>
-                        ))}
-                    </select>
+                        options={[
+                            { value: "ALL", label: "All Environments" },
+                            ...environments.map((env) => ({ value: env, label: env })),
+                        ]}
+                        ariaLabel="Filter by environment"
+                    />
                 </div>
             </div>
 
             {initialNodes.length === 0 ? (
-                <div className="p-12 rounded-2xl bg-surface border border-border text-center space-y-3">
+                <div className="p-12 rounded-xl bg-surface border border-border text-center space-y-3">
                     <Network className="w-10 h-10 text-muted mx-auto" />
                     <h3 className="text-base font-semibold text-white">No services discovered</h3>
                     <p className="text-xs text-secondary max-w-md mx-auto">
@@ -281,7 +279,7 @@ export function ServiceDependenciesClient({
                 /* Interactive Graph & Side Panel */
                 <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
                     {/* SVG Graph Canvas */}
-                    <div className="lg:col-span-2 p-6 rounded-2xl bg-[#080c12] border border-border min-h-[500px] flex flex-col justify-between relative overflow-hidden">
+                    <div className="lg:col-span-2 p-6 rounded-xl bg-[#080c12] border border-border min-h-[500px] flex flex-col justify-between relative overflow-hidden">
                         <div className="flex items-center justify-between text-xs font-mono text-zinc-400 border-b border-border/60 pb-3">
                             <span>Observed Dependency Topology ({selectedTimeRange})</span>
                             <span>{filteredNodes.length} nodes • {filteredEdges.length} edges</span>
@@ -365,7 +363,7 @@ export function ServiceDependenciesClient({
                     </div>
 
                     {/* Side Panel: Blast Radius & Node Context */}
-                    <div className="p-6 rounded-2xl bg-surface border border-border space-y-5">
+                    <div className="p-6 rounded-xl bg-surface border border-border space-y-5">
                         {selectedNode ? (
                             <>
                                 <div className="space-y-2 border-b border-border pb-4">

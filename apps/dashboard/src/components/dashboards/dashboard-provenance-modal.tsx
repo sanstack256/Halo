@@ -14,7 +14,7 @@ export function DashboardProvenanceModal({ provenance, onClose }: DashboardProve
     return (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 animate-in fade-in duration-150 font-mono text-xs">
             <div
-                className="relative w-full max-w-xl rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] p-6 shadow-2xl space-y-6 max-h-[90vh] overflow-y-auto"
+                className="relative w-full max-w-xl rounded-2xl bg-[#0b0f16] border border-[#222b38] p-6 space-y-6 max-h-[90vh] overflow-y-auto"
                 role="dialog"
                 aria-modal="true"
             >

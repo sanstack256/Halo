@@ -28,7 +28,7 @@ export default function ProjectCard({
             className="
                 group
                 block
-                rounded-2xl
+                rounded-xl
                 border
                 border-border
                 bg-surface

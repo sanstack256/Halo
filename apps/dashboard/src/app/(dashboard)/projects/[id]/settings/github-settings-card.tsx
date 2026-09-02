@@ -11,6 +11,7 @@ import {
     type GitHubConnectionTestResult,
 } from "@/actions/project-github";
 import { GitBranch, GitFork, ShieldCheck, CheckCircle2, XCircle, Loader2, AlertTriangle, Key, Eye, EyeOff, Plus } from "lucide-react";
+import { HaloSelect } from "@/components/ui/halo-select";
 
 interface GitHubSettingsCardProps {
     projectId: string;
@@ -194,16 +195,18 @@ export function GitHubSettingsCard({ projectId, initialConfig }: GitHubSettingsC
                             className="w-full px-3 py-2 text-xs rounded-lg bg-surface-elevated border border-border text-white placeholder:text-muted focus:outline-none focus:border-primary"
                         />
                     ) : (
-                        <select
+                        <HaloSelect
                             value={owner}
-                            onChange={(e) => setOwner(e.target.value)}
-                            className="w-full px-3 py-2 text-xs rounded-lg bg-surface-elevated border border-border text-white focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary/40"
-                        >
-                            <option value="" disabled>Select an owner</option>
-                            {ownerOptions.map((availableOwner) => (
-                                <option key={availableOwner} value={availableOwner}>{availableOwner}</option>
-                            ))}
-                        </select>
+                            onChange={setOwner}
+                            options={[
+                                { value: "", label: "Select an owner" },
+                                ...ownerOptions.map((availableOwner) => ({ value: availableOwner, label: availableOwner })),
+                            ]}
+                            placeholder="Select an owner"
+                            ariaLabel="Select an owner"
+                            className="w-full"
+                            triggerClassName="w-full"
+                        />
                     )}
                 </div>
 

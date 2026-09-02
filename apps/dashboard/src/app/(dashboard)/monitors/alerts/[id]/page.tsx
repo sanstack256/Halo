@@ -104,7 +104,7 @@ export default async function AlertDetailPage({ params }: AlertDetailPageProps) 
             </div>
 
             {/* Automated Investigation Diagnostic Panel */}
-            <div className="p-4 rounded-xl border border-[var(--border)] bg-gradient-to-r from-[var(--surface-elevated)] to-[var(--surface)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
+            <div className="p-4 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">
                         <Zap size={14} className="text-[var(--accent)]" />

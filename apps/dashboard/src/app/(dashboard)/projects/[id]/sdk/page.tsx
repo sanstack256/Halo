@@ -65,7 +65,7 @@ export default async function ProjectSdkPage({
 
             {/* API key warning */}
             {!hasApiKey && (
-                <section className="rounded-2xl border border-accent/20 bg-accent/[0.04] p-6">
+                <section className="rounded-xl border border-accent/20 bg-accent/[0.04] p-6">
                     <h2 className="font-medium text-primary">Generate an API key first</h2>
                     <p className="mt-2 text-sm leading-6 text-secondary">
                         Your application needs a project API key before it can send events to Halo.
@@ -81,7 +81,7 @@ export default async function ProjectSdkPage({
             )}
 
             {/* Step 1 */}
-            <section className="overflow-hidden rounded-2xl border border-border bg-surface">
+            <section className="overflow-hidden rounded-xl border border-border bg-surface">
                 <div className="border-b border-border px-6 py-5">
                     <div className="flex items-center gap-3">
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10 text-sm font-medium text-accent">
@@ -110,7 +110,7 @@ export default async function ProjectSdkPage({
             </section>
 
             {/* Step 2 */}
-            <section className="overflow-hidden rounded-2xl border border-border bg-surface">
+            <section className="overflow-hidden rounded-xl border border-border bg-surface">
                 <div className="border-b border-border px-6 py-5">
                     <div className="flex items-center gap-3">
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10 text-sm font-medium text-accent">
@@ -135,7 +135,7 @@ export default async function ProjectSdkPage({
             </section>
 
             {/* Step 3 */}
-            <section className="overflow-hidden rounded-2xl border border-border bg-surface">
+            <section className="overflow-hidden rounded-xl border border-border bg-surface">
                 <div className="border-b border-border px-6 py-5">
                     <div className="flex items-center gap-3">
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10 text-sm font-medium text-accent">
@@ -162,7 +162,7 @@ const halo = new Halo({
             </section>
 
             {/* Step 4 */}
-            <section className="overflow-hidden rounded-2xl border border-border bg-surface">
+            <section className="overflow-hidden rounded-xl border border-border bg-surface">
                 <div className="border-b border-border px-6 py-5">
                     <div className="flex items-center gap-3">
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10 text-sm font-medium text-accent">
@@ -192,7 +192,7 @@ const halo = new Halo({
             </section>
 
             {/* Step 5 */}
-            <section className="overflow-hidden rounded-2xl border border-border bg-surface">
+            <section className="overflow-hidden rounded-xl border border-border bg-surface">
                 <div className="border-b border-border px-6 py-5">
                     <div className="flex items-center gap-3">
                         <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10 text-sm font-medium text-accent">

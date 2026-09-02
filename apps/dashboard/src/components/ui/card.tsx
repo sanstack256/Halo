@@ -4,12 +4,12 @@ import { cn } from "@/lib/utils";
 
 const cardVariants = cva(
   [
-    "rounded-2xl",
+    "rounded-xl",
     "transition-all",
-    "duration-200",
-    "bg-[#0b1118]",
+    "duration-150",
+    "bg-[#080c12]",
     "border",
-    "border-white/[0.015]",
+    "border-white/[0.04]",
   ],
   {
     variants: {
@@ -17,16 +17,14 @@ const cardVariants = cva(
         default: "",
 
         elevated: [
-          "bg-[#0d141d]",
-          "shadow-[0_20px_60px_rgba(0,0,0,0.28)]",
+          "bg-[#0b1018]",
+          "shadow-[0_12px_32px_rgba(0,0,0,0.3)]",
         ],
 
         interactive: [
           "cursor-pointer",
-          "hover:bg-[#101827]",
-          "hover:border-[#5bb8ff]/10",
-          "hover:-translate-y-[1px]",
-          "hover:shadow-[0_24px_70px_rgba(0,0,0,0.35)]",
+          "hover:bg-[#0e1522]",
+          "hover:border-white/10",
         ],
       },
 

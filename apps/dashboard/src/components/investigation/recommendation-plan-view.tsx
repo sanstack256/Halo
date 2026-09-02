@@ -107,7 +107,7 @@ export function RecommendationPlanView({ plan, onJumpToEvidence }: Props) {
 
             <div className="space-y-6">
                 {/* 1. MOST USEFUL NEXT ACTION (DOMINANT VISUAL CARD) */}
-                <div className="p-5 rounded-2xl bg-surface border border-accent/40 space-y-4 shadow-xl shadow-accent/5 relative overflow-hidden">
+                <div className="p-5 rounded-xl bg-surface border border-accent/40 space-y-4 relative overflow-hidden">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2 text-accent">
                             <Zap size={16} />
@@ -179,7 +179,7 @@ export function RecommendationPlanView({ plan, onJumpToEvidence }: Props) {
 
                 {/* 2. RECOMMENDED CODE PATCH (IF AVAILABLE) */}
                 {primary.codePatch && (
-                    <div className="p-5 rounded-2xl bg-surface border border-blue-500/20 space-y-4">
+                    <div className="p-5 rounded-xl bg-surface border border-blue-500/20 space-y-4">
                         <div className="flex items-center justify-between">
                             <div className="flex items-center gap-2 text-blue-400">
                                 <Code2 size={16} />
@@ -227,7 +227,7 @@ export function RecommendationPlanView({ plan, onJumpToEvidence }: Props) {
 
                 {/* 3. OPERATIONAL STEPS (IF PRESENT) */}
                 {primary.operationalSteps && primary.operationalSteps.length > 0 && (
-                    <div className="p-5 rounded-2xl bg-surface border border-purple-500/20 space-y-3">
+                    <div className="p-5 rounded-xl bg-surface border border-purple-500/20 space-y-3">
                         <div className="flex items-center gap-2 text-purple-400">
                             <Terminal size={16} />
                             <h3 className="text-xs font-bold uppercase tracking-wider text-white">

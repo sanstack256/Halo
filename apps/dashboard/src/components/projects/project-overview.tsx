@@ -193,7 +193,7 @@ export default function ProjectOverview({
 
             <section
                 className="
-                    rounded-2xl
+                    rounded-xl
                     border
                     border-border
                     bg-surface
@@ -303,7 +303,7 @@ export default function ProjectOverview({
 
                     <div
                         className="
-                            rounded-2xl
+                            rounded-xl
                             border
                             border-border
                             bg-surface
@@ -337,7 +337,7 @@ export default function ProjectOverview({
 
                     <div
                         className="
-                            rounded-2xl
+                            rounded-xl
                             border
                             border-border
                             bg-surface
@@ -381,7 +381,7 @@ export default function ProjectOverview({
 
                     <div
                         className="
-                            rounded-2xl
+                            rounded-xl
                             border
                             border-border
                             bg-surface
@@ -421,7 +421,7 @@ export default function ProjectOverview({
 
                 <div
                     className="
-                        rounded-2xl
+                        rounded-xl
                         border
                         border-border
                         bg-surface
@@ -489,7 +489,7 @@ export default function ProjectOverview({
 
                 <div
                     className="
-                        rounded-2xl
+                        rounded-xl
                         border
                         border-border
                         bg-surface
@@ -565,7 +565,7 @@ export default function ProjectOverview({
                     href={`/projects/${projectId}/events`}
                     className="
             group
-            rounded-2xl
+            rounded-xl
             border
             border-border
             bg-surface
@@ -618,7 +618,7 @@ export default function ProjectOverview({
                     href={`/projects/${projectId}/releases`}
                     className="
             group
-            rounded-2xl
+            rounded-xl
             border
             border-border
             bg-surface
@@ -671,7 +671,7 @@ export default function ProjectOverview({
                     href={`/projects/${projectId}/issues`}
                     className="
             group
-            rounded-2xl
+            rounded-xl
             border
             border-border
             bg-surface
@@ -725,7 +725,7 @@ export default function ProjectOverview({
             <section
                 className="
                     overflow-hidden
-                    rounded-2xl
+                    rounded-xl
                     border
                     border-border
                     bg-surface
@@ -927,7 +927,7 @@ export default function ProjectOverview({
                         items-center
                         justify-between
                         gap-6
-                        rounded-2xl
+                        rounded-xl
                         border
                         border-accent/15
                         bg-accent/[0.035]

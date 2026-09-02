@@ -41,7 +41,7 @@ function SelectTrigger({
       data-size={size}
       className={cn(
         "halo-select-trigger select-none focus:outline-none",
-        size === "sm" ? "h-7 text-[11px] px-2" : "h-8 text-xs px-2.5",
+        size === "sm" ? "h-7 text-[11px] px-2" : "h-9 text-xs px-2.5",
         className
       )}
       {...props}

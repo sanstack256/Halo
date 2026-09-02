@@ -25,7 +25,7 @@ export default function ApiKeysSection({
         <section
             className="
                 overflow-hidden
-                rounded-2xl
+                rounded-xl
                 border
                 border-border
                 bg-surface

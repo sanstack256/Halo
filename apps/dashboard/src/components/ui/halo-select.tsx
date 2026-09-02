@@ -11,7 +11,7 @@ export interface HaloSelectOption {
 interface HaloSelectProps {
     value: string;
     onChange: (value: string) => void;
-    options: HaloSelectOption[];
+    options: readonly HaloSelectOption[] | HaloSelectOption[];
     placeholder?: string;
     className?: string;
     triggerClassName?: string;

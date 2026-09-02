@@ -3,6 +3,19 @@
 import { useState } from "react";
 import { updateProjectSettings } from "@/actions/settings";
 import { Check, Loader2, Save } from "lucide-react";
+import { HaloSelect, type HaloSelectOption } from "@/components/ui/halo-select";
+
+const AUTO_RESOLVE_OPTIONS: HaloSelectOption[] = [
+    { value: "disabled", label: "Disabled" },
+    { value: "7", label: "7 days" },
+    { value: "14", label: "14 days" },
+    { value: "30", label: "30 days" },
+];
+
+const ERROR_TRIGGERED_OPTIONS: HaloSelectOption[] = [
+    { value: "enabled", label: "Preserve Pre-Error Buffer (60s)" },
+    { value: "disabled", label: "Record Sampled Only" },
+];
 
 type ProjectSettingsFormProps = {
     project: {
@@ -150,16 +163,12 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
                     <p className="text-xs text-secondary mb-3">
                         Automatically resolve issues if no new event occurrences are recorded for this duration.
                     </p>
-                    <select
+                    <HaloSelect
                         value={autoResolveDays}
-                        onChange={(e) => setAutoResolveDays(e.target.value)}
-                        className="px-3.5 py-2 rounded-lg border border-border-strong bg-surface-elevated text-xs text-white focus:outline-none focus:border-accent"
-                    >
-                        <option value="disabled">Disabled</option>
-                        <option value="7">7 days</option>
-                        <option value="14">14 days</option>
-                        <option value="30">30 days</option>
-                    </select>
+                        onChange={setAutoResolveDays}
+                        options={AUTO_RESOLVE_OPTIONS}
+                        ariaLabel="Auto Resolve Inactive Issues"
+                    />
                 </div>
             </div>
 
@@ -220,14 +229,14 @@ export function ProjectSettingsForm({ project }: ProjectSettingsFormProps) {
                             <label className="block text-xs font-medium text-white mb-1">
                                 Error-Triggered Preservation
                             </label>
-                            <select
+                            <HaloSelect
                                 value={errorTriggered ? "enabled" : "disabled"}
-                                onChange={(e) => setErrorTriggered(e.target.value === "enabled")}
-                                className="w-full px-3 py-2 rounded-lg border border-border-strong bg-surface-elevated text-xs text-white focus:outline-none focus:border-accent"
-                            >
-                                <option value="enabled">Preserve Pre-Error Buffer (60s)</option>
-                                <option value="disabled">Record Sampled Only</option>
-                            </select>
+                                onChange={(val) => setErrorTriggered(val === "enabled")}
+                                options={ERROR_TRIGGERED_OPTIONS}
+                                ariaLabel="Error-Triggered Preservation"
+                                className="w-full"
+                                triggerClassName="w-full"
+                            />
                             <p className="text-[11px] text-muted mt-1">
                                 Guarantees replay capture whenever an unhandled exception occurs.
                             </p>

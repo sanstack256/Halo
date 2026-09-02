@@ -25,6 +25,31 @@ import {
 } from "lucide-react";
 import type { CanonicalService, HealthStatus } from "@/lib/services/service-registry";
 import { RelativeTime } from "@/components/ui/relative-time";
+import { HaloSelect, type HaloSelectOption } from "@/components/ui/halo-select";
+
+const TIME_RANGE_OPTIONS: HaloSelectOption[] = [
+    { value: "1h", label: "Last 1 hour" },
+    { value: "6h", label: "Last 6 hours" },
+    { value: "24h", label: "Last 24 hours" },
+    { value: "7d", label: "Last 7 days" },
+    { value: "30d", label: "Last 30 days" },
+];
+
+const HEALTH_OPTIONS: HaloSelectOption[] = [
+    { value: "ALL", label: "All Health States" },
+    { value: "Critical", label: "Critical Only" },
+    { value: "Degraded", label: "Degraded Only" },
+    { value: "Healthy", label: "Healthy Only" },
+    { value: "Unknown", label: "Unknown Only" },
+];
+
+const SORT_OPTIONS: HaloSelectOption[] = [
+    { value: "severity", label: "Sort: Health Severity" },
+    { value: "errors", label: "Sort: Highest Error Rate" },
+    { value: "latency", label: "Sort: p95 Latency" },
+    { value: "volume", label: "Sort: Request Volume" },
+    { value: "recent", label: "Sort: Last Active" },
+];
 
 interface ServicesInventoryClientProps {
     initialServices: CanonicalService[];
@@ -193,24 +218,15 @@ export function ServicesInventoryClient({
 
                 {/* Time Range Selector */}
                 <div className="flex items-center gap-2">
-                    <div className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-surface border border-border text-xs font-mono">
-                        <Calendar size={13} className="text-muted" />
-                        <span className="text-zinc-400">Window:</span>
-                        <select
-                            value={selectedTimeRange}
-                            onChange={(e) => {
-                                setSelectedTimeRange(e.target.value);
-                                updateFilter("timeRange", e.target.value);
-                            }}
-                            className="bg-transparent text-white font-semibold focus:outline-none cursor-pointer"
-                        >
-                            <option value="1h" className="bg-[#0b1018]">Last 1 hour</option>
-                            <option value="6h" className="bg-[#0b1018]">Last 6 hours</option>
-                            <option value="24h" className="bg-[#0b1018]">Last 24 hours</option>
-                            <option value="7d" className="bg-[#0b1018]">Last 7 days</option>
-                            <option value="30d" className="bg-[#0b1018]">Last 30 days</option>
-                        </select>
-                    </div>
+                    <HaloSelect
+                        value={selectedTimeRange}
+                        onChange={(val) => {
+                            setSelectedTimeRange(val);
+                            updateFilter("timeRange", val);
+                        }}
+                        options={TIME_RANGE_OPTIONS}
+                        ariaLabel="Filter by time window"
+                    />
                 </div>
             </div>
 
@@ -333,78 +349,58 @@ export function ServicesInventoryClient({
 
                 {/* Filter Controls */}
                 <div className="flex items-center gap-2 flex-wrap">
-                    {/* Health Filter */}
-                    <select
+                    <HaloSelect
                         value={selectedHealth}
-                        onChange={(e) => {
-                            setSelectedHealth(e.target.value as any);
-                            updateFilter("health", e.target.value);
+                        onChange={(val) => {
+                            setSelectedHealth(val as any);
+                            updateFilter("health", val);
                         }}
-                        className="px-2.5 py-1.5 rounded-lg bg-surface-elevated border border-border text-xs text-zinc-300 focus:outline-none focus:border-accent font-mono"
-                    >
-                        <option value="ALL">All Health States</option>
-                        <option value="Critical">Critical Only</option>
-                        <option value="Degraded">Degraded Only</option>
-                        <option value="Healthy">Healthy Only</option>
-                        <option value="Unknown">Unknown Only</option>
-                    </select>
+                        options={HEALTH_OPTIONS}
+                        ariaLabel="Filter by health state"
+                    />
 
-                    {/* Environment */}
-                    <select
+                    <HaloSelect
                         value={selectedEnv}
-                        onChange={(e) => {
-                            setSelectedEnv(e.target.value);
-                            updateFilter("environment", e.target.value);
+                        onChange={(val) => {
+                            setSelectedEnv(val);
+                            updateFilter("environment", val);
                         }}
-                        className="px-2.5 py-1.5 rounded-lg bg-surface-elevated border border-border text-xs text-zinc-300 focus:outline-none focus:border-accent font-mono"
-                    >
-                        <option value="ALL">All Environments</option>
-                        {environments.map((env) => (
-                            <option key={env} value={env}>
-                                {env}
-                            </option>
-                        ))}
-                    </select>
+                        options={[
+                            { value: "ALL", label: "All Environments" },
+                            ...environments.map((env) => ({ value: env, label: env })),
+                        ]}
+                        ariaLabel="Filter by environment"
+                    />
 
-                    {/* Owner */}
                     {owners.length > 0 && (
-                        <select
+                        <HaloSelect
                             value={selectedOwner}
-                            onChange={(e) => {
-                                setSelectedOwner(e.target.value);
-                                updateFilter("owner", e.target.value);
+                            onChange={(val) => {
+                                setSelectedOwner(val);
+                                updateFilter("owner", val);
                             }}
-                            className="px-2.5 py-1.5 rounded-lg bg-surface-elevated border border-border text-xs text-zinc-300 focus:outline-none focus:border-accent font-mono"
-                        >
-                            <option value="ALL">All Owners</option>
-                            {owners.map((owner) => (
-                                <option key={owner} value={owner}>
-                                    {owner}
-                                </option>
-                            ))}
-                        </select>
+                            options={[
+                                { value: "ALL", label: "All Owners" },
+                                ...owners.map((owner) => ({ value: owner, label: owner })),
+                            ]}
+                            ariaLabel="Filter by owner"
+                        />
                     )}
 
-                    {/* Sort By */}
-                    <select
+                    <HaloSelect
                         value={sortBy}
-                        onChange={(e) => setSortBy(e.target.value as any)}
-                        className="px-2.5 py-1.5 rounded-lg bg-surface-elevated border border-border text-xs text-zinc-300 focus:outline-none focus:border-accent font-mono"
-                    >
-                        <option value="severity">Sort: Health Severity</option>
-                        <option value="errors">Sort: Highest Error Rate</option>
-                        <option value="latency">Sort: p95 Latency</option>
-                        <option value="volume">Sort: Request Volume</option>
-                        <option value="recent">Sort: Last Active</option>
-                    </select>
+                        onChange={(val) => setSortBy(val as any)}
+                        options={SORT_OPTIONS}
+                        ariaLabel="Sort by"
+                    />
                 </div>
             </div>
 
             {/* Service Inventory Table or Precise Empty States */}
             {summary.total === 0 ? (
                 /* CASE A: No services discovered at all */
-                <div className="p-12 rounded-2xl bg-surface border border-border text-center space-y-4">
-                    <div className="w-12 h-12 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto text-accent">
+                <div className="p-12 rounded-xl bg-surface border border-border text-center space-y-4">
+                    <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto text-accent">
                         <Server size={24} />
                     </div>
                     <div className="space-y-1 max-w-md mx-auto">
@@ -422,7 +418,7 @@ export function ServicesInventoryClient({
                 </div>
             ) : filteredServices.length === 0 ? (
                 /* CASE B: Services exist but zero match current active filters */
-                <div className="p-12 rounded-2xl bg-surface border border-border text-center space-y-3">
+                <div className="p-12 rounded-xl bg-surface border border-border text-center space-y-3">
                     <Filter className="w-8 h-8 text-muted mx-auto" />
                     <h3 className="text-sm font-semibold text-white">
                         {selectedHealth !== "ALL"

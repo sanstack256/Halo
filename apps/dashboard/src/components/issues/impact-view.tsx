@@ -9,7 +9,7 @@ import {
     ChevronDown,
     ChevronUp,
 } from "lucide-react";
-import type { ImpactProjection, IssueImpact, ImpactLayer } from "@/lib/issues/issue-intelligence";
+import type { ImpactProjection, ImpactLayer } from "@/lib/issues/issue-intelligence";
 
 interface ImpactViewProps {
     data: ImpactProjection;
@@ -23,26 +23,26 @@ export function ImpactView({ data }: ImpactViewProps) {
         switch (status) {
             case "OBSERVED":
                 return (
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
+                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
                         OBSERVED
                     </span>
                 );
             case "SUPPORTED":
                 return (
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold">
+                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-blue-500/10 text-blue-400 border border-blue-500/20 font-semibold">
                         SUPPORTED
                     </span>
                 );
             case "INFERRED":
                 return (
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 font-semibold">
+                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-purple-500/10 text-purple-400 border border-purple-500/20 font-semibold">
                         INFERRED
                     </span>
                 );
             case "UNKNOWN":
             default:
                 return (
-                    <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-zinc-800 text-zinc-400 border border-zinc-700 font-semibold">
+                    <span className="text-[9px] font-mono px-1.5 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700 font-semibold">
                         UNKNOWN
                     </span>
                 );
@@ -51,7 +51,7 @@ export function ImpactView({ data }: ImpactViewProps) {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
+            {/* Page Header */}
             <div>
                 <h1 className="text-2xl font-bold text-white tracking-tight">Impact</h1>
                 <p className="text-sm text-secondary mt-1">
@@ -72,7 +72,7 @@ export function ImpactView({ data }: ImpactViewProps) {
                 </span>
             </div>
 
-            {/* Global Summary Bar */}
+            {/* Global Summary Bar (Calibrated KPI Strip) */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
                 <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
                     <span className="text-[10px] text-zinc-500 uppercase block">Evaluated Issues</span>
@@ -84,39 +84,38 @@ export function ImpactView({ data }: ImpactViewProps) {
                     <span className="text-2xl font-bold text-accent block">
                         {summary.totalObservedRequests !== null ? summary.totalObservedRequests.toLocaleString() : "UNKNOWN"}
                     </span>
-                    <span className="text-[11px] text-zinc-500">
+                    <span className="text-[11px] text-zinc-500 truncate block">
                         {summary.totalObservedRequests !== null ? "Captured request IDs" : "Request context not captured"}
                     </span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
                     <span className="text-[10px] text-zinc-500 uppercase block">OBSERVED SERVICES</span>
                     <span className="text-2xl font-bold text-purple-400 block">{summary.totalObservedServices}</span>
-                    <span className="text-[11px] text-zinc-400">Distinct services in telemetry</span>
+                    <span className="text-[11px] text-zinc-400 truncate block">Distinct services in telemetry</span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
                     <span className="text-[10px] text-zinc-500 uppercase block">Linked Sessions</span>
-                    <span className="text-2xl font-bold block text-zinc-300">
-                        {summary.sessionLinkageAvailable ? "Available" : "Not Collected"}
+                    <span className={`text-2xl font-bold block ${summary.totalObservedSessions !== null ? "text-white" : "text-zinc-400"}`}>
+                        {summary.totalObservedSessions !== null ? summary.totalObservedSessions.toLocaleString() : "UNKNOWN"}
                     </span>
-                    <span className="text-[11px] text-zinc-500">
-                        {summary.sessionLinkageAvailable ? "Linked failure events" : "Honest unknown state"}
+                    <span className="text-[11px] text-zinc-500 truncate block" title={summary.sessionLinkageDetail}>
+                        {summary.sessionLinkageDetail}
                     </span>
                 </div>
             </div>
 
             {impacts.length === 0 ? (
-                <div className="p-12 rounded-2xl bg-surface border border-border text-center space-y-2">
+                <div className="p-10 rounded-xl bg-surface border border-border text-center space-y-2">
                     <Network className="w-8 h-8 text-zinc-500 mx-auto" />
-                    <h3 className="text-base font-semibold text-white">No active impact data</h3>
+                    <h2 className="text-sm font-bold text-white font-mono uppercase tracking-wider">No Active Impact Telemetry</h2>
                     <p className="text-xs text-secondary max-w-md mx-auto font-mono">
-                        No failure occurrences were observed in the active time window to calculate impact propagation.
+                        No failure occurrences were observed in the active time window ({timeRange.key}) to calculate impact propagation.
                     </p>
                 </div>
             ) : (
                 <div className="space-y-3">
                     {impacts.map((imp) => {
                         const isExpanded = expandedIssueId === imp.issueId;
-                        const reqLayer = imp.layers.find((l) => l.layer === "REQUESTS");
                         const svcLayer = imp.layers.find((l) => l.layer === "SERVICES");
                         const opLayer = imp.layers.find((l) => l.layer === "OPERATIONS");
                         const sessLayer = imp.layers.find((l) => l.layer === "SESSIONS");
@@ -124,14 +123,14 @@ export function ImpactView({ data }: ImpactViewProps) {
                         return (
                             <div
                                 key={imp.issueId}
-                                className="p-4 rounded-xl bg-surface border border-border space-y-3"
+                                className="p-4 rounded-xl bg-surface border border-border space-y-3 transition-all duration-150"
                             >
                                 {/* Default Compact Summary Row (Section 11) */}
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3">
                                     <div className="space-y-1 min-w-0">
                                         <div className="flex items-center gap-2 flex-wrap">
                                             <h2 className="text-sm font-bold text-white font-mono truncate">{imp.title}</h2>
-                                            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-surface-elevated text-zinc-300 border border-border">
+                                            <span className="text-[10px] font-mono px-1.5 py-0.5 rounded bg-surface-elevated text-zinc-300 border border-border">
                                                 {imp.environment}
                                             </span>
                                         </div>
@@ -169,16 +168,19 @@ export function ImpactView({ data }: ImpactViewProps) {
                                     <div className="flex items-center gap-2 shrink-0">
                                         <button
                                             onClick={() => setExpandedIssueId(isExpanded ? null : imp.issueId)}
-                                            className="halo-btn halo-btn-secondary halo-btn-xs text-[10px] font-mono"
+                                            className="halo-btn halo-btn-secondary halo-btn-xs text-[11px] font-mono"
+                                            aria-expanded={isExpanded}
                                         >
                                             <span>{isExpanded ? "Hide Impact Cone" : "Inspect Impact Cone"}</span>
                                             {isExpanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
                                         </button>
                                         <Link
                                             href={`/explore/requests?search=${encodeURIComponent(imp.service)}`}
-                                            className="halo-btn halo-btn-secondary halo-btn-xs text-[10px] font-mono"
+                                            className="halo-btn halo-btn-ghost halo-btn-xs text-zinc-400 hover:text-white"
+                                            title={`Explore ${imp.service} telemetry`}
+                                            aria-label={`Explore ${imp.service} telemetry`}
                                         >
-                                            <Activity size={11} />
+                                            <Activity size={13} />
                                             <span>Explore</span>
                                         </Link>
                                     </div>
@@ -186,7 +188,7 @@ export function ImpactView({ data }: ImpactViewProps) {
 
                                 {/* Progressive Disclosure: Full Impact Cone rendered ONLY when expanded */}
                                 {isExpanded && (
-                                    <div className="space-y-3 pt-3 border-t border-border/80">
+                                    <div className="space-y-3 pt-3 border-t border-border/80 animate-in fade-in-50 duration-200">
                                         <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-accent block">
                                             Observable Surface Layers (Impact Cone)
                                         </span>
@@ -247,7 +249,7 @@ export function ImpactView({ data }: ImpactViewProps) {
                                                             </span>
                                                             <div className="flex items-center gap-1 flex-wrap">
                                                                 {layer.items?.map((item, i) => (
-                                                                    <span key={i} className="text-[10px] px-1.5 py-0.2 rounded bg-surface-elevated border border-border text-zinc-300 font-mono">
+                                                                    <span key={i} className="text-[10px] px-1.5 py-0.5 rounded bg-surface-elevated border border-border text-zinc-300 font-mono">
                                                                         {item}
                                                                     </span>
                                                                 ))}

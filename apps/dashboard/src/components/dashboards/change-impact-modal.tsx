@@ -64,8 +64,8 @@ export function ChangeImpactModal({
     const investigateUrl = `/projects/${change.projectId}/investigations/new?release=${encodeURIComponent(change.version)}`;
 
     return (
-        <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex items-center justify-center p-4 font-mono text-xs animate-in fade-in duration-150">
-            <div className="w-full max-w-2xl bg-[#080b11] border border-border rounded-2xl p-6 space-y-6 max-h-[90vh] overflow-y-auto shadow-2xl">
+        <div className="fixed inset-0 z-50 overflow-hidden bg-black/80 flex items-center justify-center p-4 font-mono text-xs animate-in fade-in duration-150">
+            <div className="w-full max-w-2xl bg-[#0b0f16] border border-[#222b38] rounded-2xl p-6 space-y-6 max-h-[90vh] overflow-y-auto">
                 {/* Modal Header */}
                 <div className="flex items-center justify-between border-b border-border pb-4">
                     <div className="flex items-center gap-3">

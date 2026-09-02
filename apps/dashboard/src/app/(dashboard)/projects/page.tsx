@@ -25,11 +25,11 @@ export default async function ProjectsPage() {
 
             {projects.length === 0 ? (
 
-                <div className="rounded-2xl border border-border bg-surface py-24">
+                <div className="rounded-xl border border-border bg-surface py-24">
 
                     <div className="mx-auto flex max-w-md flex-col items-center text-center">
 
-                        <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-accent/10">
+                        <div className="flex h-16 w-16 items-center justify-center rounded-xl bg-accent/10">
 
                             <FolderOpen className="h-8 w-8 text-accent" />
 

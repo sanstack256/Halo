@@ -110,13 +110,13 @@ export function EventDetailDrawer({
         <div className="fixed inset-0 z-50 flex justify-end">
             {/* Backdrop */}
             <div
-                className="fixed inset-0 bg-black/60 backdrop-blur-xs transition-opacity"
+                className="fixed inset-0 bg-black/80 transition-opacity"
                 onClick={onClose}
                 aria-hidden="true"
             />
 
             {/* Sliding Drawer Panel */}
-            <div className="relative z-10 w-full max-w-2xl bg-[#080b11] border-l border-border shadow-2xl flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-200">
+            <div className="relative z-10 w-full max-w-2xl bg-[#0b0f16] border-l border-[#222b38] flex flex-col h-full overflow-hidden animate-in slide-in-from-right duration-200">
                 {/* Header */}
                 <div className="p-5 border-b border-border space-y-3 bg-surface/50">
                     <div className="flex items-center justify-between gap-3">

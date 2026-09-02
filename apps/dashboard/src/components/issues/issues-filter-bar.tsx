@@ -2,13 +2,22 @@
 
 import React, { useState } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { Search, Calendar, Filter, X } from "lucide-react";
+import { Search, X } from "lucide-react";
+import { HaloSelect, type HaloSelectOption } from "@/components/ui/halo-select";
 
 interface IssuesFilterBarProps {
     projects: Array<{ id: string; name: string }>;
     services: string[];
     environments: string[];
 }
+
+const TIME_RANGE_OPTIONS: HaloSelectOption[] = [
+    { value: "1h", label: "Last 1 hour" },
+    { value: "6h", label: "Last 6 hours" },
+    { value: "24h", label: "Last 24 hours" },
+    { value: "7d", label: "Last 7 days" },
+    { value: "30d", label: "Last 30 days" },
+];
 
 export function IssuesFilterBar({
     projects,
@@ -53,90 +62,80 @@ export function IssuesFilterBar({
         setSearchQuery("");
     };
 
+    const projectOptions: HaloSelectOption[] = [
+        { value: "ALL", label: "All Projects" },
+        ...projects.map((p) => ({ value: p.id, label: p.name })),
+    ];
+
+    const serviceOptions: HaloSelectOption[] = [
+        { value: "ALL", label: "All Services" },
+        ...services.map((s) => ({ value: s, label: s })),
+    ];
+
+    const envOptions: HaloSelectOption[] = [
+        { value: "ALL", label: "All Environments" },
+        ...environments.map((env) => ({ value: env, label: env })),
+    ];
+
     return (
-        <div className="p-3.5 rounded-xl bg-surface border border-border flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 text-xs font-mono">
-            {/* Search Input */}
+        <div className="p-3 rounded-xl bg-surface border border-border flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 text-xs font-mono">
+            {/* Search Input (36px desktop height) */}
             <form onSubmit={handleSearchSubmit} className="relative flex-1">
-                <Search className="w-3.5 h-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2" />
+                <Search className="w-3.5 h-3.5 text-muted absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
                 <input
                     type="text"
-                    placeholder="Search issues, services, or error signatures..."
+                    placeholder="Search issues, services, or signatures..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
                     onBlur={() => updateParam("search", searchQuery.trim())}
-                    className="w-full pl-8 pr-4 py-1.5 rounded-lg bg-surface-elevated border border-border text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-accent"
+                    className="w-full h-9 pl-9 pr-4 rounded-lg bg-[#080b11] border border-white/10 text-xs text-white placeholder-zinc-500 focus:outline-none focus:border-accent transition-colors"
                 />
             </form>
 
-            {/* Filter Selectors */}
+            {/* Filter Selectors using HaloSelect (Attached Solid Dark Dropdown System) */}
             <div className="flex items-center gap-2 flex-wrap">
                 {/* Time Range */}
-                <div className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-surface-elevated border border-border">
-                    <Calendar size={12} className="text-muted" />
-                    <span className="text-zinc-500">Window:</span>
-                    <select
-                        value={selectedTimeRange}
-                        onChange={(e) => updateParam("timeRange", e.target.value)}
-                        className="bg-transparent text-white font-semibold focus:outline-none cursor-pointer"
-                    >
-                        <option value="1h" className="bg-[#0b1018]">Last 1 hour</option>
-                        <option value="6h" className="bg-[#0b1018]">Last 6 hours</option>
-                        <option value="24h" className="bg-[#0b1018]">Last 24 hours</option>
-                        <option value="7d" className="bg-[#0b1018]">Last 7 days</option>
-                        <option value="30d" className="bg-[#0b1018]">Last 30 days</option>
-                    </select>
-                </div>
+                <HaloSelect
+                    value={selectedTimeRange}
+                    onChange={(val) => updateParam("timeRange", val)}
+                    options={TIME_RANGE_OPTIONS}
+                    ariaLabel="Filter by time window"
+                />
 
                 {/* Project Filter */}
-                <select
+                <HaloSelect
                     value={selectedProject}
-                    onChange={(e) => updateParam("project", e.target.value)}
-                    className="px-2.5 py-1.5 rounded-lg bg-surface-elevated border border-border text-zinc-300 focus:outline-none focus:border-accent"
-                >
-                    <option value="ALL">All Projects</option>
-                    {projects.map((p) => (
-                        <option key={p.id} value={p.id} className="bg-[#0b1018]">
-                            {p.name}
-                        </option>
-                    ))}
-                </select>
+                    onChange={(val) => updateParam("project", val)}
+                    options={projectOptions}
+                    ariaLabel="Filter by project"
+                />
 
                 {/* Service Filter */}
-                <select
+                <HaloSelect
                     value={selectedService}
-                    onChange={(e) => updateParam("service", e.target.value)}
-                    className="px-2.5 py-1.5 rounded-lg bg-surface-elevated border border-border text-zinc-300 focus:outline-none focus:border-accent"
-                >
-                    <option value="ALL">All Services</option>
-                    {services.map((s) => (
-                        <option key={s} value={s} className="bg-[#0b1018]">
-                            {s}
-                        </option>
-                    ))}
-                </select>
+                    onChange={(val) => updateParam("service", val)}
+                    options={serviceOptions}
+                    ariaLabel="Filter by service"
+                />
 
                 {/* Environment Filter */}
-                <select
+                <HaloSelect
                     value={selectedEnv}
-                    onChange={(e) => updateParam("environment", e.target.value)}
-                    className="px-2.5 py-1.5 rounded-lg bg-surface-elevated border border-border text-zinc-300 focus:outline-none focus:border-accent"
-                >
-                    <option value="ALL">All Environments</option>
-                    {environments.map((env) => (
-                        <option key={env} value={env} className="bg-[#0b1018]">
-                            {env}
-                        </option>
-                    ))}
-                </select>
+                    onChange={(val) => updateParam("environment", val)}
+                    options={envOptions}
+                    ariaLabel="Filter by environment"
+                />
 
                 {/* Reset Filters */}
                 {hasActiveFilters && (
                     <button
                         onClick={clearAllFilters}
-                        className="p-1.5 rounded-lg bg-surface-elevated border border-border text-zinc-400 hover:text-white hover:border-zinc-500 transition-colors"
-                        title="Clear filters"
+                        className="h-9 px-2.5 rounded-lg bg-[#080b11] border border-white/10 text-zinc-400 hover:text-white hover:border-white/20 transition-colors flex items-center gap-1 text-xs"
+                        title="Clear active filters"
+                        aria-label="Clear active filters"
                     >
                         <X size={13} />
+                        <span className="hidden sm:inline text-[11px]">Clear</span>
                     </button>
                 )}
             </div>

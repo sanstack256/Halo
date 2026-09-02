@@ -93,7 +93,7 @@ export function ServiceDetailClient({
             </div>
 
             {/* Service Header */}
-            <div className="p-6 rounded-2xl bg-surface border border-border space-y-4">
+            <div className="p-6 rounded-xl bg-surface border border-border space-y-4">
                 <div className="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
                     <div className="space-y-2">
                         <div className="flex items-center gap-3 flex-wrap">

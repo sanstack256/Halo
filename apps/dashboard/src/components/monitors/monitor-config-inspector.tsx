@@ -31,7 +31,7 @@ export function MonitorConfigInspector({ data }: MonitorConfigInspectorProps) {
     const emailRecipients: string[] = alertConfig?.emailRecipients || (alertConfig?.email ? [alertConfig.email] : []);
 
     return (
-        <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-6">
+        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-6">
             <div className="flex items-center justify-between border-b border-[var(--border)] pb-4">
                 <div className="flex items-center gap-2">
                     <Sliders size={14} className="text-[var(--accent)]" />

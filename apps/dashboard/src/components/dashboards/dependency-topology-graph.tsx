@@ -245,7 +245,7 @@ export function DependencyTopologyGraph({
 
                     {/* Single Node Contextual Note */}
                     {isSingleNode && filteredEdges.length === 0 && (
-                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-[#080c14]/90 border border-border px-4 py-2 rounded-full text-xs text-text-secondary flex items-center gap-2 pointer-events-none z-10 backdrop-blur-md shadow-xl">
+                        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 bg-[#080b11] border border-[#222b38] px-4 py-2 rounded-full text-xs text-[#a8b1be] flex items-center gap-2 pointer-events-none z-10">
                             <Info size={13} className="text-accent" />
                             <span>No observed dependency connections in the selected scope</span>
                         </div>

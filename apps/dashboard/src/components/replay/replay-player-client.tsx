@@ -488,7 +488,7 @@ export function ReplayPlayerClient({
             </div>
 
             {/* RRWeb Canvas Viewport — real application DOM, no fake browser chrome */}
-            <div className="relative rounded-2xl bg-[#080b11] border border-white/10 shadow-2xl overflow-hidden flex flex-col items-center">
+            <div className="relative rounded-xl bg-[#080b11] border border-white/10 overflow-hidden flex flex-col items-center">
                 {/* Minimal honest session info strip — only real data from recording */}
                 <div className="w-full h-7 bg-[#0d1117] border-b border-white/[0.06] flex items-center justify-between px-3 gap-2 text-[11px] font-mono text-zinc-500">
                     <span className="truncate max-w-xs text-zinc-400">
@@ -510,7 +510,7 @@ export function ReplayPlayerClient({
                         type="button"
                         onClick={togglePlay}
                         aria-label={isPlaying ? "Pause" : "Play"}
-                        className={`pointer-events-auto w-16 h-16 rounded-full bg-black/75 hover:bg-black/90 text-white border border-white/20 shadow-2xl backdrop-blur-md flex items-center justify-center transition-all transform hover:scale-110 active:scale-95 ${isPlaying ? "opacity-0 hover:opacity-100" : "opacity-100"}`}
+                        className={`pointer-events-auto w-16 h-16 rounded-full bg-[#080b11] hover:bg-[#0b0f16] text-[#f2f5f8] border border-[#222b38] flex items-center justify-center transition-all transform hover:scale-105 active:scale-95 ${isPlaying ? "opacity-0 hover:opacity-100" : "opacity-100"}`}
                     >
                         {isPlaying ? <Pause size={28} /> : <Play size={28} className="ml-1 text-accent" />}
                     </button>

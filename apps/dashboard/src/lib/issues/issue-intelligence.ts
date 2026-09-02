@@ -107,7 +107,7 @@ export interface TriageProjection {
 /* ========================================================================== */
 
 export interface FailureFingerprintStep {
-    stage: "TRIGGER" | "BOUNDARY" | "DOWNSTREAM" | "FAILURE";
+    stage: "REQUEST_CONTEXT" | "BOUNDARY" | "DOWNSTREAM" | "FAILURE";
     label: string;
     value: string;
     evidenceStatus: EvidenceStatus;
@@ -183,6 +183,8 @@ export interface ImpactProjection {
         totalEvaluatedIssues: number;
         totalObservedRequests: number | null;
         totalObservedServices: number;
+        totalObservedSessions: number | null;
+        sessionLinkageDetail: string;
         sessionLinkageAvailable: boolean;
     };
     timeRange: { key: string; start: Date; end: Date };
@@ -234,6 +236,7 @@ export interface EvolutionProjection {
     summary: {
         totalTracked: number;
         behaviorShiftsDetected: number;
+        stableObservedStates: number;
         telemetryGapsDetected: number;
     };
     timeRange: { key: string; start: Date; end: Date };
@@ -892,11 +895,11 @@ export async function getPatternsProjection(params: IssueIntelligenceParams): Pr
 
         const fingerprintSteps: FailureFingerprintStep[] = [
             {
-                stage: "TRIGGER",
-                label: "Inbound Invocation",
+                stage: "REQUEST_CONTEXT",
+                label: "Request Context",
                 value: p.routes.size > 0 ? Array.from(p.routes)[0] : "HTTP Request",
                 evidenceStatus: p.routes.size > 0 ? "OBSERVED" : "SUPPORTED",
-                evidenceDetail: "Observed route / operation span",
+                evidenceDetail: "Observed route / operation span preceding failure",
             },
             {
                 stage: "BOUNDARY",
@@ -928,8 +931,8 @@ export async function getPatternsProjection(params: IssueIntelligenceParams): Pr
         const evidenceStrength: PatternEvidenceStrength =
             p.dependencyType && p.httpStatus ? "ROBUST" : p.issues.length >= 3 ? "MODERATE" : "LIMITED";
 
-        const whyThisIsAPattern = `Identified across ${p.issues.length} distinct issues sharing identical ${p.failureBoundary} and ${p.exceptionClass} behavior.`;
-        const commonObservedBehavior = `Consistent execution failure in ${p.failureBoundary} with ${p.exceptionClass}.`;
+        const whyThisIsAPattern = `Identified across ${p.issues.length} distinct issues sharing the same observed failure signature across available telemetry dimensions.`;
+        const commonObservedBehavior = `Share the same observed failure signature in ${p.failureBoundary} with ${p.exceptionClass}.`;
 
         patterns.push({
             id: key,
@@ -954,7 +957,7 @@ export async function getPatternsProjection(params: IssueIntelligenceParams): Pr
             invariants,
             divergences: divergences.length > 0 ? divergences : ["Uniform behavior across occurrences"],
             evidenceStatus: p.services.size > 1 ? "SUPPORTED" : "OBSERVED",
-            evidenceExplanation: "Observed behavioral similarity across distinct issues. Does not establish shared root cause.",
+            evidenceExplanation: "Share the same observed failure signature across the available telemetry dimensions. Does not establish shared root cause.",
         });
     }
 
@@ -989,6 +992,7 @@ export async function getImpactProjection(params: IssueIntelligenceParams): Prom
     let globalObservedRequests = 0;
     let hasAnyRequests = false;
     const globalServices = new Set<string>();
+    const globalSessionIds = new Set<string>();
     let sessionLinkageDetected = false;
 
     for (const issue of issues) {
@@ -1024,6 +1028,7 @@ export async function getImpactProjection(params: IssueIntelligenceParams): Prom
             }
             if (ev.sessionId) {
                 sessionIds.add(ev.sessionId);
+                globalSessionIds.add(ev.sessionId);
                 sessionLinkageAvailable = true;
                 sessionLinkageDetected = true;
             }
@@ -1109,12 +1114,21 @@ export async function getImpactProjection(params: IssueIntelligenceParams): Prom
         return bCount - aCount;
     });
 
+    const totalObservedSessions = globalSessionIds.size > 0 ? globalSessionIds.size : null;
+    const sessionLinkageDetail = totalObservedSessions !== null
+        ? `${totalObservedSessions.toLocaleString()} session(s) with linked failure events`
+        : sessionLinkageDetected
+        ? "Session linkage exists, but aggregate session cardinality is unavailable"
+        : "User session linkage was not collected in SDK events";
+
     return {
         impacts,
         summary: {
             totalEvaluatedIssues: impacts.length,
             totalObservedRequests: hasAnyRequests ? globalObservedRequests : null,
             totalObservedServices: globalServices.size,
+            totalObservedSessions,
+            sessionLinkageDetail,
             sessionLinkageAvailable: sessionLinkageDetected,
         },
         timeRange: { key: timeRange.key, start: timeRange.start, end: timeRange.end },
@@ -1260,11 +1274,14 @@ export async function getEvolutionProjection(params: IssueIntelligenceParams): P
         });
     }
 
+    const stableObservedStates = evolutions.filter((e) => !e.hasTransition).length;
+
     return {
         evolutions,
         summary: {
             totalTracked: evolutions.length,
             behaviorShiftsDetected,
+            stableObservedStates,
             telemetryGapsDetected,
         },
         timeRange: { key: timeRange.key, start: timeRange.start, end: timeRange.end },

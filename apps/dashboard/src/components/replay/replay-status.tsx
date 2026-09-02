@@ -73,7 +73,7 @@ export function ReplayStatus({
         case "PLAN_REQUIRED":
             return (
                 <div className="halo-card p-6 flex flex-col items-center justify-center text-center space-y-4 min-h-[280px]">
-                    <div className="w-12 h-12 rounded-2xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+                    <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
                         <Lock size={22} />
                     </div>
                     <div className="space-y-1">

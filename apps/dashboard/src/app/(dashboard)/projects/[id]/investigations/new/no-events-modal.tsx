@@ -14,11 +14,11 @@ export function NoEventsInvestigationModal({
     const router = useRouter();
 
     return (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-md animate-in fade-in-0 duration-150">
-            <div className="w-full max-w-lg rounded-2xl bg-[#090d14] p-7 border border-white/10 shadow-2xl space-y-6 animate-in zoom-in-95 duration-150">
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 animate-in fade-in-0 duration-150">
+            <div className="w-full max-w-lg rounded-2xl bg-[#0b0f16] p-6 border border-[#222b38] space-y-6 animate-in zoom-in-95 duration-150">
                 {/* Header with Icon */}
                 <div className="flex items-start gap-4">
-                    <div className="w-12 h-12 rounded-2xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0 text-amber-400">
+                    <div className="w-12 h-12 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center flex-shrink-0 text-amber-400">
                         <AlertCircle size={24} />
                     </div>
 

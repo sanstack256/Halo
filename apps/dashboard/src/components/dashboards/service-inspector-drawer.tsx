@@ -67,8 +67,8 @@ export function ServiceInspectorDrawer({
     const investigateUrl = `/projects/${service.projectId}/investigations/new?service=${service.service}`;
 
     return (
-        <div className="fixed inset-0 z-50 overflow-hidden bg-black/60 backdrop-blur-xs flex justify-end font-mono text-xs animate-in fade-in duration-150">
-            <div className="w-full max-w-xl bg-[#080b11] border-l border-border h-full overflow-y-auto p-6 space-y-6 flex flex-col justify-between shadow-2xl">
+        <div className="fixed inset-0 z-50 overflow-hidden bg-black/80 flex justify-end font-mono text-xs animate-in fade-in duration-150">
+            <div className="w-full max-w-xl bg-[#0b0f16] border-l border-[#222b38] h-full overflow-y-auto p-6 space-y-6 flex flex-col justify-between">
                 <div className="space-y-6">
                     {/* Drawer Header */}
                     <div className="flex items-center justify-between border-b border-border pb-4">

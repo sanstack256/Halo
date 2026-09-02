@@ -5,7 +5,7 @@ import { ArrowLeft, ShieldAlert } from "lucide-react";
 export default function AlertNotFound() {
     return (
         <div className="py-24 flex flex-col items-center justify-center text-center space-y-4">
-            <div className="p-4 rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] text-zinc-500">
+            <div className="p-4 rounded-xl bg-[var(--surface-elevated)] border border-[var(--border)] text-zinc-500">
                 <ShieldAlert size={32} />
             </div>
             <div className="space-y-1.5 max-w-sm">

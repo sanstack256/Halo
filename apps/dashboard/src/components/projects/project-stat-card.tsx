@@ -16,13 +16,13 @@ export default function ProjectStatCard({
     return (
         <div
             className="
-                rounded-2xl
+                rounded-xl
                 border
-                border-zinc-800
-                bg-zinc-950
+                border-border-default
+                bg-surface-elevated
                 p-6
                 transition
-                hover:border-zinc-700
+                hover:border-border-strong
             "
         >
             <div className="flex items-center justify-between">

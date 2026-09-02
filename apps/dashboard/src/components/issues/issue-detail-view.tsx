@@ -218,7 +218,7 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                 {/* Left Column: Occurrences & Stack Trace */}
                 <div className="space-y-6 min-w-0">
                     {/* Occurrences / Representative Events Table */}
-                    <div className="p-5 rounded-2xl bg-[#080b11] border border-border space-y-4 shadow-xl">
+                    <div className="p-5 rounded-xl bg-[#080b11] border border-border space-y-4">
                         <div className="flex items-center justify-between border-b border-white/10 pb-3">
                             <div className="flex items-center gap-2">
                                 <History className="w-4 h-4 text-accent" />
@@ -289,7 +289,7 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                     </div>
 
                     {/* Stack Trace for Selected Occurrence */}
-                    <div className="p-5 rounded-2xl bg-surface border border-border space-y-4">
+                    <div className="p-5 rounded-xl bg-surface border border-border space-y-4">
                         <div className="flex items-center justify-between border-b border-border pb-3">
                             <div>
                                 <h3 className="text-xs font-bold uppercase tracking-wider text-white">
@@ -339,7 +339,7 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
 
                     {/* Session Replay */}
                     {replaySession ? (
-                        <div className="p-5 rounded-2xl bg-surface border border-border space-y-4">
+                        <div className="p-5 rounded-xl bg-surface border border-border space-y-4">
                             <h3 className="text-xs font-bold uppercase tracking-wider text-white">
                                 Correlated User Session Replay
                             </h3>
@@ -356,7 +356,7 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                 {/* Right Column: Investigation Launchpad & Metadata */}
                 <div className="space-y-6">
                     {/* Launchpad Card */}
-                    <div className="p-5 rounded-2xl bg-accent/10 border border-accent/30 space-y-4 shadow-xl shadow-accent/5">
+                    <div className="p-5 rounded-xl bg-accent/10 border border-accent/30 space-y-4">
                         <div className="flex items-center gap-2 text-accent font-bold text-sm">
                             <Sparkles size={16} />
                             <span>Halo Causal Investigation</span>
@@ -374,7 +374,7 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                     </div>
 
                     {/* Issue Metadata Drawer */}
-                    <div className="p-5 rounded-2xl bg-surface border border-border space-y-4 text-xs font-mono">
+                    <div className="p-5 rounded-xl bg-surface border border-border space-y-4 text-xs font-mono">
                         <h3 className="font-bold uppercase tracking-wider text-zinc-400 border-b border-border pb-2">
                             Overview Metadata
                         </h3>
@@ -406,7 +406,7 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                     </div>
 
                     {/* Activity Stream / Comments */}
-                    <div className="p-5 rounded-2xl bg-surface border border-border space-y-4">
+                    <div className="p-5 rounded-xl bg-surface border border-border space-y-4">
                         <h3 className="text-xs font-bold uppercase tracking-wider text-zinc-400 border-b border-border pb-2">
                             Activity Stream & Notes
                         </h3>

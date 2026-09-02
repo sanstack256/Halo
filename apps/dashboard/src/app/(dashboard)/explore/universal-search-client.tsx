@@ -38,7 +38,7 @@ export function UniversalSearchClient() {
         <div className="space-y-6">
             {/* Search Input Bar */}
             <div className="relative">
-                <div className="flex items-center gap-3 p-2.5 rounded-2xl border border-border-strong bg-surface-elevated shadow-lg focus-within:border-accent transition-colors">
+                <div className="flex items-center gap-3 p-2.5 rounded-xl border border-border-default bg-surface-elevated focus-within:border-accent transition-colors">
                     <Search size={18} className="text-muted ml-2 flex-shrink-0" />
                     <input
                         type="text"

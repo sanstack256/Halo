@@ -32,13 +32,13 @@ export default function MonitorDetailLoading() {
             </div>
 
             {/* Timeline chart skeleton */}
-            <div className="h-44 rounded-2xl border border-[var(--border)] bg-white/5 p-6" />
+            <div className="h-44 rounded-xl border border-[var(--border)] bg-white/5 p-6" />
 
             {/* Trigger history skeleton */}
-            <div className="h-56 rounded-2xl border border-[var(--border)] bg-white/5 p-6" />
+            <div className="h-56 rounded-xl border border-[var(--border)] bg-white/5 p-6" />
 
             {/* Config inspector skeleton */}
-            <div className="h-64 rounded-2xl border border-[var(--border)] bg-white/5 p-6" />
+            <div className="h-64 rounded-xl border border-[var(--border)] bg-white/5 p-6" />
         </div>
     );
 }

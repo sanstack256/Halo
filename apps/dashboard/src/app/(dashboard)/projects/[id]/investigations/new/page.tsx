@@ -564,7 +564,7 @@ function InvestigationView({
 
             {/* Context Origin Banner: Interval */}
             {intervalContext && (
-                <div className="p-4 rounded-2xl border border-accent/20 bg-accent/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
+                <div className="p-4 rounded-xl border border-accent/20 bg-accent/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
                             <span className="px-2 py-0.5 rounded-full bg-accent/20 border border-accent/30 text-accent font-semibold text-[11px]">
@@ -594,7 +594,7 @@ function InvestigationView({
 
             {/* Context Origin Banner: Release */}
             {releaseContext && (
-                <div className="p-4 rounded-2xl border border-purple-500/20 bg-purple-500/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
+                <div className="p-4 rounded-xl border border-purple-500/20 bg-purple-500/5 flex flex-col sm:flex-row sm:items-center justify-between gap-4 font-mono text-xs">
                     <div className="space-y-1">
                         <div className="flex items-center gap-2 flex-wrap">
                             <span className="px-2 py-0.5 rounded-full bg-purple-500/20 border border-purple-500/30 text-purple-400 font-semibold text-[11px]">

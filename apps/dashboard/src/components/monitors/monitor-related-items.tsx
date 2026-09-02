@@ -25,7 +25,7 @@ export function MonitorRelatedItems({ data }: MonitorRelatedItemsProps) {
     return (
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
             {/* Related Issues Section */}
-            <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4">
+            <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <AlertOctagon size={14} className="text-[var(--accent)]" />
@@ -85,7 +85,7 @@ export function MonitorRelatedItems({ data }: MonitorRelatedItemsProps) {
             </div>
 
             {/* Related Releases / Deployments Section */}
-            <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4">
+            <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4">
                 <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                         <Package size={14} className="text-purple-400" />

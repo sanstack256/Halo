@@ -22,7 +22,7 @@ export function MonitorActivityLog({ data }: MonitorActivityLogProps) {
     const { timelineEvents } = data;
 
     return (
-        <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4">
+        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <Clock size={14} className="text-[var(--accent)]" />

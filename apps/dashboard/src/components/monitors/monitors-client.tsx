@@ -294,7 +294,7 @@ export function MonitorsClient({
             </div>
 
             {/* Toolbar Filter Controls */}
-            <div className="p-3.5 rounded-2xl bg-surface border border-border flex flex-wrap items-center justify-between gap-3">
+            <div className="p-2 rounded-xl bg-surface border border-border flex flex-wrap items-center justify-between gap-2.5">
                 <div className="flex flex-wrap items-center gap-2.5 flex-1 min-w-[280px]">
                     {/* Search Input */}
                     <div className="relative flex-1 min-w-[200px] max-w-sm">
@@ -398,8 +398,8 @@ export function MonitorsClient({
 
             {/* Monitor Table / Inventory */}
             {filteredMonitors.length === 0 ? (
-                <div className="p-12 text-center rounded-2xl bg-surface border border-border space-y-4">
-                    <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 mx-auto">
+                <div className="p-12 text-center rounded-xl bg-surface border border-border space-y-4">
+                    <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 mx-auto">
                         <BellRing size={24} />
                     </div>
                     <div>

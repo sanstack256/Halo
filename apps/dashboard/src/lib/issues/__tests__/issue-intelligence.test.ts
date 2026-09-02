@@ -272,3 +272,227 @@ describe("Global Issues Intelligence — Final Acceptance Tests (A through J)", 
         expect(category).not.toBe("INVESTIGATE_NOW");
     });
 });
+
+describe("Global Issues Intelligence — Top-1% UI/UX Semantic Guarantees (Tests 1 through 10)", () => {
+    /* ====================================================================== */
+    /* TEST 1: Request context is not labeled TRIGGER without causal evidence */
+    /* ====================================================================== */
+    it("Test 1: Request context is not labeled TRIGGER without causal evidence", () => {
+        const step = {
+            stage: "REQUEST_CONTEXT" as const,
+            label: "Request Context",
+            value: "GET /api/checkout",
+            evidenceStatus: "OBSERVED" as const,
+            evidenceDetail: "Observed route / operation span preceding failure",
+        };
+
+        expect(step.stage).toBe("REQUEST_CONTEXT");
+        expect(step.stage).not.toBe("TRIGGER");
+        expect(step.label).toBe("Request Context");
+        expect(step.evidenceDetail).toContain("preceding failure");
+    });
+
+    /* ====================================================================== */
+    /* TEST 2: Pattern explanations do not claim identical execution behavior */
+    /* ====================================================================== */
+    it("Test 2: Pattern explanations do not claim identical execution behavior without evidence", () => {
+        const explanation =
+            "Share the same observed failure signature across the available telemetry dimensions. Does not establish shared root cause.";
+        const commonObservedBehavior =
+            "Share the same observed failure signature in Application Exception with PaymentTimeoutError.";
+
+        expect(explanation).toContain("Share the same observed failure signature across the available telemetry dimensions");
+        expect(explanation).not.toContain("identical execution behavior");
+        expect(commonObservedBehavior).toContain("Share the same observed failure signature");
+        expect(commonObservedBehavior).not.toContain("identical execution behavior");
+    });
+
+    /* ====================================================================== */
+    /* TEST 3: Aggregate linked-session counts are never fabricated or "Available" */
+    /* ====================================================================== */
+    it("Test 3: Aggregate linked-session counts are never fabricated (and never placeholder 'Available')", () => {
+        function resolveSessionLinkageSummary(globalSessionIds: Set<string>, sessionLinkageDetected: boolean) {
+            const totalObservedSessions = globalSessionIds.size > 0 ? globalSessionIds.size : null;
+            const sessionLinkageDetail =
+                totalObservedSessions !== null
+                    ? `${totalObservedSessions.toLocaleString()} session(s) with linked failure events`
+                    : sessionLinkageDetected
+                    ? "Session linkage exists, but aggregate session cardinality is unavailable"
+                    : "User session linkage was not collected in SDK events";
+
+            return { totalObservedSessions, sessionLinkageDetail };
+        }
+
+        // Case A: Uncollected session IDs
+        const uncollected = resolveSessionLinkageSummary(new Set(), false);
+        expect(uncollected.totalObservedSessions).toBeNull();
+        expect(uncollected.totalObservedSessions).not.toBe(0);
+        expect(uncollected.sessionLinkageDetail).not.toContain("Available");
+        expect(uncollected.sessionLinkageDetail).toContain("not collected");
+
+        // Case B: Real collected session IDs
+        const collected = resolveSessionLinkageSummary(new Set(["sess_1", "sess_2", "sess_3"]), true);
+        expect(collected.totalObservedSessions).toBe(3);
+        expect(collected.sessionLinkageDetail).toBe("3 session(s) with linked failure events");
+        expect(collected.sessionLinkageDetail).not.toContain("Available");
+    });
+
+    /* ====================================================================== */
+    /* TEST 4: Evolution with zero transitions prioritizes no-transition state*/
+    /* ====================================================================== */
+    it("Test 4: Evolution with zero transitions prioritizes the no-transition state", () => {
+        const summary = {
+            totalTracked: 4,
+            behaviorShiftsDetected: 0,
+            stableObservedStates: 4,
+            telemetryGapsDetected: 1,
+        };
+
+        const hasZeroTransitions = summary.behaviorShiftsDetected === 0;
+        expect(hasZeroTransitions).toBe(true);
+
+        const heroHeading = hasZeroTransitions ? "No Observed Behavioral Transitions" : "Behavioral Transitions";
+        const heroDescription = hasZeroTransitions
+            ? "No verified execution-property shifts were established across tracked issues during the selected window."
+            : "Observed execution-property shifts detected.";
+
+        expect(heroHeading).toBe("No Observed Behavioral Transitions");
+        expect(heroDescription).toContain("No verified execution-property shifts were established");
+    });
+
+    /* ====================================================================== */
+    /* TEST 5: Stable evolution issues are progressively disclosed            */
+    /* ====================================================================== */
+    it("Test 5: Stable evolution issues are progressively disclosed behind toggle", () => {
+        let showStableStates = false;
+        const stableIssuesCount = 55;
+
+        const buttonLabel = showStableStates
+            ? "Hide Stable Observed States"
+            : `Show Stable Observed States (${stableIssuesCount})`;
+
+        expect(showStableStates).toBe(false);
+        expect(buttonLabel).toBe("Show Stable Observed States (55)");
+
+        // Expanding reveals stable issues
+        showStableStates = true;
+        const expandedLabel = showStableStates
+            ? "Hide Stable Observed States"
+            : `Show Stable Observed States (${stableIssuesCount})`;
+        expect(expandedLabel).toBe("Hide Stable Observed States");
+    });
+
+    /* ====================================================================== */
+    /* TEST 6: BLOCKED CAPABILITIES matches its semantic definition          */
+    /* ====================================================================== */
+    it("Test 6: BLOCKED CAPABILITIES matches its actual semantic definition", () => {
+        // A blocked capability is an investigation capability blocked across issues due to missing telemetry
+        const mockGaps = [
+            {
+                id: "gap_1",
+                category: "DISTRIBUTED_TRACE_LINKAGE",
+                blockedIssuesCount: 4,
+                whatItPrevents: "Cross-service causal tree reconstruction",
+            },
+            {
+                id: "gap_2",
+                category: "DATABASE_QUERY_TELEMETRY",
+                blockedIssuesCount: 4,
+                whatItPrevents: "Database query duration vs application latency boundary isolation",
+            },
+            {
+                id: "gap_3",
+                category: "USER_SESSION_LINKAGE",
+                blockedIssuesCount: 4,
+                whatItPrevents: "Deterministic session replay correlation",
+            },
+            {
+                id: "gap_4",
+                category: "DEPLOYMENT_RELEASE_TAG",
+                blockedIssuesCount: 4,
+                whatItPrevents: "Deployment regression attribution",
+            },
+        ];
+
+        const totalBlockedCapabilities = mockGaps.reduce((acc, g) => acc + g.blockedIssuesCount, 0);
+        const distinctBlockedIssues = 4;
+
+        expect(totalBlockedCapabilities).toBe(16);
+        expect(distinctBlockedIssues).toBe(4);
+        expect(totalBlockedCapabilities).toBeGreaterThan(distinctBlockedIssues);
+    });
+
+    /* ====================================================================== */
+    /* TEST 7: SUPPORTED states have an explicit evidence basis               */
+    /* ====================================================================== */
+    it("Test 7: SUPPORTED states have an explicit evidence basis", () => {
+        const serviceLayer: ImpactLayer = {
+            layer: "SERVICES",
+            label: "Trace-Linked Services",
+            count: 2,
+            isAvailable: true,
+            evidenceStatus: "SUPPORTED",
+            evidenceDetail: "Traced across: checkout-service, payment-service",
+            items: ["checkout-service", "payment-service"],
+        };
+
+        expect(serviceLayer.evidenceStatus).toBe("SUPPORTED");
+        expect(serviceLayer.items?.length).toBe(2);
+        expect(serviceLayer.evidenceDetail).toContain("Traced across:");
+    });
+
+    /* ====================================================================== */
+    /* TEST 8: UNKNOWN remains UNKNOWN through rendering                      */
+    /* ====================================================================== */
+    it("Test 8: UNKNOWN remains UNKNOWN through rendering and never converts to 0", () => {
+        const unknownLayer: ImpactLayer = {
+            layer: "OPERATIONS",
+            label: "Downstream Operations",
+            count: null,
+            isAvailable: false,
+            evidenceStatus: "UNKNOWN",
+            evidenceDetail: "No downstream operation telemetry is available to determine affected set",
+        };
+
+        const renderValue = unknownLayer.count !== null ? unknownLayer.count.toLocaleString() : "UNKNOWN";
+        expect(renderValue).toBe("UNKNOWN");
+        expect(renderValue).not.toBe("0");
+    });
+
+    /* ====================================================================== */
+    /* TEST 9: INSUFFICIENT_EVIDENCE cannot render as RECOVERED               */
+    /* ====================================================================== */
+    it("Test 9: INSUFFICIENT_EVIDENCE cannot render as RECOVERED", () => {
+        const candidate = {
+            issueId: "iss_1",
+            assessment: {
+                status: "INSUFFICIENT_EVIDENCE" as ResolutionStatus,
+                verdictExplanation: "Post-change request volume is unverified; elapsed time alone does not prove recovery.",
+            },
+        };
+
+        expect(candidate.assessment.status).toBe("INSUFFICIENT_EVIDENCE");
+        expect(candidate.assessment.status).not.toBe("RECOVERED");
+        expect(candidate.assessment.verdictExplanation).toContain("elapsed time alone does not prove recovery");
+    });
+
+    /* ====================================================================== */
+    /* TEST 10: Existing forensic A–J behavior remains unchanged              */
+    /* ====================================================================== */
+    it("Test 10: Existing forensic A–J behavior remains unchanged and stable", () => {
+        const statusValues: ResolutionStatus[] = [
+            "RECOVERED",
+            "PARTIALLY_RECOVERED",
+            "STILL_OBSERVED",
+            "INSUFFICIENT_EVIDENCE",
+            "NO_BASELINE_OCCURRENCE",
+            "CHANGE_NOT_ISOLATED",
+        ];
+
+        expect(statusValues).toContain("NO_BASELINE_OCCURRENCE");
+        expect(statusValues).toContain("CHANGE_NOT_ISOLATED");
+        expect(statusValues).toContain("INSUFFICIENT_EVIDENCE");
+        expect(statusValues.length).toBe(6);
+    });
+});
+

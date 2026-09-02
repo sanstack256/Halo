@@ -13,7 +13,7 @@ export function MonitorFutureInvestigationSlot({ data }: MonitorFutureInvestigat
     const { monitor, investigations } = data;
 
     return (
-        <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] relative overflow-hidden space-y-6">
+        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] relative overflow-hidden space-y-6">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">

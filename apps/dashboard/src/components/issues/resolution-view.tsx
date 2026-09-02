@@ -12,7 +12,7 @@ import {
     ChevronDown,
     ChevronUp,
 } from "lucide-react";
-import type { ResolutionProjection, ResolutionCandidate, ResolutionStatus } from "@/lib/issues/issue-intelligence";
+import type { ResolutionProjection, ResolutionStatus } from "@/lib/issues/issue-intelligence";
 import { RelativeTime } from "@/components/ui/relative-time";
 
 interface ResolutionViewProps {
@@ -72,7 +72,7 @@ export function ResolutionView({ data }: ResolutionViewProps) {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
+            {/* Page Header */}
             <div>
                 <h1 className="text-2xl font-bold text-white tracking-tight">Resolution</h1>
                 <p className="text-sm text-secondary mt-1">
@@ -93,7 +93,7 @@ export function ResolutionView({ data }: ResolutionViewProps) {
                 </span>
             </div>
 
-            {/* Summary Strip */}
+            {/* Summary Strip (Calibrated KPI Strip) */}
             <div className="grid grid-cols-2 sm:grid-cols-6 gap-2.5 text-xs font-mono">
                 <div className="p-3 rounded-xl bg-surface border border-border space-y-1">
                     <span className="text-[10px] text-zinc-500 uppercase block">Evaluated</span>
@@ -128,9 +128,9 @@ export function ResolutionView({ data }: ResolutionViewProps) {
             </div>
 
             {candidates.length === 0 ? (
-                <div className="p-12 rounded-2xl bg-surface border border-border text-center space-y-2">
+                <div className="p-10 rounded-xl bg-surface border border-border text-center space-y-2">
                     <CheckCircle2 className="w-8 h-8 text-zinc-500 mx-auto" />
-                    <h3 className="text-base font-semibold text-white">No resolution candidates found</h3>
+                    <h2 className="text-sm font-bold text-white font-mono uppercase tracking-wider">No Resolution Candidates Found</h2>
                     <p className="text-xs text-secondary max-w-md mx-auto font-mono">
                         No deployments, releases, or issue lifecycle changes matched the active scope to audit.
                     </p>
@@ -143,7 +143,7 @@ export function ResolutionView({ data }: ResolutionViewProps) {
                         return (
                             <div
                                 key={c.issueId}
-                                className="p-4 rounded-xl bg-surface border border-border space-y-3"
+                                className="p-4 rounded-xl bg-surface border border-border space-y-3 transition-all duration-150"
                             >
                                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-2">
                                     <div className="space-y-1 min-w-0">
@@ -166,22 +166,25 @@ export function ResolutionView({ data }: ResolutionViewProps) {
                                     <div className="flex items-center gap-2 shrink-0">
                                         <button
                                             onClick={() => setExpandedIssueId(isExpanded ? null : c.issueId)}
-                                            className="halo-btn halo-btn-secondary halo-btn-xs text-[10px] font-mono"
+                                            className="halo-btn halo-btn-secondary halo-btn-xs text-[11px] font-mono"
+                                            aria-expanded={isExpanded}
                                         >
                                             <span>{isExpanded ? "Hide Audit Matrix" : "Inspect Audit Matrix"}</span>
                                             {isExpanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
                                         </button>
                                         <Link
                                             href={`/projects/${c.projectId}/issues/${c.issueId}`}
-                                            className="halo-btn halo-btn-secondary halo-btn-xs text-[10px] font-mono"
+                                            className="halo-btn halo-btn-ghost halo-btn-xs text-zinc-400 hover:text-white"
+                                            title="View issue details"
+                                            aria-label="View issue details"
                                         >
-                                            <ExternalLink size={11} />
+                                            <ExternalLink size={13} />
                                             <span>Issue</span>
                                         </Link>
                                     </div>
                                 </div>
 
-                                {/* SECTION 5: Post-Change Observation & Calibrated Verdict */}
+                                {/* Post-Change Observation & Calibrated Verdict */}
                                 <div className="p-2.5 rounded-lg bg-[#06080d] border border-border/80 flex flex-col sm:flex-row sm:items-center justify-between gap-2 text-xs font-mono">
                                     <div className="space-y-0.5 min-w-0">
                                         <span className="text-zinc-200 block text-[11px]">
@@ -209,7 +212,7 @@ export function ResolutionView({ data }: ResolutionViewProps) {
 
                                 {/* Progressive Disclosure: Full Before / Change / After Matrix */}
                                 {isExpanded && (
-                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-2 border-t border-border/60 text-xs font-mono">
+                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-2 border-t border-border/60 text-xs font-mono animate-in fade-in-50 duration-200">
                                         {/* BEFORE */}
                                         <div className="p-2.5 rounded-lg bg-surface-elevated border border-border space-y-1">
                                             <span className="text-[9px] uppercase font-bold text-zinc-500 block">

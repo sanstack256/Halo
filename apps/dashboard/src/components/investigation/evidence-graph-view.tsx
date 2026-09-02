@@ -246,7 +246,7 @@ export function EvidenceGraphView({ graph, title = "Interactive Evidence Graph",
             </div>
 
             {/* Interactive Graph Canvas Area */}
-            <div className="relative rounded-2xl bg-[#080b11] border border-white/10 overflow-hidden shadow-2xl p-6 min-h-[420px] flex flex-col justify-center">
+            <div className="relative rounded-xl bg-[#080b11] border border-border-default overflow-hidden p-6 min-h-[420px] flex flex-col justify-center">
                 {/* Node Grid Layout */}
                 <div
                     className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3 transition-transform duration-200"

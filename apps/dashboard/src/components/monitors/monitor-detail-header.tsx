@@ -283,8 +283,8 @@ export function MonitorDetailHeader({ monitor }: MonitorDetailHeaderProps) {
 
             {/* Delete Confirmation Modal */}
             {showDeleteConfirm && (
-                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 p-4">
-                    <div className="w-full max-w-md p-6 rounded-2xl bg-[var(--surface-elevated)] border border-[var(--border)] space-y-4 shadow-2xl">
+                <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 p-4">
+                    <div className="w-full max-w-md p-6 rounded-2xl bg-[#0b0f16] border border-[#222b38] space-y-4">
                         <div className="flex items-start justify-between">
                             <div className="flex items-center gap-3">
                                 <div className="p-2 rounded-lg bg-red-500/10 text-red-400 border border-red-500/20">

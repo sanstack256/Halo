@@ -22,6 +22,21 @@ import {
 } from "lucide-react";
 import { createMonitor, updateMonitor, type OrgMonitor } from "@/actions/monitor";
 import type { MonitorType, MonitorSeverity } from "@/generated/prisma/client";
+import { HaloSelect, type HaloSelectOption } from "@/components/ui/halo-select";
+
+const SEVERITY_OPTIONS: HaloSelectOption[] = [
+    { value: "FATAL", label: "FATAL (Urgent / P0 page)" },
+    { value: "ERROR", label: "ERROR (Production Error / P1)" },
+    { value: "WARNING", label: "WARNING (Degraded Performance / P2)" },
+    { value: "INFO", label: "INFO (Informational Tracking / P3)" },
+];
+
+const INTERVAL_OPTIONS: HaloSelectOption[] = [
+    { value: "1", label: "Every 1 minute" },
+    { value: "5", label: "Every 5 minutes" },
+    { value: "15", label: "Every 15 minutes" },
+    { value: "60", label: "Every 1 hour" },
+];
 
 interface ProjectOption {
     id: string;
@@ -213,8 +228,8 @@ export function MonitorForm({
 
     if (projects.length === 0) {
         return (
-            <div className="p-12 text-center rounded-2xl bg-surface border border-border space-y-4">
-                <div className="w-12 h-12 rounded-2xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 mx-auto">
+            <div className="p-12 text-center rounded-xl bg-surface border border-border space-y-4">
+                <div className="w-12 h-12 rounded-xl bg-white/5 border border-white/10 flex items-center justify-center text-zinc-400 mx-auto">
                     <FolderKanban size={24} />
                 </div>
                 <div>
@@ -267,7 +282,7 @@ export function MonitorForm({
             )}
 
             {/* STEP 1: Monitor Type Selection */}
-            <div className="p-6 rounded-2xl bg-surface border border-border space-y-4">
+            <div className="p-6 rounded-xl bg-surface border border-border space-y-4">
                 <div className="flex items-center justify-between border-b border-border pb-3">
                     <div>
                         <h3 className="text-xs font-bold uppercase tracking-wider text-white font-sans">
@@ -297,7 +312,7 @@ export function MonitorForm({
                                 }}
                                 className={`p-4 rounded-xl border text-left flex items-start gap-3 transition-all cursor-pointer ${
                                     isSelected
-                                        ? "bg-accent/10 border-accent text-white shadow-lg shadow-accent/5"
+                                        ? "bg-accent/10 border-accent text-white"
                                         : "bg-[#080b11] border-white/10 text-zinc-400 hover:border-white/20 hover:text-white"
                                 }`}
                             >
@@ -323,7 +338,7 @@ export function MonitorForm({
             </div>
 
             {/* STEP 2: General Identification & Project Association */}
-            <div className="p-6 rounded-2xl bg-surface border border-border space-y-4">
+            <div className="p-6 rounded-xl bg-surface border border-border space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-white font-sans border-b border-border pb-3">
                     2. Monitor Identity & Target Scope
                 </h3>
@@ -334,17 +349,14 @@ export function MonitorForm({
                         <label className="block text-[10px] text-zinc-400 uppercase tracking-wider font-semibold mb-1">
                             Associated Project *
                         </label>
-                        <select
+                        <HaloSelect
                             value={projectId}
-                            onChange={(e) => setProjectId(e.target.value)}
-                            className="halo-select w-full"
-                        >
-                            {projects.map((p) => (
-                                <option key={p.id} value={p.id}>
-                                    {p.name}
-                                </option>
-                            ))}
-                        </select>
+                            onChange={(val) => setProjectId(val)}
+                            options={projects.map((p) => ({ value: p.id, label: p.name }))}
+                            ariaLabel="Associated Project"
+                            className="w-full"
+                            triggerClassName="w-full"
+                        />
                         {fieldErrors.projectId && (
                             <p className="text-red-400 text-[11px] mt-1">{fieldErrors.projectId}</p>
                         )}
@@ -355,16 +367,14 @@ export function MonitorForm({
                         <label className="block text-[10px] text-zinc-400 uppercase tracking-wider font-semibold mb-1">
                             Incident Severity Tier
                         </label>
-                        <select
+                        <HaloSelect
                             value={severity}
-                            onChange={(e) => setSeverity(e.target.value as MonitorSeverity)}
-                            className="halo-select w-full"
-                        >
-                            <option value="FATAL">FATAL (Urgent / P0 page)</option>
-                            <option value="ERROR">ERROR (Production Error / P1)</option>
-                            <option value="WARNING">WARNING (Degraded Performance / P2)</option>
-                            <option value="INFO">INFO (Informational Tracking / P3)</option>
-                        </select>
+                            onChange={(val) => setSeverity(val as MonitorSeverity)}
+                            options={SEVERITY_OPTIONS}
+                            ariaLabel="Incident Severity Tier"
+                            className="w-full"
+                            triggerClassName="w-full"
+                        />
                     </div>
 
                     {/* Name */}
@@ -406,7 +416,7 @@ export function MonitorForm({
             </div>
 
             {/* STEP 3: Type-Specific Evaluation Rules */}
-            <div className="p-6 rounded-2xl bg-surface border border-border space-y-4">
+            <div className="p-6 rounded-xl bg-surface border border-border space-y-4">
                 <div className="border-b border-border pb-3">
                     <h3 className="text-xs font-bold uppercase tracking-wider text-white font-sans">
                         3. Trigger Conditions & Thresholds
@@ -602,16 +612,14 @@ export function MonitorForm({
                             <label className="block text-[10px] text-zinc-400 uppercase tracking-wider font-semibold mb-1">
                                 Check Interval Frequency
                             </label>
-                            <select
+                            <HaloSelect
                                 value={thresholdWindow}
-                                onChange={(e) => setThresholdWindow(e.target.value)}
-                                className="halo-select w-full sm:w-48"
-                            >
-                                <option value="1">Every 1 minute</option>
-                                <option value="5">Every 5 minutes</option>
-                                <option value="15">Every 15 minutes</option>
-                                <option value="60">Every 1 hour</option>
-                            </select>
+                                onChange={(val) => setThresholdWindow(val)}
+                                options={INTERVAL_OPTIONS}
+                                ariaLabel="Check Interval Frequency"
+                                className="w-full sm:w-48"
+                                triggerClassName="w-full sm:w-48"
+                            />
                         </div>
                     </div>
                 )}
@@ -654,7 +662,7 @@ export function MonitorForm({
             </div>
 
             {/* STEP 4: Alert Routing Channels */}
-            <div className="p-6 rounded-2xl bg-surface border border-border space-y-4">
+            <div className="p-6 rounded-xl bg-surface border border-border space-y-4">
                 <h3 className="text-xs font-bold uppercase tracking-wider text-white font-sans border-b border-border pb-3">
                     4. Incident Alert Routing & Webhooks
                 </h3>
@@ -694,7 +702,7 @@ export function MonitorForm({
             </div>
 
             {/* STEP 5: Live Configuration Summary Preview */}
-            <div className="p-6 rounded-2xl bg-accent/5 border border-accent/20 space-y-4">
+            <div className="p-6 rounded-xl bg-accent/5 border border-accent/20 space-y-4">
                 <div className="flex items-center gap-2 text-accent font-bold text-xs uppercase font-sans">
                     <Sparkles size={14} />
                     <span>Configuration Summary Preview</span>

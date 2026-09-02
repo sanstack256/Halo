@@ -1,13 +1,12 @@
 "use client";
 
 import React from "react";
-import Link from "next/link";
 import {
     TrendingUp,
     CheckCircle2,
     Info,
 } from "lucide-react";
-import type { EvidenceGapsProjection, EvidenceGap } from "@/lib/issues/issue-intelligence";
+import type { EvidenceGapsProjection } from "@/lib/issues/issue-intelligence";
 
 interface EvidenceGapsViewProps {
     data: EvidenceGapsProjection;
@@ -18,7 +17,7 @@ export function EvidenceGapsView({ data }: EvidenceGapsViewProps) {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
+            {/* Page Header */}
             <div>
                 <h1 className="text-2xl font-bold text-white tracking-tight">Evidence Gaps</h1>
                 <p className="text-sm text-secondary mt-1">
@@ -39,7 +38,7 @@ export function EvidenceGapsView({ data }: EvidenceGapsViewProps) {
                 </span>
             </div>
 
-            {/* SECTION 8: Disambiguated Counts Summary Bar */}
+            {/* Disambiguated Counts Summary Bar per Section 13 */}
             <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-xs font-mono">
                 <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
                     <span className="text-[10px] text-zinc-500 uppercase block">Active Blocker Gaps</span>
@@ -49,16 +48,16 @@ export function EvidenceGapsView({ data }: EvidenceGapsViewProps) {
                 <div className="p-3.5 rounded-xl bg-surface border border-border space-y-1">
                     <span className="text-[10px] text-zinc-400 uppercase font-semibold block">BLOCKED ISSUES</span>
                     <span className="text-2xl font-bold text-white block">{summary.totalBlockedIssues}</span>
-                    <span className="text-[11px] text-zinc-500">Distinct issues with missing telemetry</span>
+                    <span className="text-[11px] text-zinc-500 truncate block">Distinct issues with missing telemetry</span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-surface border border-amber-500/20 space-y-1">
                     <span className="text-[10px] text-amber-400 uppercase font-semibold block">BLOCKED CAPABILITIES</span>
                     <span className="text-2xl font-bold text-amber-400 block">{summary.totalBlockedInvestigationCapabilities}</span>
-                    <span className="text-[11px] text-zinc-500">Investigation capabilities interrupted</span>
+                    <span className="text-[11px] text-zinc-500 truncate block">Investigation capabilities interrupted</span>
                 </div>
                 <div className="p-3.5 rounded-xl bg-surface border border-accent/20 space-y-1">
                     <span className="text-[10px] text-accent uppercase font-semibold block">Top Priority Target</span>
-                    <span className="text-sm font-bold text-white block truncate">
+                    <span className="text-sm font-bold text-white block truncate" title={summary.highestLeverageGapTitle || "None"}>
                         {summary.highestLeverageGapTitle || "None"}
                     </span>
                     <span className="text-[11px] text-zinc-400 truncate block">
@@ -68,17 +67,17 @@ export function EvidenceGapsView({ data }: EvidenceGapsViewProps) {
             </div>
 
             {gaps.length === 0 ? (
-                <div className="p-12 rounded-2xl bg-surface border border-border text-center space-y-2">
+                <div className="p-10 rounded-xl bg-surface border border-border text-center space-y-2">
                     <CheckCircle2 className="w-8 h-8 text-emerald-400 mx-auto" />
-                    <h3 className="text-base font-semibold text-white">No blocking telemetry gaps detected</h3>
+                    <h2 className="text-sm font-bold text-white font-mono uppercase tracking-wider">No Blocking Telemetry Gaps Detected</h2>
                     <p className="text-xs text-secondary max-w-md mx-auto font-mono">
-                        Active telemetry in this window provides complete trace and context coverage.
+                        Active telemetry in this window ({timeRange.key}) provides complete trace and context coverage.
                     </p>
                 </div>
             ) : (
                 <div className="space-y-4">
                     <div className="flex items-center gap-2">
-                        <TrendingUp size={15} className="text-accent" />
+                        <TrendingUp size={14} className="text-accent" />
                         <h2 className="text-xs font-mono font-bold uppercase tracking-wider text-white">
                             Telemetry Instrumentation Priority
                         </h2>
@@ -88,7 +87,7 @@ export function EvidenceGapsView({ data }: EvidenceGapsViewProps) {
                         {gaps.map((gap, idx) => (
                             <div
                                 key={gap.id}
-                                className="p-4 rounded-xl bg-surface border border-border space-y-3 flex flex-col justify-between"
+                                className="p-4 rounded-xl bg-surface border border-border space-y-3 flex flex-col justify-between transition-all duration-150"
                             >
                                 <div className="space-y-1.5">
                                     <div className="flex items-center justify-between flex-wrap gap-2">
@@ -105,7 +104,7 @@ export function EvidenceGapsView({ data }: EvidenceGapsViewProps) {
                                 </div>
 
                                 <div className="space-y-2 pt-2 border-t border-border/60 text-xs font-mono">
-                                    {/* SECTION 9: Meaningful explanation without gamified points */}
+                                    {/* Meaningful explanation without gamified points */}
                                     <div className="p-2.5 rounded-lg bg-[#06080d] border border-border">
                                         <span className="text-[10px] text-accent uppercase font-bold block">
                                             WHY THIS RANKS HIGH
@@ -115,7 +114,7 @@ export function EvidenceGapsView({ data }: EvidenceGapsViewProps) {
                                         </span>
                                     </div>
 
-                                    {/* What it prevents */}
+                                    {/* What it blocks */}
                                     <div className="p-2.5 rounded-lg bg-surface-elevated border border-border">
                                         <span className="text-[10px] text-amber-400 uppercase font-bold block">
                                             WHAT THIS GAP BLOCKS

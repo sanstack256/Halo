@@ -4,6 +4,20 @@ import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { Check, Loader2, Save, User } from "lucide-react";
 import { getClientTimezone, setClientTimezone, SUPPORTED_TIMEZONES } from "@/lib/timezone";
+import { HaloSelect, type HaloSelectOption } from "@/components/ui/halo-select";
+
+const LANGUAGE_OPTIONS: HaloSelectOption[] = [
+    { value: "en", label: "English" },
+    { value: "fr", label: "French" },
+    { value: "de", label: "German" },
+    { value: "es", label: "Spanish" },
+    { value: "ja", label: "Japanese" },
+];
+
+const STACK_ORDER_OPTIONS: HaloSelectOption[] = [
+    { value: "default", label: "Default (newest at top)" },
+    { value: "oldest-first", label: "Oldest first" },
+];
 
 type AccountDetailsClientProps = {
     user: {
@@ -69,8 +83,7 @@ export function AccountDetailsClient({ user }: AccountDetailsClientProps) {
                             />
                         ) : (
                             <div
-                                className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-bold text-white ring-2 ring-border"
-                                style={{ background: "linear-gradient(135deg, #6366f1 0%, #3b82f6 100%)" }}
+                                className="w-20 h-20 rounded-full flex items-center justify-center text-2xl font-semibold text-white bg-[#0b0f16] border border-[#222b38]"
                                 aria-label={`Avatar for ${name}`}
                             >
                                 {initials || <User size={28} />}
@@ -138,44 +151,38 @@ export function AccountDetailsClient({ user }: AccountDetailsClientProps) {
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
                     <div>
                         <label className="block text-xs font-medium text-white mb-1">Language</label>
-                        <select
+                        <HaloSelect
                             value={language}
-                            onChange={(e) => setLanguage(e.target.value)}
-                            className="w-full px-3.5 py-2.5 rounded-lg border border-border-strong bg-surface-elevated text-sm text-white focus:outline-none focus:border-accent"
-                        >
-                            <option value="en">English</option>
-                            <option value="fr">French</option>
-                            <option value="de">German</option>
-                            <option value="es">Spanish</option>
-                            <option value="ja">Japanese</option>
-                        </select>
+                            onChange={(val) => setLanguage(val)}
+                            options={LANGUAGE_OPTIONS}
+                            ariaLabel="Language"
+                            className="w-full"
+                            triggerClassName="w-full"
+                        />
                     </div>
 
                     <div>
                         <label className="block text-xs font-medium text-white mb-1">Timezone</label>
-                        <select
+                        <HaloSelect
                             value={timezone}
-                            onChange={(e) => setTimezone(e.target.value)}
-                            className="w-full px-3.5 py-2.5 rounded-lg border border-border-strong bg-surface-elevated text-sm text-white focus:outline-none focus:border-accent"
-                        >
-                            {SUPPORTED_TIMEZONES.map((tz) => (
-                                <option key={tz.value} value={tz.value}>
-                                    {tz.label}
-                                </option>
-                            ))}
-                        </select>
+                            onChange={(val) => setTimezone(val)}
+                            options={SUPPORTED_TIMEZONES}
+                            ariaLabel="Timezone"
+                            className="w-full"
+                            triggerClassName="w-full"
+                        />
                     </div>
 
                     <div>
                         <label className="block text-xs font-medium text-white mb-1">Stack Trace Order</label>
-                        <select
+                        <HaloSelect
                             value={stackOrder}
-                            onChange={(e) => setStackOrder(e.target.value)}
-                            className="w-full px-3.5 py-2.5 rounded-lg border border-border-strong bg-surface-elevated text-sm text-white focus:outline-none focus:border-accent"
-                        >
-                            <option value="default">Default (newest at top)</option>
-                            <option value="oldest-first">Oldest first</option>
-                        </select>
+                            onChange={(val) => setStackOrder(val)}
+                            options={STACK_ORDER_OPTIONS}
+                            ariaLabel="Stack Trace Order"
+                            className="w-full"
+                            triggerClassName="w-full"
+                        />
                     </div>
                 </div>
 

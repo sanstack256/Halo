@@ -4,16 +4,12 @@ import React, { useState } from "react";
 import Link from "next/link";
 import {
     Boxes,
-    GitCommit,
-    CheckCircle2,
     Info,
     ExternalLink,
     ChevronDown,
     ChevronUp,
-    ShieldAlert,
 } from "lucide-react";
 import type { PatternsProjection, FailurePattern } from "@/lib/issues/issue-intelligence";
-import { RelativeTime } from "@/components/ui/relative-time";
 
 interface PatternsViewProps {
     data: PatternsProjection;
@@ -49,11 +45,11 @@ export function PatternsView({ data }: PatternsViewProps) {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
+            {/* Page Header */}
             <div>
                 <h1 className="text-2xl font-bold text-white tracking-tight">Patterns</h1>
                 <p className="text-sm text-secondary mt-1">
-                    Which failures share identical execution behavior? Clusters distinct issues only when multi-dimensional telemetry confirms common failure mechanics.
+                    Which failures share the same observed failure signature across available telemetry dimensions? Clusters distinct issues only when multi-dimensional telemetry confirms common failure mechanics.
                 </p>
             </div>
 
@@ -89,17 +85,22 @@ export function PatternsView({ data }: PatternsViewProps) {
                 </div>
             </div>
 
-            {/* Content or Honest Empty State */}
+            {/* Content or Actionable Empty State per Section 10 */}
             {!hasMeaningfulPatterns || patterns.length === 0 ? (
-                <div className="p-12 rounded-2xl bg-surface border border-border text-center space-y-3">
-                    <Boxes className="w-9 h-9 text-zinc-500 mx-auto" />
-                    <h3 className="text-base font-semibold text-white">No recurring behavioral pattern established</h3>
+                <div className="p-10 rounded-xl bg-surface border border-border text-center space-y-3">
+                    <Boxes className="w-8 h-8 text-zinc-500 mx-auto" />
+                    <h2 className="text-sm font-bold text-white font-mono uppercase tracking-wider">
+                        No Shared Execution Pattern Established
+                    </h2>
                     <p className="text-xs text-secondary max-w-lg mx-auto font-mono leading-relaxed">
                         {emptyReason ||
-                            "Multiple issues share generic exception classification, but available telemetry does not establish a common execution behavior across boundaries, dependencies, and response codes."}
+                            "Generic error classifications are present across multiple issues, but available telemetry does not establish a shared execution behavior."}
                     </p>
-                    <div className="pt-2 text-[11px] font-mono text-zinc-500">
-                        Evaluated against: failure boundaries, exception classes, HTTP status codes, and downstream resource dependencies.
+                    <p className="text-[11px] text-zinc-400 max-w-md mx-auto font-mono">
+                        Collect richer request, trace, dependency, or execution telemetry to enable behavioral comparison across issues.
+                    </p>
+                    <div className="pt-1 text-[10px] font-mono text-zinc-600">
+                        Evaluated dimensions: failure boundaries, exception classes, HTTP status codes, and downstream resource dependencies.
                     </div>
                 </div>
             ) : (
@@ -110,7 +111,7 @@ export function PatternsView({ data }: PatternsViewProps) {
                         return (
                             <div
                                 key={p.id}
-                                className="p-4 rounded-xl bg-surface border border-border space-y-3"
+                                className="p-4 rounded-xl bg-surface border border-border space-y-3 transition-all duration-150"
                             >
                                 <div className="flex flex-col sm:flex-row sm:items-start justify-between gap-3">
                                     <div className="space-y-1">
@@ -130,14 +131,15 @@ export function PatternsView({ data }: PatternsViewProps) {
 
                                     <button
                                         onClick={() => setExpandedPatternId(isExpanded ? null : p.id)}
-                                        className="halo-btn halo-btn-secondary halo-btn-xs text-[10px] font-mono shrink-0"
+                                        className="halo-btn halo-btn-secondary halo-btn-xs text-[11px] font-mono shrink-0"
+                                        aria-expanded={isExpanded}
                                     >
                                         <span>{isExpanded ? "Hide Details" : "Inspect Fingerprint"}</span>
                                         {isExpanded ? <ChevronUp size={11} /> : <ChevronDown size={11} />}
                                     </button>
                                 </div>
 
-                                {/* Common Observed Behavior & Why this is a pattern */}
+                                {/* Common Observed Behavior & Why this qualifies as a pattern */}
                                 <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-xs font-mono">
                                     <div className="p-2.5 rounded-lg bg-[#06080d] border border-border/80 space-y-1">
                                         <span className="text-[10px] font-bold uppercase text-accent block">
@@ -149,7 +151,7 @@ export function PatternsView({ data }: PatternsViewProps) {
                                     </div>
                                     <div className="p-2.5 rounded-lg bg-[#06080d] border border-border/80 space-y-1">
                                         <span className="text-[10px] font-bold uppercase text-purple-400 block">
-                                            WHY THIS IS A PATTERN
+                                            WHY THIS QUALIFIES AS A PATTERN
                                         </span>
                                         <span className="text-zinc-300 block text-[11px]">
                                             {p.whyThisIsAPattern}
@@ -157,13 +159,13 @@ export function PatternsView({ data }: PatternsViewProps) {
                                     </div>
                                 </div>
 
-                                {/* Progressive Disclosure: Fingerprint Steps & Associated Issues */}
+                                {/* Progressive Disclosure: Fingerprint Sequence & Associated Issues */}
                                 {isExpanded && (
-                                    <div className="space-y-3 pt-2 border-t border-border/60">
+                                    <div className="space-y-3 pt-2 border-t border-border/60 animate-in fade-in-50 duration-200">
                                         {/* Fingerprint steps */}
                                         <div className="space-y-1.5">
                                             <span className="text-[10px] font-mono font-bold uppercase tracking-wider text-zinc-400 block">
-                                                Multi-Stage Failure Sequence
+                                                Multi-Stage Execution Sequence
                                             </span>
                                             <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-2 text-xs font-mono">
                                                 {p.fingerprintSteps.map((step, idx) => (
@@ -173,9 +175,9 @@ export function PatternsView({ data }: PatternsViewProps) {
                                                     >
                                                         <div className="flex items-center justify-between">
                                                             <span className="text-[9px] uppercase font-bold text-accent">
-                                                                Step {idx + 1}: {step.stage}
+                                                                Step {idx + 1}: {step.stage.replace("_", " ")}
                                                             </span>
-                                                            <span className="text-[9px] px-1 py-0.2 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
+                                                            <span className="text-[9px] px-1 py-0.5 rounded bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-mono">
                                                                 {step.evidenceStatus}
                                                             </span>
                                                         </div>
@@ -233,9 +235,10 @@ export function PatternsView({ data }: PatternsViewProps) {
                                                             <span className="text-accent">{iss.occurrences} events</span>
                                                             <Link
                                                                 href={`/projects/${iss.projectId}/issues/${iss.id}`}
-                                                                className="text-zinc-400 hover:text-white"
+                                                                className="text-zinc-400 hover:text-white p-1"
+                                                                aria-label="View issue details"
                                                             >
-                                                                <ExternalLink size={11} />
+                                                                <ExternalLink size={12} />
                                                             </Link>
                                                         </div>
                                                     </div>

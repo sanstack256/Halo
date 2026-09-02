@@ -42,7 +42,7 @@ export function MonitorTriggerHistory({ data }: MonitorTriggerHistoryProps) {
     };
 
     return (
-        <div className="p-6 rounded-2xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4">
+        <div className="p-6 rounded-xl border border-[var(--border)] bg-[var(--surface-elevated)] space-y-4">
             <div className="flex items-center justify-between">
                 <div className="flex items-center gap-2">
                     <ShieldAlert size={14} className="text-red-400" />

@@ -9,6 +9,15 @@ import {
     Server,
 } from "lucide-react";
 import type { ServiceLandscapeItem, ServiceHealthStatus } from "@/lib/analytics/types";
+import { HaloSelect, type HaloSelectOption } from "@/components/ui/halo-select";
+
+const MATRIX_STATUS_OPTIONS: HaloSelectOption[] = [
+    { value: "ALL", label: "All States" },
+    { value: "Critical", label: "Critical" },
+    { value: "Degraded", label: "Degraded" },
+    { value: "Healthy", label: "Healthy" },
+    { value: "Unknown", label: "Unknown" },
+];
 
 interface ServiceMatrixTableProps {
     services: ServiceLandscapeItem[];
@@ -70,17 +79,12 @@ export function ServiceMatrixTable({
                     </div>
 
                     {/* Status Filter */}
-                    <select
+                    <HaloSelect
                         value={statusFilter}
-                        onChange={(e) => setStatusFilter(e.target.value)}
-                        className="halo-select text-xs h-7 py-0 pl-2 pr-7 font-sans"
-                    >
-                        <option value="ALL">All States</option>
-                        <option value="Critical">Critical</option>
-                        <option value="Degraded">Degraded</option>
-                        <option value="Healthy">Healthy</option>
-                        <option value="Unknown">Unknown</option>
-                    </select>
+                        onChange={(val) => setStatusFilter(val)}
+                        options={MATRIX_STATUS_OPTIONS}
+                        ariaLabel="Filter by status"
+                    />
                 </div>
             </div>
 
