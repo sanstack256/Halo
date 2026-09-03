@@ -1,20 +1,28 @@
-import { Database } from "lucide-react";
+import { getDatabaseWaitAttributionData } from "@/actions/explore";
+import { DatabaseAttributionClient } from "@/components/explore/database-attribution-client";
 
-export default function DatabaseExplorePage() {
+interface PageProps {
+    searchParams: Promise<{
+        projectId?: string;
+        service?: string;
+        requestId?: string;
+    }>;
+}
+
+export default async function ExploreDatabasePage({ searchParams }: PageProps) {
+    const params = await searchParams;
+
+    const data = await getDatabaseWaitAttributionData({
+        projectId: params.projectId,
+        service: params.service,
+        requestId: params.requestId,
+    });
+
     return (
-        <div className="space-y-8 pb-12">
-            <div className="halo-page-header">
-                <h1 className="halo-page-title">Database Telemetry</h1>
-                <p className="halo-page-description">Database query traces, latency bottlenecks, and connection errors.</p>
-            </div>
-
-            <div className="halo-empty-state">
-                <Database className="halo-empty-state-icon" />
-                <h3 className="halo-empty-state-title">No database queries recorded</h3>
-                <p className="halo-empty-state-description">
-                    SQL query spans and ORM trace events recorded by the SDK will be cataloged here.
-                </p>
-            </div>
-        </div>
+        <DatabaseAttributionClient
+            data={data}
+            currentRequestId={params.requestId}
+            currentService={params.service}
+        />
     );
 }

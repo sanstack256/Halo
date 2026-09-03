@@ -24,6 +24,7 @@ import {
     User as UserIcon,
     Wifi,
     Zap,
+    Search,
 } from "lucide-react";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { SeverityBadge } from "@/components/ui/severity-badge";
@@ -138,6 +139,13 @@ export function EventDetailView({ projectId, event }: Props) {
                                 <span>Investigate</span>
                             </Link>
                         )}
+                        <Link
+                            href={`/explore?anchorId=${event.id}`}
+                            className="halo-btn halo-btn-sm halo-btn-secondary inline-flex items-center gap-1.5"
+                        >
+                            <Search size={13} className="text-cyan-400" />
+                            <span>Evidence Needle</span>
+                        </Link>
                         {(event.issue?.id || event.issueId) && (
                             <Link
                                 href={`/projects/${projectId}/issues/${event.issue?.id || event.issueId}`}

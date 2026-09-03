@@ -29,6 +29,7 @@ import {
     User,
     Wifi,
     Zap,
+    FileWarning,
 } from "lucide-react";
 import { ReplayPlayerClient } from "@/components/replay/replay-player-client";
 import { ReplayStatus } from "@/components/replay/replay-status";
@@ -173,6 +174,15 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                         <Archive size={14} />
                         <span>{status === "IGNORED" ? "Unignore" : "Ignore"}</span>
                     </button>
+
+                    <Link
+                        href={`/explore/errors?fingerprint=${encodeURIComponent(issue.fingerprint || issue.id)}`}
+                        className="halo-btn halo-btn-sm halo-btn-secondary flex items-center gap-1.5"
+                        title="Extract Reproduction Recipe from observed occurrences"
+                    >
+                        <FileWarning size={14} className="text-amber-400" />
+                        <span>Reproduction Recipe</span>
+                    </Link>
 
                     <Link
                         href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}${activeEvent ? `&eventId=${activeEvent.id}` : ""}`}
