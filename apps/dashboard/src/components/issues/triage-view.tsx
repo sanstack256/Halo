@@ -3,7 +3,6 @@
 import React, { useState } from "react";
 import Link from "next/link";
 import {
-    Sparkles,
     CheckCircle2,
     AlertTriangle,
     HelpCircle,
@@ -180,7 +179,6 @@ export function TriageView({ data }: TriageViewProps) {
                             href={`/projects/${c.projectId}/investigations/new?issueId=${c.issueId}`}
                             className="halo-btn halo-btn-primary halo-btn-xs"
                         >
-                            <Sparkles size={11} />
                             <span>Investigate</span>
                         </Link>
 

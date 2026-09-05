@@ -95,7 +95,6 @@ export function AlertDetailActions({ alert }: AlertDetailActionsProps) {
                     href={`/projects/${alert.projectId}/investigations/new?monitorId=${alert.monitorId}&alertId=${alert.id}`}
                     className="flex items-center justify-center gap-2 w-full px-4 py-2 text-xs font-mono rounded-lg border border-[var(--accent)] text-white bg-[var(--accent)] hover:opacity-90 transition-opacity font-semibold"
                 >
-                    <Sparkles size={13} />
                     <span>Investigate Trigger</span>
                 </Link>
 

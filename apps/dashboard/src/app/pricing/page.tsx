@@ -1,5 +1,5 @@
+import Image from "next/image";
 import Link from "next/link";
-import { Zap } from "lucide-react";
 import { PricingGrid } from "./pricing-grid";
 import type { Metadata } from "next";
 
@@ -15,9 +15,14 @@ export default function PricingPage() {
             {/* Nav */}
             <header className="flex items-center justify-between px-8 py-5 border-b border-white/5">
                 <Link href="/" className="flex items-center gap-2.5 text-white font-bold text-lg">
-                    <span className="w-7 h-7 rounded-lg bg-blue-500 flex items-center justify-center">
-                        <Zap size={14} />
-                    </span>
+                    <Image
+                        src="/halo-logo.png"
+                        alt="Halo"
+                        width={28}
+                        height={28}
+                        priority
+                        className="object-contain"
+                    />
                     Halo
                 </Link>
                 <div className="flex items-center gap-3">

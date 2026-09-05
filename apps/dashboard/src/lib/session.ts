@@ -8,7 +8,11 @@ export async function getSession() {
     if (process.env.NODE_ENV !== "production") {
       const cookie = h.get("cookie") || "";
       if (cookie.includes("halo-dev-auth=true")) {
-        const user = await prisma.user.findFirst();
+        const userEmailMatch = cookie.match(/halo-dev-email=([^;]+)/);
+        const targetEmail = userEmailMatch ? decodeURIComponent(userEmailMatch[1]) : undefined;
+        const user = targetEmail
+          ? await prisma.user.findUnique({ where: { email: targetEmail } })
+          : await prisma.user.findFirst();
         if (user) {
           return {
             user: {

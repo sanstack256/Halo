@@ -593,7 +593,6 @@ export function ServicesInventoryClient({
                                                     )}`}
                                                     className="flex items-center gap-2 px-3 py-1.5 hover:bg-surface-elevated text-amber-400 hover:text-amber-300"
                                                 >
-                                                    <Sparkles size={13} />
                                                     <span>Investigate Degradation</span>
                                                 </Link>
                                             )}

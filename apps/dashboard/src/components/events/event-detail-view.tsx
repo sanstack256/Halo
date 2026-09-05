@@ -135,7 +135,6 @@ export function EventDetailView({ projectId, event }: Props) {
                                 href={`/projects/${projectId}/investigations/new?issueId=${event.issueId}&eventId=${event.id}`}
                                 className="halo-btn halo-btn-sm halo-btn-primary inline-flex items-center gap-1.5"
                             >
-                                <Sparkles size={14} />
                                 <span>Investigate</span>
                             </Link>
                         )}

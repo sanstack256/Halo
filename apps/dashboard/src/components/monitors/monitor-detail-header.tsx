@@ -264,7 +264,6 @@ export function MonitorDetailHeader({ monitor }: MonitorDetailHeaderProps) {
                         href={`/projects/${monitor.projectId}/investigations/new`}
                         className="halo-btn halo-btn-primary halo-btn-sm"
                     >
-                        <Sparkles size={13} />
                         <span>Investigate</span>
                     </Link>
 

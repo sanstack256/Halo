@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useSearchParams } from "next/navigation";
 import {
@@ -377,7 +378,14 @@ export default function Sidebar({ initialProjects = [] }: SidebarProps) {
                     className="halo-sidebar-logo"
                     aria-label="Halo"
                 >
-                    <Sparkles size={19} strokeWidth={2.2} />
+                    <Image
+                        src="/halo-logo.png"
+                        alt="Halo"
+                        width={34}
+                        height={34}
+                        priority
+                        className="halo-sidebar-logo-img"
+                    />
                 </Link>
 
                 <nav className="halo-sidebar-primary-nav">

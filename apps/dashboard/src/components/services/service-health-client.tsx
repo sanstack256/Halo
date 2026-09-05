@@ -403,7 +403,6 @@ export function ServiceHealthClient({
                                                     )}`}
                                                     className="halo-btn halo-btn-primary halo-btn-xs"
                                                 >
-                                                    <Sparkles size={11} />
                                                     <span>Investigate Degradation</span>
                                                 </Link>
                                             )}

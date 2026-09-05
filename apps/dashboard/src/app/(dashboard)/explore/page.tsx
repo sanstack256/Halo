@@ -7,6 +7,9 @@ interface PageProps {
         anchorId?: string;
         timeRange?: string;
         projectId?: string;
+        environment?: string;
+        service?: string;
+        release?: string;
     }>;
 }
 

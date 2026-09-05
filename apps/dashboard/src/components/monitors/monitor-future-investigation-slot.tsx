@@ -31,7 +31,6 @@ export function MonitorFutureInvestigationSlot({ data }: MonitorFutureInvestigat
                     href={`/projects/${monitor.projectId}/investigations/new?monitorId=${monitor.id}`}
                     className="halo-btn halo-btn-primary halo-btn-sm shrink-0 font-mono"
                 >
-                    <Sparkles size={13} />
                     <span>Launch Investigation</span>
                     <ArrowRight size={12} />
                 </Link>

@@ -23,7 +23,6 @@ import {
     Play,
     Send,
     ShieldAlert,
-    Sparkles,
     Tag,
     Terminal,
     User,
@@ -158,9 +157,7 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                     <button
                         type="button"
                         onClick={() => setStatus(status === "RESOLVED" ? "OPEN" : "RESOLVED")}
-                        className={`halo-btn halo-btn-sm ${
-                            status === "RESOLVED" ? "halo-btn-secondary" : "halo-btn-primary"
-                        }`}
+                        className="halo-btn halo-btn-sm halo-btn-secondary"
                     >
                         <Check size={14} />
                         <span>{status === "RESOLVED" ? "Reopen" : "Resolve"}</span>
@@ -188,7 +185,6 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                         href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}${activeEvent ? `&eventId=${activeEvent.id}` : ""}`}
                         className="halo-btn halo-btn-sm halo-btn-primary flex items-center gap-1.5"
                     >
-                        <Sparkles size={14} />
                         <span>Investigate</span>
                     </Link>
                 </div>
@@ -237,7 +233,7 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                                 </h3>
                             </div>
                             <span className="text-[11px] font-mono text-zinc-400">
-                                Select occurrence to investigate
+                                Click row to inspect stack trace
                             </span>
                         </div>
 
@@ -249,7 +245,7 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                                         <th className="py-2.5 px-3">Service</th>
                                         <th className="py-2.5 px-3">Environment</th>
                                         <th className="py-2.5 px-3">Trace ID</th>
-                                        <th className="py-2.5 px-3 text-right">Action</th>
+                                        <th className="py-2.5 px-3 text-right">Selection</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-white/5">
@@ -282,13 +278,15 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                                                     {ev.traceId ? `${ev.traceId.slice(0, 10)}…` : "—"}
                                                 </td>
                                                 <td className="py-2.5 px-3 text-right">
-                                                    <Link
-                                                        href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}&eventId=${ev.id}`}
-                                                        className="px-2.5 py-1 rounded bg-accent/20 hover:bg-accent text-white border border-accent text-[11px] font-bold inline-flex items-center gap-1 transition-colors"
-                                                    >
-                                                        <Sparkles size={11} />
-                                                        <span>Investigate</span>
-                                                    </Link>
+                                                    {isSelected ? (
+                                                        <span className="text-[10px] font-mono text-accent font-semibold px-2 py-0.5 rounded bg-accent/15 border border-accent/30">
+                                                            Active
+                                                        </span>
+                                                    ) : (
+                                                        <span className="text-[10px] font-mono text-zinc-500">
+                                                            Select
+                                                        </span>
+                                                    )}
                                                 </td>
                                             </tr>
                                         );
@@ -363,26 +361,8 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
                     )}
                 </div>
 
-                {/* Right Column: Investigation Launchpad & Metadata */}
+                {/* Right Column: Issue Metadata Drawer */}
                 <div className="space-y-6">
-                    {/* Launchpad Card */}
-                    <div className="p-5 rounded-xl bg-accent/10 border border-accent/30 space-y-4">
-                        <div className="flex items-center gap-2 text-accent font-bold text-sm">
-                            <Sparkles size={16} />
-                            <span>Halo Causal Investigation</span>
-                        </div>
-                        <p className="text-xs text-secondary leading-relaxed">
-                            Evaluate active telemetry, stack frames, upstream requests, and Git regressions to pinpoint the exact root cause.
-                        </p>
-                        <Link
-                            href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}${activeEvent ? `&eventId=${activeEvent.id}` : ""}`}
-                            className="halo-btn halo-btn-primary w-full justify-center"
-                        >
-                            <Sparkles size={14} />
-                            <span>Investigate</span>
-                        </Link>
-                    </div>
-
                     {/* Issue Metadata Drawer */}
                     <div className="p-5 rounded-xl bg-surface border border-border space-y-4 text-xs font-mono">
                         <h3 className="font-bold uppercase tracking-wider text-zinc-400 border-b border-border pb-2">

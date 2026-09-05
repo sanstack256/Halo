@@ -146,7 +146,6 @@ export function ServiceDetailClient({
                                 )}`}
                                 className="halo-btn halo-btn-primary halo-btn-sm"
                             >
-                                <Sparkles size={13} />
                                 <span>Investigate Degradation</span>
                             </Link>
                         )}
