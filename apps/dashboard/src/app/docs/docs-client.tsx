@@ -68,7 +68,6 @@ const DOC_SECTIONS: DocSection[] = [
     id: "logs-and-telemetry",
     title: "Logs & Telemetry",
     icon: Terminal,
-    badge: "Core",
     items: [
       { id: "logs-ingestion", title: "Ingestion Model", desc: "High-throughput batching and event pipeline" },
       { id: "logs-structured", title: "Structured Logging", desc: "Format, log levels, and custom JSON payloads" },
@@ -80,7 +79,6 @@ const DOC_SECTIONS: DocSection[] = [
     id: "investigations",
     title: "Investigations Engine",
     icon: Activity,
-    badge: "AI-Powered",
     items: [
       { id: "investigations-how", title: "How Halo Investigates", desc: "Automated root-cause discovery vs raw alerting" },
       { id: "investigations-causal-chain", title: "Causal Chain Reconstruction", desc: "Tracing error provenance across distributed dependencies" },
