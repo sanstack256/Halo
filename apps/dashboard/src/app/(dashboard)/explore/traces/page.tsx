@@ -5,16 +5,18 @@ interface PageProps {
     searchParams: Promise<{
         traceId?: string;
         referenceTraceId?: string;
+        refTraceId?: string;
         projectId?: string;
     }>;
 }
 
 export default async function ExploreTracesPage({ searchParams }: PageProps) {
     const params = await searchParams;
+    const refId = params.referenceTraceId || params.refTraceId;
 
     const { divergence, recentTraces } = await getTraceDivergenceData(
         params.traceId,
-        params.referenceTraceId,
+        refId,
         { projectId: params.projectId }
     );
 
@@ -23,7 +25,7 @@ export default async function ExploreTracesPage({ searchParams }: PageProps) {
             divergence={divergence}
             recentTraces={recentTraces}
             currentTraceId={params.traceId}
-            currentReferenceId={params.referenceTraceId}
+            currentReferenceId={refId}
         />
     );
 }

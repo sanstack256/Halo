@@ -25,6 +25,7 @@ import { EvidenceBadge } from "./evidence-badge";
 import { DetailDrawer } from "./detail-drawer";
 import { ExploreEmptyState } from "./empty-state";
 import { RelativeTime } from "@/components/ui/relative-time";
+import { formatDeterministicTime } from "@/lib/date-format";
 
 interface SearchNeedleClientProps {
     initialQuery: string;
@@ -53,6 +54,10 @@ export function SearchNeedleClient({
     const [query, setQuery] = useState(initialQuery);
     const [selectedRecord, setSelectedRecord] = useState<CanonicalEvidenceRecord | null>(null);
 
+    useEffect(() => {
+        setQuery(initialQuery);
+    }, [initialQuery]);
+
     // Global keyboard shortcut Cmd+K to focus search input
     useEffect(() => {
         const handleKeyDown = (e: KeyboardEvent) => {
@@ -65,23 +70,35 @@ export function SearchNeedleClient({
         return () => window.removeEventListener("keydown", handleKeyDown);
     }, []);
 
-    const handleSearchSubmit = (e: React.FormEvent) => {
-        e.preventDefault();
-        const params = new URLSearchParams(searchParams.toString());
-        if (query.trim()) {
-            params.set("q", query.trim());
+    const handleSearchSubmit = (e?: React.FormEvent) => {
+        if (e) e.preventDefault();
+        const effectiveQuery = (searchInputRef.current?.value ?? query).trim();
+        const searchStr = typeof window !== "undefined" ? window.location.search : searchParams.toString();
+        const params = new URLSearchParams(searchStr);
+        if (effectiveQuery) {
+            params.set("q", effectiveQuery);
         } else {
             params.delete("q");
         }
         params.delete("anchorId");
-        router.push(`/explore?${params.toString()}`);
+        if (typeof window !== "undefined") {
+            window.location.href = `/explore?${params.toString()}`;
+        } else {
+            router.push(`/explore?${params.toString()}`);
+        }
     };
 
     const handleSelectAnchor = (rec: CanonicalEvidenceRecord) => {
-        const params = new URLSearchParams(searchParams.toString());
+        const searchStr = typeof window !== "undefined" ? window.location.search : searchParams.toString();
+        const params = new URLSearchParams(searchStr);
         params.set("anchorId", rec.id);
-        if (query.trim()) params.set("q", query.trim());
-        router.push(`/explore?${params.toString()}`);
+        const effectiveQuery = (searchInputRef.current?.value ?? query).trim();
+        if (effectiveQuery) params.set("q", effectiveQuery);
+        if (typeof window !== "undefined") {
+            window.location.href = `/explore?${params.toString()}`;
+        } else {
+            router.push(`/explore?${params.toString()}`);
+        }
     };
 
     const hasResults = searchResults.totalMatches > 0;
@@ -104,25 +121,43 @@ export function SearchNeedleClient({
                         className="absolute left-4 top-1/2 -translate-y-1/2 text-zinc-400 pointer-events-none"
                     />
                     <input
+                        id="search-input"
                         ref={searchInputRef}
                         type="text"
                         value={query}
                         onChange={(e) => setQuery(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                e.preventDefault();
+                                handleSearchSubmit(e);
+                            }
+                        }}
                         placeholder="Search error messages, request IDs, trace IDs, logs, services, releases... (Press ⌘K to focus)"
-                        className="w-full h-12 pl-12 pr-10 rounded-xl border border-border bg-[#080b11] text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-accent font-sans shadow-sm"
+                        className="w-full h-12 pl-12 pr-28 rounded-xl border border-border bg-[#080b11] text-sm text-white placeholder:text-zinc-500 focus:outline-none focus:border-accent font-sans shadow-sm"
                     />
-                    {query && (
+                    <div className="absolute right-2.5 top-1/2 -translate-y-1/2 flex items-center gap-1.5">
+                        {query && (
+                            <button
+                                type="button"
+                                onClick={() => {
+                                    setQuery("");
+                                    searchInputRef.current?.focus();
+                                }}
+                                className="p-1 text-zinc-500 hover:text-white"
+                                title="Clear search"
+                            >
+                                <X size={15} />
+                            </button>
+                        )}
                         <button
+                            id="search-submit-btn"
                             type="button"
-                            onClick={() => {
-                                setQuery("");
-                                searchInputRef.current?.focus();
-                            }}
-                            className="absolute right-3 top-1/2 -translate-y-1/2 text-zinc-500 hover:text-white"
+                            onClick={handleSearchSubmit}
+                            className="halo-btn halo-btn-xs halo-btn-primary font-sans h-7 px-2.5 text-[11px]"
                         >
-                            <X size={16} />
+                            Search
                         </button>
-                    )}
+                    </div>
                 </form>
 
                 {/* Compact Syntax Examples */}
@@ -446,7 +481,7 @@ export function SearchNeedleClient({
                                     <div className="flex items-center gap-2 text-[11px] font-mono text-zinc-300 flex-wrap">
                                         <span>Service: {needle.anchor.service || "service"}</span>
                                         <span>•</span>
-                                        <span>Time: {needle.anchor.timestamp.toLocaleTimeString()}</span>
+                                        <span>Time: {formatDeterministicTime(needle.anchor.timestamp, "UTC", false)} UTC</span>
                                     </div>
                                 </div>
 
@@ -494,7 +529,7 @@ export function SearchNeedleClient({
                                                     </span>
                                                 </div>
                                                 <span className="text-[10px] font-mono text-muted">
-                                                    {item.record.timestamp.toLocaleTimeString()}
+                                                    {formatDeterministicTime(item.record.timestamp, "UTC", false)}
                                                 </span>
                                             </div>
 

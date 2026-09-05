@@ -10,6 +10,7 @@ import { ExploreContextBar } from "./explore-context-bar";
 import { DetailDrawer } from "./detail-drawer";
 import { ExploreEmptyState } from "./empty-state";
 import { RelativeTime } from "@/components/ui/relative-time";
+import { formatDeterministicTime } from "@/lib/date-format";
 
 interface LogThreaderClientProps {
     threads: LogThread[];
@@ -146,7 +147,7 @@ export function LogThreaderClient({
                                                         <div className="flex items-center gap-2">
                                                             <Layers size={13} className="text-muted" />
                                                             <span>
-                                                                {cluster.count} repeated observations collapsed ({cluster.firstTimestamp.toLocaleTimeString()} – {cluster.lastTimestamp.toLocaleTimeString()})
+                                                                {cluster.count} repeated observations collapsed ({formatDeterministicTime(cluster.firstTimestamp, "UTC", false)} – {formatDeterministicTime(cluster.lastTimestamp, "UTC", false)} UTC)
                                                             </span>
                                                         </div>
                                                         <span className="text-accent underline font-mono">
@@ -219,7 +220,7 @@ function ThreadNodeRow({
         >
             <div className="flex items-center gap-2 min-w-0 flex-1">
                 <span className="text-[10px] text-muted shrink-0 w-16">
-                    {node.record.timestamp.toLocaleTimeString()}
+                    {formatDeterministicTime(node.record.timestamp, "UTC", false)}
                 </span>
                 <span
                     className={`px-1.5 py-0.2 rounded text-[9px] uppercase font-bold shrink-0 ${

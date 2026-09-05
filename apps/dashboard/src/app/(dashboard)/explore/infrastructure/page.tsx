@@ -4,6 +4,7 @@ import { RuntimeFingerprintClient } from "@/components/explore/runtime-fingerpri
 interface PageProps {
     searchParams: Promise<{
         eventId?: string;
+        traceId?: string;
         referenceEventId?: string;
         projectId?: string;
     }>;
@@ -11,9 +12,10 @@ interface PageProps {
 
 export default async function ExploreInfrastructurePage({ searchParams }: PageProps) {
     const params = await searchParams;
+    const targetId = params.eventId || params.traceId;
 
     const { fingerprint, recentErrors } = await getRuntimeFingerprintData(
-        params.eventId,
+        targetId,
         { projectId: params.projectId }
     );
 
@@ -21,7 +23,7 @@ export default async function ExploreInfrastructurePage({ searchParams }: PagePr
         <RuntimeFingerprintClient
             fingerprint={fingerprint}
             recentErrors={recentErrors}
-            currentEventId={params.eventId}
+            currentEventId={targetId}
         />
     );
 }

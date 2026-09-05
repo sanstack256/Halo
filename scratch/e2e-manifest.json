@@ -1,0 +1,95 @@
+{
+  "primaryProjectId": "cmsj10w380000erihmy7j5222",
+  "secondaryProjectId": "cmtg8a5y20001opitcsxo6x8i",
+  "generatedAt": "2026-09-04T19:12:44.650Z",
+  "scenarios": {
+    "scenarioA": {
+      "name": "Healthy Request",
+      "requestId": "req_healthy_1788549164650",
+      "traceId": "trc_healthy_1788549164650",
+      "sessionId": "ses_healthy_1788549164650",
+      "service": "checkout-service",
+      "status": 200,
+      "durationMs": 125
+    },
+    "scenarioB": {
+      "name": "Failed Multi-Span Request",
+      "requestId": "req_failed_1788549164650",
+      "traceId": "trc_failed_1788549164650",
+      "sessionId": "ses_failed_1788549164650",
+      "fingerprint": "fp_stripe_timeout_1788549164650",
+      "service": "order-service",
+      "status": 500
+    },
+    "scenarioC": {
+      "name": "Missing Telemetry (Unmeasured Gap & No DB)",
+      "requestId": "req_missing_1788549164650",
+      "traceId": "trc_missing_1788549164650",
+      "service": "export-service",
+      "fingerprint": "fp_export_crash_1788549164650",
+      "totalDurationMs": 600,
+      "capturedSpanDurationMs": 120,
+      "expectedGapMs": 480
+    },
+    "scenarioD": {
+      "name": "Reproduction Matrix Populations",
+      "sharedFingerprint": "fp_lock_timeout_1788549164650",
+      "failureCount": 4,
+      "successComparatorCount": 4,
+      "conditionA": "apple_pay",
+      "isolatedSingleFingerprint": "fp_isolated_single_1788549164650",
+      "isolatedRequestId": "req_isolated_1788549164650",
+      "isolatedTraceId": "trc_isolated_1788549164650"
+    },
+    "scenarioE": {
+      "name": "Trace Divergence",
+      "targetTraceId": "trc_div_target_1788549164650",
+      "referenceTraceId": "trc_div_ref_1788549164650",
+      "service": "shipping-rate-service",
+      "divergenceAtSpanIndex": 4,
+      "shallowTrace1": "trc_shallow_1_1788549164650",
+      "shallowTrace2": "trc_shallow_2_1788549164650"
+    },
+    "scenarioF": {
+      "name": "Metric Shape Series",
+      "sampleCount": 6,
+      "values": [
+        10,
+        15,
+        20,
+        95,
+        30,
+        12
+      ]
+    },
+    "scenarioG": {
+      "name": "Database Attribution",
+      "withDbRequestId": "req_db_1788549164650",
+      "withDbTraceId": "trc_db_1788549164650",
+      "expectedDbWaitMs": 220,
+      "expectedRequestDurationMs": 520,
+      "expectedUnattributedMs": 300,
+      "withoutDbRequestId": "req_nodb_1788549164650",
+      "withoutDbTraceId": "trc_nodb_1788549164650"
+    },
+    "scenarioH": {
+      "name": "Infrastructure Runtime Fingerprint",
+      "failureTraceId": "trc_infra_fail_1788549164650",
+      "referenceTraceId": "trc_infra_ref_1788549164650",
+      "service": "worker-service",
+      "matchingAttributes": [
+        "region",
+        "os"
+      ],
+      "differentAttributes": [
+        "runtime",
+        "host"
+      ]
+    },
+    "scenarioI": {
+      "name": "Cross-Org Multi-Tenant Isolation",
+      "secondaryProjectId": "cmtg8a5y20001opitcsxo6x8i",
+      "secondaryTraceId": "trc_eval_secret_1788549164650"
+    }
+  }
+}

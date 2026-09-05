@@ -83,7 +83,7 @@ export async function generateErrorReproductionRecipe(
 
     if (!sampleEvent && target.fingerprint) {
         const { records } = await getEventsInTimeRange(
-            { search: target.fingerprint, types: ["ERROR"], limit: 1 },
+            { fingerprint: target.fingerprint, types: ["ERROR"], limit: 1 },
             orgId
         );
         sampleEvent = records[0] || null;
@@ -107,7 +107,8 @@ export async function generateErrorReproductionRecipe(
         {
             projectIds: [sampleEvent.projectId],
             types: ["ERROR"],
-            search: sampleEvent.title,
+            fingerprint: sampleEvent.fingerprint ?? undefined,
+            search: !sampleEvent.fingerprint ? sampleEvent.title : undefined,
             limit: 100,
         },
         orgId
@@ -268,6 +269,50 @@ export async function generateErrorReproductionRecipe(
         addCondition("Runtime", "Client Browser", "Not Captured (Server execution or uninstrumented)", 0);
     }
 
+    // 4. Dynamic metadata/tag condition discovery
+    const dynamicKeyCounts = new Map<string, Map<string, number>>();
+    const compDynamicKeyCounts = new Map<string, Map<string, number>>();
+
+    for (const occ of occurrences) {
+        const combined = { ...occ.tags, ...occ.metadata };
+        for (const [k, v] of Object.entries(combined)) {
+            if (v !== null && v !== undefined && typeof v !== "object" && k !== "browser" && k !== "os") {
+                const strVal = String(v);
+                let valMap = dynamicKeyCounts.get(k);
+                if (!valMap) {
+                    valMap = new Map<string, number>();
+                    dynamicKeyCounts.set(k, valMap);
+                }
+                valMap.set(strVal, (valMap.get(strVal) || 0) + 1);
+            }
+        }
+    }
+
+    for (const comp of validComparators) {
+        const combined = { ...comp.tags, ...comp.metadata };
+        for (const [k, v] of Object.entries(combined)) {
+            if (v !== null && v !== undefined && typeof v !== "object" && k !== "browser" && k !== "os") {
+                const strVal = String(v);
+                let valMap = compDynamicKeyCounts.get(k);
+                if (!valMap) {
+                    valMap = new Map<string, number>();
+                    compDynamicKeyCounts.set(k, valMap);
+                }
+                valMap.set(strVal, (valMap.get(strVal) || 0) + 1);
+            }
+        }
+    }
+
+    for (const [key, valMap] of dynamicKeyCounts.entries()) {
+        const compValMap = compDynamicKeyCounts.get(key);
+        for (const [val, count] of valMap.entries()) {
+            const compCount = compValMap?.get(val) || 0;
+            const label = key.replace(/([A-Z])/g, " $1").replace(/[._]/g, " ").trim();
+            const friendlyLabel = label.charAt(0).toUpperCase() + label.slice(1);
+            addCondition("Metadata", friendlyLabel, val, count, compCount);
+        }
+    }
+
     const conditionMatrix = {
         observedAcrossFailures: conditions.filter(
             (c) => c.classification === "OBSERVED ACROSS FAILURES" || c.classification === "ABSENT FROM COMPARATORS"
@@ -287,6 +332,7 @@ export async function generateErrorReproductionRecipe(
     const rawRecipeLines: string[] = [
         `HALO TRACE — FACTUAL ERROR REPRODUCTION RECIPE`,
         `Failure Signature: ${sampleEvent.title}`,
+        `Fingerprint: ${fingerprint}`,
         `Total Evaluated Failures: ${totalFailures}`,
         `Comparable Successes: ${totalSuccesses}`,
         `Observed Window: ${minTime.toISOString()} to ${maxTime.toISOString()}`,
@@ -321,7 +367,10 @@ export async function generateErrorReproductionRecipe(
     ];
 
     const provenance: AnalyticalResultProvenance = {
-        basisEvidenceIds: occurrences.slice(0, 10).map((o) => o.id),
+        basisEvidenceIds: [
+            ...occurrences.slice(0, 10).map((o) => o.id),
+            ...validComparators.slice(0, 12).map((c) => c.id),
+        ],
         relationshipType: "COMPARATIVE",
         derivationType: "Population Condition Correlation",
         evidenceState: sufficiency.status === "SUFFICIENT" ? "OBSERVED" : "INSUFFICIENT",

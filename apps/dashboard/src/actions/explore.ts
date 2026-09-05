@@ -88,7 +88,12 @@ export async function getEvidenceNeedleData(
     rawQuery: string,
     anchorEventId?: string,
     timeRangeKey: string = "24h",
-    projectIdOption?: string
+    projectIdOption?: string,
+    contextFilters?: {
+        environment?: string;
+        service?: string;
+        release?: string;
+    }
 ): Promise<{
     searchResults: CategorizedSearchResults;
     needle: EvidenceNeedleResult | null;
@@ -115,7 +120,8 @@ export async function getEvidenceNeedleData(
         orgId,
         rawQuery,
         timeRange,
-        projectIds
+        projectIds,
+        contextFilters
     );
 
     let needle: EvidenceNeedleResult | null = null;
@@ -138,6 +144,7 @@ export async function getLogThreadsData(options?: {
     projectId?: string;
     environment?: string;
     service?: string;
+    release?: string;
     timeRange?: string;
     search?: string;
     limit?: number;
@@ -145,12 +152,15 @@ export async function getLogThreadsData(options?: {
     const { orgId, projectIds } = await getAuthorizedContext(options?.projectId);
     if (!orgId || projectIds.length === 0) return { threads: [], unthreadedCount: 0 };
 
-    const { from, to } = parseTimeRange(options?.timeRange || "24h");
+    const defaultWindow = options?.search ? "7d" : "24h";
+    const { from, to } = parseTimeRange(options?.timeRange || defaultWindow);
 
     return constructLogThreads(
         {
             projectIds,
+            environmentName: options?.environment,
             service: options?.service,
+            release: options?.release,
             from,
             to,
             search: options?.search,

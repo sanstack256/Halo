@@ -12,6 +12,10 @@ export interface CanonicalQueryFilter {
     environmentName?: string;
     service?: string;
     release?: string;
+    traceId?: string;
+    requestId?: string;
+    sessionId?: string;
+    fingerprint?: string;
     types?: Array<"ERROR" | "LOG" | "MESSAGE" | "TRACE">;
     severities?: Array<"INFO" | "WARNING" | "ERROR" | "FATAL">;
     from?: Date;
@@ -276,8 +280,22 @@ export async function getEventsInTimeRange(
     if (filter.release) {
         where.release = filter.release;
     }
+    if (filter.traceId) {
+        where.traceId = filter.traceId;
+    }
+    if (filter.requestId) {
+        where.requestId = filter.requestId;
+    }
+    if (filter.sessionId) {
+        where.sessionId = filter.sessionId;
+    }
+    if (filter.fingerprint) {
+        where.fingerprint = filter.fingerprint;
+    }
     if (filter.environmentId) {
         where.environmentId = filter.environmentId;
+    } else if (filter.environmentName) {
+        where.environment = { name: { equals: filter.environmentName, mode: "insensitive" } };
     }
     if (filter.from || filter.to) {
         where.timestamp = {};
@@ -294,6 +312,7 @@ export async function getEventsInTimeRange(
             { service: { contains: query, mode: "insensitive" } },
             { traceId: { contains: query, mode: "insensitive" } },
             { requestId: { contains: query, mode: "insensitive" } },
+            { fingerprint: { contains: query, mode: "insensitive" } },
         ];
     }
 

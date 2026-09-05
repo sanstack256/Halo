@@ -19,6 +19,7 @@ export type MatchQuality =
 export interface MetricDataPoint {
     timestamp: Date;
     value: number;
+    sampleCount: number;
 }
 
 export interface MetricShapeTwinMatch {
@@ -126,7 +127,11 @@ export async function computeMetricShapeTwins(
             val = durations[p95Idx] || durations[0];
         }
 
-        currentPoints.push({ timestamp: sliceStart, value: val });
+        currentPoints.push({
+            timestamp: sliceStart,
+            value: val,
+            sampleCount: sliceEvents.length,
+        });
     }
 
     const nonZeroPoints = currentPoints.filter((p) => p.value > 0).length;
@@ -224,7 +229,11 @@ export async function computeMetricShapeTwins(
                 const p95Idx = Math.floor(durations.length * 0.95);
                 val = durations[p95Idx] || durations[0];
             }
-            hPoints.push({ timestamp: sStart, value: val });
+            hPoints.push({
+                timestamp: sStart,
+                value: val,
+                sampleCount: sEvents.length,
+            });
         }
 
         // Real normalized distance

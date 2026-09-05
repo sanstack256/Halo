@@ -99,7 +99,12 @@ export async function searchEvidenceCategories(
     orgId: string,
     rawQuery: string,
     timeRange?: { from: Date; to: Date },
-    projectIds?: string[]
+    projectIds?: string[],
+    contextFilters?: {
+        environment?: string;
+        service?: string;
+        release?: string;
+    }
 ): Promise<CategorizedSearchResults> {
     const parsed = parseSearchQuery(rawQuery);
 
@@ -119,12 +124,18 @@ export async function searchEvidenceCategories(
         }
     }
 
+    const hasSpecificEntityId = Boolean(parsed.traceId || parsed.requestId || parsed.sessionId || parsed.eventId || parsed.errorType);
     const baseFilter: CanonicalQueryFilter = {
         projectIds,
-        service: parsed.service,
-        release: parsed.release,
-        from: timeRange?.from,
-        to: timeRange?.to,
+        environmentName: contextFilters?.environment,
+        service: parsed.service || contextFilters?.service,
+        release: parsed.release || contextFilters?.release,
+        traceId: parsed.traceId,
+        requestId: parsed.requestId,
+        sessionId: parsed.sessionId,
+        fingerprint: parsed.errorType,
+        from: hasSpecificEntityId ? undefined : timeRange?.from,
+        to: hasSpecificEntityId ? undefined : timeRange?.to,
         search: parsed.text || undefined,
     };
 
@@ -134,24 +145,26 @@ export async function searchEvidenceCategories(
         getEventsInTimeRange({ ...baseFilter, types: ["TRACE"], limit: 12 }, orgId),
         getEventsInTimeRange({ ...baseFilter, types: ["LOG", "MESSAGE"], limit: 12 }, orgId),
         getEventsInTimeRange({ ...baseFilter, limit: 30 }, orgId),
-        prisma.telemetrySession.findMany({
-            where: {
-                project: { organizationId: orgId },
-                ...(parsed.sessionId
-                    ? { id: parsed.sessionId }
-                    : parsed.text
-                    ? {
-                          OR: [
-                              { id: { contains: parsed.text, mode: "insensitive" } },
-                              { userKey: { contains: parsed.text, mode: "insensitive" } },
-                          ],
-                      }
-                    : {}),
-                ...(timeRange ? { lastSeenAt: { gte: timeRange.from, lte: timeRange.to } } : {}),
-            },
-            take: 6,
-            orderBy: { lastSeenAt: "desc" },
-        }),
+        (parsed.traceId || parsed.requestId || parsed.errorType) && !parsed.sessionId && !parsed.text
+            ? Promise.resolve([])
+            : prisma.telemetrySession.findMany({
+                  where: {
+                      project: { organizationId: orgId },
+                      ...(parsed.sessionId
+                          ? { id: parsed.sessionId }
+                          : parsed.text
+                          ? {
+                                OR: [
+                                    { id: { contains: parsed.text, mode: "insensitive" } },
+                                    { userKey: { contains: parsed.text, mode: "insensitive" } },
+                                ],
+                            }
+                          : {}),
+                      ...(timeRange ? { lastSeenAt: { gte: timeRange.from, lte: timeRange.to } } : {}),
+                  },
+                  take: 6,
+                  orderBy: { lastSeenAt: "desc" },
+              }),
     ]);
 
     // Rank results by evidence strength (exact ID match > exact identifier match > token match)

@@ -364,6 +364,11 @@ export class Halo {
             requestId?: string;
 
             traceId?: string;
+
+            tags?: Record<
+                string,
+                string | number | boolean
+            >;
         },
     ) {
         return this.capture({
@@ -388,6 +393,9 @@ export class Halo {
 
             service:
                 options.service,
+
+            tags:
+                options.tags,
 
             metadata:
                 options.metadata,
@@ -425,6 +433,7 @@ export class Halo {
                 "INFO",
 
             timestamp:
+                event.timestamp ??
                 new Date().toISOString(),
 
             stack:

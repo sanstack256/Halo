@@ -149,11 +149,13 @@ export async function computeDatabaseWaitAttribution(
     let dbWaitPercentage: number | null = null;
     let appProcessingMs: number | null = null;
     let unattributedMs: number | null = null;
+    const nonDbSpans = targetEvents.filter((e) => e.id !== primaryEvent?.id && !dbSpans.some((db) => db.id === e.id));
+    const measuredAppMs = nonDbSpans.reduce((sum, s) => sum + (s.durationMs || 0), 0);
 
     if (requestDurationMs !== null && telemetryObserved) {
         dbWaitPercentage = requestDurationMs > 0 ? Math.round((totalDbWaitMs / requestDurationMs) * 100) : 0;
-        appProcessingMs = Math.max(0, requestDurationMs - totalDbWaitMs);
-        unattributedMs = Math.max(0, requestDurationMs - totalDbWaitMs - (appProcessingMs > 0 ? appProcessingMs : 0));
+        appProcessingMs = measuredAppMs > 0 ? measuredAppMs : null;
+        unattributedMs = Math.max(0, requestDurationMs - totalDbWaitMs - measuredAppMs);
     }
 
     // Slow vs fast real comparator

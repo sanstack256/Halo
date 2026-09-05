@@ -16,9 +16,16 @@ export default async function ExploreSearchPage({ searchParams }: PageProps) {
     const anchorId = params.anchorId;
     const timeRange = params.timeRange || "24h";
     const projectId = params.projectId;
+    const environment = params.environment;
+    const service = params.service;
+    const release = params.release;
 
     const [{ searchResults, needle }, contextOptions] = await Promise.all([
-        getEvidenceNeedleData(query, anchorId, timeRange, projectId),
+        getEvidenceNeedleData(query, anchorId, timeRange, projectId, {
+            environment,
+            service,
+            release,
+        }),
         getExploreContextOptions(),
     ]);
 

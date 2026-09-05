@@ -64,7 +64,11 @@ export function ExploreContextBar({
         } else {
             params.set(key, value);
         }
-        router.push(`${pathname}?${params.toString()}`);
+        if (typeof window !== "undefined") {
+            window.location.href = `${pathname}?${params.toString()}`;
+        } else {
+            router.push(`${pathname}?${params.toString()}`);
+        }
     };
 
     const projectOptions: HaloSelectOption[] = [

@@ -1,0 +1,170 @@
+[
+  {
+    "test": "Search: trace syntax query",
+    "dataSource": "traceId=trc_healthy_1788460840401",
+    "expected": "Exact traceId matched in PostgreSQL telemetry",
+    "actual": "Retrieved trace 'cmtlvex9v006rinit4w10666g' with service 'payment-service'",
+    "status": "PASS",
+    "evidence": "Event ID: cmtlvex9v006rinit4w10666g, Trace ID: trc_healthy_1788460840401"
+  },
+  {
+    "test": "Search: Needle execution neighborhood reconstruction",
+    "dataSource": "anchorId=cmtlvex9v006rinit4w10666g",
+    "expected": "Reconstruct neighborhood with DIRECT anchor and TRACE_LINK relationships",
+    "actual": "Neighborhood reconstructed with 56 items (3 trace-linked)",
+    "status": "PASS",
+    "evidence": "Items: 56, TraceLinks: 3, Anchor: true"
+  },
+  {
+    "test": "Search: request syntax query",
+    "dataSource": "requestId=req_healthy_1788460840401",
+    "expected": "Exact requestId matched in PostgreSQL telemetry",
+    "actual": "Found 4 matching request records",
+    "status": "PASS",
+    "evidence": "Request ID: req_healthy_1788460840401, Matches: 4"
+  },
+  {
+    "test": "Search: service syntax query",
+    "dataSource": "service=checkout-service",
+    "expected": "Filter results strictly to requested service",
+    "actual": "Retrieved 31 matches strictly matching service 'checkout-service'",
+    "status": "PASS",
+    "evidence": "Service: checkout-service, Total Matches: 31"
+  },
+  {
+    "test": "Search: honest empty state (no fake results)",
+    "dataSource": "trace:non_existent_trace_999999999",
+    "expected": "totalMatches === 0 without fabricated items",
+    "actual": "Returned 0 results",
+    "status": "PASS",
+    "evidence": "Total Matches: 0"
+  },
+  {
+    "test": "Logs: Thread reconstruction by traceId",
+    "dataSource": "traceId=trc_healthy_1788460840401",
+    "expected": "Thread reconstructed with DIRECT strength and chronological order",
+    "actual": "Thread 'trace:trc_healthy_1788460840401' reconstructed with 1 events, strength: DIRECT",
+    "status": "PASS",
+    "evidence": "Thread ID: trace:trc_healthy_1788460840401, Strength: DIRECT, Events: 1"
+  },
+  {
+    "test": "Logs: Non-destructive cluster compression",
+    "dataSource": "Thread trace:trc_healthy_1788460840401",
+    "expected": "underlyingEventIds preserves raw evidence IDs",
+    "actual": "All 1 clusters preserve raw event IDs without data loss",
+    "status": "PASS",
+    "evidence": "Clusters: 1, Preserved: true"
+  },
+  {
+    "test": "Traces: First Observed Divergence detection",
+    "dataSource": "Target: trc_div_target_1788460840401 (4 spans), Ref: trc_div_ref_1788460840401 (5 spans)",
+    "expected": "Pinpoint first divergence at span index 4 as an investigation lead",
+    "actual": "First divergence detected at span #5: 'MISSING_SPAN'",
+    "status": "PASS",
+    "evidence": "Explanation: Reference span \"carrier.retry\" was not observed in target execution., Basis: Manually specified reference trace."
+  },
+  {
+    "test": "Traces: Shallow 1-span trace comparison boundary",
+    "dataSource": "Shallow Trace 1 (trc_shallow_1_1788460840401) vs Shallow Trace 2 (trc_shallow_2_1788460840401)",
+    "expected": "LIMITED sufficiency with 'Only one span was captured in each execution' (never fully equivalent)",
+    "actual": "Sufficiency status: 'LIMITED' with reason: 'Only one span was captured in each execution.'",
+    "status": "PASS",
+    "evidence": "Sufficiency: LIMITED, Reasons: Only one span was captured in each execution."
+  },
+  {
+    "test": "Errors: Multi-occurrence comparative matrix & anti-false-causality",
+    "dataSource": "fingerprint=fp_lock_timeout_1788460840401 (4 failures, 12 successes)",
+    "expected": "Report exact failure frequency (4/4) and comparator frequency without declaring causal necessity",
+    "actual": "Evaluated 4 failures and 12 successes. Condition apple_pay failure: 4/4, success: 6/12",
+    "status": "PASS",
+    "evidence": "Total Failures: 4, Total Comparators: 12, Classification: OBSERVED ACROSS FAILURES"
+  },
+  {
+    "test": "Errors: Copy reproduction recipe contains observed facts only",
+    "dataSource": "Recipe plain-text",
+    "expected": "Plain-text export contains observed frequencies and metadata",
+    "actual": "Plain-text recipe generated (1313 chars)",
+    "status": "PASS",
+    "evidence": "Header snippet: HALO TRACE — FACTUAL ERROR REPRODUCTION RECIPE Failure Signature: InventoryLockTimeoutException: Tim"
+  },
+  {
+    "test": "Errors: 1/1 Failure boundary (never claims required condition)",
+    "dataSource": "fingerprint=fp_isolated_single_1788460840401 (1 occurrence)",
+    "expected": "Sufficiency status LIMITED; explicitly states 1 observation cannot establish requirement",
+    "actual": "Sufficiency status: 'LIMITED', Reason: 'Only 1 failure occurrence observed. A single observation cannot establish necessity or requirement.'",
+    "status": "PASS",
+    "evidence": "Sufficiency: LIMITED, Reasons: Only 1 failure occurrence observed. A single observation cannot establish necessity or requirement."
+  },
+  {
+    "test": "Metrics: Sufficient shape analysis (≥4 samples)",
+    "dataSource": "Metric: latency (24h window)",
+    "expected": "SUFFICIENT status with peak, average, and contour distance calculation",
+    "actual": "Sample points: 12, Peak: 850ms, Status: SUFFICIENT",
+    "status": "PASS",
+    "evidence": "Points: 12, Peak: 850, Avg: 81.3, BestTwin: STRONG MATCH"
+  },
+  {
+    "test": "Metrics: Sparse samples boundary (INSUFFICIENT SHAPE DATA)",
+    "dataSource": "Metric: errors (1h window)",
+    "expected": "Report INSUFFICIENT when sample count < 4; no fabricated similarity score",
+    "actual": "Sufficiency: 'INSUFFICIENT', Reasons: 'Current window contains only 0 samples (minimum 4 required to extract a behavioral shape).'",
+    "status": "PASS",
+    "evidence": "Sufficiency: INSUFFICIENT, BestTwin: null"
+  },
+  {
+    "test": "Requests: Full lifecycle reconstruction (with captured body & headers)",
+    "dataSource": "requestId=req_healthy_1788460840401",
+    "expected": "Reconstruct ingress method, headers, captured body, and internal spans",
+    "actual": "Reconstructed POST /api/checkout, BodyCaptured: true, Headers: 3, Spans: 3",
+    "status": "PASS",
+    "evidence": "URL: /api/checkout, Spans: 3, Headers: accept, user-agent, content-type"
+  },
+  {
+    "test": "Requests: Honest missing body, missing headers, and unmeasured gap detection",
+    "dataSource": "requestId=req_missing_1788460840401 (Total: 600ms, Span: 120ms)",
+    "expected": "bodyCaptured === false (never '{}'), 0 safe headers, and ~480ms unmeasured gap",
+    "actual": "BodyCaptured: false, HeadersCount: 0, DetectedGap: 480ms",
+    "status": "PASS",
+    "evidence": "BodyPayload: undefined, GapDescription: 480ms unattributed telemetry gap between measured execution spans"
+  },
+  {
+    "test": "Database: Real span wait attribution (220ms DB wait out of 520ms request)",
+    "dataSource": "requestId=req_db_1788460840401 (3 DB queries)",
+    "expected": "queryCount=3, totalDbWaitMs=220, requestDurationMs=520, unattributedMs=300",
+    "actual": "queries.length=3, totalDbWaitMs=220ms, requestDurationMs=520ms, unattributedMs=300ms",
+    "status": "PASS",
+    "evidence": "DB Wait: 220ms (42%), Queries: 35ms + 110ms + 75ms"
+  },
+  {
+    "test": "Database: Zero DB telemetry boundary (never claims 0ms wait)",
+    "dataSource": "requestId=req_nodb_1788460840401 (0 DB spans)",
+    "expected": "telemetryObserved === false and sufficiency === INSUFFICIENT (never asserts 0ms)",
+    "actual": "telemetryObserved=false, sufficiency=INSUFFICIENT",
+    "status": "PASS",
+    "evidence": "Sufficiency: INSUFFICIENT, WhatCannotBeEstablished: Time spent waiting on database operations (telemetry was not captured)."
+  },
+  {
+    "test": "Infrastructure: Dynamic attribute difference detection",
+    "dataSource": "Failure: trc_infra_fail_1788460840401 vs Reference: trc_infra_ref_1788460840401",
+    "expected": "runtime: DIFFERENT, host: DIFFERENT, region: MATCHING",
+    "actual": "runtime=DIFFERENT (Node.js 22.4.1 vs Node.js 20.15.0), region=MATCHING, host=DIFFERENT",
+    "status": "PASS",
+    "evidence": "Total Attributes: 9, Differences: 2, Matches: 7"
+  },
+  {
+    "test": "Authorization: Cross-organization data leakage prevention",
+    "dataSource": "Attempting to query secondaryProjectId=cmtg8a5y20001opitcsxo6x8i with Primary Org ID",
+    "expected": "0 records returned (server-side authorization enforces tenant boundary)",
+    "actual": "Returned 0 records",
+    "status": "PASS",
+    "evidence": "Target Project: cmtg8a5y20001opitcsxo6x8i, Authorized Org: cmscyd52c00001uih32dhgvdl, Records: 0"
+  },
+  {
+    "test": "Performance: Zero N+1 batch relationship fetching",
+    "dataSource": "Batch querying related traces & requests for 10 records",
+    "expected": "Batch fetch all related spans using IN clauses in a single query roundtrip",
+    "actual": "Built traceMap (6 traces) and requestMap (2 requests) in single query roundtrip",
+    "status": "PASS",
+    "evidence": "Input records: 10, Distinct Traces: 6, Distinct Requests: 2"
+  }
+]

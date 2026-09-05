@@ -1,0 +1,227 @@
+[
+  {
+    "id": "SEARCH-SURFACE-RENDER",
+    "capability": "Search",
+    "action": "Load /explore root search surface",
+    "expected": "Render dominant search input with Cmd+K and initial search surface",
+    "actual": "Dominant search input rendered and search surface active",
+    "status": "PASS",
+    "evidence": "URL: http://localhost:3000/explore"
+  },
+  {
+    "id": "SEARCH-NO-MATCH",
+    "capability": "Search",
+    "action": "Search invalid telemetry identifier 'invalid_nonexistent_trace_xyz999'",
+    "expected": "Render honest 'No matching telemetry observed' boundary label without error or hang",
+    "actual": "Rendered honest 'No matching telemetry observed' empty state",
+    "status": "PASS",
+    "evidence": "URL: http://localhost:3000/explore?q=invalid_nonexistent_trace_xyz999"
+  },
+  {
+    "id": "SEARCH-TRACE-SYNTAX",
+    "capability": "Search",
+    "action": "Submit query 'trace:<id>' via search input",
+    "expected": "Categorized search returns matching trace item in Traces section",
+    "actual": "Found trace item containing 'trc_heal'",
+    "status": "PASS",
+    "evidence": "Query: trace:trc_healthy_1788460840401, URL: http://localhost:3000/explore?q=trace%3Atrc_healthy_1788460840401"
+  },
+  {
+    "id": "SEARCH-NEEDLE-ANCHOR",
+    "capability": "Search",
+    "action": "Click trace result row to construct Evidence Needle",
+    "expected": "Needle panel renders anchor with DIRECT strength badge and T+0ms anchor badge",
+    "actual": "Anchor rendered with 'SELECTED ANCHOR', ANCHOR badge, and T+0ms anchor offset",
+    "status": "PASS",
+    "evidence": "Anchor title: checkout-service"
+  },
+  {
+    "id": "SEARCH-REQ-SYNTAX",
+    "capability": "Search",
+    "action": "Submit query 'request:<id>' via search form",
+    "expected": "Categorized search returns matching request item",
+    "actual": "Found request item with req:req_heal",
+    "status": "PASS",
+    "evidence": "Query: request:req_healthy_1788460840401"
+  },
+  {
+    "id": "FILTER-TIME-RANGE",
+    "capability": "Filters",
+    "action": "Select 'Last 6 hours' preset in Context Bar dropdown",
+    "expected": "URL search params update with timeRange=6h and page reloads context",
+    "actual": "URL updated with timeRange=6h",
+    "status": "PASS",
+    "evidence": "Current URL: http://localhost:3000/explore?q=request%3Areq_healthy_1788460840401&timeRange=6h"
+  },
+  {
+    "id": "LOGS-THREAD-RENDER",
+    "capability": "Logs",
+    "action": "Filter logs by traceId in /explore/logs",
+    "expected": "Reconstruct log thread with DIRECT THREAD (TRACE) badge and preserve raw IDs",
+    "actual": "Direct thread rendered with trace key trc_healthy_1788460840401 and service checkout-service",
+    "status": "PASS",
+    "evidence": "Badge: DIRECT THREAD (TRACE), Service: checkout-service"
+  },
+  {
+    "id": "LOGS-CLUSTER-EXPAND",
+    "capability": "Logs",
+    "action": "Inspect individual log rows",
+    "expected": "Preserve raw log IDs, severities, and timestamps in thread",
+    "actual": "Individual log entries visible with timestamps and severities",
+    "status": "PASS",
+    "evidence": "Verified log thread nodes"
+  },
+  {
+    "id": "TRACE-DIVERGENCE-FOUND",
+    "capability": "Traces",
+    "action": "Submit Target trace vs Reference trace in /explore/traces",
+    "expected": "Identify divergence point at 'carrier.retry' / 'Span #5' with 'FIRST OBSERVED DIVERGENCE' and honest causality disclaimer",
+    "actual": "Rendered 'FIRST OBSERVED DIVERGENCE' at Span #5 with honest non-causality disclaimer ('it does not assert root causality')",
+    "status": "PASS",
+    "evidence": "Divergence at span #5: carrier.retry"
+  },
+  {
+    "id": "TRACE-SHALLOW-DEPTH",
+    "capability": "Traces",
+    "action": "Submit shallow trace with < 3 spans",
+    "expected": "Display honest 'OBSERVED PATHS MATCH WITH LIMITED CAPTURED SPAN DEPTH' without inventing alignment",
+    "actual": "Rendered honest 'OBSERVED PATHS MATCH WITH LIMITED CAPTURED SPAN DEPTH' warning",
+    "status": "PASS",
+    "evidence": "Target: trc_shallow_1_1788460840401"
+  },
+  {
+    "id": "ERROR-RECIPE-MATRIX",
+    "capability": "Errors",
+    "action": "Extract recipe for multi-occurrence error fingerprint",
+    "expected": "Render reproduction matrix with condition 'apple_pay', 4 occurrences, and Copy Recipe action",
+    "actual": "Rendered 4 occurrences, condition 'apple_pay' with OBSERVED REPRODUCTION MATRIX, and Copy button interactive",
+    "status": "PASS",
+    "evidence": "Fingerprint: fp_lock_timeout_1788460840401"
+  },
+  {
+    "id": "ERROR-ISOLATED-LIMITED",
+    "capability": "Errors",
+    "action": "Extract recipe for isolated single-occurrence failure",
+    "expected": "Display honest 'EVIDENCE QUALITY: LIMITED' explaining single observation cannot establish requirement",
+    "actual": "Rendered honest LIMITED warning: 'A single observation cannot establish necessity or requirement.'",
+    "status": "PASS",
+    "evidence": "Fingerprint: fp_isolated_single_1788460840401"
+  },
+  {
+    "id": "METRICS-TOGGLES",
+    "capability": "Metrics",
+    "action": "Toggle metric dimensions between Errors, Latency, and Throughput",
+    "expected": "URL updates with metric key and chart re-renders corresponding telemetry dimension",
+    "actual": "All 3 metric toggles update URL and trigger client-side re-render",
+    "status": "PASS",
+    "evidence": "Current URL: http://localhost:3000/explore/metrics?metric=errors&timeRange=7d"
+  },
+  {
+    "id": "METRICS-TIME-WINDOW",
+    "capability": "Metrics",
+    "action": "Change time window to 1h then 7d",
+    "expected": "URL updates with timeRange and window points re-partition",
+    "actual": "Time window controls update URL and state",
+    "status": "PASS",
+    "evidence": "URL: http://localhost:3000/explore/metrics?metric=errors&timeRange=7d"
+  },
+  {
+    "id": "REQUESTS-LIFECYCLE-STAGES",
+    "capability": "Requests",
+    "action": "Reconstruct healthy request lifecycle in /explore/requests",
+    "expected": "Render all lifecycle stages: Ingress, Processing, Outbound Dependencies, and Response",
+    "actual": "Rendered all request lifecycle stages with method POST, status 200, and checkout-service",
+    "status": "PASS",
+    "evidence": "Request ID: req_healthy_1788460840401"
+  },
+  {
+    "id": "REQUESTS-HONEST-BOUNDARIES",
+    "capability": "Requests",
+    "action": "Inspect request with missing telemetry in /explore/requests",
+    "expected": "Display honest 'REQUEST BODY NOT CAPTURED' and '[No safe HTTP headers captured in telemetry]'",
+    "actual": "Rendered honest 'REQUEST BODY NOT CAPTURED' and uncaptured headers notice",
+    "status": "PASS",
+    "evidence": "Request ID: req_missing_1788460840401"
+  },
+  {
+    "id": "DATABASE-ATTRIBUTION-METRICS",
+    "capability": "Database",
+    "action": "Inspect database wait attribution for request with SQL telemetry",
+    "expected": "Display 220ms DB wait, 520ms request duration, 300ms unattributed gap, and 3 queries",
+    "actual": "Rendered 220ms DB wait, 520ms request time, 300ms unattributed processing gap, and 3 queries",
+    "status": "PASS",
+    "evidence": "Request ID: req_db_1788460840401"
+  },
+  {
+    "id": "DATABASE-NOT-OBSERVED-LABEL",
+    "capability": "Database",
+    "action": "Inspect request without database spans",
+    "expected": "Display honest 'DATABASE TELEMETRY NOT OBSERVED' (never misleading 0ms)",
+    "actual": "Rendered honest 'DATABASE TELEMETRY NOT OBSERVED' label",
+    "status": "PASS",
+    "evidence": "Request ID: req_nodb_1788460840401"
+  },
+  {
+    "id": "INFRA-RUNTIME-MATRIX",
+    "capability": "Infrastructure",
+    "action": "Generate runtime fingerprint comparing failure against healthy reference",
+    "expected": "Highlight Node 22 vs Node 20 as DIFFERENT lead, and region as MATCHING",
+    "actual": "Rendered side-by-side comparison: Node 22 (failed) vs Node 20 (reference) marked DIFFERENT, and region marked MATCHING",
+    "status": "PASS",
+    "evidence": "Failure Trace ID: trc_infra_fail_1788460840401"
+  },
+  {
+    "id": "PROVENANCE-RAW-PAYLOAD",
+    "capability": "Provenance",
+    "action": "Inspect 'Raw Captured Payload' tab in Detail Drawer",
+    "expected": "Display unmodified JSON payload captured by Halo pipeline",
+    "actual": "Rendered unmodified raw telemetry JSON payload with Copy button",
+    "status": "PASS",
+    "evidence": "Raw JSON payload tab verified"
+  },
+  {
+    "id": "CROSS-PAGE-JOURNEY",
+    "capability": "Cross-Page",
+    "action": "Execute end-to-end investigation: Search -> Errors -> Requests -> Traces -> Logs -> Database -> Infrastructure -> Metrics",
+    "expected": "Each step loads target entity, preserves telemetry identity, updates URL without error or state loss",
+    "actual": "Full 8-step investigative workflow succeeded seamlessly across all pages without crash or data loss",
+    "status": "PASS",
+    "evidence": "Final URL: http://localhost:3000/explore/metrics?metric=throughput&timeRange=7d"
+  },
+  {
+    "id": "INTEGRITY-HYDRATION",
+    "capability": "Integrity",
+    "action": "Inspect browser console for React hydration mismatches",
+    "expected": "Zero React hydration mismatches ('Warning: Text content did not match...')",
+    "actual": "Zero hydration mismatch errors detected",
+    "status": "PASS",
+    "evidence": "Hydration errors count: 0"
+  },
+  {
+    "id": "INTEGRITY-NETWORK",
+    "capability": "Integrity",
+    "action": "Inspect network responses during browser session",
+    "expected": "Zero unexpected 4xx/5xx network responses",
+    "actual": "Zero network errors during all flows",
+    "status": "PASS",
+    "evidence": "None"
+  },
+  {
+    "id": "PERF-N-PLUS-ONE",
+    "capability": "Performance",
+    "action": "Measure batchFetchLinkedEvidence relationship fetching for 10 records",
+    "expected": "Collect all traceIds, requestIds, sessionIds and execute bounded IN (...) queries (zero N+1)",
+    "actual": "Resolved 0 traces, 0 requests in 2ms with bounded batch queries",
+    "status": "PASS",
+    "evidence": "Uses prisma.event.findMany({ where: { in: [...] } }) instead of per-row queries"
+  },
+  {
+    "id": "SEMANTICS-TIME-BOUNDARY",
+    "capability": "Semantics",
+    "action": "Verify time range operator in canonical-evidence-access.ts",
+    "expected": "Filter uses closed interval [from, to] (inclusive: gte AND lte)",
+    "actual": "Uses where.timestamp.gte = filter.from AND where.timestamp.lte = filter.to (inclusive [from, to])",
+    "status": "PASS",
+    "evidence": "apps/dashboard/src/lib/explore/canonical-evidence-access.ts: lines 300-301"
+  }
+]

@@ -48,20 +48,30 @@ export function ErrorRecipeClient({
 
     const handleSearchSubmit = (e: React.FormEvent) => {
         e.preventDefault();
-        const params = new URLSearchParams(searchParams.toString());
+        const searchStr = typeof window !== "undefined" ? window.location.search : searchParams.toString();
+        const params = new URLSearchParams(searchStr);
         if (searchInput.trim()) {
             params.set("fingerprint", searchInput.trim());
         } else {
             params.delete("fingerprint");
         }
-        router.push(`/explore/errors?${params.toString()}`);
+        if (typeof window !== "undefined") {
+            window.location.href = `/explore/errors?${params.toString()}`;
+        } else {
+            router.push(`/explore/errors?${params.toString()}`);
+        }
     };
 
     const handleSelectError = (err: CanonicalEvidenceRecord) => {
-        const params = new URLSearchParams(searchParams.toString());
+        const searchStr = typeof window !== "undefined" ? window.location.search : searchParams.toString();
+        const params = new URLSearchParams(searchStr);
         params.set("eventId", err.id);
         params.delete("fingerprint");
-        router.push(`/explore/errors?${params.toString()}`);
+        if (typeof window !== "undefined") {
+            window.location.href = `/explore/errors?${params.toString()}`;
+        } else {
+            router.push(`/explore/errors?${params.toString()}`);
+        }
     };
 
     return (

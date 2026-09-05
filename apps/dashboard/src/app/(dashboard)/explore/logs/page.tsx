@@ -20,6 +20,7 @@ export default async function ExploreLogsPage({ searchParams }: PageProps) {
             projectId: params.projectId,
             environment: params.environment,
             service: params.service,
+            release: params.release,
             timeRange: params.timeRange || "24h",
             search: params.search,
         }),

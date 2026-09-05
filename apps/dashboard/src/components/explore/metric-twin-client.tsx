@@ -7,6 +7,7 @@ import { BarChart3, Activity, Zap, Layers, Clock, ArrowRight, CheckCircle2, Aler
 import type { MetricShapeTwinResult, MetricKey } from "@/lib/explore/metric-twin";
 import { ExploreHeader } from "./explore-header";
 import { RelativeTime } from "@/components/ui/relative-time";
+import { formatDeterministicTime, formatDeterministicDate } from "@/lib/date-format";
 import { ExploreEmptyState } from "./empty-state";
 
 interface MetricTwinClientProps {
@@ -24,15 +25,25 @@ export function MetricTwinClient({
     const searchParams = useSearchParams();
 
     const handleSelectMetric = (metric: MetricKey) => {
-        const params = new URLSearchParams(searchParams.toString());
+        const searchStr = typeof window !== "undefined" ? window.location.search : searchParams.toString();
+        const params = new URLSearchParams(searchStr);
         params.set("metric", metric);
-        router.push(`/explore/metrics?${params.toString()}`);
+        if (typeof window !== "undefined") {
+            window.location.href = `/explore/metrics?${params.toString()}`;
+        } else {
+            router.push(`/explore/metrics?${params.toString()}`);
+        }
     };
 
-    const handleSelectWindow = (window: string) => {
-        const params = new URLSearchParams(searchParams.toString());
-        params.set("timeRange", window);
-        router.push(`/explore/metrics?${params.toString()}`);
+    const handleSelectWindow = (windowStr: string) => {
+        const searchStr = typeof window !== "undefined" ? window.location.search : searchParams.toString();
+        const params = new URLSearchParams(searchStr);
+        params.set("timeRange", windowStr);
+        if (typeof window !== "undefined") {
+            window.location.href = `/explore/metrics?${params.toString()}`;
+        } else {
+            router.push(`/explore/metrics?${params.toString()}`);
+        }
     };
 
     const isInsufficient = data.sufficiency.status === "INSUFFICIENT";
@@ -139,7 +150,7 @@ export function MetricTwinClient({
                                         CURRENT INTERVAL BEHAVIOR
                                     </span>
                                     <span className="text-xs text-muted font-mono">
-                                        {data.currentWindow.startTime.toLocaleTimeString()} – {data.currentWindow.endTime.toLocaleTimeString()}
+                                        {formatDeterministicTime(data.currentWindow.startTime, "UTC", false)} – {formatDeterministicTime(data.currentWindow.endTime, "UTC", false)} UTC
                                     </span>
                                 </div>
                                 <div className="text-right">
@@ -156,24 +167,33 @@ export function MetricTwinClient({
                             <div className="p-4 rounded-lg bg-[#04060a] border border-border space-y-2">
                                 <div className="flex items-end gap-1.5 h-24 pt-2">
                                     {data.currentWindow.points.map((pt, idx) => {
+                                        const hasTelemetry = pt.sampleCount > 0;
                                         const heightPct =
-                                            data.currentWindow.peakValue > 0
-                                                ? Math.max(8, Math.round((pt.value / data.currentWindow.peakValue) * 100))
-                                                : 8;
+                                            hasTelemetry && data.currentWindow.peakValue > 0
+                                                ? Math.max(12, Math.round((pt.value / data.currentWindow.peakValue) * 100))
+                                                : 6;
                                         return (
                                             <div
                                                 key={idx}
                                                 style={{ height: `${heightPct}%` }}
-                                                title={`${pt.timestamp.toLocaleTimeString()}: ${pt.value} ${data.unit}`}
-                                                className="flex-1 bg-accent/60 hover:bg-accent rounded-t transition-all cursor-pointer"
+                                                title={
+                                                    hasTelemetry
+                                                        ? `${formatDeterministicTime(pt.timestamp, "UTC", false)} UTC: ${pt.value} ${data.unit} (${pt.sampleCount} ${pt.sampleCount === 1 ? "sample" : "samples"})`
+                                                        : `${formatDeterministicTime(pt.timestamp, "UTC", false)} UTC: No observed telemetry (0 samples)`
+                                                }
+                                                className={`flex-1 rounded-t transition-all cursor-pointer ${
+                                                    hasTelemetry
+                                                        ? "bg-accent/70 hover:bg-accent"
+                                                        : "bg-zinc-800/40 hover:bg-zinc-700/50 border-t border-dashed border-zinc-600/60"
+                                                }`}
                                             />
                                         );
                                     })}
                                 </div>
                                 <div className="flex items-center justify-between text-[10px] font-mono text-muted pt-1 border-t border-border/40">
-                                    <span>{data.currentWindow.startTime.toLocaleTimeString()}</span>
+                                    <span>{formatDeterministicTime(data.currentWindow.startTime, "UTC", false)}</span>
                                     <span>Current Shape Trajectory</span>
-                                    <span>{data.currentWindow.endTime.toLocaleTimeString()}</span>
+                                    <span>{formatDeterministicTime(data.currentWindow.endTime, "UTC", false)}</span>
                                 </div>
                             </div>
 
@@ -205,20 +225,22 @@ export function MetricTwinClient({
                                     </div>
                                     <span className="text-xs text-muted font-mono">
                                         {data.bestTwin
-                                            ? `${data.bestTwin.startTime.toLocaleDateString()} ${data.bestTwin.startTime.toLocaleTimeString()}`
+                                            ? `${formatDeterministicDate(data.bestTwin.startTime, "UTC")} ${formatDeterministicTime(data.bestTwin.startTime, "UTC", false)} UTC`
                                             : "No historical match"}
                                     </span>
                                 </div>
-                                {data.bestTwin && (
-                                    <div className="text-right">
-                                        <span className="text-sm font-bold text-white font-mono block">
-                                            Contour Dist: {data.bestTwin.contourDistance}
-                                        </span>
-                                        <span className="text-[10px] text-zinc-400 font-mono">
-                                            {data.bestTwin.correlatedEventsCount} events in window
-                                        </span>
-                                    </div>
-                                )}
+                                <div className="text-right">
+                                    {data.bestTwin && (
+                                        <>
+                                            <span className="text-sm font-bold text-white font-mono block">
+                                                Contour Dist: {data.bestTwin.contourDistance}
+                                            </span>
+                                            <span className="text-[10px] text-zinc-400 font-mono">
+                                                {data.bestTwin.correlatedEventsCount} events in window
+                                            </span>
+                                        </>
+                                    )}
+                                </div>
                             </div>
 
                             {data.bestTwin ? (
@@ -227,21 +249,33 @@ export function MetricTwinClient({
                                         <div className="flex items-end gap-1.5 h-24 pt-2">
                                             {data.bestTwin.points.map((pt, idx) => {
                                                 const peak = Math.max(...data.bestTwin!.points.map((p) => p.value), 1);
-                                                const heightPct = Math.max(8, Math.round((pt.value / peak) * 100));
+                                                const hasTelemetry = pt.sampleCount > 0;
+                                                const heightPct =
+                                                    hasTelemetry && peak > 0
+                                                        ? Math.max(12, Math.round((pt.value / peak) * 100))
+                                                        : 6;
                                                 return (
                                                     <div
                                                         key={idx}
                                                         style={{ height: `${heightPct}%` }}
-                                                        title={`${pt.timestamp.toLocaleTimeString()}: ${pt.value}`}
-                                                        className="flex-1 bg-emerald-500/60 hover:bg-emerald-400 rounded-t transition-all cursor-pointer"
+                                                        title={
+                                                            hasTelemetry
+                                                                ? `${formatDeterministicTime(pt.timestamp, "UTC", false)} UTC: ${pt.value} (${pt.sampleCount} ${pt.sampleCount === 1 ? "sample" : "samples"})`
+                                                                : `${formatDeterministicTime(pt.timestamp, "UTC", false)} UTC: No observed telemetry (0 samples)`
+                                                        }
+                                                        className={`flex-1 rounded-t transition-all cursor-pointer ${
+                                                            hasTelemetry
+                                                                ? "bg-emerald-500/70 hover:bg-emerald-400"
+                                                                : "bg-zinc-800/40 hover:bg-zinc-700/50 border-t border-dashed border-zinc-600/60"
+                                                        }`}
                                                     />
                                                 );
                                             })}
                                         </div>
                                         <div className="flex items-center justify-between text-[10px] font-mono text-muted pt-1 border-t border-border/40">
-                                            <span>{data.bestTwin.startTime.toLocaleTimeString()}</span>
+                                            <span>{formatDeterministicTime(data.bestTwin.startTime, "UTC", false)}</span>
                                             <span>Historical Contour Trajectory</span>
-                                            <span>{data.bestTwin.endTime.toLocaleTimeString()}</span>
+                                            <span>{formatDeterministicTime(data.bestTwin.endTime, "UTC", false)}</span>
                                         </div>
                                     </div>
 
@@ -284,7 +318,7 @@ export function MetricTwinClient({
                                         <div className="space-y-0.5">
                                             <div className="text-white font-semibold flex items-center gap-2">
                                                 <span>
-                                                    {twin.startTime.toLocaleDateString()} {twin.startTime.toLocaleTimeString()} – {twin.endTime.toLocaleTimeString()}
+                                                    {formatDeterministicDate(twin.startTime, "UTC")} {formatDeterministicTime(twin.startTime, "UTC", false)} – {formatDeterministicTime(twin.endTime, "UTC", false)} UTC
                                                 </span>
                                                 <span className="text-muted text-[11px] font-sans">
                                                     (<RelativeTime date={twin.startTime} />)

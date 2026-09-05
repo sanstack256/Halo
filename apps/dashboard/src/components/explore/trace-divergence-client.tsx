@@ -44,21 +44,31 @@ export function TraceDivergenceClient({
 
     const handleApplyTraces = (e: React.FormEvent) => {
         e.preventDefault();
-        const params = new URLSearchParams(searchParams.toString());
+        const searchStr = typeof window !== "undefined" ? window.location.search : searchParams.toString();
+        const params = new URLSearchParams(searchStr);
         if (manualTraceInput.trim()) {
             params.set("traceId", manualTraceInput.trim());
         }
         if (manualRefInput.trim()) {
             params.set("refTraceId", manualRefInput.trim());
         }
-        router.push(`/explore/traces?${params.toString()}`);
+        if (typeof window !== "undefined") {
+            window.location.href = `/explore/traces?${params.toString()}`;
+        } else {
+            router.push(`/explore/traces?${params.toString()}`);
+        }
     };
 
     const handleSelectTrace = (id: string) => {
-        const params = new URLSearchParams(searchParams.toString());
+        const searchStr = typeof window !== "undefined" ? window.location.search : searchParams.toString();
+        const params = new URLSearchParams(searchStr);
         params.set("traceId", id);
         params.delete("refTraceId");
-        router.push(`/explore/traces?${params.toString()}`);
+        if (typeof window !== "undefined") {
+            window.location.href = `/explore/traces?${params.toString()}`;
+        } else {
+            router.push(`/explore/traces?${params.toString()}`);
+        }
     };
 
     return (

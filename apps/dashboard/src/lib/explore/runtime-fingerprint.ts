@@ -1,6 +1,7 @@
 import { prisma } from "../prisma";
 import {
     getEventById,
+    getEventsByTraceId,
     getEventsInTimeRange,
 } from "./canonical-evidence-access";
 import type {
@@ -16,6 +17,7 @@ export interface DiscoveredRuntimeAttribute {
     failureValue: string;
     referenceValue: string;
     status: FingerprintStatus;
+    leadClassification?: "LEAD" | "MATCHING" | "UNOBSERVED";
     source: string;
     isInvestigationLead: boolean;
 }
@@ -38,6 +40,10 @@ export async function compareRuntimeFingerprint(
     let failureEvent: CanonicalEvidenceRecord | null = null;
     if (failureEventId) {
         failureEvent = await getEventById(failureEventId, orgId);
+        if (!failureEvent) {
+            const traceEvents = await getEventsByTraceId(failureEventId, orgId);
+            failureEvent = traceEvents.find((e) => e.severity === "ERROR" || e.type === "ERROR") || traceEvents[0] || null;
+        }
     }
 
     if (!failureEvent) {
