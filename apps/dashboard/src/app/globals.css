@@ -3475,39 +3475,258 @@ HALO INVESTIGATION
     background: var(--surface-interactive);
 }
 
-/* ─── Landing Page Animations ─────────────────────────────────────────────── */
+/* ─── Landing Page Animations & Motion Specifications ────────────────────── */
 
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(18px); }
-  to   { opacity: 1; transform: translateY(0); }
+@keyframes heroFadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(12px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
-@keyframes fadeIn {
+@keyframes heroFadeIn {
   from { opacity: 0; }
   to   { opacity: 1; }
 }
 
-@keyframes glowPulse {
-  0%, 100% { opacity: 0.45; }
-  50%       { opacity: 1; }
+@keyframes haloAtmosphereBreath {
+  0%, 100% {
+    opacity: 0.92;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 1.04;
+    transform: scale(1.015);
+  }
 }
 
-@keyframes shimmerLine {
-  0%   { transform: scaleX(0); opacity: 0; }
-  30%  { opacity: 1; }
-  100% { transform: scaleX(1); opacity: 1; }
+@keyframes signalTravel {
+  0% {
+    top: 0;
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.9;
+  }
+  85% {
+    opacity: 0.9;
+  }
+  100% {
+    top: 100%;
+    opacity: 0;
+  }
 }
 
-.anim-fade-in-up {
-  animation: fadeInUp 0.65s ease-out forwards;
+.anim-hero-eyebrow {
   opacity: 0;
+  animation: heroFadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.15s forwards;
 }
 
-.anim-fade-in {
-  animation: fadeIn 0.65s ease-out forwards;
+.anim-hero-headline {
   opacity: 0;
+  animation: heroFadeInUp 0.55s cubic-bezier(0.22, 1, 0.36, 1) 0.28s forwards;
 }
 
-.glow-pulse {
-  animation: glowPulse 2.4s ease-in-out infinite;
+.anim-hero-body {
+  opacity: 0;
+  animation: heroFadeInUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) 0.42s forwards;
+}
+
+.anim-hero-actions {
+  opacity: 0;
+  animation: heroFadeInUp 0.45s cubic-bezier(0.22, 1, 0.36, 1) 0.55s forwards;
+}
+
+.anim-hero-artifact {
+  opacity: 0;
+  animation: heroFadeIn 0.7s cubic-bezier(0.22, 1, 0.36, 1) 0.45s forwards;
+}
+
+.halo-atmosphere-layer {
+  animation: haloAtmosphereBreath 12s ease-in-out infinite;
+  transform-origin: center center;
+  will-change: opacity, transform;
+}
+
+/* Primary CTA Tactile Behavior */
+.halo-primary-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  height: 48px;
+  padding: 0 26px;
+  border-radius: 10px;
+  background: #69BFFF;
+  color: #061018;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  text-decoration: none;
+  transition: background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
+              transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
+              box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
+  box-shadow: 0 2px 10px rgba(105, 191, 255, 0.16);
+  cursor: pointer;
+}
+
+.halo-primary-cta:hover {
+  background: #8BD3FF;
+  transform: translateY(-1px);
+  box-shadow: 0 6px 22px rgba(105, 191, 255, 0.26);
+}
+
+.halo-primary-cta:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(105, 191, 255, 0.18);
+}
+
+/* Secondary Action */
+.halo-secondary-action {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 10px 14px;
+  color: #8D9AAA;
+  font-family: var(--font-geist-sans), system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 500;
+  text-decoration: none;
+  transition: color 180ms ease;
+  cursor: pointer;
+}
+
+.halo-secondary-action .halo-arrow {
+  display: inline-block;
+  opacity: 0.65;
+  transition: transform 180ms cubic-bezier(0.22, 1, 0.36, 1), opacity 180ms ease;
+}
+
+.halo-secondary-action:hover {
+  color: #C2CCD8;
+}
+
+.halo-secondary-action:hover .halo-arrow {
+  transform: translateX(4px);
+  opacity: 0.95;
+}
+
+/* Card hover micro-interaction */
+.halo-card-hover {
+  transition: transform 220ms cubic-bezier(0.22, 1, 0.36, 1),
+              border-color 220ms ease,
+              box-shadow 220ms ease;
+}
+
+.halo-card-hover:hover {
+  transform: translateY(-2px);
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  box-shadow: 0 20px 48px rgba(0, 0, 0, 0.65), 0 0 24px rgba(105, 191, 255, 0.04);
+}
+
+/* Evidence node interaction */
+.halo-evidence-node {
+  transition: transform 200ms ease, filter 200ms ease, opacity 200ms ease;
+  cursor: pointer;
+}
+
+.halo-evidence-node:hover {
+  filter: brightness(1.25);
+}
+
+/* Mobile Menu Toggle */
+.halo-mobile-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  background: rgba(255, 255, 255, 0.03);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  color: #C9D2DE;
+  cursor: pointer;
+  margin-left: 4px;
+}
+
+@media (min-width: 768px) {
+  .halo-mobile-toggle {
+    display: none !important;
+  }
+}
+
+/* Source panel micro-interaction */
+.halo-source-panel {
+  transition: background-color 200ms ease, border-color 200ms ease, transform 200ms ease;
+}
+
+.halo-source-panel:hover {
+  background-color: #080D14 !important;
+  border-color: rgba(255, 255, 255, 0.12) !important;
+  transform: scale(1.002);
+}
+
+/* Atmospheric Scroll Canvas (1-3% perceived movement) */
+.halo-atmosphere-canvas {
+  will-change: transform;
+  transform: translate3d(0, calc(var(--halo-scroll, 0px) * -0.02), 0);
+}
+
+/* ─── Landing Page Responsive Container ───────────────────────────────────── */
+
+.landing-container {
+  width: 100%;
+  max-width: 1280px;
+  margin-left: auto;
+  margin-right: auto;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@media (max-width: 359px) {
+  .landing-container {
+    padding-left: 16px;
+    padding-right: 16px;
+  }
+}
+
+@media (min-width: 640px) {
+  .landing-container {
+    padding-left: 32px;
+    padding-right: 32px;
+  }
+}
+
+@media (min-width: 1024px) {
+  .landing-container {
+    padding-left: 40px;
+    padding-right: 40px;
+  }
+}
+
+/* ─── Accessibility: Reduced Motion ──────────────────────────────────────── */
+
+@media (prefers-reduced-motion: reduce) {
+  .anim-hero-eyebrow,
+  .anim-hero-headline,
+  .anim-hero-body,
+  .anim-hero-actions,
+  .anim-hero-artifact,
+  .halo-atmosphere-layer,
+  .halo-atmosphere-canvas {
+    animation: none !important;
+    opacity: 1 !important;
+    transform: none !important;
+  }
+
+  .halo-primary-cta:hover,
+  .halo-secondary-action:hover .halo-arrow,
+  .halo-card-hover:hover,
+  .halo-source-panel:hover {
+    transform: none !important;
+  }
 }

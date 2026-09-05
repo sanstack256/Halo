@@ -26,26 +26,34 @@ function useInView(threshold = 0.15) {
   return [ref, inView] as const;
 }
 
-// ─── Design Tokens ──────────────────────────────────────────────────────────
+// ─── Design Tokens (Strict Brand & Typography Hierarchy) ─────────────────────
 
 const C = {
-  bg:       "#05070A",
-  surface:  "#090C11",
-  s2:       "#0D1118",
-  s3:       "#111720",
-  blue:     "#69BFFF",
-  blueBr:   "#8BD3FF",
-  blueDeep: "#2B8FD9",
-  blueAtm:  "#0D3B61",
-  // Softer white hierarchy per refinement
-  textDisp: "#E8EDF3",   // primary display / headlines
-  textImp:  "#C5CDD7",   // important secondary
-  text2:    "#A7B0BD",   // body / supporting
-  text3:    "#6F7A89",   // muted
-  textMic:  "#66717F",   // technical / micro
-  muted:    "#4B5563",
-  border:   "rgba(255,255,255,0.06)",
-  borderB:  "rgba(105,191,255,0.15)",
+  bg: "#02060A",             // Base background, dominant page background
+  blueBlack: "#06101A",      // Deep blue-black
+  atmBlue: "#081827",        // Secondary atmospheric blue
+  blue: "#69BFFF",           // Primary Halo sky blue
+  blueBr: "#8BD3FF",         // Bright sky blue
+  surface: "#080C11",        // Card surface
+  surfaceElevated: "#090D12",
+  codeBg: "#070A0F",         // Code panel background
+  surfaceSubtle: "rgba(255,255,255,0.02)",
+  textPrimary: "#E7EDF4",    // Primary text / major headlines
+  textBigIdeaMuted: "#8E9CAD",// Big Idea first line / section secondary
+  textHeadingSec: "#C9D2DE", // Secondary headings
+  textSectionSub: "#8E9CAD", // Section secondary line
+  textBody: "#9AA7B7",       // Body text / supporting copy
+  textMuted: "#657487",      // Muted text
+  textMeta: "#596779",       // Technical metadata
+  textMetaFaint: "#465364",  // Very faint metadata
+  // Borders
+  border: "rgba(255,255,255,0.06)",
+  borderElevated: "rgba(255,255,255,0.08)",
+  borderBlue: "rgba(105,191,255,0.18)",
+  borderDashed: "rgba(255,255,255,0.10)",
+  // Semantic data indicators
+  red: "#f87171",            // Error
+  yellow: "#fbbf24",         // Database
 };
 
 const mono = "var(--font-geist-mono), 'Geist Mono', ui-monospace, monospace";
@@ -59,11 +67,20 @@ interface LandingPageProps {
 
 function Nav({ isAuthenticated }: { isAuthenticated?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+
   useEffect(() => {
-    const h = () => setScrolled(window.scrollY > 24);
+    const h = () => setScrolled(window.scrollY > 20);
     window.addEventListener("scroll", h, { passive: true });
     return () => window.removeEventListener("scroll", h);
   }, []);
+
+  const navLinks = [
+    { label: "Product", href: "#evidence" },
+    { label: "How it works", href: "#how-it-works" },
+    { label: "Docs", href: "/sdk" },
+    { label: "Pricing", href: "/pricing" },
+  ];
 
   return (
     <nav
@@ -76,24 +93,22 @@ function Nav({ isAuthenticated }: { isAuthenticated?: boolean }) {
         height: 72,
         display: "flex",
         alignItems: "center",
-        background: scrolled ? "rgba(5,7,10,0.94)" : "transparent",
-        backdropFilter: scrolled ? "blur(14px)" : "none",
-        borderBottom: scrolled ? `1px solid ${C.border}` : "1px solid transparent",
-        transition: "background 0.3s ease, border-color 0.3s ease",
+        background: scrolled || mobileMenuOpen ? "rgba(2,6,10,0.88)" : "transparent",
+        backdropFilter: scrolled || mobileMenuOpen ? "blur(14px)" : "none",
+        borderBottom: scrolled || mobileMenuOpen ? `1px solid ${C.border}` : "1px solid transparent",
+        transition: "background 0.25s ease, border-color 0.25s ease, backdrop-filter 0.25s ease",
       }}
     >
       <div
+        className="landing-container"
         style={{
-          maxWidth: 1280,
-          margin: "0 auto",
-          padding: "0 24px",
-          width: "100%",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
+          height: "100%",
         }}
       >
-        {/* Logo: full wordmark (icon + text) */}
+        {/* Left: Halo logo wordmark */}
         <Link
           href="/"
           style={{ display: "flex", alignItems: "center", textDecoration: "none", flexShrink: 0 }}
@@ -103,7 +118,7 @@ function Nav({ isAuthenticated }: { isAuthenticated?: boolean }) {
             src="/landing/halo-wordmark.png"
             alt="Halo"
             style={{
-              height: 36,
+              height: 34,
               width: "auto",
               mixBlendMode: "screen",
               objectFit: "contain",
@@ -111,96 +126,136 @@ function Nav({ isAuthenticated }: { isAuthenticated?: boolean }) {
           />
         </Link>
 
-        <div className="hidden md:flex" style={{ gap: 32 }}>
-          {[
-            { label: "Product", href: "#evidence" },
-            { label: "How it works", href: "#how-it-works" },
-            { label: "Docs", href: "/sdk" },
-            { label: "Pricing", href: "/pricing" },
-          ].map((item) => (
+        {/* Center: Navigation (desktop) */}
+        <div className="hidden md:flex" style={{ gap: 32, alignItems: "center" }}>
+          {navLinks.map((item) => (
             <Link
               key={item.label}
               href={item.href}
               style={{
                 fontFamily: sans,
                 fontSize: 14,
-                color: C.text3,
+                color: C.textMuted,
                 textDecoration: "none",
-                transition: "color 0.2s",
+                transition: "color 0.16s ease",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = C.textImp)}
-              onMouseLeave={(e) => (e.currentTarget.style.color = C.text3)}
+              onMouseEnter={(e) => (e.currentTarget.style.color = C.textHeadingSec)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = C.textMuted)}
             >
               {item.label}
             </Link>
           ))}
         </div>
 
+        {/* Right: Auth / Action Area */}
         <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
-          {isAuthenticated ? (
-            <Link
-              href="/overview"
-              style={{
-                fontFamily: sans,
-                fontSize: 13,
-                fontWeight: 600,
-                padding: "9px 18px",
-                borderRadius: 7,
-                background: C.blue,
-                color: C.bg,
-                textDecoration: "none",
-                transition: "background 0.2s",
-              }}
-              onMouseEnter={(e) => (e.currentTarget.style.background = C.blueBr)}
-              onMouseLeave={(e) => (e.currentTarget.style.background = C.blue)}
-            >
-              Open Dashboard →
-            </Link>
-          ) : (
-            <>
-              <Link
-                href="/sign-in"
-                className="hidden sm:inline-block"
-                style={{
-                  fontFamily: sans,
-                  fontSize: 13,
-                  color: C.text3,
-                  padding: "8px 14px",
-                  textDecoration: "none",
-                  transition: "color 0.2s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = C.textImp)}
-                onMouseLeave={(e) => (e.currentTarget.style.color = C.text3)}
-              >
-                Log in
-              </Link>
-              <Link
-                href="/sign-up"
-                style={{
-                  fontFamily: sans,
-                  fontSize: 13,
-                  fontWeight: 600,
-                  padding: "9px 18px",
-                  borderRadius: 7,
-                  background: C.blue,
-                  color: C.bg,
-                  textDecoration: "none",
-                  transition: "background 0.2s",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = C.blueBr)}
-                onMouseLeave={(e) => (e.currentTarget.style.background = C.blue)}
-              >
-                Get started
-              </Link>
-            </>
-          )}
+          <Link
+            href="/sign-in"
+            className="hidden sm:inline-block"
+            style={{
+              fontFamily: sans,
+              fontSize: 14,
+              color: C.textMuted,
+              padding: "8px 14px",
+              textDecoration: "none",
+              transition: "color 0.16s ease",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.color = C.textHeadingSec)}
+            onMouseLeave={(e) => (e.currentTarget.style.color = C.textMuted)}
+          >
+            Log in
+          </Link>
+          <Link
+            href="/sign-up"
+            className="halo-primary-cta"
+            style={{ height: 40, padding: "0 18px", fontSize: 13 }}
+          >
+            Get started
+          </Link>
+
+          {/* Mobile menu toggle */}
+          <button
+            type="button"
+            className="halo-mobile-toggle"
+            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            aria-label={mobileMenuOpen ? "Close navigation menu" : "Open navigation menu"}
+          >
+            {mobileMenuOpen ? (
+              <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M3 3l10 10M13 3L3 13" />
+              </svg>
+            ) : (
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none" stroke="currentColor" strokeWidth="1.5">
+                <path d="M2.5 5h13M2.5 9h13M2.5 13h13" />
+              </svg>
+            )}
+          </button>
         </div>
       </div>
+
+      {/* Mobile Menu Dropdown */}
+      {mobileMenuOpen && (
+        <div
+          className="md:hidden"
+          style={{
+            position: "absolute",
+            top: 72,
+            left: 0,
+            right: 0,
+            background: "rgba(4,6,10,0.97)",
+            backdropFilter: "blur(18px)",
+            borderBottom: `1px solid ${C.border}`,
+            padding: "20px 24px 28px",
+            display: "flex",
+            flexDirection: "column",
+            gap: 16,
+            zIndex: 49,
+          }}
+        >
+          {navLinks.map((item) => (
+            <Link
+              key={item.label}
+              href={item.href}
+              onClick={() => setMobileMenuOpen(false)}
+              style={{
+                fontFamily: sans,
+                fontSize: 16,
+                color: C.textHeadingSec,
+                textDecoration: "none",
+                padding: "8px 0",
+              }}
+            >
+              {item.label}
+            </Link>
+          ))}
+          <Link
+            href="/sign-in"
+            onClick={() => setMobileMenuOpen(false)}
+            style={{
+              fontFamily: sans,
+              fontSize: 16,
+              color: C.textMuted,
+              textDecoration: "none",
+              padding: "8px 0",
+            }}
+          >
+            Log in
+          </Link>
+          <Link
+            href="/sign-up"
+            onClick={() => setMobileMenuOpen(false)}
+            className="halo-primary-cta"
+            style={{ height: 40, padding: "0 18px", fontSize: 14, marginTop: 4 }}
+          >
+            Get started
+          </Link>
+        </div>
+      )}
     </nav>
   );
 }
 
-// ─── Hero investigation artifact ─────────────────────────────────────────────
+// ─── Hero Investigation Artifact ─────────────────────────────────────────────
 
 interface NodeProps {
   visible: boolean;
@@ -218,14 +273,14 @@ function ENode({ visible, lineVisible, label, title, meta, dot = C.blue, isLast,
     <div
       style={{
         display: "flex",
-        gap: 12,
+        gap: 14,
         paddingLeft: indent ? 28 : 0,
         opacity: visible ? 1 : 0,
-        transform: visible ? "translateY(0)" : "translateY(5px)",
-        transition: "opacity 0.45s ease, transform 0.45s ease",
+        transform: visible ? "translateY(0)" : "translateY(6px)",
+        transition: "opacity 0.4s cubic-bezier(0.22, 1, 0.36, 1), transform 0.4s cubic-bezier(0.22, 1, 0.36, 1)",
       }}
     >
-      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 12, flexShrink: 0 }}>
+      <div style={{ display: "flex", flexDirection: "column", alignItems: "center", width: 14, flexShrink: 0 }}>
         <div
           style={{
             width: 8,
@@ -233,42 +288,43 @@ function ENode({ visible, lineVisible, label, title, meta, dot = C.blue, isLast,
             borderRadius: "50%",
             background: visible ? dot : "transparent",
             flexShrink: 0,
-            marginTop: 3,
-            boxShadow: visible ? `0 0 7px ${dot}60` : "none",
+            marginTop: 4,
+            boxShadow: visible ? `0 0 8px ${dot}55` : "none",
             transition: "background 0.3s ease, box-shadow 0.3s ease",
           }}
         />
         {!isLast && (
           <div
             style={{
+              position: "relative",
               width: 1,
               flexGrow: 1,
-              minHeight: 24,
-              background: "linear-gradient(to bottom, rgba(105,191,255,0.3), rgba(105,191,255,0.08))",
+              minHeight: 28,
+              background: "linear-gradient(to bottom, rgba(105,191,255,0.24), rgba(105,191,255,0.06))",
               transform: lineVisible ? "scaleY(1)" : "scaleY(0)",
               transformOrigin: "top center",
-              transition: "transform 0.5s ease",
+              transition: "transform 0.45s cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           />
         )}
       </div>
-      <div style={{ paddingBottom: isLast ? 8 : 20, flex: 1, minWidth: 0 }}>
+      <div style={{ paddingBottom: isLast ? 6 : 20, flex: 1, minWidth: 0 }}>
         <div
           style={{
             fontFamily: mono,
             fontSize: 10,
             letterSpacing: "0.14em",
-            color: C.textMic,
+            color: C.textMeta,
             textTransform: "uppercase",
-            marginBottom: 2,
+            marginBottom: 3,
           }}
         >
           {label}
         </div>
-        <div style={{ fontFamily: sans, fontSize: 13, color: C.textImp, fontWeight: 500, lineHeight: 1.4 }}>
+        <div style={{ fontFamily: sans, fontSize: 13, color: C.textHeadingSec, fontWeight: 500, lineHeight: 1.4 }}>
           {title}
         </div>
-        <div style={{ fontFamily: mono, fontSize: 11, color: C.text3, marginTop: 2, wordBreak: "break-all" }}>
+        <div style={{ fontFamily: mono, fontSize: 11, color: C.textMuted, marginTop: 2, wordBreak: "break-all" }}>
           {meta}
         </div>
       </div>
@@ -278,211 +334,185 @@ function ENode({ visible, lineVisible, label, title, meta, dot = C.blue, isLast,
 
 function HeroArtifact() {
   const [step, setStep] = useState(0);
+
   useEffect(() => {
-    const delays = [350, 750, 1100, 1450, 1800, 2150, 2500, 2850, 3250];
+    // Staggered reveal sequence
+    const delays = [200, 550, 900, 1250, 1600, 1950, 2350];
     const timers = delays.map((d, i) => setTimeout(() => setStep(i + 1), d));
     return () => timers.forEach(clearTimeout);
   }, []);
+
   const v = (n: number) => step >= n;
 
   return (
-    <div style={{ position: "relative" }}>
-      {/* Primary atmospheric glow — strongest light source on the page */}
+    <div
+      className="anim-hero-artifact halo-card-hover"
+      style={{
+        position: "relative",
+        width: "100%",
+        maxWidth: 660,
+        marginLeft: "auto",
+        background: C.surface,
+        border: `1px solid ${C.borderElevated}`,
+        borderRadius: 16,
+        boxShadow: "0 28px 72px rgba(0,0,0,0.65), 0 0 0 1px rgba(255,255,255,0.02)",
+        overflow: "hidden",
+      }}
+    >
+      {/* Header */}
       <div
         style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-40%, -50%)",
-          width: "140%",
-          height: "130%",
-          background: [
-            "radial-gradient(ellipse 65% 60% at 52% 48%, rgba(105,191,255,0.13) 0%, rgba(43,143,217,0.05) 45%, transparent 75%)",
-          ].join(", "),
-          pointerEvents: "none",
-          zIndex: 0,
-          filter: "blur(1px)",
-        }}
-      />
-      {/* Outer atmospheric diffusion */}
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-42%, -50%)",
-          width: "170%",
-          height: "160%",
-          background: "radial-gradient(ellipse 55% 50% at 52% 48%, rgba(13,59,97,0.18) 0%, transparent 70%)",
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
-
-      {/* Panel */}
-      <div
-        style={{
-          position: "relative",
-          zIndex: 1,
-          background: C.surface,
-          border: "1px solid rgba(255,255,255,0.07)",
-          borderRadius: 16,
-          overflow: "hidden",
-          boxShadow: "0 32px 80px rgba(0,0,0,0.55), 0 0 0 1px rgba(255,255,255,0.03)",
-          opacity: v(1) ? 1 : 0,
-          transition: "opacity 0.7s ease",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "16px 24px",
+          borderBottom: `1px solid ${C.border}`,
+          background: "rgba(255,255,255,0.015)",
         }}
       >
-        {/* Header */}
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-            padding: "14px 20px",
-            borderBottom: "1px solid rgba(255,255,255,0.05)",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
-            <span
-              style={{
-                fontFamily: mono,
-                fontSize: 10,
-                letterSpacing: "0.16em",
-                color: C.textMic,
-                textTransform: "uppercase",
-              }}
-            >
-              Investigation
-            </span>
-            <span style={{ fontFamily: mono, fontSize: 11, color: C.muted }}>#7743a</span>
-          </div>
-          <div style={{ display: "flex", alignItems: "center", gap: 6 }}>
-            <div
-              className={v(1) ? "glow-pulse" : ""}
-              style={{
-                width: 6,
-                height: 6,
-                borderRadius: "50%",
-                background: C.blue,
-                opacity: v(1) ? 1 : 0,
-                transition: "opacity 0.4s ease",
-              }}
-            />
-            <span
-              style={{
-                fontFamily: mono,
-                fontSize: 10,
-                letterSpacing: "0.12em",
-                color: C.textMic,
-                textTransform: "uppercase",
-              }}
-            >
-              Active
-            </span>
-          </div>
+        <div style={{ display: "flex", alignItems: "center", gap: 8 }}>
+          <span
+            style={{
+              fontFamily: mono,
+              fontSize: 10,
+              letterSpacing: "0.16em",
+              color: C.textMeta,
+              textTransform: "uppercase",
+            }}
+          >
+            INVESTIGATION
+          </span>
+          <span style={{ fontFamily: mono, fontSize: 11, color: C.textMuted }}>#7743a</span>
         </div>
-
-        <div style={{ padding: "20px 20px 4px" }}>
-          <ENode
-            visible={v(1)}
-            lineVisible={v(2)}
-            label="Error"
-            title="NullPointerException"
-            meta="UserService.java:247 · checkout.process()"
-            dot="#f87171"
+        <div style={{ display: "flex", alignItems: "center", gap: 7 }}>
+          <div
+            style={{
+              width: 6,
+              height: 6,
+              borderRadius: "50%",
+              background: C.blue,
+              opacity: v(1) ? 0.95 : 0,
+              boxShadow: v(1) ? `0 0 8px ${C.blue}80` : "none",
+              transition: "opacity 0.4s ease",
+            }}
           />
-          <ENode
-            visible={v(3)}
-            lineVisible={v(4)}
-            label="Request"
-            title="POST /api/checkout"
-            meta="trace_id: a3f87c2e4d1a · 1 min ago"
-          />
-          <ENode
-            visible={v(5)}
-            lineVisible={v(6)}
-            label="Trace"
-            title="checkout.handler"
-            meta="span_id: 7c2e · duration: 1.847s"
-          />
-          <ENode
-            visible={v(7)}
-            lineVisible={false}
-            label="Database"
-            title="SELECT * FROM orders WHERE user_id = ?"
-            meta="latency: 2.4s ↑↑ · 94th pct spike"
-            dot="#fbbf24"
-            indent
-          />
-          <ENode
-            visible={v(8)}
-            lineVisible={false}
-            label="Source"
-            title="app/api/checkout/route.ts"
-            meta="line 89 · getUserOrders(session.user.id)"
-            isLast
-          />
+          <span
+            style={{
+              fontFamily: mono,
+              fontSize: 10,
+              letterSpacing: "0.14em",
+              color: C.textMeta,
+              textTransform: "uppercase",
+            }}
+          >
+            ACTIVE
+          </span>
         </div>
+      </div>
 
-        {/* Summary */}
-        <div
-          style={{
-            margin: "8px 20px 20px",
-            padding: "12px 16px",
-            background: "rgba(105,191,255,0.04)",
-            border: `1px solid ${C.borderB}`,
-            borderRadius: 10,
-            opacity: v(9) ? 1 : 0,
-            transform: v(9) ? "translateY(0)" : "translateY(6px)",
-            transition: "opacity 0.5s ease, transform 0.5s ease",
-          }}
-        >
-          <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-            <div style={{ display: "flex", alignItems: "center", gap: 20 }}>
-              <div>
-                <div
-                  style={{
-                    fontFamily: mono,
-                    fontSize: 9,
-                    letterSpacing: "0.14em",
-                    color: C.textMic,
-                    textTransform: "uppercase",
-                    marginBottom: 3,
-                  }}
-                >
-                  Confidence
-                </div>
-                <div style={{ fontFamily: sans, fontSize: 13, fontWeight: 600, color: C.blue }}>High</div>
+      {/* Nodes list */}
+      <div style={{ padding: "22px 24px 6px" }}>
+        <ENode
+          visible={v(1)}
+          lineVisible={v(2)}
+          label="ERROR"
+          title="NullPointerException"
+          meta="UserService.java:247 · checkout.process()"
+          dot={C.red}
+        />
+        <ENode
+          visible={v(2)}
+          lineVisible={v(3)}
+          label="REQUEST"
+          title="POST /api/checkout"
+          meta="trace_id: a3f87c2e4d1a · 1 min ago"
+          dot={C.blue}
+        />
+        <ENode
+          visible={v(3)}
+          lineVisible={v(4)}
+          label="TRACE"
+          title="checkout.handler"
+          meta="span_id: 7c2e · duration: 1.847s"
+          dot={C.blue}
+        />
+        <ENode
+          visible={v(4)}
+          lineVisible={false}
+          label="DATABASE"
+          title="SELECT * FROM orders WHERE user_id = ?"
+          meta="latency: 2.4s ↑↑ · 94th pct spike"
+          dot={C.yellow}
+          indent
+        />
+        <ENode
+          visible={v(5)}
+          lineVisible={false}
+          label="SOURCE"
+          title="app/api/checkout/route.ts"
+          meta="line 89 · getUserOrders(session.user.id)"
+          dot={C.blue}
+          isLast
+        />
+      </div>
+
+      {/* Bottom Summary */}
+      <div
+        style={{
+          margin: "8px 24px 22px",
+          padding: "14px 18px",
+          background: "rgba(105,191,255,0.03)",
+          border: `1px solid ${C.borderBlue}`,
+          borderRadius: 10,
+          opacity: v(6) ? 1 : 0,
+          transform: v(6) ? "translateY(0)" : "translateY(6px)",
+          transition: "opacity 0.5s ease, transform 0.5s ease",
+        }}
+      >
+        <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", flexWrap: "wrap", gap: 12 }}>
+          <div style={{ display: "flex", alignItems: "center", gap: 22 }}>
+            <div>
+              <div
+                style={{
+                  fontFamily: mono,
+                  fontSize: 9,
+                  letterSpacing: "0.14em",
+                  color: C.textMeta,
+                  textTransform: "uppercase",
+                  marginBottom: 3,
+                }}
+              >
+                CONFIDENCE
               </div>
-              <div style={{ width: 1, height: 28, background: "rgba(255,255,255,0.07)" }} />
-              <div>
-                <div
-                  style={{
-                    fontFamily: mono,
-                    fontSize: 9,
-                    letterSpacing: "0.14em",
-                    color: C.textMic,
-                    textTransform: "uppercase",
-                    marginBottom: 3,
-                  }}
-                >
-                  Sources
-                </div>
-                <div style={{ fontFamily: sans, fontSize: 13, fontWeight: 500, color: C.textImp }}>4 linked</div>
+              <div style={{ fontFamily: sans, fontSize: 13, fontWeight: 600, color: C.blue }}>High</div>
+            </div>
+            <div style={{ width: 1, height: 26, background: "rgba(255,255,255,0.07)" }} />
+            <div>
+              <div
+                style={{
+                  fontFamily: mono,
+                  fontSize: 9,
+                  letterSpacing: "0.14em",
+                  color: C.textMeta,
+                  textTransform: "uppercase",
+                  marginBottom: 3,
+                }}
+              >
+                SOURCES
               </div>
+              <div style={{ fontFamily: sans, fontSize: 13, fontWeight: 500, color: C.textHeadingSec }}>4 linked</div>
             </div>
-            <div
-              style={{
-                fontFamily: mono,
-                fontSize: 10,
-                color: C.muted,
-                textAlign: "right",
-                lineHeight: 1.5,
-              }}
-            >
-              REQUEST BODY<br />NOT CAPTURED
-            </div>
+          </div>
+          <div
+            style={{
+              fontFamily: mono,
+              fontSize: 10,
+              color: C.textMuted,
+              textAlign: "right",
+              lineHeight: 1.45,
+            }}
+          >
+            REQUEST BODY<br />NOT CAPTURED
           </div>
         </div>
       </div>
@@ -497,68 +527,58 @@ function Hero({ isAuthenticated }: { isAuthenticated?: boolean }) {
     <section
       id="how-it-works"
       style={{
-        minHeight: "100vh",
-        background: C.bg,
-        // Subtle dot grid & atmospheric lighting
-        backgroundImage: [
-          "radial-gradient(ellipse 72% 65% at 62% 52%, rgba(105,191,255,0.055) 0%, rgba(43,143,217,0.025) 50%, transparent 72%)",
-          "radial-gradient(ellipse 85% 70% at 60% 52%, rgba(13,59,97,0.12) 0%, transparent 68%)",
-          "radial-gradient(ellipse 45% 50% at 22% 44%, rgba(105,191,255,0.018) 0%, transparent 65%)",
-          "linear-gradient(rgba(255,255,255,0.012) 1px, transparent 1px)",
-          "linear-gradient(90deg, rgba(255,255,255,0.012) 1px, transparent 1px)",
-        ].join(", "),
-        backgroundSize: "auto, auto, auto, 64px 64px, 64px 64px",
+        minHeight: "min(100vh, 860px)",
         display: "flex",
         alignItems: "center",
-        padding: "120px 0 80px",
+        paddingTop: "clamp(96px, 13vh, 144px)",
+        paddingBottom: "clamp(64px, 10vh, 108px)",
+        position: "relative",
       }}
     >
-      <div style={{ maxWidth: 1280, margin: "0 auto", padding: "0 24px sm:0 40px", width: "100%" }}>
-        <div className="grid grid-cols-1 lg:grid-cols-[45fr_55fr] gap-12 lg:gap-20 items-center px-4 sm:px-0">
-          {/* Left: copy */}
-          <div>
+      <div className="landing-container">
+        {/* Golden-ratio inspired fluid composition: minmax(0, 0.92fr) / minmax(0, 1.08fr) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,0.92fr)_minmax(0,1.08fr)] gap-10 lg:gap-12 xl:gap-16 2xl:gap-20 items-center">
+          {/* Left: Copy & Actions */}
+          <div className="w-full">
             <div
-              className="anim-fade-in-up"
+              className="anim-hero-eyebrow"
               style={{
                 fontFamily: mono,
-                fontSize: 11,
-                letterSpacing: "0.22em",
-                color: C.textMic,
+                fontSize: 12,
+                letterSpacing: "0.16em",
+                color: C.textMeta,
                 textTransform: "uppercase",
-                marginBottom: 24,
-                animationDelay: "0.1s",
+                marginBottom: 20,
               }}
             >
-              Observe · Connect · Investigate
+              OBSERVE · CONNECT · INVESTIGATE
             </div>
 
             <h1
-              className="anim-fade-in-up"
+              className="anim-hero-headline"
               style={{
                 fontFamily: sans,
-                fontSize: "clamp(38px, 5vw, 68px)",
-                lineHeight: 1.07,
+                fontSize: "clamp(40px, 4.8vw, 72px)",
+                lineHeight: 1.0,
                 fontWeight: 600,
-                color: C.textDisp,
+                color: C.textPrimary,
                 marginBottom: 24,
-                maxWidth: 580,
-                letterSpacing: "-0.025em",
-                animationDelay: "0.2s",
+                maxWidth: 640,
+                letterSpacing: "-0.035em",
               }}
             >
-              Understand what actually broke.
+              Understand what<br />actually broke.
             </h1>
 
             <p
-              className="anim-fade-in-up"
+              className="anim-hero-body"
               style={{
                 fontFamily: sans,
-                fontSize: 18,
-                lineHeight: 1.72,
-                color: C.text2,
+                fontSize: "clamp(16px, 1.2vw, 18px)",
+                lineHeight: 1.65,
+                color: C.textBody,
                 marginBottom: 40,
-                maxWidth: 520,
-                animationDelay: "0.35s",
+                maxWidth: 560,
               }}
             >
               Halo turns production telemetry into evidence-backed investigations — showing what happened, what the
@@ -566,51 +586,26 @@ function Hero({ isAuthenticated }: { isAuthenticated?: boolean }) {
             </p>
 
             <div
-              className="anim-fade-in-up"
-              style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 12, animationDelay: "0.5s" }}
+              className="anim-hero-actions"
+              style={{ display: "flex", flexWrap: "wrap", alignItems: "center", gap: 14 }}
             >
               <Link
-                href={isAuthenticated ? "/overview" : "/sign-up"}
-                style={{
-                  fontFamily: sans,
-                  fontSize: 14,
-                  fontWeight: 600,
-                  padding: "12px 24px",
-                  borderRadius: 8,
-                  background: C.blue,
-                  color: C.bg,
-                  textDecoration: "none",
-                  transition: "background 0.2s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = C.blueBr)}
-                onMouseLeave={(e) => (e.currentTarget.style.background = C.blue)}
+                href="/sign-up"
+                className="halo-primary-cta"
               >
-                {isAuthenticated ? "Open Dashboard" : "Get started"}
+                Get started
               </Link>
               <a
                 href="#evidence"
-                style={{
-                  fontFamily: sans,
-                  fontSize: 14,
-                  color: C.text2,
-                  padding: "12px 14px",
-                  borderRadius: 8,
-                  textDecoration: "none",
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 6,
-                  transition: "color 0.2s ease",
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.color = C.textImp)}
-                onMouseLeave={(e) => (e.currentTarget.style.color = C.text2)}
+                className="halo-secondary-action"
               >
-                See how it works <span style={{ opacity: 0.55 }}>→</span>
+                See how it works
               </a>
             </div>
           </div>
 
-          {/* Right: artifact */}
-          <div className="anim-fade-in" style={{ animationDelay: "0.45s" }}>
+          {/* Right: Investigation Artifact */}
+          <div className="w-full flex justify-end">
             <HeroArtifact />
           </div>
         </div>
@@ -619,48 +614,27 @@ function Hero({ isAuthenticated }: { isAuthenticated?: boolean }) {
   );
 }
 
-// ─── Big Idea Section ────────────────────────────────────────────────────────
+// ─── Section 2 — Big Idea ────────────────────────────────────────────────────
 
 function BigIdea() {
-  const [ref, inView] = useInView(0.3);
-  const base = (d = 0) => ({
-    opacity: inView ? 1 : 0,
-    transform: inView ? "translateY(0)" : "translateY(18px)",
-    transition: `opacity 0.7s ease ${d}s, transform 0.7s ease ${d}s`,
-  });
+  const [ref, inView] = useInView(0.25);
 
   return (
     <section
       ref={ref}
       style={{
-        background: C.bg,
-        padding: "128px 24px",
+        padding: "clamp(120px, 16vh, 180px) 0",
         position: "relative",
-        overflow: "hidden",
         textAlign: "center",
       }}
     >
-      {/* Subtle atmospheric continuation from hero */}
-      <div
-        style={{
-          position: "absolute",
-          top: "-20%",
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "70%",
-          height: "200%",
-          background: "radial-gradient(ellipse 60% 40% at 50% 0%, rgba(105,191,255,0.04) 0%, transparent 65%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative" }}>
+      <div className="landing-container" style={{ position: "relative" }}>
         <div
           style={{
-            width: 40,
+            width: 32,
             height: 1,
-            background: "rgba(105,191,255,0.35)",
-            margin: "0 auto 52px",
+            background: "rgba(105,191,255,0.22)",
+            margin: "0 auto 48px",
             opacity: inView ? 1 : 0,
             transition: "opacity 0.6s ease",
           }}
@@ -669,26 +643,30 @@ function BigIdea() {
         <p
           style={{
             fontFamily: sans,
-            fontSize: "clamp(26px, 3.5vw, 44px)",
+            fontSize: "clamp(28px, 3.6vw, 46px)",
             lineHeight: 1.35,
             fontWeight: 400,
-            letterSpacing: "-0.02em",
-            ...base(0.1),
+            letterSpacing: "-0.025em",
+            maxWidth: 880,
+            margin: "0 auto",
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(12px)",
+            transition: "opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s",
           }}
         >
-          <span style={{ color: C.text3 }}>Observability gives you data.</span>
+          <span style={{ color: C.textBigIdeaMuted }}>Observability gives you data.</span>
           <br />
-          <span style={{ color: C.textDisp }}>Investigation gives it meaning.</span>
+          <span style={{ color: C.textPrimary, fontWeight: 500 }}>Investigation gives it meaning.</span>
         </p>
 
         <div
           style={{
-            width: 40,
+            width: 32,
             height: 1,
-            background: "rgba(105,191,255,0.35)",
-            margin: "52px auto 0",
+            background: "rgba(105,191,255,0.22)",
+            margin: "48px auto 0",
             opacity: inView ? 1 : 0,
-            transition: "opacity 0.6s ease 0.35s",
+            transition: "opacity 0.6s ease 0.3s",
           }}
         />
       </div>
@@ -696,10 +674,25 @@ function BigIdea() {
   );
 }
 
-// ─── Telemetry → Evidence Section ────────────────────────────────────────────
+// ─── Section 3 — Telemetry → Investigation Choreography ──────────────────────
 
 function Telemetry() {
-  const [ref, inView] = useInView(0.12);
+  const [ref, inView] = useInView(0.18);
+  const [phase, setPhase] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    // Sequential choreography: heading -> rows -> halo connector -> card -> traveling signal -> stop
+    const timers = [
+      setTimeout(() => setPhase(1), 80),   // heading
+      setTimeout(() => setPhase(2), 240),  // rows
+      setTimeout(() => setPhase(3), 720),  // halo connector
+      setTimeout(() => setPhase(4), 1050), // investigation card
+      setTimeout(() => setPhase(5), 1400), // single signal travels
+      setTimeout(() => setPhase(6), 2200), // sequence complete, still
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [inView]);
 
   const raw = [
     { label: "LOGS",     val: "2.4M/min" },
@@ -710,88 +703,69 @@ function Telemetry() {
     { label: "DATABASE", val: "4.2K qps" },
   ];
 
-  const reveal = (d: number) => ({
-    opacity: inView ? 1 : 0,
-    transform: inView ? "translateY(0)" : "translateY(12px)",
-    transition: `opacity 0.55s ease ${d}s, transform 0.55s ease ${d}s`,
-  });
-
   return (
     <section
       ref={ref}
       style={{
-        background: C.surface,
-        padding: "120px 24px sm:120px 40px",
-        borderTop: `1px solid ${C.border}`,
-        borderBottom: `1px solid ${C.border}`,
+        padding: "clamp(120px, 15vh, 160px) 0",
         position: "relative",
-        overflow: "hidden",
       }}
     >
-      {/* Very faint atmospheric trace */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "60%",
-          height: "50%",
-          background: "radial-gradient(ellipse 50% 60% at 50% 0%, rgba(105,191,255,0.025) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", padding: "0 16px sm:0" }}>
-        <div style={{ marginBottom: 80 }}>
+      <div className="landing-container" style={{ position: "relative" }}>
+        <div style={{ marginBottom: 64 }}>
           <div
             style={{
               fontFamily: mono,
               fontSize: 11,
               letterSpacing: "0.18em",
-              color: C.textMic,
+              color: C.textMeta,
               textTransform: "uppercase",
               marginBottom: 14,
-              ...reveal(0),
+              opacity: phase >= 1 ? 1 : 0,
+              transition: "opacity 0.5s ease",
             }}
           >
-            From telemetry to evidence
+            FROM TELEMETRY TO EVIDENCE
           </div>
           <h2
             style={{
               fontFamily: sans,
-              fontSize: "clamp(28px, 3.5vw, 44px)",
+              fontSize: "clamp(28px, 3.5vw, 48px)",
               fontWeight: 600,
-              color: C.textDisp,
-              lineHeight: 1.15,
-              letterSpacing: "-0.02em",
-              maxWidth: 560,
-              ...reveal(0.1),
+              color: C.textPrimary,
+              lineHeight: 1.12,
+              letterSpacing: "-0.025em",
+              maxWidth: 640,
+              opacity: phase >= 1 ? 1 : 0,
+              transform: phase >= 1 ? "translateY(0)" : "translateY(12px)",
+              transition: "opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
             Halo doesn&apos;t collect telemetry.
             <br />
-            <span style={{ color: C.text2, fontWeight: 400 }}>It connects it.</span>
+            <span style={{ color: C.textSectionSub, fontWeight: 400 }}>It connects it.</span>
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-[1fr_auto_1fr] gap-10 lg:gap-12 items-center">
-          {/* Raw inputs */}
+        {/* Golden ratio guided layout: Raw inputs (~58%) -> Understated connector -> Investigation card (~42%) */}
+        <div className="grid grid-cols-1 md:grid-cols-[1.3fr_auto_1fr] gap-8 lg:gap-12 xl:gap-16 items-center">
+          {/* Raw Telemetry */}
           <div>
             <div
               style={{
                 fontFamily: mono,
                 fontSize: 10,
                 letterSpacing: "0.16em",
-                color: C.muted,
+                color: C.textMeta,
                 textTransform: "uppercase",
-                marginBottom: 20,
-                ...reveal(0.2),
+                marginBottom: 18,
+                opacity: phase >= 2 ? 1 : 0,
+                transition: "opacity 0.5s ease",
               }}
             >
-              Raw Telemetry
+              RAW TELEMETRY
             </div>
-            <div style={{ display: "flex", flexDirection: "column", gap: 6 }}>
+            <div style={{ display: "flex", flexDirection: "column", gap: 7 }}>
               {raw.map((item, i) => (
                 <div
                   key={item.label}
@@ -799,73 +773,95 @@ function Telemetry() {
                     display: "flex",
                     alignItems: "center",
                     justifyContent: "space-between",
-                    padding: "9px 13px",
-                    background: "rgba(255,255,255,0.02)",
-                    border: "1px solid rgba(255,255,255,0.05)",
-                    borderRadius: 7,
-                    opacity: inView ? 0.7 + (i % 3) * 0.1 : 0,
-                    transform: inView ? "translateX(0)" : "translateX(-10px)",
-                    transition: `opacity 0.5s ease ${0.2 + i * 0.07}s, transform 0.5s ease ${0.2 + i * 0.07}s`,
+                    padding: "10px 14px",
+                    background: "rgba(255,255,255,0.018)",
+                    border: `1px solid ${C.border}`,
+                    borderRadius: 8,
+                    opacity: phase >= 2 ? 1 : 0,
+                    transform: phase >= 2 ? "translateX(0)" : "translateX(-8px)",
+                    transition: `opacity 0.45s ease ${i * 0.07}s, transform 0.45s ease ${i * 0.07}s`,
                   }}
                 >
-                  <span style={{ fontFamily: mono, fontSize: 11, letterSpacing: "0.1em", color: C.text3 }}>
+                  <span style={{ fontFamily: mono, fontSize: 11, letterSpacing: "0.12em", color: C.textMuted }}>
                     {item.label}
                   </span>
-                  <span style={{ fontFamily: mono, fontSize: 11, color: C.muted }}>{item.val}</span>
+                  <span style={{ fontFamily: mono, fontSize: 11, color: C.textMeta }}>{item.val}</span>
                 </div>
               ))}
             </div>
           </div>
 
-          {/* HALO center connector */}
-          <div className="hidden md:flex" style={{ flexDirection: "column", alignItems: "center", gap: 12, ...reveal(0.5) }}>
-            {[...Array(5)].map((_, i) => (
-              <div key={i} style={{ width: 1, height: 7, background: `rgba(105,191,255,${0.12 + i * 0.06})` }} />
+          {/* Understated HALO connector with single traveling pulse in phase 5 */}
+          <div className="hidden md:flex" style={{ flexDirection: "column", alignItems: "center", gap: 10 }}>
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={`top-${i}`}
+                style={{
+                  width: 1,
+                  height: 6,
+                  background: phase === 5 ? C.blue : `rgba(105,191,255,${0.12 + i * 0.06})`,
+                  transition: "background 0.3s ease",
+                }}
+              />
             ))}
             <div
               style={{
-                padding: "9px 18px",
-                background: "rgba(105,191,255,0.05)",
-                border: "1px solid rgba(105,191,255,0.22)",
+                padding: "8px 16px",
+                background: "rgba(105,191,255,0.04)",
+                border: `1px solid ${phase === 5 ? "rgba(105,191,255,0.45)" : "rgba(105,191,255,0.22)"}`,
                 borderRadius: 8,
                 fontFamily: mono,
-                fontSize: 12,
+                fontSize: 11,
                 letterSpacing: "0.18em",
                 color: C.blue,
                 textTransform: "uppercase",
+                opacity: phase >= 3 ? 1 : 0,
+                transform: phase >= 3 ? "scale(1)" : "scale(0.95)",
+                transition: "opacity 0.5s ease, transform 0.5s ease, border-color 0.3s ease",
               }}
             >
               HALO
             </div>
-            {[...Array(5)].map((_, i) => (
-              <div key={i} style={{ width: 1, height: 7, background: `rgba(105,191,255,${0.12 + (4 - i) * 0.06})` }} />
+            {[...Array(4)].map((_, i) => (
+              <div
+                key={`bot-${i}`}
+                style={{
+                  width: 1,
+                  height: 6,
+                  background: phase === 5 ? C.blue : `rgba(105,191,255,${0.12 + (3 - i) * 0.06})`,
+                  transition: "background 0.3s ease",
+                }}
+              />
             ))}
           </div>
 
-          {/* Evidence output */}
+          {/* Investigation Result Card */}
           <div>
             <div
               style={{
                 fontFamily: mono,
                 fontSize: 10,
                 letterSpacing: "0.16em",
-                color: C.muted,
+                color: C.textMeta,
                 textTransform: "uppercase",
-                marginBottom: 20,
-                ...reveal(0.55),
+                marginBottom: 18,
+                opacity: phase >= 4 ? 1 : 0,
+                transition: "opacity 0.5s ease",
               }}
             >
-              Investigation
+              INVESTIGATION
             </div>
             <div
+              className="halo-card-hover"
               style={{
-                padding: "22px",
-                background: "rgba(105,191,255,0.03)",
-                border: "1px solid rgba(105,191,255,0.13)",
-                borderRadius: 12,
-                opacity: inView ? 1 : 0,
-                transform: inView ? "translateX(0)" : "translateX(10px)",
-                transition: "opacity 0.6s ease 0.6s, transform 0.6s ease 0.6s",
+                padding: "24px",
+                background: C.surface,
+                border: `1px solid ${C.borderBlue}`,
+                borderRadius: 14,
+                boxShadow: "0 20px 48px rgba(0,0,0,0.45)",
+                opacity: phase >= 4 ? 1 : 0,
+                transform: phase >= 4 ? "translateX(0)" : "translateX(8px)",
+                transition: "opacity 0.55s ease, transform 0.55s ease",
               }}
             >
               <div
@@ -884,18 +880,18 @@ function Telemetry() {
                 style={{
                   fontFamily: sans,
                   fontSize: 14,
-                  color: C.textImp,
+                  color: C.textHeadingSec,
                   fontWeight: 500,
                   lineHeight: 1.5,
-                  marginBottom: 16,
+                  marginBottom: 18,
                 }}
               >
                 Database latency spike during checkout
               </div>
               {[
-                { k: "Confidence", v: "High",    vc: C.blue  },
-                { k: "Sources",    v: "4 linked", vc: C.textImp },
-                { k: "Unknown",    v: "1 gap",    vc: C.text3 },
+                { k: "Confidence", v: "High",     vc: C.blue },
+                { k: "Sources",    v: "4 linked",  vc: C.textHeadingSec },
+                { k: "Unknown",    v: "1 gap",     vc: C.textMuted },
               ].map((row) => (
                 <div
                   key={row.k}
@@ -903,10 +899,10 @@ function Telemetry() {
                     display: "flex",
                     justifyContent: "space-between",
                     alignItems: "center",
-                    marginBottom: 6,
+                    marginBottom: 8,
                   }}
                 >
-                  <span style={{ fontFamily: mono, fontSize: 11, color: C.text3 }}>{row.k}</span>
+                  <span style={{ fontFamily: mono, fontSize: 11, color: C.textMuted }}>{row.k}</span>
                   <span style={{ fontFamily: sans, fontSize: 12, fontWeight: 500, color: row.vc }}>{row.v}</span>
                 </div>
               ))}
@@ -918,121 +914,120 @@ function Telemetry() {
   );
 }
 
-// ─── Evidence Graph Section ───────────────────────────────────────────────────
+// ─── Section 4 — Evidence Graph Choreography ──────────────────────────────────
 
 function EvidenceGraph() {
   const [ref, inView] = useInView(0.2);
+  const [hoveredNode, setHoveredNode] = useState<string | null>(null);
+  const [step, setStep] = useState(0);
+
+  useEffect(() => {
+    if (!inView) return;
+    // Step-by-step evidence construction sequence
+    const timers = [
+      setTimeout(() => setStep(1), 150),  // Step 1: Error node appears
+      setTimeout(() => setStep(2), 500),  // Step 2: Request line draws
+      setTimeout(() => setStep(3), 850),  // Step 3: Trace line draws
+      setTimeout(() => setStep(4), 1200), // Step 4: Source line draws
+      setTimeout(() => setStep(5), 1550), // Step 5: Database line draws
+      setTimeout(() => setStep(6), 1950), // Step 6: Nodes subtly illuminate
+      setTimeout(() => setStep(7), 2300), // Step 7: Single signal travels along relationship
+      setTimeout(() => setStep(8), 3100), // Finished: perfectly still
+    ];
+    return () => timers.forEach(clearTimeout);
+  }, [inView]);
 
   const nodes = {
-    error:    { x: 350, y: 52,  label: "ERROR",    dot: "#f87171" },
-    request:  { x: 110, y: 180, label: "REQUEST",  dot: C.blue   },
-    trace:    { x: 350, y: 180, label: "TRACE",    dot: C.blue   },
-    source:   { x: 590, y: 180, label: "SOURCE",   dot: C.blue   },
-    database: { x: 350, y: 300, label: "DATABASE", dot: "#fbbf24"},
+    error:    { id: "error",    x: 350, y: 56,  label: "ERROR",    dot: C.red,    minStep: 1 },
+    request:  { id: "request",  x: 120, y: 180, label: "REQUEST",  dot: C.blue,   minStep: 2 },
+    trace:    { id: "trace",    x: 350, y: 180, label: "TRACE",    dot: C.blue,   minStep: 3 },
+    source:   { id: "source",   x: 580, y: 180, label: "SOURCE",   dot: C.blue,   minStep: 4 },
+    database: { id: "database", x: 350, y: 296, label: "DATABASE", dot: C.yellow, minStep: 5 },
   };
 
   const edges = [
-    { a: nodes.error, b: nodes.request,  d: 0.3  },
-    { a: nodes.error, b: nodes.trace,    d: 0.5  },
-    { a: nodes.error, b: nodes.source,   d: 0.7  },
-    { a: nodes.trace, b: nodes.database, d: 0.95 },
+    { a: nodes.error, b: nodes.request,  stepTrigger: 2 },
+    { a: nodes.error, b: nodes.trace,    stepTrigger: 3 },
+    { a: nodes.error, b: nodes.source,   stepTrigger: 4 },
+    { a: nodes.trace, b: nodes.database, stepTrigger: 5 },
   ];
 
   function len(a: { x: number; y: number }, b: { x: number; y: number }) {
     return Math.sqrt((b.x - a.x) ** 2 + (b.y - a.y) ** 2);
   }
 
-  const reveal = (d = 0) => ({
-    opacity: inView ? 1 : 0,
-    transform: inView ? "translateY(0)" : "translateY(14px)",
-    transition: `opacity 0.6s ease ${d}s, transform 0.6s ease ${d}s`,
-  });
-
   return (
     <section
       id="evidence"
       ref={ref}
       style={{
-        background: C.bg,
-        padding: "120px 24px",
+        padding: "clamp(120px, 16vh, 180px) 0",
         position: "relative",
-        overflow: "hidden",
       }}
     >
-      {/* Atmospheric blue behind the evidence network */}
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -45%)",
-          width: "700px",
-          height: "500px",
-          background: [
-            "radial-gradient(ellipse 55% 50% at 50% 50%, rgba(105,191,255,0.07) 0%, rgba(43,143,217,0.03) 45%, transparent 70%)",
-            "radial-gradient(ellipse 40% 35% at 50% 50%, rgba(13,59,97,0.14) 0%, transparent 65%)",
-          ].join(", "),
-          pointerEvents: "none",
-          zIndex: 0,
-        }}
-      />
-
-      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", zIndex: 1, padding: "0 16px sm:0" }}>
-        <div style={{ marginBottom: 72 }}>
+      <div className="landing-container" style={{ position: "relative" }}>
+        <div style={{ marginBottom: 64 }}>
           <div
             style={{
               fontFamily: mono,
               fontSize: 11,
               letterSpacing: "0.18em",
-              color: C.textMic,
+              color: C.textMeta,
               textTransform: "uppercase",
               marginBottom: 14,
-              ...reveal(0),
+              opacity: step >= 1 ? 1 : 0,
+              transition: "opacity 0.5s ease",
             }}
           >
-            Evidence relationships
+            EVIDENCE RELATIONSHIPS
           </div>
           <h2
             style={{
               fontFamily: sans,
-              fontSize: "clamp(28px, 3.5vw, 44px)",
+              fontSize: "clamp(28px, 3.5vw, 48px)",
               fontWeight: 600,
-              color: C.textDisp,
-              lineHeight: 1.15,
-              letterSpacing: "-0.02em",
-              ...reveal(0.1),
+              color: C.textPrimary,
+              lineHeight: 1.12,
+              letterSpacing: "-0.025em",
+              maxWidth: 640,
+              opacity: step >= 1 ? 1 : 0,
+              transform: step >= 1 ? "translateY(0)" : "translateY(12px)",
+              transition: "opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1), transform 0.6s cubic-bezier(0.22, 1, 0.36, 1)",
             }}
           >
             Every failure leaves a trail.
             <br />
-            <span style={{ color: C.text2, fontWeight: 400 }}>Halo follows it.</span>
+            <span style={{ color: C.textSectionSub, fontWeight: 400 }}>Halo follows it.</span>
           </h2>
         </div>
 
+        {/* Evidence Network SVG (NO causal arrows, neutral relationship lines) */}
         <div style={{ display: "flex", justifyContent: "center", width: "100%", overflowX: "auto" }}>
           <svg
-            width="700"
-            height="360"
             viewBox="0 0 700 360"
-            style={{ overflow: "visible", maxWidth: "100%", height: "auto" }}
+            style={{ overflow: "visible", width: "100%", maxWidth: 840, height: "auto" }}
           >
-            {/* Subtle glow circles behind nodes */}
-            {Object.values(nodes).map((n, i) => (
+            {/* Subtle glow behind nodes */}
+            {Object.values(nodes).map((n) => (
               <circle
                 key={`glow-${n.label}`}
                 cx={n.x}
                 cy={n.y}
-                r={32}
+                r={hoveredNode === n.id ? 28 : 20}
                 fill={n.dot}
                 style={{
-                  opacity: inView ? 0.04 : 0,
-                  transition: `opacity 0.6s ease ${0.2 + i * 0.12}s`,
-                  filter: "blur(8px)",
+                  opacity: step >= n.minStep ? (hoveredNode === n.id ? 0.14 : (step >= 6 ? 0.06 : 0.03)) : 0,
+                  transition: "opacity 0.4s ease, r 0.3s ease",
+                  filter: "blur(6px)",
                 }}
               />
             ))}
+
+            {/* Neutral relationship lines */}
             {edges.map((e, i) => {
               const l = len(e.a, e.b);
+              const isDrawn = step >= e.stepTrigger;
+              const isHighlighted = hoveredNode === e.a.id || hoveredNode === e.b.id;
               return (
                 <line
                   key={i}
@@ -1040,46 +1035,67 @@ function EvidenceGraph() {
                   y1={e.a.y}
                   x2={e.b.x}
                   y2={e.b.y}
-                  stroke="rgba(105,191,255,0.28)"
+                  stroke={isHighlighted ? "rgba(105,191,255,0.6)" : (step === 7 && i === 1 ? "rgba(105,191,255,0.55)" : "rgba(105,191,255,0.22)")}
                   strokeWidth="1"
                   style={{
                     strokeDasharray: l,
-                    strokeDashoffset: inView ? 0 : l,
-                    transition: `stroke-dashoffset 0.75s ease ${e.d}s`,
+                    strokeDashoffset: isDrawn ? 0 : l,
+                    transition: "stroke-dashoffset 0.65s cubic-bezier(0.22, 1, 0.36, 1), stroke 0.25s ease",
                   }}
                 />
               );
             })}
-            {Object.values(nodes).map((n, i) => (
-              <g key={n.label}>
-                <circle
-                  cx={n.x}
-                  cy={n.y}
-                  r={16}
-                  fill={n.dot}
-                  style={{ opacity: inView ? 0.07 : 0, transition: `opacity 0.4s ease ${0.1 + i * 0.12}s` }}
-                />
-                <circle
-                  cx={n.x}
-                  cy={n.y}
-                  r={5}
-                  fill={n.dot}
-                  style={{ opacity: inView ? 1 : 0, transition: `opacity 0.4s ease ${0.1 + i * 0.12}s` }}
-                />
-                <text
-                  x={n.x}
-                  y={n.y - 19}
-                  textAnchor="middle"
-                  fill={C.textMic}
-                  fontSize="9.5"
-                  fontFamily={mono}
-                  letterSpacing="1.6"
-                  style={{ opacity: inView ? 1 : 0, transition: `opacity 0.5s ease ${0.15 + i * 0.12}s` }}
+
+            {/* Nodes & Labels */}
+            {Object.values(nodes).map((n) => {
+              const isHovered = hoveredNode === n.id;
+              const isVisible = step >= n.minStep;
+              return (
+                <g
+                  key={n.label}
+                  className="halo-evidence-node"
+                  onMouseEnter={() => setHoveredNode(n.id)}
+                  onMouseLeave={() => setHoveredNode(null)}
                 >
-                  {n.label}
-                </text>
-              </g>
-            ))}
+                  <circle
+                    cx={n.x}
+                    cy={n.y}
+                    r={isHovered ? 14 : 10}
+                    fill={n.dot}
+                    style={{
+                      opacity: isVisible ? (isHovered ? 0.2 : (step >= 6 ? 0.1 : 0.07)) : 0,
+                      transition: "opacity 0.4s ease, r 0.2s ease",
+                    }}
+                  />
+                  <circle
+                    cx={n.x}
+                    cy={n.y}
+                    r={isHovered ? 5.5 : 4.5}
+                    fill={n.dot}
+                    style={{
+                      opacity: isVisible ? 1 : 0,
+                      transition: "opacity 0.4s ease, r 0.2s ease",
+                    }}
+                  />
+                  <text
+                    x={n.x}
+                    y={n.y - 18}
+                    textAnchor="middle"
+                    fill={isHovered ? C.textPrimary : C.textMeta}
+                    fontSize="9.5"
+                    fontFamily={mono}
+                    letterSpacing="1.5"
+                    style={{
+                      opacity: isVisible ? 1 : 0,
+                      transition: "opacity 0.45s ease, fill 0.2s ease",
+                      userSelect: "none",
+                    }}
+                  >
+                    {n.label}
+                  </text>
+                </g>
+              );
+            })}
           </svg>
         </div>
 
@@ -1088,11 +1104,12 @@ function EvidenceGraph() {
             fontFamily: sans,
             textAlign: "center",
             fontSize: 16,
-            lineHeight: 1.75,
-            color: C.text3,
-            maxWidth: 520,
+            lineHeight: 1.72,
+            color: C.textBody,
+            maxWidth: 620,
             margin: "48px auto 0",
-            ...reveal(1.3),
+            opacity: step >= 6 ? 1 : 0,
+            transition: "opacity 0.6s ease",
           }}
         >
           An error is not an event in isolation — it is a node in a network of evidence. Requests, traces, database
@@ -1103,10 +1120,10 @@ function EvidenceGraph() {
   );
 }
 
-// ─── Trust Section ────────────────────────────────────────────────────────────
+// ─── Section 5 — Evidence Integrity ──────────────────────────────────────────
 
 function Trust() {
-  const [ref, inView] = useInView(0.15);
+  const [ref, inView] = useInView(0.18);
 
   const limits = [
     {
@@ -1127,66 +1144,48 @@ function Trust() {
     <section
       ref={ref}
       style={{
-        background: C.surface,
-        padding: "120px 24px",
-        borderTop: `1px solid ${C.border}`,
-        borderBottom: `1px solid ${C.border}`,
+        padding: "clamp(120px, 15vh, 160px) 0",
         position: "relative",
-        overflow: "hidden",
       }}
     >
-      {/* Intentionally quiet — only the faintest atmospheric trace */}
-      <div
-        style={{
-          position: "absolute",
-          top: 0,
-          left: "50%",
-          transform: "translateX(-50%)",
-          width: "50%",
-          height: "40%",
-          background: "radial-gradient(ellipse 50% 60% at 50% 0%, rgba(105,191,255,0.018) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", padding: "0 16px sm:0" }}>
-        <div style={{ maxWidth: 640, marginBottom: 72 }}>
+      <div className="landing-container" style={{ position: "relative" }}>
+        <div style={{ maxWidth: 680, marginBottom: 64 }}>
           <div
             style={{
               fontFamily: mono,
               fontSize: 11,
               letterSpacing: "0.18em",
-              color: C.textMic,
+              color: C.textMeta,
               textTransform: "uppercase",
               marginBottom: 14,
               opacity: inView ? 1 : 0,
               transition: "opacity 0.5s ease",
             }}
           >
-            Evidence integrity
+            EVIDENCE INTEGRITY
           </div>
           <h2
             style={{
               fontFamily: sans,
-              fontSize: "clamp(28px, 3.5vw, 44px)",
+              fontSize: "clamp(28px, 3.5vw, 48px)",
               fontWeight: 600,
-              lineHeight: 1.15,
-              letterSpacing: "-0.02em",
-              marginBottom: 18,
+              lineHeight: 1.12,
+              letterSpacing: "-0.025em",
+              marginBottom: 20,
               opacity: inView ? 1 : 0,
-              transform: inView ? "translateY(0)" : "translateY(16px)",
-              transition: "opacity 0.6s ease 0.1s, transform 0.6s ease 0.1s",
+              transform: inView ? "translateY(0)" : "translateY(12px)",
+              transition: "opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s",
             }}
           >
-            <span style={{ color: C.textDisp }}>When the evidence isn&apos;t enough, </span>
+            <span style={{ color: C.textPrimary }}>When the evidence isn&apos;t enough, </span>
             <span style={{ color: C.blue }}>Halo says so.</span>
           </h2>
           <p
             style={{
               fontFamily: sans,
               fontSize: 17,
-              lineHeight: 1.72,
-              color: C.text3,
+              lineHeight: 1.68,
+              color: C.textBody,
               opacity: inView ? 1 : 0,
               transition: "opacity 0.5s ease 0.25s",
             }}
@@ -1195,18 +1194,19 @@ function Trust() {
           </p>
         </div>
 
+        {/* Evidence gaps list */}
         <div>
           {limits.map((item, i) => (
             <div
               key={item.label}
-              className="grid grid-cols-1 sm:grid-cols-[minmax(200px,1fr)_2fr] gap-4 sm:gap-16 items-start"
+              className="grid grid-cols-1 sm:grid-cols-[minmax(240px,1fr)_2.5fr] gap-4 sm:gap-12 xl:gap-20 items-start"
               style={{
-                padding: "28px 0",
-                borderTop: "1px solid rgba(255,255,255,0.06)",
-                borderBottom: i === limits.length - 1 ? "1px solid rgba(255,255,255,0.06)" : "none",
+                padding: "26px 0",
+                borderTop: `1px solid ${C.border}`,
+                borderBottom: i === limits.length - 1 ? `1px solid ${C.border}` : "none",
                 opacity: inView ? 1 : 0,
                 transform: inView ? "translateY(0)" : "translateY(10px)",
-                transition: `opacity 0.5s ease ${0.3 + i * 0.14}s, transform 0.5s ease ${0.3 + i * 0.14}s`,
+                transition: `opacity 0.45s ease ${0.25 + i * 0.09}s, transform 0.45s ease ${0.25 + i * 0.09}s`,
               }}
             >
               <div>
@@ -1215,17 +1215,18 @@ function Trust() {
                     display: "inline-flex",
                     alignItems: "center",
                     gap: 8,
-                    padding: "6px 10px",
-                    border: "1px dashed rgba(255,255,255,0.13)",
-                    borderRadius: 5,
+                    padding: "6px 12px",
+                    border: `1px dashed ${C.borderDashed}`,
+                    borderRadius: 6,
+                    background: "rgba(255,255,255,0.012)",
                   }}
                 >
                   <div
                     style={{
-                      width: 6,
-                      height: 6,
+                      width: 5,
+                      height: 5,
                       borderRadius: "50%",
-                      border: "1px solid rgba(255,255,255,0.18)",
+                      border: "1px solid rgba(255,255,255,0.22)",
                       flexShrink: 0,
                     }}
                   />
@@ -1233,8 +1234,8 @@ function Trust() {
                     style={{
                       fontFamily: mono,
                       fontSize: 10,
-                      letterSpacing: "0.11em",
-                      color: C.muted,
+                      letterSpacing: "0.12em",
+                      color: C.textMuted,
                       textTransform: "uppercase",
                     }}
                   >
@@ -1242,7 +1243,7 @@ function Trust() {
                   </span>
                 </div>
               </div>
-              <p style={{ fontFamily: sans, fontSize: 15, lineHeight: 1.72, color: C.text3, margin: "4px 0 0" }}>
+              <p style={{ fontFamily: sans, fontSize: 15, lineHeight: 1.68, color: C.textBody, margin: "2px 0 0" }}>
                 {item.desc}
               </p>
             </div>
@@ -1253,12 +1254,12 @@ function Trust() {
           style={{
             fontFamily: sans,
             marginTop: 56,
-            fontSize: 17,
+            fontSize: 16,
             lineHeight: 1.72,
-            color: C.text2,
-            maxWidth: 540,
+            color: C.textMuted,
+            maxWidth: 600,
             opacity: inView ? 1 : 0,
-            transition: "opacity 0.5s ease 0.8s",
+            transition: "opacity 0.5s ease 0.65s",
           }}
         >
           These are not failures. They are trust signals. An investigation that acknowledges what it doesn&apos;t know
@@ -1269,10 +1270,10 @@ function Trust() {
   );
 }
 
-// ─── Source Section ───────────────────────────────────────────────────────────
+// ─── Section 6 — Source Investigation ─────────────────────────────────────────
 
 function Source() {
-  const [ref, inView] = useInView(0.15);
+  const [ref, inView] = useInView(0.18);
 
   const lines = [
     { n: 85, code: "export async function POST(req: Request) {",           hl: false },
@@ -1285,104 +1286,94 @@ function Source() {
     { n: 92, code: "}",                                                     hl: false },
   ];
 
-  const reveal = (d = 0) => ({
-    opacity: inView ? 1 : 0,
-    transform: inView ? "translateY(0)" : "translateY(16px)",
-    transition: `opacity 0.6s ease ${d}s, transform 0.6s ease ${d}s`,
-  });
-
   return (
     <section
       ref={ref}
       style={{
-        background: C.bg,
-        padding: "120px 24px",
+        padding: "clamp(120px, 15vh, 160px) 0",
         position: "relative",
-        overflow: "hidden",
       }}
     >
-      {/* Subtle atmospheric blue behind product surface */}
-      <div
-        style={{
-          position: "absolute",
-          top: "30%",
-          right: "5%",
-          width: "45%",
-          height: "60%",
-          background: "radial-gradient(ellipse 60% 55% at 60% 50%, rgba(105,191,255,0.04) 0%, transparent 70%)",
-          pointerEvents: "none",
-        }}
-      />
-
-      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative", padding: "0 16px sm:0" }}>
-        <div style={{ maxWidth: 520, marginBottom: 64 }}>
+      <div className="landing-container" style={{ position: "relative" }}>
+        <div style={{ maxWidth: 580, marginBottom: 56 }}>
           <div
             style={{
               fontFamily: mono,
               fontSize: 11,
               letterSpacing: "0.18em",
-              color: C.textMic,
+              color: C.textMeta,
               textTransform: "uppercase",
               marginBottom: 14,
-              ...reveal(0),
+              opacity: inView ? 1 : 0,
+              transition: "opacity 0.5s ease",
             }}
           >
-            Source investigation
+            SOURCE INVESTIGATION
           </div>
           <h2
             style={{
               fontFamily: sans,
-              fontSize: "clamp(28px, 3.5vw, 44px)",
+              fontSize: "clamp(28px, 3.5vw, 48px)",
               fontWeight: 600,
-              color: C.textDisp,
-              lineHeight: 1.15,
-              letterSpacing: "-0.02em",
-              ...reveal(0.1),
+              color: C.textPrimary,
+              lineHeight: 1.12,
+              letterSpacing: "-0.025em",
+              opacity: inView ? 1 : 0,
+              transform: inView ? "translateY(0)" : "translateY(12px)",
+              transition: "opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s",
             }}
           >
             Follow the evidence
             <br />
-            <span style={{ color: C.text2, fontWeight: 400 }}>to where it happened.</span>
+            <span style={{ color: C.textSectionSub, fontWeight: 400 }}>to where it happened.</span>
           </h2>
         </div>
 
-        <div className="grid grid-cols-1 lg:grid-cols-[3fr_2fr] gap-12 items-start">
+        {/* Code panel (~58%) and Investigation relationship panel (~42%) */}
+        <div className="grid grid-cols-1 lg:grid-cols-[1.38fr_1fr] gap-10 xl:gap-14 items-start">
+          {/* Code Panel */}
           <div
+            className="halo-source-panel"
             style={{
-              background: C.surface,
-              border: "1px solid rgba(255,255,255,0.06)",
-              borderRadius: 12,
+              background: C.codeBg,
+              border: `1px solid ${C.borderElevated}`,
+              borderRadius: 14,
               overflow: "hidden",
-              ...reveal(0.2),
+              boxShadow: "0 24px 64px rgba(0,0,0,0.55)",
+              opacity: inView ? 1 : 0,
+              transform: inView ? "translateY(0)" : "translateY(12px)",
+              transition: "opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s, background-color 200ms ease, border-color 200ms ease",
             }}
           >
             <div
               style={{
-                padding: "11px 18px",
-                borderBottom: "1px solid rgba(255,255,255,0.05)",
+                padding: "12px 20px",
+                borderBottom: `1px solid ${C.border}`,
                 display: "flex",
                 alignItems: "center",
                 gap: 10,
+                background: "rgba(255,255,255,0.015)",
               }}
             >
-              <div style={{ display: "flex", gap: 5 }}>
+              <div style={{ display: "flex", gap: 6 }}>
                 {["#f87171", "#fbbf24", "#4ade80"].map((c, i) => (
-                  <div key={i} style={{ width: 10, height: 10, borderRadius: "50%", background: c, opacity: 0.38 }} />
+                  <div key={i} style={{ width: 9, height: 9, borderRadius: "50%", background: c, opacity: 0.35 }} />
                 ))}
               </div>
-              <span style={{ fontFamily: mono, fontSize: 11, color: C.textMic, marginLeft: 6 }}>
+              <span style={{ fontFamily: mono, fontSize: 11, color: C.textMeta, marginLeft: 6 }}>
                 app/api/checkout/route.ts
               </span>
             </div>
-            <div style={{ padding: "14px 0", overflowX: "auto" }}>
+            {/* Internal horizontal scroll for code to prevent any page overflow */}
+            <div style={{ padding: "16px 0", overflowX: "auto", width: "100%" }}>
               {lines.map((line) => (
                 <div
                   key={line.n}
                   style={{
                     display: "flex",
                     alignItems: "center",
-                    padding: "2.5px 18px",
-                    background: line.hl ? "rgba(105,191,255,0.055)" : "transparent",
+                    padding: "3px 20px",
+                    background: line.hl ? "rgba(105,191,255,0.07)" : "transparent",
                     borderLeft: line.hl ? "2px solid rgba(105,191,255,0.6)" : "2px solid transparent",
                   }}
                 >
@@ -1390,8 +1381,8 @@ function Source() {
                     style={{
                       fontFamily: mono,
                       fontSize: 12,
-                      color: C.muted,
-                      width: 28,
+                      color: C.textMetaFaint,
+                      width: 32,
                       flexShrink: 0,
                       userSelect: "none",
                     }}
@@ -1402,7 +1393,7 @@ function Source() {
                     style={{
                       fontFamily: mono,
                       fontSize: 12,
-                      color: line.hl ? C.text2 : C.text3,
+                      color: line.hl ? C.textHeadingSec : C.textMuted,
                       lineHeight: "22px",
                       whiteSpace: "pre",
                     }}
@@ -1414,14 +1405,24 @@ function Source() {
             </div>
           </div>
 
-          <div style={{ paddingTop: 16, ...reveal(0.4) }}>
+          {/* Investigation explanation panel */}
+          <div
+            style={{
+              paddingTop: 12,
+              opacity: inView ? 1 : 0,
+              transform: inView ? "translateY(0)" : "translateY(12px)",
+              transition: "opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.35s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.35s",
+            }}
+          >
             <div
+              className="halo-card-hover"
               style={{
-                padding: "20px",
-                background: "rgba(105,191,255,0.04)",
-                border: "1px solid rgba(105,191,255,0.13)",
-                borderRadius: 10,
-                marginBottom: 16,
+                padding: "22px",
+                background: C.surface,
+                border: `1px solid ${C.borderBlue}`,
+                borderRadius: 12,
+                marginBottom: 18,
+                boxShadow: "0 18px 44px rgba(0,0,0,0.45)",
               }}
             >
               <div
@@ -1434,9 +1435,9 @@ function Source() {
                   marginBottom: 12,
                 }}
               >
-                Investigation links here
+                INVESTIGATION LINKS HERE
               </div>
-              <p style={{ fontFamily: sans, fontSize: 14, lineHeight: 1.68, color: C.text2, margin: "0 0 16px" }}>
+              <p style={{ fontFamily: sans, fontSize: 14, lineHeight: 1.68, color: C.textBody, margin: "0 0 18px" }}>
                 Line 89 corresponds to the database query with elevated latency. The trace spans for this call show a
                 2.4s execution time — 8× above baseline.
               </p>
@@ -1445,13 +1446,13 @@ function Source() {
                 { k: "Span duration", v: "2.4s ↑↑"         },
                 { k: "Baseline",      v: "~290ms"          },
               ].map((row) => (
-                <div key={row.k} style={{ display: "flex", justifyContent: "space-between", marginBottom: 6 }}>
-                  <span style={{ fontFamily: mono, fontSize: 11, color: C.text3 }}>{row.k}</span>
-                  <span style={{ fontFamily: mono, fontSize: 11, color: C.text2 }}>{row.v}</span>
+                <div key={row.k} style={{ display: "flex", justifyContent: "space-between", marginBottom: 7 }}>
+                  <span style={{ fontFamily: mono, fontSize: 11, color: C.textMuted }}>{row.k}</span>
+                  <span style={{ fontFamily: mono, fontSize: 11, color: C.textHeadingSec }}>{row.v}</span>
                 </div>
               ))}
             </div>
-            <p style={{ fontFamily: sans, fontSize: 13, lineHeight: 1.68, color: C.muted, fontStyle: "italic" }}>
+            <p style={{ fontFamily: sans, fontSize: 13, lineHeight: 1.68, color: C.textMeta, fontStyle: "italic" }}>
               Halo links this source location to the evidence — it doesn&apos;t claim to have found the root cause, only
               to have followed the evidence.
             </p>
@@ -1462,57 +1463,34 @@ function Source() {
   );
 }
 
-// ─── Final CTA ────────────────────────────────────────────────────────────────
+// ─── Section 7 / Final CTA ────────────────────────────────────────────────────
 
 function FinalCTA({ isAuthenticated }: { isAuthenticated?: boolean }) {
-  const [ref, inView] = useInView(0.3);
-  const reveal = (d = 0) => ({
-    opacity: inView ? 1 : 0,
-    transform: inView ? "translateY(0)" : "translateY(16px)",
-    transition: `opacity 0.65s ease ${d}s, transform 0.65s ease ${d}s`,
-  });
+  const [ref, inView] = useInView(0.25);
 
   return (
     <section
       ref={ref}
       style={{
-        background: C.bg,
-        padding: "160px 24px",
+        padding: "clamp(140px, 18vh, 200px) 0",
         position: "relative",
-        overflow: "hidden",
         textAlign: "center",
       }}
     >
-      {/* Second-strongest atmospheric blue on the page */}
-      <div
-        style={{
-          position: "absolute",
-          top: "50%",
-          left: "50%",
-          transform: "translate(-50%, -50%)",
-          width: "800px",
-          height: "500px",
-          background: [
-            "radial-gradient(ellipse 55% 55% at 50% 50%, rgba(105,191,255,0.1) 0%, rgba(43,143,217,0.04) 45%, transparent 70%)",
-            "radial-gradient(ellipse 65% 60% at 50% 50%, rgba(13,59,97,0.18) 0%, transparent 68%)",
-          ].join(", "),
-          pointerEvents: "none",
-        }}
-      />
-
-      <div style={{ maxWidth: 1280, margin: "0 auto", position: "relative" }}>
+      <div className="landing-container" style={{ position: "relative" }}>
         <div
           style={{
             fontFamily: mono,
             fontSize: 11,
             letterSpacing: "0.18em",
-            color: C.textMic,
+            color: C.textMeta,
             textTransform: "uppercase",
-            marginBottom: 24,
-            ...reveal(0),
+            marginBottom: 22,
+            opacity: inView ? 1 : 0,
+            transition: "opacity 0.5s ease",
           }}
         >
-          Ready to investigate
+          READY TO INVESTIGATE
         </div>
 
         <h2
@@ -1520,11 +1498,13 @@ function FinalCTA({ isAuthenticated }: { isAuthenticated?: boolean }) {
             fontFamily: sans,
             fontSize: "clamp(36px, 5vw, 64px)",
             fontWeight: 600,
-            color: C.textDisp,
-            lineHeight: 1.1,
-            letterSpacing: "-0.025em",
+            color: C.textPrimary,
+            lineHeight: 1.08,
+            letterSpacing: "-0.03em",
             marginBottom: 20,
-            ...reveal(0.1),
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(12px)",
+            transition: "opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.1s",
           }}
         >
           Stop guessing.
@@ -1536,41 +1516,31 @@ function FinalCTA({ isAuthenticated }: { isAuthenticated?: boolean }) {
           style={{
             fontFamily: sans,
             fontSize: 18,
-            lineHeight: 1.72,
-            color: C.text3,
-            maxWidth: 400,
-            margin: "0 auto 48px",
-            ...reveal(0.22),
+            lineHeight: 1.65,
+            color: C.textBody,
+            maxWidth: 480,
+            margin: "0 auto 44px",
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(10px)",
+            transition: "opacity 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s, transform 0.6s cubic-bezier(0.22, 1, 0.36, 1) 0.2s",
           }}
         >
           See what your telemetry actually tells you.
         </p>
 
-        <div style={reveal(0.38)}>
+        <div
+          style={{
+            opacity: inView ? 1 : 0,
+            transform: inView ? "translateY(0)" : "translateY(8px)",
+            transition: "opacity 0.5s ease 0.3s, transform 0.5s ease 0.3s",
+          }}
+        >
           <Link
-            href={isAuthenticated ? "/overview" : "/sign-up"}
-            style={{
-              display: "inline-block",
-              fontFamily: sans,
-              fontSize: 15,
-              fontWeight: 600,
-              padding: "14px 36px",
-              borderRadius: 8,
-              background: C.blue,
-              color: C.bg,
-              textDecoration: "none",
-              transition: "background 0.2s ease, transform 0.2s ease",
-            }}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.background = C.blueBr;
-              e.currentTarget.style.transform = "translateY(-2px)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.background = C.blue;
-              e.currentTarget.style.transform = "translateY(0)";
-            }}
+            href="/sign-up"
+            className="halo-primary-cta"
+            style={{ height: 50, padding: "0 34px", fontSize: 15 }}
           >
-            {isAuthenticated ? "Open Dashboard" : "Get started"}
+            Get started
           </Link>
         </div>
       </div>
@@ -1581,52 +1551,61 @@ function FinalCTA({ isAuthenticated }: { isAuthenticated?: boolean }) {
 // ─── Footer ───────────────────────────────────────────────────────────────────
 
 function Footer() {
+  const footerLinks = [
+    { label: "Product", href: "#evidence" },
+    { label: "Docs", href: "/sdk" },
+    { label: "Pricing", href: "/pricing" },
+    { label: "Privacy", href: "/settings/privacy" },
+    { label: "Terms", href: "/settings/legal" },
+  ];
+
   return (
     <footer
       style={{
-        background: C.surface,
         borderTop: `1px solid ${C.border}`,
-        padding: "40px 24px",
+        padding: "44px 0",
+        position: "relative",
       }}
     >
       <div
+        className="landing-container"
         style={{
-          maxWidth: 1280,
-          margin: "0 auto",
           display: "flex",
           alignItems: "center",
           justifyContent: "space-between",
           flexWrap: "wrap",
-          gap: 16,
+          gap: 20,
         }}
       >
-        {/* Full wordmark in footer */}
+        {/* Halo Wordmark */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src="/landing/halo-wordmark.png"
           alt="Halo"
-          style={{ height: 32, width: "auto", mixBlendMode: "screen", objectFit: "contain", opacity: 0.7 }}
+          style={{
+            height: 30,
+            width: "auto",
+            mixBlendMode: "screen",
+            objectFit: "contain",
+            opacity: 0.72,
+          }}
         />
+
+        {/* Links */}
         <div style={{ display: "flex", gap: 32, flexWrap: "wrap" }}>
-          {[
-            { label: "Product", href: "#evidence" },
-            { label: "Docs", href: "/sdk" },
-            { label: "Pricing", href: "/pricing" },
-            { label: "Privacy", href: "/settings/privacy" },
-            { label: "Terms", href: "/settings/legal" },
-          ].map((item) => (
+          {footerLinks.map((item) => (
             <Link
               key={item.label}
               href={item.href}
               style={{
                 fontFamily: sans,
                 fontSize: 13,
-                color: C.muted,
+                color: C.textMeta,
                 textDecoration: "none",
-                transition: "color 0.2s",
+                transition: "color 0.16s ease",
               }}
-              onMouseEnter={(e) => (e.currentTarget.style.color = C.text3)}
-              onMouseLeave={(e) => (e.currentTarget.style.color = C.muted)}
+              onMouseEnter={(e) => (e.currentTarget.style.color = C.textHeadingSec)}
+              onMouseLeave={(e) => (e.currentTarget.style.color = C.textMeta)}
             >
               {item.label}
             </Link>
@@ -1637,20 +1616,161 @@ function Footer() {
   );
 }
 
-// ─── App ──────────────────────────────────────────────────────────────────────
+// ─── Landing Page Root (Continuous Atmospheric Canvas Architecture) ───────────
 
 export default function LandingPage({ isAuthenticated = false }: LandingPageProps) {
+  // Centralized performant scroll handler for 1-3% atmospheric parallax
+  useEffect(() => {
+    let ticking = false;
+    const onScroll = () => {
+      if (!ticking) {
+        window.requestAnimationFrame(() => {
+          document.documentElement.style.setProperty("--halo-scroll", `${window.scrollY}px`);
+          ticking = false;
+        });
+        ticking = true;
+      }
+    };
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
   return (
-    <div style={{ background: C.bg, minHeight: "100%", fontFamily: sans, color: C.textDisp }}>
-      <Nav isAuthenticated={isAuthenticated} />
-      <Hero isAuthenticated={isAuthenticated} />
-      <BigIdea />
-      <Telemetry />
-      <EvidenceGraph />
-      <Trust />
-      <Source />
-      <FinalCTA isAuthenticated={isAuthenticated} />
-      <Footer />
+    <div
+      style={{
+        position: "relative",
+        background: C.bg,
+        color: C.textPrimary,
+        fontFamily: sans,
+        minHeight: "100vh",
+        width: "100%",
+        overflowX: "clip",
+      }}
+    >
+      {/* ─── Global Contained Background Canvas (Zero Overflow Source) ─── */}
+      <div
+        style={{
+          position: "absolute",
+          inset: 0,
+          overflow: "hidden",
+          pointerEvents: "none",
+          zIndex: 0,
+          width: "100%",
+        }}
+      >
+        {/* Layer 1: Continuous Multi-stop Vertical Atmospheric Gradient */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            background:
+              "linear-gradient(180deg, #02060A 0%, #030810 12%, #06101A 28%, #081827 46%, #06101A 64%, #040B13 82%, #02060A 100%)",
+          }}
+        />
+
+        {/* Layer 2: Subtle Static Technical Grid (rgba(105,191,255, 0.028) at 64px) */}
+        <div
+          style={{
+            position: "absolute",
+            inset: 0,
+            backgroundImage:
+              "linear-gradient(rgba(105, 191, 255, 0.028) 1px, transparent 1px), linear-gradient(90deg, rgba(105, 191, 255, 0.028) 1px, transparent 1px)",
+            backgroundSize: "64px 64px",
+            maskImage: "radial-gradient(ellipse 90% 95% at 50% 50%, black 40%, transparent 95%)",
+            WebkitMaskImage: "radial-gradient(ellipse 90% 95% at 50% 50%, black 40%, transparent 95%)",
+          }}
+        />
+
+        {/* Layer 3: Scroll-Linked Parallax Atmosphere (1-3% movement) with 12s ambient breathing */}
+        <div
+          className="halo-atmosphere-canvas"
+          style={{
+            position: "absolute",
+            inset: 0,
+            width: "100%",
+            height: "100%",
+          }}
+        >
+          <div
+            className="halo-atmosphere-layer"
+            style={{
+              position: "absolute",
+              inset: 0,
+              width: "100%",
+              height: "100%",
+            }}
+          >
+            {/* Layer A: Deep Blue Atmospheric Field */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: "55%",
+                background:
+                  "radial-gradient(ellipse 70% 50% at 58% 30%, rgba(8, 24, 39, 0.55) 0%, rgba(6, 16, 26, 0.25) 45%, transparent 75%)",
+                filter: "blur(24px)",
+              }}
+            />
+
+            {/* Layer B: Subtle Sky-Blue Atmospheric Signal (Hero / Artifact focus) */}
+            <div
+              style={{
+                position: "absolute",
+                top: 0,
+                left: 0,
+                right: 0,
+                height: "50%",
+                background:
+                  "radial-gradient(ellipse 55% 40% at 56% 32%, rgba(105, 191, 255, 0.038) 0%, transparent 68%)",
+                filter: "blur(20px)",
+              }}
+            />
+
+            {/* Layer C: Lower-Page Atmospheric Depth (Middle / Lower page) */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: "50%",
+                background:
+                  "radial-gradient(ellipse 70% 45% at 50% 75%, rgba(8, 24, 39, 0.45) 0%, rgba(6, 16, 26, 0.2) 50%, transparent 75%)",
+                filter: "blur(24px)",
+              }}
+            />
+
+            {/* Atmospheric Sky-Blue Convergence behind Final CTA */}
+            <div
+              style={{
+                position: "absolute",
+                bottom: 0,
+                left: 0,
+                right: 0,
+                height: "35%",
+                background:
+                  "radial-gradient(ellipse 50% 35% at 50% 85%, rgba(105, 191, 255, 0.045) 0%, transparent 65%)",
+                filter: "blur(22px)",
+              }}
+            />
+          </div>
+        </div>
+      </div>
+
+      {/* ─── Foreground Content ─── */}
+      <div style={{ position: "relative", zIndex: 1, width: "100%" }}>
+        <Nav isAuthenticated={isAuthenticated} />
+        <Hero isAuthenticated={isAuthenticated} />
+        <BigIdea />
+        <Telemetry />
+        <EvidenceGraph />
+        <Trust />
+        <Source />
+        <FinalCTA isAuthenticated={isAuthenticated} />
+        <Footer />
+      </div>
     </div>
   );
 }
