@@ -3553,36 +3553,61 @@ HALO INVESTIGATION
 }
 
 /* Primary CTA Tactile Behavior */
-.halo-primary-cta {
+.halo-primary-cta,
+a.halo-primary-cta {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   height: 48px;
   padding: 0 26px;
   border-radius: 10px;
-  background: #69BFFF;
-  color: #061018;
+  border: none;
+  background-color: #69BFFF;
+  color: #041018 !important;
   font-family: var(--font-geist-sans), system-ui, sans-serif;
   font-size: 14px;
   font-weight: 600;
   letter-spacing: -0.01em;
   text-decoration: none;
-  transition: background-color 180ms cubic-bezier(0.22, 1, 0.36, 1),
-              transform 180ms cubic-bezier(0.22, 1, 0.36, 1),
-              box-shadow 180ms cubic-bezier(0.22, 1, 0.36, 1);
-  box-shadow: 0 2px 10px rgba(105, 191, 255, 0.16);
+  transition: background-color 180ms ease,
+              transform 180ms ease,
+              box-shadow 180ms ease;
+  box-shadow: 0 2px 10px rgba(105, 191, 255, 0.10);
   cursor: pointer;
+  -webkit-font-smoothing: antialiased;
 }
 
-.halo-primary-cta:hover {
-  background: #8BD3FF;
+.halo-primary-cta:hover,
+a.halo-primary-cta:hover {
+  background-color: #8BD3FF;
+  color: #041018 !important;
   transform: translateY(-1px);
-  box-shadow: 0 6px 22px rgba(105, 191, 255, 0.26);
+  box-shadow: 0 8px 28px rgba(105, 191, 255, 0.14);
 }
 
-.halo-primary-cta:active {
+.halo-primary-cta:active,
+a.halo-primary-cta:active {
+  background-color: #4AA9EC;
+  color: #041018 !important;
   transform: translateY(0);
-  box-shadow: 0 2px 8px rgba(105, 191, 255, 0.18);
+  box-shadow: 0 4px 16px rgba(105, 191, 255, 0.10);
+}
+
+.halo-primary-cta:focus-visible,
+a.halo-primary-cta:focus-visible {
+  outline: 2px solid rgba(105, 191, 255, 0.65);
+  outline-offset: 2px;
+  color: #041018 !important;
+}
+
+.halo-primary-cta:disabled,
+.halo-primary-cta[aria-disabled="true"],
+a.halo-primary-cta[aria-disabled="true"] {
+  opacity: 0.55;
+  cursor: not-allowed;
+  pointer-events: none;
+  transform: none;
+  box-shadow: none;
 }
 
 /* Secondary Action */
@@ -3723,7 +3748,15 @@ HALO INVESTIGATION
     transform: none !important;
   }
 
+  .halo-primary-cta,
   .halo-primary-cta:hover,
+  .halo-primary-cta:active,
+  a.halo-primary-cta,
+  a.halo-primary-cta:hover,
+  a.halo-primary-cta:active {
+    transform: none !important;
+  }
+
   .halo-secondary-action:hover .halo-arrow,
   .halo-card-hover:hover,
   .halo-source-panel:hover {

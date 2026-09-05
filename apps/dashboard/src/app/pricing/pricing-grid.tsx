@@ -161,11 +161,11 @@ export function PricingGrid() {
                             {/* CTA */}
                             <Link
                                 href="/sign-up"
-                                className={`w-full text-center py-2.5 px-4 rounded-xl text-sm font-semibold transition-all ${
+                                className={
                                     isRecommended
-                                        ? "bg-accent hover:bg-accent-hover text-[#05070b]"
-                                        : "bg-white/6 hover:bg-white/10 border border-white/10 text-white"
-                                }`}
+                                        ? "halo-primary-cta w-full"
+                                        : "w-full text-center py-2.5 px-4 rounded-xl text-sm font-semibold transition-all bg-white/6 hover:bg-white/10 border border-white/10 text-white"
+                                }
                             >
                                 {price === 0 ? "Get started free" : `Start ${plan.name} plan`}
                             </Link>
