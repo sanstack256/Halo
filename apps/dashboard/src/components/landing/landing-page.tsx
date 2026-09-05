@@ -118,7 +118,7 @@ function Nav({ isAuthenticated }: { isAuthenticated?: boolean }) {
             src="/landing/halo-wordmark.png"
             alt="Halo"
             style={{
-              height: 34,
+              height: 40,
               width: "auto",
               mixBlendMode: "screen",
               objectFit: "contain",
