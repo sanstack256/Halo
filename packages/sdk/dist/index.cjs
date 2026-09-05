@@ -453,6 +453,7 @@ function createSessionId() {
 var Halo = class {
   client;
   enabled;
+  service;
   release;
   environment;
   user;
@@ -506,6 +507,7 @@ var Halo = class {
       }
     );
     this.enabled = options.enabled ?? true;
+    this.service = options.service;
     this.release = options.release;
     this.environment = options.environment;
     this.maxBreadcrumbs = Math.max(
@@ -628,6 +630,7 @@ var Halo = class {
       resource: options.resource,
       status: options.status,
       service: options.service,
+      tags: options.tags,
       metadata: options.metadata,
       requestId: options.requestId,
       traceId: options.traceId
@@ -643,7 +646,7 @@ var Halo = class {
       title: event.title,
       message: event.message,
       severity: event.severity ?? "INFO",
-      timestamp: (/* @__PURE__ */ new Date()).toISOString(),
+      timestamp: event.timestamp ?? (/* @__PURE__ */ new Date()).toISOString(),
       stack: event.stack,
       fingerprint: event.fingerprint,
       metadata: event.metadata,
@@ -671,7 +674,7 @@ var Halo = class {
        */
       requestId: event.requestId ?? context?.requestId,
       traceId: event.traceId ?? context?.traceId,
-      service: event.service,
+      service: event.service ?? this.service,
       resource: event.resource,
       operation: event.operation,
       status: event.status,

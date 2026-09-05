@@ -100,6 +100,8 @@ export interface HaloCaptureOptions {
 
     severity?: HaloSeverity;
 
+    timestamp?: string;
+
     stack?: string;
 
     fingerprint?: string;

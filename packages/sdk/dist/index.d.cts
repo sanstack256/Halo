@@ -19,6 +19,7 @@ interface HaloOptions {
      * Defaults to true.
      */
     captureHttp?: boolean;
+    service?: string;
     environment?: string;
     release?: string;
     sessionId?: string;
@@ -60,6 +61,7 @@ interface HaloCaptureOptions {
     title: string;
     message?: string;
     severity?: HaloSeverity;
+    timestamp?: string;
     stack?: string;
     fingerprint?: string;
     metadata?: Record<string, unknown>;
@@ -84,6 +86,7 @@ interface HaloCaptureOptions {
 declare class Halo {
     private client;
     private enabled;
+    private service?;
     private release?;
     private environment?;
     private user?;
@@ -124,6 +127,7 @@ declare class Halo {
         metadata?: Record<string, unknown>;
         requestId?: string;
         traceId?: string;
+        tags?: Record<string, string | number | boolean>;
     }): Promise<void>;
     capture(event: HaloCaptureOptions): Promise<void>;
 }
