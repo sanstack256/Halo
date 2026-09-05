@@ -3763,3 +3763,20 @@ a.halo-primary-cta[aria-disabled="true"] {
     transform: none !important;
   }
 }
+
+/* Docs search target highlight */
+@keyframes haloSectionFlash {
+  0% {
+    background-color: rgba(105, 191, 255, 0.16);
+    box-shadow: 0 0 0 2px rgba(105, 191, 255, 0.35);
+  }
+  100% {
+    background-color: transparent;
+    box-shadow: 0 0 0 2px transparent;
+  }
+}
+
+.halo-section-highlight {
+  animation: haloSectionFlash 2s ease-out;
+  border-radius: 8px;
+}

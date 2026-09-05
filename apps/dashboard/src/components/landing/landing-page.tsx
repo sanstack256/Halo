@@ -78,7 +78,7 @@ function Nav({ isAuthenticated }: { isAuthenticated?: boolean }) {
   const navLinks = [
     { label: "Product", href: "#evidence" },
     { label: "How it works", href: "#how-it-works" },
-    { label: "Docs", href: "/sdk" },
+    { label: "Docs", href: "/docs" },
     { label: "Pricing", href: "/pricing" },
   ];
 
@@ -1553,7 +1553,7 @@ function FinalCTA({ isAuthenticated }: { isAuthenticated?: boolean }) {
 function Footer() {
   const footerLinks = [
     { label: "Product", href: "#evidence" },
-    { label: "Docs", href: "/sdk" },
+    { label: "Docs", href: "/docs" },
     { label: "Pricing", href: "/pricing" },
     { label: "Privacy", href: "/settings/privacy" },
     { label: "Terms", href: "/settings/legal" },
