@@ -85,11 +85,12 @@ export function evaluateRepairEligibility(opts: EvaluateEligibilityOptions): Rep
     const hasContradictions = snapshot.investigation.hypotheses.some((h) => {
         if (!h.contradictingReasons || h.contradictingReasons.length === 0) return false;
         if ((h.status as string) === "REJECTED" || (h.status as string) === "REFUTED") return true;
-        if (typeof (h as any).score === "number") return (h as any).score < 0.5;
+        const score = (h as { score?: unknown }).score;
+        if (typeof score === "number") return score < 0.5;
 
-        if (typeof (h as any).score === "object" && (h as any).score !== null) {
-            const pos = (h as any).score.positive || 0;
-            const neg = (h as any).score.negative || 0;
+        if (typeof score === "object" && score !== null) {
+            const pos = (score as { positive?: number }).positive || 0;
+            const neg = (score as { negative?: number }).negative || 0;
             return neg > pos || h.contradictingReasons.length > 0;
         }
         return h.contradictingReasons.length > 0;

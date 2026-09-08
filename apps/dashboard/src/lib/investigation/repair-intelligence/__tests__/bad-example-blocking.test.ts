@@ -82,7 +82,7 @@ function makeMockInvestigation(evidence: Evidence[]): Investigation {
             },
         ],
         causalChains: [],
-        impact: { affectedServices: ["acme-checkout"], blastRadius: "MEDIUM" } as any,
+        impact: { affectedServices: ["acme-checkout"], blastRadius: "MEDIUM" } as unknown as Investigation["impact"],
         recommendations: [],
         report: {
             summary: "Purchase could not be completed",

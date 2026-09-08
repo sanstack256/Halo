@@ -43,7 +43,7 @@ interface BuildRepairCaseOptions {
  * Builds the canonical RepairCase from an EvidenceSnapshot.
  */
 export function buildRepairCase(opts: BuildRepairCaseOptions): RepairCase {
-    const { snapshot, llmAugmentation } = opts;
+    const { snapshot } = opts;
 
     // 1. Build Failure Model
     const failureModel = buildFailureModel(snapshot);
@@ -133,14 +133,15 @@ export function buildRepairCase(opts: BuildRepairCaseOptions): RepairCase {
                 ts.ScriptTarget.Latest,
                 true
             );
-            const parseDiagnostics = (testSource as any).parseDiagnostics;
+            const parseDiagnostics = (testSource as ts.SourceFile & { parseDiagnostics?: ts.Diagnostic[] }).parseDiagnostics;
             if (parseDiagnostics && parseDiagnostics.length > 0) {
                 syntaxValid = false;
                 validationErrors.push("Proposed patch snippet produced syntax parse errors.");
             }
-        } catch (err: any) {
+        } catch (err: unknown) {
             syntaxValid = false;
-            validationErrors.push(`AST syntax validation failed: ${err.message}`);
+            const message = err instanceof Error ? err.message : String(err);
+            validationErrors.push(`AST syntax validation failed: ${message}`);
         }
 
         const unifiedDiff = [

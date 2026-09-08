@@ -77,10 +77,9 @@ export function analyzeBlastRadius(opts: AnalyzeBlastRadiusOptions): {
 
     for (const ev of snapshot.evidence) {
         if (ev.type === "TRACE" || (ev.type as string) === "REQUEST") {
-            const data = ((ev as any).payload || ev.metadata || (ev as any).data) as Record<string, any> | undefined;
-
-
-            const endpoint = data?.path || data?.url || data?.route || ev.title;
+            const evObj = ev as unknown as { payload?: Record<string, unknown>; metadata?: Record<string, unknown>; data?: Record<string, unknown> };
+            const data = evObj.payload || evObj.metadata || evObj.data;
+            const endpoint = (data?.path || data?.url || data?.route || ev.title) as string | undefined;
             if (endpoint) {
                 endpointCounts[endpoint] = (endpointCounts[endpoint] || 0) + 1;
                 totalSamples++;

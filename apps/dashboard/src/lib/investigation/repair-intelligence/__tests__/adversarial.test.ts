@@ -13,8 +13,6 @@ import { describe, it, expect } from "vitest";
 import type { Evidence, Investigation } from "@halo/investigation-engine";
 import { buildCanonicalEvidenceSnapshot } from "../../evidence-snapshot";
 import { buildRepairCase } from "../repair-case-builder";
-import { evaluateRepairEligibility } from "../repair-eligibility";
-import { buildFailureModel } from "../failure-model";
 import { validateModelOutput } from "../../recommendation-engine/output-validator";
 import { generateEvidenceBoundRecommendation } from "../../recommendation-engine/engine";
 import { MockRecommendationModel } from "../../recommendation-engine/provider";
@@ -62,7 +60,7 @@ function makeMockInvestigation(evidence: Evidence[], contradictingReasons: strin
             },
         ],
         causalChains: [],
-        impact: { affectedServices: ["billing"], blastRadius: "LOW" } as any,
+        impact: { affectedServices: ["billing"], blastRadius: "LOW" } as unknown as Investigation["impact"],
         recommendations: [],
         report: {
             summary: "Adversarial test report",
@@ -100,7 +98,6 @@ describe("Adversarial & Truth Boundary Tests", () => {
             },
         });
 
-        const failureModel = buildFailureModel(snapshot);
         const repairCase = buildRepairCase({ snapshot });
 
         expect(repairCase.repairEligibility.state).toBe("REPAIR_BLOCKED");

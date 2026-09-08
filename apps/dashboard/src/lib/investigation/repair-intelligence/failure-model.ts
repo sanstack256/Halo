@@ -47,12 +47,13 @@ export function buildFailureModel(snapshot: EvidenceSnapshot): FailureModel {
 
     // Search evidence for explicit captured runtime values (e.g. from debug session, local variable capture)
     for (const ev of snapshot.evidence) {
-        const payload = ((ev as any).payload || ev.metadata || (ev as any).data) as Record<string, any> | undefined;
+        const evObj = ev as unknown as { payload?: Record<string, unknown>; metadata?: Record<string, unknown>; data?: Record<string, unknown> };
+        const payload = evObj.payload || evObj.metadata || evObj.data;
+        const capturedVars = payload?.capturedVariables as Record<string, unknown> | undefined;
 
-
-        if (payload?.capturedVariables && failingExpression && payload.capturedVariables[failingExpression] !== undefined) {
+        if (capturedVars && failingExpression && capturedVars[failingExpression] !== undefined) {
             runtimeValueStatus = "CAPTURED";
-            runtimeValue = String(payload.capturedVariables[failingExpression]);
+            runtimeValue = String(capturedVars[failingExpression]);
             break;
         }
         if (payload?.evaluatedValue !== undefined && payload?.evaluatedExpression === failingExpression) {
@@ -209,10 +210,9 @@ export function buildFailureModel(snapshot: EvidenceSnapshot): FailureModel {
 
     // Check for missing request body / arguments
     const hasRequestBody = snapshot.evidence.some(e => {
-        const d = ((e as any).payload || e.metadata || (e as any).data) as Record<string, any> | undefined;
-
-
-        return d?.requestBody || d?.arguments || d?.params;
+        const evObj = e as unknown as { payload?: Record<string, unknown>; metadata?: Record<string, unknown>; data?: Record<string, unknown> };
+        const d = evObj.payload || evObj.metadata || evObj.data;
+        return Boolean(d?.requestBody || d?.arguments || d?.params);
     });
     if (!hasRequestBody) {
         unknowns.push({

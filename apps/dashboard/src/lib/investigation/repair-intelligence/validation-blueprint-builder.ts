@@ -22,7 +22,7 @@ interface BuildValidationBlueprintOptions {
  * Builds the ValidationBlueprint for an incident.
  */
 export function buildValidationBlueprint(opts: BuildValidationBlueprintOptions): ValidationBlueprint {
-    const { snapshot, failureModel } = opts;
+    const { failureModel } = opts;
 
     const errorTitle = failureModel.errorTitle;
     const failingExpr = failureModel.failingExpression || "target expression";

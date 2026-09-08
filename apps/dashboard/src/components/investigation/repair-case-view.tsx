@@ -526,7 +526,7 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
             )}
 
             {/* 5. PROPOSED PATCH UI */}
-            {activePatch && activePatch.validationStatus === "VALID" ? (
+            {activePatch && activePatch.validationStatus === "VALID" && (
                 <div className="space-y-3 pt-2">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-white font-semibold">
@@ -610,29 +610,7 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
                         </div>
                     </div>
                 </div>
-            ) : repairEligibility.state === "REPAIR_UNDERDETERMINED" && repairOptions.length > 0 ? (
-                <div className="p-5 rounded-lg bg-zinc-900/30 border border-dashed border-zinc-800 text-center space-y-2 pt-2">
-                    <div className="flex items-center justify-center gap-2 text-xs font-mono text-zinc-400">
-                        <Code2 className="w-4 h-4 text-accent" />
-                        <span className="font-semibold uppercase tracking-wider">Proposed Patch Preview</span>
-                    </div>
-                    <p className="text-xs text-zinc-400 max-w-lg mx-auto leading-relaxed">
-                        Intended runtime contract is underdetermined. Select an architectural strategy above to preview its syntax-verified diff.
-                    </p>
-                    <div className="flex items-center justify-center gap-3 pt-2">
-                        {repairOptions.map((opt, idx) => (
-                            <button
-                                key={opt.id}
-                                type="button"
-                                onClick={() => setSelectedOptionId(opt.id)}
-                                className="px-3 py-1.5 rounded text-xs font-mono bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition-colors cursor-pointer"
-                            >
-                                Preview Option {String.fromCharCode(65 + idx)} ({opt.id.includes("guard") ? "Defensive Guard" : "Validate Preconditions"})
-                            </button>
-                        ))}
-                    </div>
-                </div>
-            ) : null}
+            )}
 
             {/* 6. BLAST RADIUS & SIDE EFFECT ANALYSIS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
