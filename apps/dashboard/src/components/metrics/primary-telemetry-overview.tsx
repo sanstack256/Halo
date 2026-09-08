@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { ArrowUpRight, ArrowDownRight, Minus, AlertCircle } from "lucide-react";
+import { AlertCircle } from "lucide-react";
 import type {
   PrimaryTelemetryOverviewData,
   PrimaryChartBucket,
@@ -59,7 +59,8 @@ export function PrimaryTelemetryOverview({
       <div className="grid grid-cols-2 gap-4 lg:grid-cols-4 divide-y lg:divide-y-0 lg:divide-x divide-border/40">
         {metricsList.map((m, idx) => {
           const isGood = m.isImprovement;
-          const isUnavailable = m.delta === "Baseline unavailable";
+          const isUnavailable =
+            m.delta === "Baseline unavailable" || m.delta === "Insufficient baseline";
 
           return (
             <div key={m.label} className={idx > 0 ? "pt-3 lg:pt-0 lg:pl-4" : ""}>
@@ -73,17 +74,14 @@ export function PrimaryTelemetryOverview({
 
               <div className="mt-2 flex items-center justify-between text-xs">
                 <span
-                  className={`inline-flex items-center gap-0.5 font-mono text-[11px] ${
-                    isUnavailable || m.deltaDirection === null || m.deltaDirection === "flat"
+                  className={`font-mono text-[11px] ${
+                    isUnavailable || m.isImprovement === null
                       ? "text-muted-foreground"
                       : isGood
                       ? "text-emerald-400"
                       : "text-rose-400"
                   }`}
                 >
-                  {m.deltaDirection === "up" && <ArrowUpRight className="h-3 w-3" />}
-                  {m.deltaDirection === "down" && <ArrowDownRight className="h-3 w-3" />}
-                  {m.deltaDirection === "flat" && <Minus className="h-3 w-3" />}
                   {m.delta}
                 </span>
 

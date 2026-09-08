@@ -44,8 +44,26 @@ interface EventFilterWhere {
   };
 }
 
-import { isFailedStatus, calculatePercentile, resolveTimeWindow, calculateErrorRate } from "./calculations";
-export { isFailedStatus, calculatePercentile, resolveTimeWindow, calculateErrorRate };
+import {
+  isFailedStatus,
+  calculatePercentile,
+  resolveTimeWindow,
+  calculateErrorRate,
+  formatMetricDelta,
+  resolveDeltaDirection,
+  resolveIsImprovement,
+  type BaselineStatus,
+} from "./calculations";
+export {
+  isFailedStatus,
+  calculatePercentile,
+  resolveTimeWindow,
+  calculateErrorRate,
+  formatMetricDelta,
+  resolveDeltaDirection,
+  resolveIsImprovement,
+  type BaselineStatus,
+};
 
 export async function getProjectMetricsIntelligence(
   projectIdOrSlug: string,
@@ -286,7 +304,23 @@ export async function getProjectMetricsIntelligence(
   const prevErrorRate = prevErrorRateResult.value;
 
   const errorRateComp = calculateMetricComparison(currentErrorRate, prevErrorRate, true, true);
-  const hasErrorRateBaseline = prevRequests.length >= 5 && currentErrorRate !== null && errorRateComp.percentagePointsDiff !== null;
+
+  let errorRateBaselineStatus: BaselineStatus = "AVAILABLE";
+  if (previousEvents.length === 0) {
+    errorRateBaselineStatus = "UNAVAILABLE";
+  } else if (prevRequests.length < 5 || prevErrorRate === null || currentErrorRate === null) {
+    errorRateBaselineStatus = "INSUFFICIENT";
+  }
+
+  const errorRateDiff = errorRateComp.percentagePointsDiff;
+  const errorRateDelta = formatMetricDelta({
+    diff: errorRateDiff,
+    baseline: errorRateBaselineStatus,
+    unit: "pp",
+    precision: 1,
+  });
+  const errorRateDeltaDir = resolveDeltaDirection(errorRateDiff, errorRateBaselineStatus, 1);
+  const errorRateIsImprovement = resolveIsImprovement(errorRateDiff, errorRateBaselineStatus, true, 1);
 
   let errorRateQualityState: MetricOverviewItem["qualityState"] = "OBSERVED";
   let errorRateQualityLabel = "Observed";
@@ -306,42 +340,37 @@ export async function getProjectMetricsIntelligence(
     label: "ERROR RATE",
     value: currentErrorRate !== null ? `${currentErrorRate.toFixed(1)}%` : "—",
     rawNumber: currentErrorRate,
-    delta: hasErrorRateBaseline
-      ? `${errorRateComp.percentagePointsDiff! > 0 ? "↑" : errorRateComp.percentagePointsDiff! < 0 ? "↓" : "—"} ${Math.abs(errorRateComp.percentagePointsDiff!)} pp`
-      : "Baseline unavailable",
-    deltaDirection:
-      hasErrorRateBaseline
-        ? errorRateComp.percentagePointsDiff! > 0
-          ? "up"
-          : errorRateComp.percentagePointsDiff! < 0
-          ? "down"
-          : "flat"
-        : null,
-    isImprovement: errorRateComp.isImprovement,
+    delta: errorRateDelta,
+    deltaDirection: errorRateDeltaDir,
+    isImprovement: errorRateIsImprovement,
     qualityState: errorRateQualityState,
     qualityLabel: errorRateQualityLabel,
   };
 
   // REQUESTS CALCULATION
   const reqVolComp = calculateMetricComparison(currentRequests.length, prevRequests.length, false, false);
-  const hasRequestsBaseline = previousEvents.length > 0 && reqVolComp.relativeDiffPct !== null;
+  let requestsBaselineStatus: BaselineStatus = "AVAILABLE";
+  if (previousEvents.length === 0) {
+    requestsBaselineStatus = "UNAVAILABLE";
+  }
+
+  const reqVolDiff = reqVolComp.relativeDiffPct;
+  const requestsDelta = formatMetricDelta({
+    diff: reqVolDiff,
+    baseline: requestsBaselineStatus,
+    unit: "%",
+    precision: 1,
+  });
+  const requestsDeltaDir = resolveDeltaDirection(reqVolDiff, requestsBaselineStatus, 1);
+  const requestsIsImprovement = resolveIsImprovement(reqVolDiff, requestsBaselineStatus, false, 1);
 
   const requestsOverview: MetricOverviewItem = {
     label: "REQUESTS",
     value: currentRequests.length.toLocaleString(),
     rawNumber: currentRequests.length,
-    delta: hasRequestsBaseline
-      ? `${reqVolComp.relativeDiffPct! > 0 ? "↑" : reqVolComp.relativeDiffPct! < 0 ? "↓" : "—"} ${Math.abs(reqVolComp.relativeDiffPct!)}%`
-      : "Baseline unavailable",
-    deltaDirection:
-      hasRequestsBaseline
-        ? reqVolComp.relativeDiffPct! > 0
-          ? "up"
-          : reqVolComp.relativeDiffPct! < 0
-          ? "down"
-          : "flat"
-        : null,
-    isImprovement: reqVolComp.isImprovement,
+    delta: requestsDelta,
+    deltaDirection: requestsDeltaDir,
+    isImprovement: requestsIsImprovement,
     qualityState: currentRequests.length > 0 ? "OBSERVED" : "NOT_CAPTURED",
     qualityLabel: currentRequests.length > 0 ? "Observed" : "Not captured",
   };
@@ -358,24 +387,30 @@ export async function getProjectMetricsIntelligence(
   const prevP95 = calculatePercentile(prevLatencies, 95);
 
   const p95Comp = calculateMetricComparison(currentP95, prevP95, false, true);
-  const hasP95Baseline = prevLatencies.length >= 5 && p95Comp.relativeDiffPct !== null;
+  let p95BaselineStatus: BaselineStatus = "AVAILABLE";
+  if (previousEvents.length === 0) {
+    p95BaselineStatus = "UNAVAILABLE";
+  } else if (prevLatencies.length < 5 || prevP95 === null || currentP95 === null) {
+    p95BaselineStatus = "INSUFFICIENT";
+  }
+
+  const p95Diff = p95Comp.relativeDiffPct;
+  const p95Delta = formatMetricDelta({
+    diff: p95Diff,
+    baseline: p95BaselineStatus,
+    unit: "%",
+    precision: 1,
+  });
+  const p95DeltaDir = resolveDeltaDirection(p95Diff, p95BaselineStatus, 1);
+  const p95IsImprovement = resolveIsImprovement(p95Diff, p95BaselineStatus, true, 1);
 
   const p95LatencyOverview: MetricOverviewItem = {
     label: "P95 LATENCY",
     value: currentP95 !== null ? `${currentP95}ms` : "—",
     rawNumber: currentP95,
-    delta: hasP95Baseline
-      ? `${p95Comp.relativeDiffPct! > 0 ? "↑" : p95Comp.relativeDiffPct! < 0 ? "↓" : "—"} ${Math.abs(p95Comp.relativeDiffPct!)}%`
-      : "Baseline unavailable",
-    deltaDirection:
-      hasP95Baseline
-        ? p95Comp.relativeDiffPct! > 0
-          ? "up"
-          : p95Comp.relativeDiffPct! < 0
-          ? "down"
-          : "flat"
-        : null,
-    isImprovement: p95Comp.isImprovement,
+    delta: p95Delta,
+    deltaDirection: p95DeltaDir,
+    isImprovement: p95IsImprovement,
     qualityState:
       currentLatencies.length === 0
         ? "NOT_CAPTURED"
@@ -403,25 +438,37 @@ export async function getProjectMetricsIntelligence(
 
   const affectedUsersCount = currentAffectedUsersSet.size;
   const prevAffectedUsersCount = previousAffectedUsersSet.size;
-  const hasUsersBaseline = previousEvents.length > 0 && allIdentifiedUsers.size > 0;
+  let usersBaselineStatus: BaselineStatus = "AVAILABLE";
+  if (previousEvents.length === 0 || allIdentifiedUsers.size === 0) {
+    usersBaselineStatus = "UNAVAILABLE";
+  }
+
   const usersDiff = affectedUsersCount - prevAffectedUsersCount;
+  const usersDelta = formatMetricDelta({
+    diff: usersBaselineStatus === "AVAILABLE" ? usersDiff : null,
+    baseline: usersBaselineStatus,
+    unit: "",
+    precision: 0,
+  });
+  const usersDeltaDir = resolveDeltaDirection(
+    usersBaselineStatus === "AVAILABLE" ? usersDiff : null,
+    usersBaselineStatus,
+    0
+  );
+  const usersIsImprovement = resolveIsImprovement(
+    usersBaselineStatus === "AVAILABLE" ? usersDiff : null,
+    usersBaselineStatus,
+    true,
+    0
+  );
 
   const affectedUsersOverview: MetricOverviewItem = {
     label: "AFFECTED USERS",
     value: allIdentifiedUsers.size > 0 ? affectedUsersCount.toLocaleString() : "—",
     rawNumber: allIdentifiedUsers.size > 0 ? affectedUsersCount : null,
-    delta: hasUsersBaseline
-      ? `${usersDiff > 0 ? "↑" : usersDiff < 0 ? "↓" : "—"} ${Math.abs(usersDiff)}`
-      : "Baseline unavailable",
-    deltaDirection:
-      hasUsersBaseline
-        ? usersDiff > 0
-          ? "up"
-          : usersDiff < 0
-          ? "down"
-          : "flat"
-        : null,
-    isImprovement: usersDiff <= 0,
+    delta: usersDelta,
+    deltaDirection: usersDeltaDir,
+    isImprovement: usersIsImprovement,
     qualityState: allIdentifiedUsers.size > 0 ? "OBSERVED" : "NOT_CAPTURED",
     qualityLabel: allIdentifiedUsers.size > 0 ? "Observed" : "Identity not captured",
   };
@@ -502,31 +549,46 @@ export async function getProjectMetricsIntelligence(
   const changes: ObservedChangeRow[] = [];
   const evalTime = formatUtcTime(timeRange.end);
 
-  if (hasErrorRateBaseline && errorRateComp.percentagePointsDiff !== null && Math.abs(errorRateComp.percentagePointsDiff) >= 3.0) {
+  if (errorRateBaselineStatus === "AVAILABLE" && errorRateComp.percentagePointsDiff !== null && Math.abs(errorRateComp.percentagePointsDiff) >= 3.0) {
     changes.push({
       metric: "ERROR RATE",
-      change: `${errorRateComp.percentagePointsDiff > 0 ? "↑" : "↓"} ${Math.abs(errorRateComp.percentagePointsDiff)} pp`,
+      change: formatMetricDelta({
+        diff: errorRateComp.percentagePointsDiff,
+        baseline: "AVAILABLE",
+        unit: "pp",
+        precision: 1,
+      }),
       time: evalTime,
       actionLabel: "View errors →",
       actionHref: `/projects/${project.id}/events?type=ERROR`,
     });
   }
 
-  if (hasP95Baseline && currentP95 !== null && prevP95 !== null && Math.abs(currentP95 - prevP95) >= 40) {
+  if (p95BaselineStatus === "AVAILABLE" && currentP95 !== null && prevP95 !== null && Math.abs(currentP95 - prevP95) >= 40) {
     const latDiff = currentP95 - prevP95;
     changes.push({
       metric: "LATENCY (P95)",
-      change: `${latDiff > 0 ? "↑" : "↓"} ${Math.abs(latDiff)}ms`,
+      change: formatMetricDelta({
+        diff: latDiff,
+        baseline: "AVAILABLE",
+        unit: "ms",
+        precision: 0,
+      }),
       time: evalTime,
       actionLabel: "View requests →",
       actionHref: `/projects/${project.id}/events?type=TRACE`,
     });
   }
 
-  if (hasRequestsBaseline && reqVolComp.relativeDiffPct !== null && Math.abs(reqVolComp.relativeDiffPct) >= 15.0) {
+  if (requestsBaselineStatus === "AVAILABLE" && reqVolComp.relativeDiffPct !== null && Math.abs(reqVolComp.relativeDiffPct) >= 15.0) {
     changes.push({
       metric: "REQUEST VOLUME",
-      change: `${reqVolComp.relativeDiffPct > 0 ? "↑" : "↓"} ${Math.abs(reqVolComp.relativeDiffPct)}%`,
+      change: formatMetricDelta({
+        diff: reqVolComp.relativeDiffPct,
+        baseline: "AVAILABLE",
+        unit: "%",
+        precision: 1,
+      }),
       time: evalTime,
       actionLabel: "Explore →",
       actionHref: `/projects/${project.id}/events`,
@@ -536,7 +598,7 @@ export async function getProjectMetricsIntelligence(
   let observedChangesState: ObservedChangesData["state"] = "no_changes";
   let observedChangesMessage: string | undefined = undefined;
 
-  if (!hasErrorRateBaseline && !hasRequestsBaseline && !hasP95Baseline) {
+  if (errorRateBaselineStatus === "UNAVAILABLE" && requestsBaselineStatus === "UNAVAILABLE" && p95BaselineStatus === "UNAVAILABLE") {
     observedChangesState = "insufficient_baseline";
     observedChangesMessage = "Changes not evaluated — insufficient baseline telemetry.";
   } else if (changes.length === 0) {
@@ -831,29 +893,76 @@ export async function getProjectMetricsIntelligence(
     {
       metricName: "ERROR RATE",
       current: currentErrorRate !== null ? `${currentErrorRate.toFixed(1)}%` : "—",
-      previous: hasErrorRateBaseline && prevErrorRate !== null ? `${prevErrorRate.toFixed(1)}%` : "No observed baseline",
-      delta: hasErrorRateBaseline && errorRateComp.percentagePointsDiff !== null
-        ? `${errorRateComp.percentagePointsDiff > 0 ? "↑" : "↓"} ${Math.abs(errorRateComp.percentagePointsDiff)} pp`
-        : "—",
-      status: hasErrorRateBaseline ? (errorRateComp.isImprovement ? "Improving" : "Degrading") : "Baseline unavailable",
+      previous:
+        errorRateBaselineStatus === "AVAILABLE" && prevErrorRate !== null
+          ? `${prevErrorRate.toFixed(1)}%`
+          : errorRateBaselineStatus === "INSUFFICIENT"
+          ? "Insufficient baseline"
+          : "No observed baseline",
+      delta: formatMetricDelta({
+        diff: errorRateComp.percentagePointsDiff,
+        baseline: errorRateBaselineStatus,
+        unit: "pp",
+        precision: 1,
+      }),
+      status:
+        errorRateBaselineStatus !== "AVAILABLE"
+          ? errorRateBaselineStatus === "INSUFFICIENT"
+            ? "Insufficient baseline"
+            : "Baseline unavailable"
+          : errorRateComp.percentagePointsDiff === null || Math.abs(errorRateComp.percentagePointsDiff) < 0.0001
+          ? "No change"
+          : errorRateComp.isImprovement
+          ? "Improving"
+          : "Degrading",
     },
     {
       metricName: "P95 LATENCY",
       current: currentP95 !== null ? `${currentP95}ms` : "—",
-      previous: hasP95Baseline && prevP95 !== null ? `${prevP95}ms` : "No observed baseline",
-      delta: hasP95Baseline && p95Comp.relativeDiffPct !== null
-        ? `${p95Comp.relativeDiffPct > 0 ? "↑" : "↓"} ${Math.abs(p95Comp.relativeDiffPct)}%`
-        : "—",
-      status: hasP95Baseline ? (p95Comp.isImprovement ? "Improving" : "Degrading") : "Baseline unavailable",
+      previous:
+        p95BaselineStatus === "AVAILABLE" && prevP95 !== null
+          ? `${prevP95}ms`
+          : p95BaselineStatus === "INSUFFICIENT"
+          ? "Insufficient baseline"
+          : "No observed baseline",
+      delta: formatMetricDelta({
+        diff: p95Comp.relativeDiffPct,
+        baseline: p95BaselineStatus,
+        unit: "%",
+        precision: 1,
+      }),
+      status:
+        p95BaselineStatus !== "AVAILABLE"
+          ? p95BaselineStatus === "INSUFFICIENT"
+            ? "Insufficient baseline"
+            : "Baseline unavailable"
+          : p95Comp.relativeDiffPct === null || Math.abs(p95Comp.relativeDiffPct) < 0.0001
+          ? "No change"
+          : p95Comp.isImprovement
+          ? "Improving"
+          : "Degrading",
     },
     {
       metricName: "REQUEST VOLUME",
       current: currentRequests.length.toLocaleString(),
-      previous: hasRequestsBaseline ? prevRequests.length.toLocaleString() : "No observed baseline",
-      delta: hasRequestsBaseline && reqVolComp.relativeDiffPct !== null
-        ? `${reqVolComp.relativeDiffPct > 0 ? "↑" : "↓"} ${Math.abs(reqVolComp.relativeDiffPct)}%`
-        : "—",
-      status: hasRequestsBaseline ? (reqVolComp.isImprovement ? "Healthy" : "Reduced") : "Baseline unavailable",
+      previous:
+        requestsBaselineStatus === "AVAILABLE"
+          ? prevRequests.length.toLocaleString()
+          : "No observed baseline",
+      delta: formatMetricDelta({
+        diff: reqVolComp.relativeDiffPct,
+        baseline: requestsBaselineStatus,
+        unit: "%",
+        precision: 1,
+      }),
+      status:
+        requestsBaselineStatus !== "AVAILABLE"
+          ? "Baseline unavailable"
+          : reqVolComp.relativeDiffPct === null || Math.abs(reqVolComp.relativeDiffPct) < 0.0001
+          ? "No change"
+          : reqVolComp.isImprovement
+          ? "Healthy"
+          : "Reduced",
     },
   ];
 

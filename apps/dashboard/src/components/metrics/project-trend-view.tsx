@@ -44,21 +44,32 @@ export function ProjectTrendView({ data }: ProjectTrendViewProps) {
                   {row.previous}
                 </td>
                 <td className="py-3 text-right">
-                  {row.delta !== "—" ? (
-                    <span className={row.delta.startsWith("↑") ? "text-rose-400" : "text-emerald-400"}>
+                  {row.delta !== "—" &&
+                  row.delta !== "Baseline unavailable" &&
+                  row.delta !== "Insufficient baseline" &&
+                  row.delta !== "No change" ? (
+                    <span
+                      className={
+                        row.status === "Improving" || row.status === "Healthy"
+                          ? "text-emerald-400"
+                          : row.status === "Degrading" || row.status === "Reduced"
+                          ? "text-rose-400"
+                          : "text-muted-foreground"
+                      }
+                    >
                       {row.delta}
                     </span>
                   ) : (
-                    <span className="text-muted-foreground">—</span>
+                    <span className="text-muted-foreground">{row.delta}</span>
                   )}
                 </td>
                 <td className="py-3 text-right font-sans">
                   <span
-                    className={`text-[11px] px-2 py-0.5 rounded ${
-                      row.status === "Improving"
-                        ? "text-emerald-400 bg-emerald-500/10 font-medium"
-                        : row.status === "Degrading"
-                        ? "text-rose-400 bg-rose-500/10 font-medium"
+                    className={`text-[11px] px-2 py-0.5 rounded font-medium ${
+                      row.status === "Improving" || row.status === "Healthy"
+                        ? "text-emerald-400 bg-emerald-500/10"
+                        : row.status === "Degrading" || row.status === "Reduced"
+                        ? "text-rose-400 bg-rose-500/10"
                         : "text-muted-foreground bg-secondary/30"
                     }`}
                   >

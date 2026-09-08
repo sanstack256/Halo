@@ -4,6 +4,9 @@ import {
   isFailedStatus,
   resolveTimeWindow,
   calculateErrorRate,
+  formatMetricDelta,
+  resolveDeltaDirection,
+  resolveIsImprovement,
 } from "../calculations";
 import {
   formatUtcDateTime,
@@ -325,6 +328,129 @@ describe("Project Metrics Calculations & Mathematical Correctness", () => {
 
       const errorsPerUser = Math.round((totalErrors / affectedUsers) * 10) / 10;
       expect(errorsPerUser).toBe(3.9);
+    });
+  });
+
+  describe("Canonical Metric Delta Formatter & Direction Invariants", () => {
+    it("1. Formats positive delta with exactly one upward arrow", () => {
+      const formatted = formatMetricDelta({
+        diff: 0.2,
+        baseline: "AVAILABLE",
+        unit: "pp",
+        precision: 1,
+      });
+      expect(formatted).toBe("↑ 0.2 pp");
+    });
+
+    it("2. Formats negative delta with exactly one downward arrow", () => {
+      const formatted = formatMetricDelta({
+        diff: -0.2,
+        baseline: "AVAILABLE",
+        unit: "pp",
+        precision: 1,
+      });
+      expect(formatted).toBe("↓ 0.2 pp");
+    });
+
+    it("3. Formats zero delta as 'No change'", () => {
+      const formatted = formatMetricDelta({
+        diff: 0,
+        baseline: "AVAILABLE",
+        unit: "pp",
+        precision: 1,
+      });
+      expect(formatted).toBe("No change");
+
+      const formattedSmall = formatMetricDelta({
+        diff: 0.00001,
+        baseline: "AVAILABLE",
+        unit: "pp",
+        precision: 1,
+      });
+      expect(formattedSmall).toBe("No change");
+    });
+
+    it("4. Formats unavailable baseline as 'Baseline unavailable'", () => {
+      const formatted = formatMetricDelta({
+        diff: null,
+        baseline: "UNAVAILABLE",
+        unit: "pp",
+      });
+      expect(formatted).toBe("Baseline unavailable");
+
+      const formattedWithDiff = formatMetricDelta({
+        diff: 0.5,
+        baseline: "UNAVAILABLE",
+        unit: "pp",
+      });
+      expect(formattedWithDiff).toBe("Baseline unavailable");
+    });
+
+    it("5. Formats insufficient baseline as 'Insufficient baseline'", () => {
+      const formatted = formatMetricDelta({
+        diff: null,
+        baseline: "INSUFFICIENT",
+        unit: "pp",
+      });
+      expect(formatted).toBe("Insufficient baseline");
+    });
+
+    it("6. Invariant: NEVER produces duplicate directional symbols", () => {
+      const testCases = [
+        { diff: 0.2, baseline: "AVAILABLE" as const, unit: "pp" as const },
+        { diff: -0.2, baseline: "AVAILABLE" as const, unit: "pp" as const },
+        { diff: 15, baseline: "AVAILABLE" as const, unit: "%" as const },
+        { diff: -15, baseline: "AVAILABLE" as const, unit: "%" as const },
+        { diff: 40, baseline: "AVAILABLE" as const, unit: "ms" as const },
+        { diff: 0, baseline: "AVAILABLE" as const, unit: "pp" as const },
+        { diff: null, baseline: "UNAVAILABLE" as const, unit: "pp" as const },
+        { diff: null, baseline: "INSUFFICIENT" as const, unit: "pp" as const },
+      ];
+
+      for (const tc of testCases) {
+        const res = formatMetricDelta(tc);
+        // Must never have duplicate arrow combinations
+        expect(res).not.toMatch(/↗\s*↑/);
+        expect(res).not.toMatch(/↘\s*↓/);
+        expect(res).not.toMatch(/↑\s*↗/);
+        expect(res).not.toMatch(/↓\s*↘/);
+        expect(res).not.toMatch(/\+\s*↑/);
+        expect(res).not.toMatch(/-\s*↓/);
+
+        // Count occurrences of arrow characters
+        const arrowCount = (res.match(/[↑↓↗↘]/g) || []).length;
+        expect(arrowCount).toBeLessThanOrEqual(1);
+      }
+    });
+
+    it("7. Mathematical direction is strictly decoupled from health sentiment", () => {
+      // Error Rate: increase is up, but NOT improvement
+      expect(resolveDeltaDirection(0.2, "AVAILABLE")).toBe("up");
+      expect(resolveIsImprovement(0.2, "AVAILABLE", true)).toBe(false);
+
+      // Error Rate: decrease is down, and IS improvement
+      expect(resolveDeltaDirection(-0.2, "AVAILABLE")).toBe("down");
+      expect(resolveIsImprovement(-0.2, "AVAILABLE", true)).toBe(true);
+
+      // Request Volume: increase is up, and IS improvement
+      expect(resolveDeltaDirection(15, "AVAILABLE")).toBe("up");
+      expect(resolveIsImprovement(15, "AVAILABLE", false)).toBe(true);
+
+      // Request Volume: decrease is down, and is NOT improvement
+      expect(resolveDeltaDirection(-15, "AVAILABLE")).toBe("down");
+      expect(resolveIsImprovement(-15, "AVAILABLE", false)).toBe(false);
+
+      // P95 Latency: increase is up, and is NOT improvement
+      expect(resolveDeltaDirection(25, "AVAILABLE")).toBe("up");
+      expect(resolveIsImprovement(25, "AVAILABLE", true)).toBe(false);
+
+      // Flat / Zero change: direction is flat, improvement is null
+      expect(resolveDeltaDirection(0, "AVAILABLE")).toBe("flat");
+      expect(resolveIsImprovement(0, "AVAILABLE", true)).toBeNull();
+
+      // Unavailable baseline: direction is null, improvement is null
+      expect(resolveDeltaDirection(null, "UNAVAILABLE")).toBeNull();
+      expect(resolveIsImprovement(null, "UNAVAILABLE", true)).toBeNull();
     });
   });
 });

@@ -114,3 +114,101 @@ export function resolveTimeWindow(filter: MetricsFilterParams): ResolvedTimeRang
 
   return parseTimeRange(filter.timeRange, "PREVIOUS_PERIOD");
 }
+
+export type BaselineStatus = "AVAILABLE" | "UNAVAILABLE" | "INSUFFICIENT";
+
+export interface FormatMetricDeltaOptions {
+  diff: number | null;
+  baseline: BaselineStatus;
+  unit?: "pp" | "%" | "ms" | "";
+  precision?: number;
+}
+
+/**
+ * Canonical metric delta formatter.
+ * Produces EXACTLY one directional indicator:
+ *   - positive: "↑ 0.2 pp"
+ *   - negative: "↓ 0.2 pp"
+ *   - zero: "No change"
+ *   - unavailable baseline: "Baseline unavailable"
+ *   - insufficient baseline: "Insufficient baseline"
+ */
+export function formatMetricDelta({
+  diff,
+  baseline,
+  unit = "",
+  precision = 1,
+}: FormatMetricDeltaOptions): string {
+  if (baseline === "UNAVAILABLE") {
+    return "Baseline unavailable";
+  }
+
+  if (baseline === "INSUFFICIENT") {
+    return "Insufficient baseline";
+  }
+
+  if (diff === null || diff === undefined || isNaN(diff)) {
+    return "Baseline unavailable";
+  }
+
+  const absDiff = Math.abs(diff);
+  const rounded = precision === 0 ? Math.round(absDiff) : Number(absDiff.toFixed(precision));
+  if (rounded === 0 || absDiff < 0.0001) {
+    return "No change";
+  }
+
+  const arrow = diff > 0 ? "↑" : "↓";
+  const formattedVal =
+    precision === 0
+      ? Math.round(absDiff).toString()
+      : unit === "%" && absDiff % 1 === 0
+      ? absDiff.toString()
+      : absDiff.toFixed(precision);
+
+  const unitSuffix = unit === "pp" ? " pp" : unit;
+
+  return `${arrow} ${formattedVal}${unitSuffix}`;
+}
+
+/**
+ * Resolves pure mathematical direction ("up", "down", "flat", null).
+ * Independent of health/sentiment.
+ */
+export function resolveDeltaDirection(
+  diff: number | null,
+  baseline: BaselineStatus,
+  precision: number = 1
+): "up" | "down" | "flat" | null {
+  if (baseline !== "AVAILABLE" || diff === null || isNaN(diff)) {
+    return null;
+  }
+  const absDiff = Math.abs(diff);
+  const rounded = precision === 0 ? Math.round(absDiff) : Number(absDiff.toFixed(precision));
+  if (rounded === 0 || absDiff < 0.0001) {
+    return "flat";
+  }
+  return diff > 0 ? "up" : "down";
+}
+
+/**
+ * Resolves health sentiment (isImprovement: true/false/null).
+ * Higher is better (e.g. requests): diff > 0 => true
+ * Lower is better (e.g. error rate, latency, failures): diff < 0 => true
+ */
+export function resolveIsImprovement(
+  diff: number | null,
+  baseline: BaselineStatus,
+  lowerIsBetter: boolean,
+  precision: number = 1
+): boolean | null {
+  if (baseline !== "AVAILABLE" || diff === null || isNaN(diff)) {
+    return null;
+  }
+  const absDiff = Math.abs(diff);
+  const rounded = precision === 0 ? Math.round(absDiff) : Number(absDiff.toFixed(precision));
+  if (rounded === 0 || absDiff < 0.0001) {
+    return null;
+  }
+  return lowerIsBetter ? diff < 0 : diff > 0;
+}
+
