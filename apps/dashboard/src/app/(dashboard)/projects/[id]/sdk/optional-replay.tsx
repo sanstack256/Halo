@@ -18,24 +18,24 @@ replay.start();`;
                 type="button"
                 onClick={() => setIsOpen(!isOpen)}
                 aria-expanded={isOpen}
-                className="flex items-center gap-2 text-xs font-medium text-secondary transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
+                className="flex items-center gap-2 text-sm font-medium text-secondary transition-colors hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
             >
                 <span>Optional: Browser replay</span>
                 <ChevronDown
-                    className={`h-3.5 w-3.5 transition-transform duration-200 ${
+                    className={`h-4 w-4 transition-transform duration-200 ${
                         isOpen ? "rotate-180" : ""
                     }`}
                 />
             </button>
 
             {isOpen && (
-                <div className="mt-3 space-y-4 rounded-lg border border-border/70 bg-surface/50 p-4">
-                    <p className="text-xs text-secondary leading-normal">
+                <div className="mt-3 space-y-4 rounded-lg border border-border/70 bg-surface/50 p-5">
+                    <p className="text-sm text-secondary leading-normal">
                         Capture the browser session leading up to a frontend error.
                     </p>
 
-                    <div className="space-y-1.5">
-                        <span className="text-[11px] font-medium text-muted uppercase tracking-wider">
+                    <div className="space-y-2">
+                        <span className="text-xs font-semibold text-muted uppercase tracking-wider">
                             Install
                         </span>
                         <CodeSnippet
@@ -44,8 +44,8 @@ replay.start();`;
                         />
                     </div>
 
-                    <div className="space-y-1.5">
-                        <span className="text-[11px] font-medium text-muted uppercase tracking-wider">
+                    <div className="space-y-2">
+                        <span className="text-xs font-semibold text-muted uppercase tracking-wider">
                             Initialize
                         </span>
                         <CodeSnippet

@@ -1,6 +1,6 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { ArrowLeft, ArrowRight, Check } from "lucide-react";
+import { ArrowLeft, ArrowRight } from "lucide-react";
 
 import { getProject } from "@/actions/project";
 import { getApiKeys } from "@/actions/api-key";
@@ -48,35 +48,35 @@ const halo = new Halo({
             <div>
                 <Link
                     href={`/projects/${project.id}`}
-                    className="inline-flex items-center gap-1.5 text-xs font-medium text-secondary transition-colors hover:text-primary"
+                    className="inline-flex items-center gap-2 text-sm font-medium text-secondary transition-colors hover:text-primary"
                 >
-                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <ArrowLeft className="h-4 w-4" />
                     <span>Back to project</span>
                 </Link>
             </div>
 
             {/* Header with Project Context */}
             <div className="mt-8 mb-8">
-                <p className="text-xs font-medium text-muted lowercase">
+                <p className="text-sm font-medium text-muted lowercase">
                     {project.name}
                 </p>
-                <h1 className="mt-1.5 text-2xl font-semibold tracking-tight text-primary">
+                <h1 className="mt-1.5 text-3xl font-semibold tracking-tight text-primary">
                     Install Halo SDK
                 </h1>
-                <p className="mt-1 text-sm text-secondary">
+                <p className="mt-1.5 text-base text-secondary">
                     Send your first telemetry to Halo.
                 </p>
             </div>
 
             {/* Setup Flow — 4 Primary Steps */}
-            <div className="space-y-7">
+            <div className="space-y-8">
                 {/* Step 01: Install */}
                 <div className="space-y-3">
                     <div className="flex items-baseline gap-3">
-                        <span className="font-mono text-xs font-semibold text-muted">01</span>
+                        <span className="font-mono text-sm font-semibold text-muted">01</span>
                         <div>
-                            <h2 className="text-sm font-semibold text-primary">Install</h2>
-                            <p className="mt-0.5 text-xs text-secondary">
+                            <h2 className="text-base font-semibold text-primary">Install</h2>
+                            <p className="mt-0.5 text-sm text-secondary">
                                 Add the Halo SDK to your application.
                             </p>
                         </div>
@@ -87,10 +87,10 @@ const halo = new Halo({
                 {/* Step 02: Configure */}
                 <div className="space-y-3">
                     <div className="flex items-baseline gap-3">
-                        <span className="font-mono text-xs font-semibold text-muted">02</span>
+                        <span className="font-mono text-sm font-semibold text-muted">02</span>
                         <div>
-                            <h2 className="text-sm font-semibold text-primary">Configure</h2>
-                            <p className="mt-0.5 text-xs text-secondary">
+                            <h2 className="text-base font-semibold text-primary">Configure</h2>
+                            <p className="mt-0.5 text-sm text-secondary">
                                 Add your project&apos;s API key to your environment.
                             </p>
                         </div>
@@ -101,10 +101,10 @@ const halo = new Halo({
                 {/* Step 03: Initialize */}
                 <div className="space-y-3">
                     <div className="flex items-baseline gap-3">
-                        <span className="font-mono text-xs font-semibold text-muted">03</span>
+                        <span className="font-mono text-sm font-semibold text-muted">03</span>
                         <div>
-                            <h2 className="text-sm font-semibold text-primary">Initialize</h2>
-                            <p className="mt-0.5 text-xs text-secondary">
+                            <h2 className="text-base font-semibold text-primary">Initialize</h2>
+                            <p className="mt-0.5 text-sm text-secondary">
                                 Create a Halo client in your application.
                             </p>
                         </div>
@@ -115,16 +115,16 @@ const halo = new Halo({
                 {/* Step 04: Send an event */}
                 <div className="space-y-3">
                     <div className="flex items-baseline gap-3">
-                        <span className="font-mono text-xs font-semibold text-muted">04</span>
+                        <span className="font-mono text-sm font-semibold text-muted">04</span>
                         <div>
-                            <h2 className="text-sm font-semibold text-primary">Send your first event</h2>
-                            <p className="mt-0.5 text-xs text-secondary">
+                            <h2 className="text-base font-semibold text-primary">Send your first event</h2>
+                            <p className="mt-0.5 text-sm text-secondary">
                                 Verify that Halo is receiving telemetry.
                             </p>
                         </div>
                     </div>
                     <CodeSnippet code={eventCode} language="typescript" />
-                    <p className="text-xs text-secondary leading-normal">
+                    <p className="text-sm text-secondary leading-normal">
                         Once Halo receives the event, it will appear in your project telemetry.
                     </p>
                 </div>
@@ -137,28 +137,27 @@ const halo = new Halo({
             <div className="border-t border-border pt-6 mt-8">
                 <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                     <div>
-                        <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-medium text-primary">
+                        <div className="flex items-center gap-2.5">
+                            <h3 className="text-base font-semibold text-primary">
                                 SDK setup complete?
                             </h3>
                             {hasEvents && (
-                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-[#35d08a]">
-                                    <Check className="h-3 w-3" />
-                                    Telemetry received ✓
+                                <span className="inline-flex items-center rounded-full bg-emerald-500/10 px-2.5 py-0.5 text-xs font-medium text-[#35d08a]">
+                                    Telemetry received
                                 </span>
                             )}
                         </div>
-                        <p className="mt-1 text-xs text-secondary">
+                        <p className="mt-1 text-sm text-secondary">
                             Send an event from your application and check the project for new telemetry.
                         </p>
                     </div>
 
                     <Link
                         href={`/projects/${project.id}`}
-                        className="inline-flex items-center gap-1.5 text-xs font-medium text-secondary hover:text-accent transition-colors self-start sm:self-auto group"
+                        className="inline-flex items-center gap-1.5 text-sm font-medium text-secondary hover:text-accent transition-colors self-start sm:self-auto group"
                     >
                         <span>Back to project</span>
-                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                        <ArrowRight className="h-4 w-4 transition-transform group-hover:translate-x-0.5" />
                     </Link>
                 </div>
             </div>

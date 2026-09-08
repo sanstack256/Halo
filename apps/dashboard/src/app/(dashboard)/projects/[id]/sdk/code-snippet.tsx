@@ -126,14 +126,14 @@ export function CodeSnippet({
 
     return (
         <div className="group relative overflow-hidden rounded-lg border border-border bg-[#04060a] transition-colors hover:border-border-strong">
-            <pre className="overflow-x-auto px-4 py-3 font-mono text-xs leading-relaxed text-secondary select-all">
+            <pre className="overflow-x-auto px-4.5 py-3.5 font-mono text-[13.5px] leading-relaxed text-secondary select-all">
                 <code>{renderHighlightedTokens(code, language)}</code>
             </pre>
 
             <button
                 type="button"
                 onClick={handleCopy}
-                className="absolute right-2.5 top-2.5 flex items-center gap-1.5 rounded-md border border-border bg-surface px-2 py-1 text-[11px] font-medium text-secondary transition-all hover:bg-surface-elevated hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
+                className="absolute right-3 top-3 flex items-center gap-1.5 rounded-md border border-border bg-surface px-2.5 py-1.5 text-xs font-medium text-secondary transition-all hover:bg-surface-elevated hover:text-primary focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
                 aria-label="Copy code to clipboard"
             >
                 {copied ? (
