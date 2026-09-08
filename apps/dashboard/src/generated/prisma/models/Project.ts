@@ -37,6 +37,13 @@ export type ProjectMinAggregateOutputType = {
   githubToken: string | null
   githubDefaultBranch: string | null
   githubInstallationId: string | null
+  aiProvider: $Enums.AiProvider | null
+  aiEncryptedKey: string | null
+  aiKeyPrefix: string | null
+  aiKeySuffix: string | null
+  aiModel: string | null
+  aiStatus: $Enums.AiConnectionStatus | null
+  aiLastTestedAt: Date | null
 }
 
 export type ProjectMaxAggregateOutputType = {
@@ -52,6 +59,13 @@ export type ProjectMaxAggregateOutputType = {
   githubToken: string | null
   githubDefaultBranch: string | null
   githubInstallationId: string | null
+  aiProvider: $Enums.AiProvider | null
+  aiEncryptedKey: string | null
+  aiKeyPrefix: string | null
+  aiKeySuffix: string | null
+  aiModel: string | null
+  aiStatus: $Enums.AiConnectionStatus | null
+  aiLastTestedAt: Date | null
 }
 
 export type ProjectCountAggregateOutputType = {
@@ -68,6 +82,13 @@ export type ProjectCountAggregateOutputType = {
   githubToken: number
   githubDefaultBranch: number
   githubInstallationId: number
+  aiProvider: number
+  aiEncryptedKey: number
+  aiKeyPrefix: number
+  aiKeySuffix: number
+  aiModel: number
+  aiStatus: number
+  aiLastTestedAt: number
   _all: number
 }
 
@@ -85,6 +106,13 @@ export type ProjectMinAggregateInputType = {
   githubToken?: true
   githubDefaultBranch?: true
   githubInstallationId?: true
+  aiProvider?: true
+  aiEncryptedKey?: true
+  aiKeyPrefix?: true
+  aiKeySuffix?: true
+  aiModel?: true
+  aiStatus?: true
+  aiLastTestedAt?: true
 }
 
 export type ProjectMaxAggregateInputType = {
@@ -100,6 +128,13 @@ export type ProjectMaxAggregateInputType = {
   githubToken?: true
   githubDefaultBranch?: true
   githubInstallationId?: true
+  aiProvider?: true
+  aiEncryptedKey?: true
+  aiKeyPrefix?: true
+  aiKeySuffix?: true
+  aiModel?: true
+  aiStatus?: true
+  aiLastTestedAt?: true
 }
 
 export type ProjectCountAggregateInputType = {
@@ -116,6 +151,13 @@ export type ProjectCountAggregateInputType = {
   githubToken?: true
   githubDefaultBranch?: true
   githubInstallationId?: true
+  aiProvider?: true
+  aiEncryptedKey?: true
+  aiKeyPrefix?: true
+  aiKeySuffix?: true
+  aiModel?: true
+  aiStatus?: true
+  aiLastTestedAt?: true
   _all?: true
 }
 
@@ -205,6 +247,13 @@ export type ProjectGroupByOutputType = {
   githubToken: string | null
   githubDefaultBranch: string | null
   githubInstallationId: string | null
+  aiProvider: $Enums.AiProvider
+  aiEncryptedKey: string | null
+  aiKeyPrefix: string | null
+  aiKeySuffix: string | null
+  aiModel: string | null
+  aiStatus: $Enums.AiConnectionStatus
+  aiLastTestedAt: Date | null
   _count: ProjectCountAggregateOutputType | null
   _min: ProjectMinAggregateOutputType | null
   _max: ProjectMaxAggregateOutputType | null
@@ -242,6 +291,13 @@ export type ProjectWhereInput = {
   githubToken?: Prisma.StringNullableFilter<"Project"> | string | null
   githubDefaultBranch?: Prisma.StringNullableFilter<"Project"> | string | null
   githubInstallationId?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiProvider?: Prisma.EnumAiProviderFilter<"Project"> | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiKeyPrefix?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiKeySuffix?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiModel?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFilter<"Project"> | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.DateTimeNullableFilter<"Project"> | Date | string | null
   apiKeys?: Prisma.ApiKeyListRelationFilter
   environments?: Prisma.EnvironmentListRelationFilter
   events?: Prisma.EventListRelationFilter
@@ -268,6 +324,13 @@ export type ProjectOrderByWithRelationInput = {
   githubToken?: Prisma.SortOrderInput | Prisma.SortOrder
   githubDefaultBranch?: Prisma.SortOrderInput | Prisma.SortOrder
   githubInstallationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiProvider?: Prisma.SortOrder
+  aiEncryptedKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiKeyPrefix?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiKeySuffix?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiModel?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiStatus?: Prisma.SortOrder
+  aiLastTestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   apiKeys?: Prisma.ApiKeyOrderByRelationAggregateInput
   environments?: Prisma.EnvironmentOrderByRelationAggregateInput
   events?: Prisma.EventOrderByRelationAggregateInput
@@ -298,6 +361,13 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   githubToken?: Prisma.StringNullableFilter<"Project"> | string | null
   githubDefaultBranch?: Prisma.StringNullableFilter<"Project"> | string | null
   githubInstallationId?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiProvider?: Prisma.EnumAiProviderFilter<"Project"> | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiKeyPrefix?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiKeySuffix?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiModel?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFilter<"Project"> | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.DateTimeNullableFilter<"Project"> | Date | string | null
   apiKeys?: Prisma.ApiKeyListRelationFilter
   environments?: Prisma.EnvironmentListRelationFilter
   events?: Prisma.EventListRelationFilter
@@ -324,6 +394,13 @@ export type ProjectOrderByWithAggregationInput = {
   githubToken?: Prisma.SortOrderInput | Prisma.SortOrder
   githubDefaultBranch?: Prisma.SortOrderInput | Prisma.SortOrder
   githubInstallationId?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiProvider?: Prisma.SortOrder
+  aiEncryptedKey?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiKeyPrefix?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiKeySuffix?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiModel?: Prisma.SortOrderInput | Prisma.SortOrder
+  aiStatus?: Prisma.SortOrder
+  aiLastTestedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   _count?: Prisma.ProjectCountOrderByAggregateInput
   _max?: Prisma.ProjectMaxOrderByAggregateInput
   _min?: Prisma.ProjectMinOrderByAggregateInput
@@ -346,6 +423,13 @@ export type ProjectScalarWhereWithAggregatesInput = {
   githubToken?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
   githubDefaultBranch?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
   githubInstallationId?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
+  aiProvider?: Prisma.EnumAiProviderWithAggregatesFilter<"Project"> | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
+  aiKeyPrefix?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
+  aiKeySuffix?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
+  aiModel?: Prisma.StringNullableWithAggregatesFilter<"Project"> | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusWithAggregatesFilter<"Project"> | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"Project"> | Date | string | null
 }
 
 export type ProjectCreateInput = {
@@ -361,6 +445,13 @@ export type ProjectCreateInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
@@ -387,6 +478,13 @@ export type ProjectUncheckedCreateInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
@@ -411,6 +509,13 @@ export type ProjectUpdateInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
@@ -437,6 +542,13 @@ export type ProjectUncheckedUpdateInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -462,6 +574,13 @@ export type ProjectCreateManyInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
 }
 
 export type ProjectUpdateManyMutationInput = {
@@ -477,6 +596,13 @@ export type ProjectUpdateManyMutationInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ProjectUncheckedUpdateManyInput = {
@@ -493,6 +619,13 @@ export type ProjectUncheckedUpdateManyInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 export type ProjectListRelationFilter = {
@@ -524,6 +657,13 @@ export type ProjectCountOrderByAggregateInput = {
   githubToken?: Prisma.SortOrder
   githubDefaultBranch?: Prisma.SortOrder
   githubInstallationId?: Prisma.SortOrder
+  aiProvider?: Prisma.SortOrder
+  aiEncryptedKey?: Prisma.SortOrder
+  aiKeyPrefix?: Prisma.SortOrder
+  aiKeySuffix?: Prisma.SortOrder
+  aiModel?: Prisma.SortOrder
+  aiStatus?: Prisma.SortOrder
+  aiLastTestedAt?: Prisma.SortOrder
 }
 
 export type ProjectMaxOrderByAggregateInput = {
@@ -539,6 +679,13 @@ export type ProjectMaxOrderByAggregateInput = {
   githubToken?: Prisma.SortOrder
   githubDefaultBranch?: Prisma.SortOrder
   githubInstallationId?: Prisma.SortOrder
+  aiProvider?: Prisma.SortOrder
+  aiEncryptedKey?: Prisma.SortOrder
+  aiKeyPrefix?: Prisma.SortOrder
+  aiKeySuffix?: Prisma.SortOrder
+  aiModel?: Prisma.SortOrder
+  aiStatus?: Prisma.SortOrder
+  aiLastTestedAt?: Prisma.SortOrder
 }
 
 export type ProjectMinOrderByAggregateInput = {
@@ -554,6 +701,13 @@ export type ProjectMinOrderByAggregateInput = {
   githubToken?: Prisma.SortOrder
   githubDefaultBranch?: Prisma.SortOrder
   githubInstallationId?: Prisma.SortOrder
+  aiProvider?: Prisma.SortOrder
+  aiEncryptedKey?: Prisma.SortOrder
+  aiKeyPrefix?: Prisma.SortOrder
+  aiKeySuffix?: Prisma.SortOrder
+  aiModel?: Prisma.SortOrder
+  aiStatus?: Prisma.SortOrder
+  aiLastTestedAt?: Prisma.SortOrder
 }
 
 export type ProjectScalarRelationFilter = {
@@ -605,6 +759,18 @@ export type ProjectUncheckedUpdateManyWithoutOrganizationNestedInput = {
 
 export type NullableStringFieldUpdateOperationsInput = {
   set?: string | null
+}
+
+export type EnumAiProviderFieldUpdateOperationsInput = {
+  set?: $Enums.AiProvider
+}
+
+export type EnumAiConnectionStatusFieldUpdateOperationsInput = {
+  set?: $Enums.AiConnectionStatus
+}
+
+export type NullableDateTimeFieldUpdateOperationsInput = {
+  set?: Date | string | null
 }
 
 export type ProjectCreateNestedOneWithoutEnvironmentsInput = {
@@ -746,6 +912,13 @@ export type ProjectCreateWithoutOrganizationInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
@@ -770,6 +943,13 @@ export type ProjectUncheckedCreateWithoutOrganizationInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
@@ -824,6 +1004,13 @@ export type ProjectScalarWhereInput = {
   githubToken?: Prisma.StringNullableFilter<"Project"> | string | null
   githubDefaultBranch?: Prisma.StringNullableFilter<"Project"> | string | null
   githubInstallationId?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiProvider?: Prisma.EnumAiProviderFilter<"Project"> | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiKeyPrefix?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiKeySuffix?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiModel?: Prisma.StringNullableFilter<"Project"> | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFilter<"Project"> | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.DateTimeNullableFilter<"Project"> | Date | string | null
 }
 
 export type ProjectCreateWithoutEnvironmentsInput = {
@@ -839,6 +1026,13 @@ export type ProjectCreateWithoutEnvironmentsInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
@@ -864,6 +1058,13 @@ export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
@@ -903,6 +1104,13 @@ export type ProjectUpdateWithoutEnvironmentsInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
@@ -928,6 +1136,13 @@ export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
@@ -951,6 +1166,13 @@ export type ProjectCreateWithoutApiKeysInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
@@ -976,6 +1198,13 @@ export type ProjectUncheckedCreateWithoutApiKeysInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
@@ -1015,6 +1244,13 @@ export type ProjectUpdateWithoutApiKeysInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
@@ -1040,6 +1276,13 @@ export type ProjectUncheckedUpdateWithoutApiKeysInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
@@ -1063,6 +1306,13 @@ export type ProjectCreateWithoutEventsInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
@@ -1088,6 +1338,13 @@ export type ProjectUncheckedCreateWithoutEventsInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
@@ -1127,6 +1384,13 @@ export type ProjectUpdateWithoutEventsInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
@@ -1152,6 +1416,13 @@ export type ProjectUncheckedUpdateWithoutEventsInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
@@ -1175,6 +1446,13 @@ export type ProjectCreateWithoutTelemetrySessionsInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
@@ -1200,6 +1478,13 @@ export type ProjectUncheckedCreateWithoutTelemetrySessionsInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
@@ -1239,6 +1524,13 @@ export type ProjectUpdateWithoutTelemetrySessionsInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
@@ -1264,6 +1556,13 @@ export type ProjectUncheckedUpdateWithoutTelemetrySessionsInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -1287,6 +1586,13 @@ export type ProjectCreateWithoutReleasesInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
@@ -1312,6 +1618,13 @@ export type ProjectUncheckedCreateWithoutReleasesInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
@@ -1351,6 +1664,13 @@ export type ProjectUpdateWithoutReleasesInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
@@ -1376,6 +1696,13 @@ export type ProjectUncheckedUpdateWithoutReleasesInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -1399,6 +1726,13 @@ export type ProjectCreateWithoutIssuesInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
@@ -1424,6 +1758,13 @@ export type ProjectUncheckedCreateWithoutIssuesInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
@@ -1463,6 +1804,13 @@ export type ProjectUpdateWithoutIssuesInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
@@ -1488,6 +1836,13 @@ export type ProjectUncheckedUpdateWithoutIssuesInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -1511,6 +1866,13 @@ export type ProjectCreateWithoutReplaySessionsInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
@@ -1536,6 +1898,13 @@ export type ProjectUncheckedCreateWithoutReplaySessionsInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
@@ -1575,6 +1944,13 @@ export type ProjectUpdateWithoutReplaySessionsInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
@@ -1600,6 +1976,13 @@ export type ProjectUncheckedUpdateWithoutReplaySessionsInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -1623,6 +2006,13 @@ export type ProjectCreateWithoutMonitorsInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
@@ -1648,6 +2038,13 @@ export type ProjectUncheckedCreateWithoutMonitorsInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
@@ -1687,6 +2084,13 @@ export type ProjectUpdateWithoutMonitorsInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
@@ -1712,6 +2116,13 @@ export type ProjectUncheckedUpdateWithoutMonitorsInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -1735,6 +2146,13 @@ export type ProjectCreateWithoutInvestigationsInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
   events?: Prisma.EventCreateNestedManyWithoutProjectInput
@@ -1760,6 +2178,13 @@ export type ProjectUncheckedCreateWithoutInvestigationsInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
   environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
   events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
@@ -1799,6 +2224,13 @@ export type ProjectUpdateWithoutInvestigationsInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
@@ -1824,6 +2256,13 @@ export type ProjectUncheckedUpdateWithoutInvestigationsInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -1847,6 +2286,13 @@ export type ProjectCreateManyOrganizationInput = {
   githubToken?: string | null
   githubDefaultBranch?: string | null
   githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
 }
 
 export type ProjectUpdateWithoutOrganizationInput = {
@@ -1862,6 +2308,13 @@ export type ProjectUpdateWithoutOrganizationInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUpdateManyWithoutProjectNestedInput
@@ -1886,6 +2339,13 @@ export type ProjectUncheckedUpdateWithoutOrganizationInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
   environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
   events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
@@ -1910,6 +2370,13 @@ export type ProjectUncheckedUpdateManyWithoutOrganizationInput = {
   githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
 }
 
 
@@ -2029,6 +2496,13 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   githubToken?: boolean
   githubDefaultBranch?: boolean
   githubInstallationId?: boolean
+  aiProvider?: boolean
+  aiEncryptedKey?: boolean
+  aiKeyPrefix?: boolean
+  aiKeySuffix?: boolean
+  aiModel?: boolean
+  aiStatus?: boolean
+  aiLastTestedAt?: boolean
   apiKeys?: boolean | Prisma.Project$apiKeysArgs<ExtArgs>
   environments?: boolean | Prisma.Project$environmentsArgs<ExtArgs>
   events?: boolean | Prisma.Project$eventsArgs<ExtArgs>
@@ -2056,6 +2530,13 @@ export type ProjectSelectCreateManyAndReturn<ExtArgs extends runtime.Types.Exten
   githubToken?: boolean
   githubDefaultBranch?: boolean
   githubInstallationId?: boolean
+  aiProvider?: boolean
+  aiEncryptedKey?: boolean
+  aiKeyPrefix?: boolean
+  aiKeySuffix?: boolean
+  aiModel?: boolean
+  aiStatus?: boolean
+  aiLastTestedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -2073,6 +2554,13 @@ export type ProjectSelectUpdateManyAndReturn<ExtArgs extends runtime.Types.Exten
   githubToken?: boolean
   githubDefaultBranch?: boolean
   githubInstallationId?: boolean
+  aiProvider?: boolean
+  aiEncryptedKey?: boolean
+  aiKeyPrefix?: boolean
+  aiKeySuffix?: boolean
+  aiModel?: boolean
+  aiStatus?: boolean
+  aiLastTestedAt?: boolean
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -2090,9 +2578,16 @@ export type ProjectSelectScalar = {
   githubToken?: boolean
   githubDefaultBranch?: boolean
   githubInstallationId?: boolean
+  aiProvider?: boolean
+  aiEncryptedKey?: boolean
+  aiKeyPrefix?: boolean
+  aiKeySuffix?: boolean
+  aiModel?: boolean
+  aiStatus?: boolean
+  aiLastTestedAt?: boolean
 }
 
-export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "organizationId" | "createdAt" | "updatedAt" | "description" | "replayConfig" | "githubRepoOwner" | "githubRepoName" | "githubToken" | "githubDefaultBranch" | "githubInstallationId", ExtArgs["result"]["project"]>
+export type ProjectOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "name" | "slug" | "organizationId" | "createdAt" | "updatedAt" | "description" | "replayConfig" | "githubRepoOwner" | "githubRepoName" | "githubToken" | "githubDefaultBranch" | "githubInstallationId" | "aiProvider" | "aiEncryptedKey" | "aiKeyPrefix" | "aiKeySuffix" | "aiModel" | "aiStatus" | "aiLastTestedAt", ExtArgs["result"]["project"]>
 export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   apiKeys?: boolean | Prisma.Project$apiKeysArgs<ExtArgs>
   environments?: boolean | Prisma.Project$environmentsArgs<ExtArgs>
@@ -2141,6 +2636,13 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     githubToken: string | null
     githubDefaultBranch: string | null
     githubInstallationId: string | null
+    aiProvider: $Enums.AiProvider
+    aiEncryptedKey: string | null
+    aiKeyPrefix: string | null
+    aiKeySuffix: string | null
+    aiModel: string | null
+    aiStatus: $Enums.AiConnectionStatus
+    aiLastTestedAt: Date | null
   }, ExtArgs["result"]["project"]>
   composites: {}
 }
@@ -2587,6 +3089,13 @@ export interface ProjectFieldRefs {
   readonly githubToken: Prisma.FieldRef<"Project", 'String'>
   readonly githubDefaultBranch: Prisma.FieldRef<"Project", 'String'>
   readonly githubInstallationId: Prisma.FieldRef<"Project", 'String'>
+  readonly aiProvider: Prisma.FieldRef<"Project", 'AiProvider'>
+  readonly aiEncryptedKey: Prisma.FieldRef<"Project", 'String'>
+  readonly aiKeyPrefix: Prisma.FieldRef<"Project", 'String'>
+  readonly aiKeySuffix: Prisma.FieldRef<"Project", 'String'>
+  readonly aiModel: Prisma.FieldRef<"Project", 'String'>
+  readonly aiStatus: Prisma.FieldRef<"Project", 'AiConnectionStatus'>
+  readonly aiLastTestedAt: Prisma.FieldRef<"Project", 'DateTime'>
 }
     
 

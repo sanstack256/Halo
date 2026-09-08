@@ -126,3 +126,21 @@ export const InvestigationStatus = {
 } as const
 
 export type InvestigationStatus = (typeof InvestigationStatus)[keyof typeof InvestigationStatus]
+
+
+export const AiProvider = {
+  HALO_MANAGED: 'HALO_MANAGED',
+  GEMINI: 'GEMINI',
+  OPENAI: 'OPENAI'
+} as const
+
+export type AiProvider = (typeof AiProvider)[keyof typeof AiProvider]
+
+
+export const AiConnectionStatus = {
+  NOT_CONFIGURED: 'NOT_CONFIGURED',
+  CONNECTED: 'CONNECTED',
+  FAILED: 'FAILED'
+} as const
+
+export type AiConnectionStatus = (typeof AiConnectionStatus)[keyof typeof AiConnectionStatus]

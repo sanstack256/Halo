@@ -83,6 +83,11 @@ import { parseStackTrace } from "@/lib/investigation/runtime/stack-parser";
 import type { SourceContext } from "@/lib/investigation/runtime/types";
 import { getServerTimezone } from "@/lib/timezone-server";
 import { formatDeterministicDateTime, formatDeterministicTime, formatDeterministicDate, getTimezoneAbbr } from "@/lib/date-format";
+import { buildCanonicalEvidenceSnapshot } from "@/lib/investigation/evidence-snapshot";
+import { generateEvidenceBoundRecommendation, type ValidatedRecommendationResult } from "@/lib/investigation/recommendation-engine";
+import { getProjectRecommendationModel } from "@/actions/project-ai";
+import { detectAnchorRuntimeOrigin } from "@/lib/investigation/interpreter";
+import { buildCallChains } from "@/lib/investigation/runtime/call-chain";
 
 export default async function InvestigationPage({
     params,
@@ -324,6 +329,64 @@ export default async function InvestigationPage({
             });
         }
 
+        // Build Canonical Evidence Snapshot (Single Collection source-of-truth)
+        const snapshot = buildCanonicalEvidenceSnapshot({
+            tenant: { projectId: id, environment },
+            scope: {
+                anchorEventId: incidentAnchorId,
+                anchorTimestamp: incidentAnchorTimestamp,
+                issueId,
+                monitorId,
+                alertId,
+                release: release || releaseVersion || releaseId,
+                interval:
+                    intervalStart || intervalTime
+                        ? {
+                              start: new Date(intervalStart || intervalTime!),
+                              end: intervalEnd ? new Date(intervalEnd) : new Date(),
+                          }
+                        : undefined,
+                service,
+            },
+            rawEvidence: investigation.evidence,
+            investigation,
+            runtime: {
+                anchorError,
+                primaryFailingFrame,
+                callChain: primaryFailingFrame
+                    ? buildCallChains([primaryFailingFrame], resolvedSourceContext?.failingExpression).applicationCallChain
+                    : [],
+                failingExpression: resolvedSourceContext?.failingExpression,
+                failingStatement: resolvedSourceContext?.failingStatement,
+                containingFunction: resolvedSourceContext?.containingFunction,
+                runtimeOrigin: anchorError ? detectAnchorRuntimeOrigin(anchorError) : "unknown",
+            },
+            source: resolvedSourceContext,
+            replay: resolvedReplay?.replaySession
+                ? {
+                      sessionId: resolvedReplay.replaySession.sessionId,
+                      url: resolvedReplay.replaySession.url,
+                      browser: resolvedReplay.replaySession.browser,
+                      os: resolvedReplay.replaySession.os,
+                      viewport: {
+                          width: resolvedReplay.replaySession.viewportWidth,
+                          height: resolvedReplay.replaySession.viewportHeight,
+                      },
+                      totalDurationMs: resolvedReplay.replaySession.totalDurationMs,
+                      errorAt: resolvedReplay.replaySession.errorAt,
+                  }
+                : undefined,
+        });
+
+        // Resolve project's configured AI recommendation model (Halo Managed, Gemini BYOK, or OpenAI BYOK)
+        const customModel = await getProjectRecommendationModel(id);
+
+        // Run Evidence-Bound Recommendation Engine
+        const llmRecommendation = await generateEvidenceBoundRecommendation({
+            snapshot,
+            customModel,
+        });
+
         return (
             <InvestigationView
                 investigation={investigation}
@@ -339,6 +402,7 @@ export default async function InvestigationPage({
                 intervalContext={intervalContext}
                 releaseContext={releaseContext}
                 userTimezone={userTimezone}
+                llmRecommendation={llmRecommendation}
             />
         );
     } catch (error) {
@@ -370,6 +434,7 @@ function InvestigationView({
     intervalContext,
     releaseContext,
     userTimezone = "UTC",
+    llmRecommendation,
 }: {
     investigation: Investigation;
     resolvedReplay: ResolvedOccurrenceReplay | null;
@@ -453,6 +518,7 @@ function InvestigationView({
         project: { id: string; name: string };
     } | null;
     userTimezone?: string;
+    llmRecommendation?: ValidatedRecommendationResult;
 }) {
     const {
         status,
@@ -1386,7 +1452,10 @@ function InvestigationView({
             </section>
 
             {/* G. RECOMMENDATIONS (ACTIONS) */}
-            <RecommendationPlanView plan={interpreted.recommendations} />
+            <RecommendationPlanView
+                plan={interpreted.recommendations}
+                llmResult={llmRecommendation}
+            />
         </div>
     );
 }

@@ -1830,7 +1830,14 @@ export const ProjectScalarFieldEnum = {
   githubRepoName: 'githubRepoName',
   githubToken: 'githubToken',
   githubDefaultBranch: 'githubDefaultBranch',
-  githubInstallationId: 'githubInstallationId'
+  githubInstallationId: 'githubInstallationId',
+  aiProvider: 'aiProvider',
+  aiEncryptedKey: 'aiEncryptedKey',
+  aiKeyPrefix: 'aiKeyPrefix',
+  aiKeySuffix: 'aiKeySuffix',
+  aiModel: 'aiModel',
+  aiStatus: 'aiStatus',
+  aiLastTestedAt: 'aiLastTestedAt'
 } as const
 
 export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]
@@ -2236,6 +2243,34 @@ export type JsonFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'J
  * Reference to a field of type 'QueryMode'
  */
 export type EnumQueryModeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'QueryMode'>
+    
+
+
+/**
+ * Reference to a field of type 'AiProvider'
+ */
+export type EnumAiProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AiProvider'>
+    
+
+
+/**
+ * Reference to a field of type 'AiProvider[]'
+ */
+export type ListEnumAiProviderFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AiProvider[]'>
+    
+
+
+/**
+ * Reference to a field of type 'AiConnectionStatus'
+ */
+export type EnumAiConnectionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AiConnectionStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'AiConnectionStatus[]'
+ */
+export type ListEnumAiConnectionStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'AiConnectionStatus[]'>
     
 
 

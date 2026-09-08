@@ -1,6 +1,8 @@
 import { getProject } from "@/actions/project";
 import { getProjectGitHubConfig } from "@/actions/project-github";
+import { getProjectAiConfig } from "@/actions/project-ai";
 import { GitHubSettingsCard } from "./github-settings-card";
+import { AiSettingsCard } from "./ai-settings-card";
 import { notFound } from "next/navigation";
 import { FolderGit2, Settings } from "lucide-react";
 
@@ -16,7 +18,10 @@ export default async function ProjectSettingsPage({ params }: ProjectSettingsPag
         notFound();
     }
 
-    const githubConfig = await getProjectGitHubConfig(id);
+    const [githubConfig, aiConfig] = await Promise.all([
+        getProjectGitHubConfig(id),
+        getProjectAiConfig(id),
+    ]);
 
     return (
         <div className="space-y-8 pb-16 max-w-5xl">
@@ -64,6 +69,9 @@ export default async function ProjectSettingsPage({ params }: ProjectSettingsPag
                     </div>
                 </div>
             </div>
+
+            {/* AI Recommendation Engine */}
+            <AiSettingsCard projectId={project.id} initialConfig={aiConfig} />
 
             {/* GitHub Integration */}
             <GitHubSettingsCard projectId={project.id} initialConfig={githubConfig} />

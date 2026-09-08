@@ -32,6 +32,13 @@ model Project {
   githubToken         String?
   githubDefaultBranch String?            @default("main")
   githubInstallationId String?
+  aiProvider          AiProvider         @default(HALO_MANAGED)
+  aiEncryptedKey      String?
+  aiKeyPrefix         String?
+  aiKeySuffix         String?
+  aiModel             String?
+  aiStatus            AiConnectionStatus @default(NOT_CONFIGURED)
+  aiLastTestedAt      DateTime?
   apiKeys             ApiKey[]
   environments        Environment[]
   events              Event[]
@@ -475,5 +482,17 @@ model Investigation {
   @@index([projectId, createdAt])
   @@index([monitorId])
   @@index([issueId])
+}
+
+enum AiProvider {
+  HALO_MANAGED
+  GEMINI
+  OPENAI
+}
+
+enum AiConnectionStatus {
+  NOT_CONFIGURED
+  CONNECTED
+  FAILED
 }
 

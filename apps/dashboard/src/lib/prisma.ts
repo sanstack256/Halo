@@ -20,6 +20,20 @@ const pool = new Pool({
 
 const adapter = new PrismaPg(pool);
 
+// Invalidate stale cached instance if schema was regenerated while dev server was running
+const cachedClient = global.prisma as any;
+if (
+    cachedClient?._runtimeDataModel &&
+    !cachedClient._runtimeDataModel.models?.Project?.fields?.some((f: any) => f.name === "aiProvider")
+) {
+    try {
+        void global.prisma?.$disconnect();
+    } catch {
+        // ignore
+    }
+    global.prisma = undefined;
+}
+
 export const prisma =
     global.prisma ??
     new PrismaClient({

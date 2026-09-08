@@ -491,10 +491,6 @@ export type ApiKeyUncheckedUpdateManyWithoutEnvironmentNestedInput = {
   deleteMany?: Prisma.ApiKeyScalarWhereInput | Prisma.ApiKeyScalarWhereInput[]
 }
 
-export type NullableDateTimeFieldUpdateOperationsInput = {
-  set?: Date | string | null
-}
-
 export type ApiKeyCreateWithoutProjectInput = {
   id?: string
   name: string

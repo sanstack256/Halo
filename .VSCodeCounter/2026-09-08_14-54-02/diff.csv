@@ -1,0 +1,27 @@
+"filename", "language", "TypeScript", "TypeScript JSX", "MS SQL", "comment", "blank", "total"
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/__tests__/project-ai.test.ts", "TypeScript", 101, 0, 0, 3, 20, 124
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/actions/project-ai.ts", "TypeScript", 353, 0, 0, 32, 49, 434
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/investigations/new/page.tsx", "TypeScript JSX", 0, 63, 0, 3, 3, 69
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/settings/ai-settings-card.tsx", "TypeScript JSX", 0, 441, 0, 12, 26, 479
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/app/(dashboard)/projects/[id]/settings/page.tsx", "TypeScript JSX", 0, 6, 0, 1, 1, 8
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/components/investigation/recommendation-plan-view.tsx", "TypeScript JSX", 0, 198, 0, 1, 4, 203
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/commonInputTypes.ts", "TypeScript", 60, 0, 0, 0, 8, 68
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/enums.ts", "TypeScript", 12, 0, 0, 0, 6, 18
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/prismaNamespace.ts", "TypeScript", 11, 0, 0, 12, 12, 35
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/internal/prismaNamespaceBrowser.ts", "TypeScript", 7, 0, 0, 0, 0, 7
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/ApiKey.ts", "TypeScript", -3, 0, 0, 0, -1, -4
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/generated/prisma/models/Project.ts", "TypeScript", 506, 0, 0, 0, 3, 509
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/crypto.ts", "TypeScript", 60, 0, 0, 14, 13, 87
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/evidence-snapshot.ts", "TypeScript", 248, 0, 0, 44, 38, 330
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/recommendation-engine/__tests__/recommendation-engine.test.ts", "TypeScript", 571, 0, 0, 18, 52, 641
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/recommendation-engine/eligibility-gate.ts", "TypeScript", 110, 0, 0, 18, 12, 140
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/recommendation-engine/engine.ts", "TypeScript", 194, 0, 0, 17, 15, 226
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/recommendation-engine/index.ts", "TypeScript", 7, 0, 0, 0, 1, 8
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/recommendation-engine/output-validator.ts", "TypeScript", 147, 0, 0, 19, 16, 182
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/recommendation-engine/patch-validator.ts", "TypeScript", 188, 0, 0, 24, 26, 238
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/recommendation-engine/prompt-builder.ts", "TypeScript", 188, 0, 0, 8, 5, 201
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/recommendation-engine/provider.ts", "TypeScript", 179, 0, 0, 26, 29, 234
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/recommendation-engine/redaction.ts", "TypeScript", 10, 0, 0, 8, 7, 25
+"/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/recommendation-engine/types.ts", "TypeScript", 156, 0, 0, 26, 26, 208
+"/Users/nssanjeev/Development/Halo/prisma/migrations/20260908_add_project_ai_provider/migration.sql", "MS SQL", 0, 0, 17, 0, 3, 20
+"Total", "-", 3105, 708, 17, 286, 374, 4490

@@ -112,7 +112,14 @@ export const ProjectScalarFieldEnum = {
   githubRepoName: 'githubRepoName',
   githubToken: 'githubToken',
   githubDefaultBranch: 'githubDefaultBranch',
-  githubInstallationId: 'githubInstallationId'
+  githubInstallationId: 'githubInstallationId',
+  aiProvider: 'aiProvider',
+  aiEncryptedKey: 'aiEncryptedKey',
+  aiKeyPrefix: 'aiKeyPrefix',
+  aiKeySuffix: 'aiKeySuffix',
+  aiModel: 'aiModel',
+  aiStatus: 'aiStatus',
+  aiLastTestedAt: 'aiLastTestedAt'
 } as const
 
 export type ProjectScalarFieldEnum = (typeof ProjectScalarFieldEnum)[keyof typeof ProjectScalarFieldEnum]

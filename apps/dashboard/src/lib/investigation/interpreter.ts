@@ -1319,7 +1319,7 @@ function getConfidenceLevel(score: number): "Low" | "Medium" | "High" | "Very Hi
  * - Node.js events → "application exception" (never "browser/client exception")
  * - Browser events → "client-side exception"
  */
-function detectAnchorRuntimeOrigin(
+export function detectAnchorRuntimeOrigin(
     anchorError: Evidence | undefined
 ): "node" | "browser" | "unknown" {
     if (!anchorError) return "unknown";
