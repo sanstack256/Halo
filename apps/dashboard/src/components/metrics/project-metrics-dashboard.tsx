@@ -3,22 +3,22 @@
 import { useTransition } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
 import { RefreshCw, FilterX, Globe, Server, Tag } from "lucide-react";
-import type { ProjectMetricsIntelligence, TimeRangePreset } from "@/lib/metrics/types";
+import type {
+  RedesignedProjectMetricsIntelligence,
+  TimeRangePreset,
+} from "@/lib/metrics/types";
 
-import { EmptyMetricsState } from "./empty-metrics-state";
-import { ProjectHealthSnapshotView } from "./project-health-snapshot";
-import { ErrorBehaviorView } from "./error-behavior-view";
-import { RequestPerformanceView } from "./request-performance-view";
-import { ServiceHealthDistributionView } from "./service-health-distribution";
-import { ReleaseImpactView } from "./release-impact-view";
-import { ErrorConcentrationView } from "./error-concentration-view";
+import { PrimaryTelemetryOverview } from "./primary-telemetry-overview";
+import { ObservedChangesView } from "./observed-changes-view";
+import { FailureConcentrationView } from "./failure-concentration-view";
+import { ServicePerformanceTable } from "./service-performance-table";
+import { ReleaseBehaviorView } from "./release-behavior-view";
 import { UserImpactView } from "./user-impact-view";
-import { TelemetryCoverageView } from "./telemetry-coverage-view";
-import { TemporalAnomaliesView } from "./temporal-anomalies-view";
-import { ProjectTrendsView } from "./project-trends-view";
+import { TelemetryCoverageMatrix } from "./telemetry-coverage-matrix";
+import { ProjectTrendView } from "./project-trend-view";
 
 interface ProjectMetricsDashboardProps {
-  metrics: ProjectMetricsIntelligence;
+  metrics: RedesignedProjectMetricsIntelligence;
 }
 
 const TIME_RANGES: { key: TimeRangePreset; label: string }[] = [
@@ -27,6 +27,7 @@ const TIME_RANGES: { key: TimeRangePreset; label: string }[] = [
   { key: "24h", label: "24 Hours" },
   { key: "7d", label: "7 Days" },
   { key: "30d", label: "30 Days" },
+  { key: "custom", label: "Custom" },
 ];
 
 export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProps) {
@@ -35,7 +36,10 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
   const searchParams = useSearchParams();
   const [isPending, startTransition] = useTransition();
 
-  const currentRange = (searchParams.get("range") as TimeRangePreset) || metrics.filterApplied.timeRange || "24h";
+  const currentRange =
+    (searchParams.get("range") as TimeRangePreset) ||
+    metrics.filterApplied.timeRange ||
+    "24h";
   const currentEnv = searchParams.get("env") || metrics.filterApplied.environment || "ALL";
   const currentService = searchParams.get("service") || metrics.filterApplied.service || "ALL";
   const currentRelease = searchParams.get("release") || metrics.filterApplied.release || "ALL";
@@ -67,19 +71,76 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
   }
 
   const hasActiveCustomFilters =
-    currentEnv !== "ALL" || currentService !== "ALL" || currentRelease !== "ALL" || currentRange !== "24h";
+    currentEnv !== "ALL" ||
+    currentService !== "ALL" ||
+    currentRelease !== "ALL" ||
+    currentRange !== "24h";
 
+  // Truthful Empty State if project has literally zero telemetry ever recorded
   if (metrics.totalHistoricalEvents === 0) {
-    return <EmptyMetricsState projectId={metrics.projectId} />;
+    return (
+      <div className="mx-auto max-w-[1440px] px-4 md:px-10 py-6 space-y-6">
+        {/* 1. Page Header */}
+        <div className="flex h-14 items-center justify-between border-b border-border/50 pb-2">
+          <div>
+            <h1 className="text-2xl font-semibold tracking-tight text-foreground">
+              Metrics
+            </h1>
+            <p className="text-[13px] text-muted-foreground">
+              Quantitative telemetry for this project
+            </p>
+          </div>
+          <button
+            type="button"
+            onClick={handleRefresh}
+            className="flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/20 transition-colors"
+          >
+            <RefreshCw className="h-3.5 w-3.5" />
+            <span>Refresh</span>
+          </button>
+        </div>
+
+        {/* Clean Empty State */}
+        <div className="rounded-lg border border-border bg-card p-12 text-center space-y-3">
+          <h2 className="text-base font-semibold text-foreground">
+            No telemetry observed
+          </h2>
+          <p className="text-xs text-muted-foreground max-w-md mx-auto">
+            No project telemetry was captured for the selected interval. Send requests or instrument the Halo SDK to view operational telemetry.
+          </p>
+        </div>
+      </div>
+    );
   }
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Filter Control Bar */}
-      <div className="flex flex-wrap items-center justify-between gap-4 rounded-xl border border-border bg-card p-3.5 sm:p-4">
+    <div className="mx-auto max-w-[1440px] px-4 md:px-10 py-6 space-y-5">
+      {/* 1. Project Metrics Header */}
+      <div className="flex h-14 items-center justify-between border-b border-border/50 pb-2">
+        <div>
+          <h1 className="text-2xl font-semibold tracking-tight text-foreground leading-none">
+            Metrics
+          </h1>
+          <p className="mt-1 text-[13px] text-muted-foreground">
+            Quantitative telemetry for this project
+          </p>
+        </div>
+        <button
+          type="button"
+          onClick={handleRefresh}
+          disabled={isPending}
+          className="flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/20 transition-colors disabled:opacity-50"
+        >
+          <RefreshCw className={`h-3.5 w-3.5 ${isPending ? "animate-spin" : ""}`} />
+          <span>Refresh</span>
+        </button>
+      </div>
+
+      {/* 2. Global Filter Bar (Height: 36-40px) */}
+      <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-card p-2 text-xs">
         <div className="flex flex-wrap items-center gap-2">
           {/* Time Range Selector */}
-          <div className="flex items-center rounded-lg border border-border bg-background p-1 text-xs">
+          <div className="flex items-center rounded-md border border-border bg-background p-0.5">
             {TIME_RANGES.map((r) => {
               const isActive = currentRange === r.key;
               return (
@@ -87,9 +148,9 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
                   key={r.key}
                   type="button"
                   onClick={() => updateFilter({ range: r.key })}
-                  className={`rounded-md px-2.5 py-1 font-medium transition-all ${
+                  className={`rounded px-2.5 py-1 font-medium transition-all ${
                     isActive
-                      ? "bg-primary text-primary-foreground shadow-sm"
+                      ? "bg-secondary text-foreground shadow-sm font-semibold"
                       : "text-muted-foreground hover:text-foreground"
                   }`}
                 >
@@ -99,9 +160,9 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
             })}
           </div>
 
-          {/* Environment Filter Dropdown */}
+          {/* Environment Filter */}
           {metrics.availableEnvironments.length > 0 && (
-            <div className="flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1 text-xs">
+            <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1">
               <Globe className="h-3.5 w-3.5 text-muted-foreground" />
               <select
                 value={currentEnv}
@@ -118,14 +179,14 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
             </div>
           )}
 
-          {/* Service Filter Dropdown */}
+          {/* Service Filter */}
           {metrics.availableServices.length > 0 && (
-            <div className="flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1 text-xs">
+            <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1">
               <Server className="h-3.5 w-3.5 text-muted-foreground" />
               <select
                 value={currentService}
                 onChange={(e) => updateFilter({ service: e.target.value })}
-                className="bg-transparent text-foreground focus:outline-none cursor-pointer max-w-[140px] truncate"
+                className="bg-transparent text-foreground focus:outline-none cursor-pointer max-w-[130px] truncate"
               >
                 <option value="ALL">All Services</option>
                 {metrics.availableServices.map((svc) => (
@@ -137,14 +198,14 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
             </div>
           )}
 
-          {/* Release Filter Dropdown */}
+          {/* Release Filter */}
           {metrics.availableReleases.length > 0 && (
-            <div className="flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1 text-xs">
+            <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1">
               <Tag className="h-3.5 w-3.5 text-muted-foreground" />
               <select
                 value={currentRelease}
                 onChange={(e) => updateFilter({ release: e.target.value })}
-                className="bg-transparent text-foreground focus:outline-none cursor-pointer max-w-[130px] truncate"
+                className="bg-transparent text-foreground focus:outline-none cursor-pointer max-w-[120px] truncate"
               >
                 <option value="ALL">All Releases</option>
                 {metrics.availableReleases.map((rel) => (
@@ -156,12 +217,12 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
             </div>
           )}
 
-          {/* Clear Filters Button */}
+          {/* Reset Filters */}
           {hasActiveCustomFilters && (
             <button
               type="button"
               onClick={handleResetFilters}
-              className="flex items-center gap-1 rounded-lg border border-border/80 bg-secondary/30 px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-secondary/60 hover:text-foreground transition-colors"
+              className="flex items-center gap-1 rounded-md border border-border/80 bg-secondary/30 px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-secondary/60 hover:text-foreground transition-colors"
             >
               <FilterX className="h-3.5 w-3.5" />
               <span>Reset</span>
@@ -169,111 +230,46 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
           )}
         </div>
 
-        {/* Refresh & status */}
-        <div className="flex items-center gap-2">
-          {isPending && (
-            <span className="text-[11px] text-muted-foreground animate-pulse">
-              Recalculating...
-            </span>
-          )}
-          <button
-            type="button"
-            onClick={handleRefresh}
-            disabled={isPending}
-            className="flex items-center gap-1.5 rounded-lg border border-border bg-background px-2.5 py-1 text-xs font-medium text-foreground hover:bg-secondary/20 transition-colors disabled:opacity-50"
-            title="Refresh Metrics"
-          >
-            <RefreshCw className={`h-3.5 w-3.5 ${isPending ? "animate-spin" : ""}`} />
-            <span>Refresh</span>
-          </button>
-        </div>
+        {isPending && (
+          <span className="text-[11px] text-muted-foreground font-mono animate-pulse pr-2">
+            Requerying telemetry...
+          </span>
+        )}
       </div>
 
-      {metrics.healthSnapshot.totalEventsObserved === 0 && (
-        <div className="rounded-xl border border-border bg-card p-6 text-center space-y-3">
-          <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-400">
-            No Telemetry in Selected Window ({currentRange})
-          </div>
-          <h3 className="text-base font-semibold text-foreground">
-            Zero Events Recorded in Active Filter Window
-          </h3>
-          <p className="text-xs text-muted-foreground max-w-md mx-auto">
-            This project contains {metrics.totalHistoricalEvents.toLocaleString()} historical events recorded. Select a wider time range (such as 7 Days or 30 Days) to inspect metrics across recorded telemetry.
-          </p>
-          <div className="flex items-center justify-center gap-2 pt-2">
-            <button
-              type="button"
-              onClick={() => updateFilter({ range: "7d" })}
-              className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/40 transition-colors"
-            >
-              View 7 Days
-            </button>
-            <button
-              type="button"
-              onClick={() => updateFilter({ range: "30d" })}
-              className="rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
-            >
-              View 30 Days
-            </button>
-          </div>
-        </div>
-      )}
-
-      {/* A. Project Health Snapshot */}
-      <ProjectHealthSnapshotView
-        snapshot={metrics.healthSnapshot}
-        timeRangeLabel={currentRange}
+      {/* 3. Primary Telemetry Overview (4 metrics + 300px switchable chart) */}
+      <PrimaryTelemetryOverview
+        overview={metrics.telemetryOverview}
+        buckets={metrics.primaryChart.buckets}
+        timeRangeLabel={metrics.timeWindow.label}
       />
 
-      {/* B. Error Behavior */}
-      <ErrorBehaviorView
-        projectId={metrics.projectId}
-        data={metrics.errorBehavior}
-      />
+      {/* 4. Observed Changes (Max 3 rows) */}
+      <ObservedChangesView data={metrics.observedChanges} />
 
-      {/* C. Request Performance */}
-      <RequestPerformanceView
-        data={metrics.requestPerformance}
-      />
+      {/* 5. Failure Concentration (Segmented control + ranked proportional bars) */}
+      <FailureConcentrationView data={metrics.failureConcentration} />
 
-      {/* D. Service Health Distribution */}
-      <ServiceHealthDistributionView
-        data={metrics.serviceDistribution}
-        selectedService={currentService}
+      {/* 6. Service Performance (Dense table sorted by errors) */}
+      <ServicePerformanceTable
+        data={metrics.servicePerformance}
         onSelectService={(svc) => updateFilter({ service: svc })}
       />
 
-      {/* E. Release / Change Impact */}
-      <ReleaseImpactView
-        data={metrics.releaseImpact}
-        selectedRelease={currentRelease}
+      {/* 7. Release Behavior (Horizontal timeline + table) */}
+      <ReleaseBehaviorView
+        data={metrics.releaseBehavior}
         onSelectRelease={(rel) => updateFilter({ release: rel })}
       />
 
-      {/* F. Error Concentration */}
-      <ErrorConcentrationView
-        data={metrics.errorConcentration}
-      />
+      {/* 8. User Impact (4 compact metrics + factual sentence) */}
+      <UserImpactView data={metrics.userImpact} />
 
-      {/* G. User Impact */}
-      <UserImpactView
-        data={metrics.userImpact}
-      />
+      {/* 9. Telemetry Coverage (Compact 2-column matrix) */}
+      <TelemetryCoverageMatrix data={metrics.telemetryCoverage} />
 
-      {/* H. Telemetry Coverage / Evidence Quality */}
-      <TelemetryCoverageView
-        data={metrics.telemetryCoverage}
-      />
-
-      {/* I. Temporal Anomalies */}
-      <TemporalAnomaliesView
-        data={metrics.temporalAnomalies}
-      />
-
-      {/* J. Project Trends */}
-      <ProjectTrendsView
-        data={metrics.projectTrends}
-      />
+      {/* 10. Long-Term Trend (3 rows: ERROR RATE, P95 LATENCY, REQUEST VOLUME) */}
+      <ProjectTrendView data={metrics.longTermTrend} />
     </div>
   );
 }

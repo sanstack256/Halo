@@ -41,7 +41,7 @@ export default async function ProjectMetricsPage({
     // immediately sees the project's real telemetry
     if (
       !search.range &&
-      metrics.healthSnapshot.totalEventsObserved === 0 &&
+      !metrics.hasTelemetry &&
       metrics.totalHistoricalEvents > 0
     ) {
       metrics = await getProjectMetricsIntelligence(id, {

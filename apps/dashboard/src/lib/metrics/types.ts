@@ -1,4 +1,10 @@
-export type TimeRangePreset = "1h" | "6h" | "24h" | "7d" | "14d" | "30d" | "custom";
+export type TimeRangePreset = "1h" | "6h" | "24h" | "7d" | "30d" | "custom";
+
+export type PrimaryChartMetric = "error_rate" | "requests" | "p95_latency" | "failed_requests";
+
+export type TimeBucketState = "OBSERVED_VALUE" | "OBSERVED_ZERO" | "NO_TELEMETRY" | "INSUFFICIENT_SAMPLE";
+
+export type CoverageState = "OBSERVED" | "PARTIAL" | "LIMITED" | "NOT CAPTURED" | "UNAVAILABLE";
 
 export interface MetricsFilterParams {
   timeRange: TimeRangePreset;
@@ -9,208 +15,170 @@ export interface MetricsFilterParams {
   release?: string;
 }
 
-export interface MetricComparison {
-  current: number;
-  previous: number | null;
-  relativeDiffPct: number | null;
-  percentagePointsDiff?: number | null;
-  direction: "up" | "down" | "flat" | "insufficient_data";
-  isImprovement: boolean;
-  timeWindowLabel: string;
-  sufficientBaseline: boolean;
+export interface MetricOverviewItem {
+  label: "ERROR RATE" | "REQUESTS" | "P95 LATENCY" | "AFFECTED USERS";
+  value: string;
+  rawNumber: number | null;
+  delta: string;
+  deltaDirection: "up" | "down" | "flat" | null;
+  isImprovement: boolean | null;
+  qualityState: "OBSERVED" | "LIMITED" | "INSUFFICIENT" | "NOT_CAPTURED";
+  qualityLabel: string;
 }
 
-export interface ProjectHealthSnapshot {
-  errorRate: MetricComparison;
-  requestVolume: MetricComparison;
-  p95LatencyMs: MetricComparison;
-  failedRequests: MetricComparison;
-  affectedUsers: MetricComparison;
-  activeIssues: MetricComparison;
-  totalEventsObserved: number;
-  hasSufficientSample: boolean;
+export interface PrimaryTelemetryOverviewData {
+  errorRate: MetricOverviewItem;
+  requests: MetricOverviewItem;
+  p95Latency: MetricOverviewItem;
+  affectedUsers: MetricOverviewItem;
+  selectedTimeRangeLabel: string;
+  hasTelemetry: boolean;
 }
 
-export interface TimeSeriesBucket {
-  timestamp: string; // ISO string for bucket start
-  hasTelemetry: boolean; // false if no events were observed in this bucket
+export interface PrimaryChartBucket {
+  timestamp: string; // ISO string
+  formattedTime: string; // "Sep 8, 21:00 UTC"
+  compactTime: string; // "21:00 UTC"
+  state: TimeBucketState;
   requestCount: number;
-  errorCount: number;
   failedRequestCount: number;
-  errorRate: number | null; // null if requestCount === 0
+  errorCount: number;
+  errorRate: number | null;
   p50LatencyMs: number | null;
   p75LatencyMs: number | null;
   p95LatencyMs: number | null;
   p99LatencyMs: number | null;
-  activeSessions: number;
+  dataStateLabel: string;
 }
 
-export interface TopErrorIssueSummary {
-  id: string;
-  title: string;
-  severity: string;
-  errorCount: number;
-  affectedUsers: number;
-  affectedSessions: number;
-  firstSeen: string;
-  lastSeen: string;
-  trend: "escalating" | "stable" | "declining";
+export interface ObservedChangeRow {
+  metric: string;
+  change: string;
+  time: string;
+  actionLabel: string;
+  actionHref: string;
 }
 
-export interface ErrorBehaviorData {
-  timeSeries: TimeSeriesBucket[];
-  topIssues: TopErrorIssueSummary[];
-  totalErrors: number;
-  totalFailedRequests: number;
-  hasTelemetry: boolean;
+export interface ObservedChangesData {
+  state: "has_changes" | "no_changes" | "insufficient_baseline";
+  message?: string;
+  changes: ObservedChangeRow[];
 }
 
-export interface RequestPerformanceData {
-  timeSeries: TimeSeriesBucket[];
-  overallThroughputRps: number;
-  overallP50LatencyMs: number | null;
-  overallP75LatencyMs: number | null;
-  overallP95LatencyMs: number | null;
-  overallP99LatencyMs: number | null;
-  overallFailureRate: number | null;
-  sampleSize: number;
-  hasSufficientSample: boolean;
-}
-
-export interface ServiceHealthMetric {
-  serviceName: string;
-  requestVolume: number;
-  errorCount: number;
-  errorRate: number | null;
-  p95LatencyMs: number | null;
-  affectedUsers: number;
-  activeIssuesCount: number;
-  impactRank: number; // Derived purely from: (errorCount * 3) + activeIssuesCount + (p95LatencyMs > 1000 ? 2 : 0)
-  impactScoreReason: string;
-}
-
-export interface ServiceHealthDistribution {
-  services: ServiceHealthMetric[];
-  hasTelemetry: boolean;
-}
-
-export interface ReleaseImpactMetric {
-  version: string;
-  createdAt: string;
-  environmentName?: string;
-  requestCountObserved: number;
-  errorCountObserved: number;
-  errorRateObserved: number | null;
-  p95LatencyMsObserved: number | null;
-  affectedUsersObserved: number;
-  activeIssuesObserved: number;
-  firstEventObservedAt: string | null;
-  lastEventObservedAt: string | null;
-  observationContext: "Observed telemetry associated with this release identifier";
-}
-
-export interface ReleaseImpactData {
-  releases: ReleaseImpactMetric[];
-  hasTelemetry: boolean;
-}
-
-export interface ErrorConcentrationItem {
-  dimension: "endpoint" | "service" | "error_type" | "release";
+export interface FailureConcentrationRow {
+  rank: number;
   name: string;
   errorCount: number;
   percentageOfTotalErrors: number;
+  affectedUsers: number | null;
+  actionHref: string;
 }
 
-export interface ErrorConcentrationData {
-  byEndpoint: ErrorConcentrationItem[];
-  byService: ErrorConcentrationItem[];
-  byErrorType: ErrorConcentrationItem[];
-  totalErrorsObserved: number;
+export interface FailureConcentrationData {
+  dimension: "endpoint" | "service" | "error_type";
+  endpointAttributionAvailable: boolean;
+  totalErrors: number;
+  byEndpoint: FailureConcentrationRow[];
+  byService: FailureConcentrationRow[];
+  byErrorType: FailureConcentrationRow[];
+}
+
+export interface ServicePerformanceRow {
+  service: string;
+  requests: number;
+  errors: number;
+  errorRate: number | null;
+  p95LatencyMs: number | null;
+  affectedUsers: number | null;
+  actionHref: string;
+}
+
+export interface ServicePerformanceData {
+  services: ServicePerformanceRow[];
+  hasTelemetry: boolean;
+}
+
+export interface ReleaseBehaviorRow {
+  version: string;
+  deployedAt: string;
+  requestCount: number;
+  errorCount: number;
+  errorRate: number | null;
+  p95LatencyMs: number | null;
+  temporalRelationship: string;
+  actionHref: string;
+}
+
+export interface ReleaseMarker {
+  version: string;
+  deployedAt: string;
+  timestampMs: number;
+}
+
+export interface ReleaseBehaviorData {
+  releases: ReleaseBehaviorRow[];
+  timelineMarkers: ReleaseMarker[];
   hasTelemetry: boolean;
 }
 
 export interface UserImpactData {
-  affectedUsersCount: number;
-  affectedSessionsCount: number;
-  totalCapturedSessionsCount: number;
-  failedSessionsCount: number;
-  percentageOfObservedSessionsWithErrors: number | null;
-  errorOccurrencesPerAffectedUser: number | null;
-  userTelemetryQuality: "identified_users_observed" | "anonymous_sessions_only" | "unavailable";
-  qualityMessage: string;
+  affectedUsersCount: number | null;
+  affectedSessionsCount: number | null;
+  sessionsWithErrorsCount: number | null;
+  percentageOfSessionsWithErrors: number | null;
+  errorsPerAffectedUser: number | null;
+  summarySentence: string;
+  hasIdentityTelemetry: boolean;
 }
 
-export type CoverageStatus = "OBSERVED" | "PARTIAL" | "LIMITED" | "NOT CAPTURED";
-
-export interface CoverageDimension {
-  name: string;
-  description: string;
-  status: CoverageStatus;
-  observedCount: number;
-  details: string;
+export interface CoverageSignalItem {
+  signal: string;
+  state: CoverageState;
+  observedCount: number | null;
+  detail: string;
 }
 
 export interface TelemetryCoverageData {
-  dimensions: CoverageDimension[];
-  overallObservationTier: CoverageStatus;
-  observedTelemetryGaps: string[];
+  signals: CoverageSignalItem[];
 }
 
-export interface TemporalAnomaly {
-  id: string;
-  type: "error_spike" | "latency_spike" | "traffic_drop" | "new_issue_regression";
-  title: string;
-  description: string;
-  timestamp: string;
-  severity: "critical" | "warning" | "info";
-  evidenceValue: string;
-  baselineValue: string;
-  ruleTriggered: string;
+export interface ProjectTrendRow {
+  metricName: "ERROR RATE" | "P95 LATENCY" | "REQUEST VOLUME";
+  current: string;
+  previous: string;
+  delta: string;
+  status: string;
 }
 
-export interface TemporalAnomaliesData {
-  anomalies: TemporalAnomaly[];
-  detectionPeriodLabel: string;
-  evaluationNote: string;
+export interface LongTermTrendData {
+  rows: ProjectTrendRow[];
+  hasBaseline: boolean;
 }
 
-export interface TrendComparisonPoint {
-  metricName: string;
-  currentValue: string;
-  previousValue: string;
-  changePct: number | null;
-  trendDirection: "improving" | "degrading" | "neutral" | "not_enough_telemetry";
-  commentary: string;
-}
-
-export interface ProjectTrendsData {
-  comparisons: TrendComparisonPoint[];
-  evaluationWindowDays: number;
-}
-
-export interface ProjectMetricsIntelligence {
+export interface RedesignedProjectMetricsIntelligence {
   projectId: string;
   projectName: string;
   filterApplied: MetricsFilterParams;
+  totalHistoricalEvents: number;
+  hasTelemetry: boolean;
   timeWindow: {
     from: string;
     to: string;
     previousFrom: string;
     previousTo: string;
-    bucketSizeMinutes: number;
+    label: string;
   };
-  hasTelemetry: boolean;
-  totalHistoricalEvents: number;
-  healthSnapshot: ProjectHealthSnapshot;
-  errorBehavior: ErrorBehaviorData;
-  requestPerformance: RequestPerformanceData;
-  serviceDistribution: ServiceHealthDistribution;
-  releaseImpact: ReleaseImpactData;
-  errorConcentration: ErrorConcentrationData;
+  telemetryOverview: PrimaryTelemetryOverviewData;
+  primaryChart: {
+    buckets: PrimaryChartBucket[];
+  };
+  observedChanges: ObservedChangesData;
+  failureConcentration: FailureConcentrationData;
+  servicePerformance: ServicePerformanceData;
+  releaseBehavior: ReleaseBehaviorData;
   userImpact: UserImpactData;
   telemetryCoverage: TelemetryCoverageData;
-  temporalAnomalies: TemporalAnomaliesData;
-  projectTrends: ProjectTrendsData;
+  longTermTrend: LongTermTrendData;
   availableEnvironments: { id: string; name: string }[];
   availableServices: string[];
   availableReleases: string[];

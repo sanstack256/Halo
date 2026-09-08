@@ -2,29 +2,28 @@ import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { getOrganization } from "@/lib/organization";
 import { parseTimeRange, calculateMetricComparison, type ResolvedTimeRange } from "@/lib/analytics/time";
+import { formatUtcDateTime, formatUtcTime } from "./formatters";
 import type {
   MetricsFilterParams,
-  ProjectMetricsIntelligence,
-  ProjectHealthSnapshot,
-  TimeSeriesBucket,
-  TopErrorIssueSummary,
-  ErrorBehaviorData,
-  RequestPerformanceData,
-  ServiceHealthDistribution,
-  ServiceHealthMetric,
-  ReleaseImpactData,
-  ReleaseImpactMetric,
-  ErrorConcentrationData,
-  ErrorConcentrationItem,
+  RedesignedProjectMetricsIntelligence,
+  PrimaryTelemetryOverviewData,
+  MetricOverviewItem,
+  PrimaryChartBucket,
+  ObservedChangesData,
+  ObservedChangeRow,
+  FailureConcentrationData,
+  FailureConcentrationRow,
+  ServicePerformanceData,
+  ServicePerformanceRow,
+  ReleaseBehaviorData,
+  ReleaseBehaviorRow,
+  ReleaseMarker,
   UserImpactData,
   TelemetryCoverageData,
-  CoverageDimension,
-  TemporalAnomaliesData,
-  TemporalAnomaly,
-  ProjectTrendsData,
-  TrendComparisonPoint,
-  CoverageStatus,
-  MetricComparison,
+  CoverageSignalItem,
+  LongTermTrendData,
+  ProjectTrendRow,
+  TimeBucketState,
 } from "./types";
 
 interface TelemetryUserRecord {
@@ -45,67 +44,13 @@ interface EventFilterWhere {
   };
 }
 
-export function isFailedStatus(status: string | null | undefined): boolean {
-  if (!status) return false;
-  const normalized = status.toLowerCase().trim();
-  if (
-    normalized === "error" ||
-    normalized === "failed" ||
-    normalized === "failure" ||
-    normalized === "timeout" ||
-    normalized === "timed_out" ||
-    normalized === "500" ||
-    normalized === "502" ||
-    normalized === "503" ||
-    normalized === "504"
-  ) {
-    return true;
-  }
-  const numeric = Number(status);
-  if (Number.isFinite(numeric)) {
-    return numeric >= 400;
-  }
-  return false;
-}
-
-export function calculatePercentile(values: number[], percentileRank: number): number | null {
-  if (!values || values.length === 0) return null;
-  const sorted = [...values].sort((a, b) => a - b);
-  const index = Math.ceil((percentileRank / 100) * sorted.length) - 1;
-  const clampedIndex = Math.max(0, Math.min(index, sorted.length - 1));
-  return sorted[clampedIndex];
-}
-
-export function resolveTimeWindow(filter: MetricsFilterParams): ResolvedTimeRange {
-  if (filter.timeRange === "custom" && filter.from && filter.to) {
-    const start = new Date(filter.from);
-    const end = new Date(filter.to);
-    const durationMs = Math.max(end.getTime() - start.getTime(), 60 * 1000);
-    const comparisonStart = new Date(start.getTime() - durationMs);
-    const comparisonEnd = new Date(start.getTime());
-    let bucketCount = 24;
-    if (durationMs <= 3600 * 1000) bucketCount = 12;
-    else if (durationMs <= 86400 * 1000) bucketCount = 24;
-    else bucketCount = 30;
-
-    return {
-      key: "24h", // fallback key compatible with ResolvedTimeRange
-      start,
-      end,
-      comparisonStart,
-      comparisonEnd,
-      bucketCount,
-      bucketIntervalMs: Math.floor(durationMs / bucketCount),
-    };
-  }
-
-  return parseTimeRange(filter.timeRange, "PREVIOUS_PERIOD");
-}
+import { isFailedStatus, calculatePercentile, resolveTimeWindow } from "./calculations";
+export { isFailedStatus, calculatePercentile, resolveTimeWindow };
 
 export async function getProjectMetricsIntelligence(
   projectIdOrSlug: string,
   filterParams: Partial<MetricsFilterParams> = {}
-): Promise<ProjectMetricsIntelligence> {
+): Promise<RedesignedProjectMetricsIntelligence> {
   const session = await getSession();
   if (!session) {
     throw new Error("Unauthorized: You must be logged in to view metrics");
@@ -206,9 +151,9 @@ export async function getProjectMetricsIntelligence(
     currentEvents,
     previousEvents,
     currentSessions,
-    openIssues,
     allReleases,
     totalHistoricalEvents,
+    replaySessionCount,
   ] = await Promise.all([
     prisma.event.findMany({
       where: currentEventsWhere,
@@ -263,29 +208,15 @@ export async function getProjectMetricsIntelligence(
         lastSeenAt: true,
       },
     }),
-    prisma.issue.findMany({
-      where: {
-        projectId: project.id,
-        status: "OPEN",
-      },
-      select: {
-        id: true,
-        title: true,
-        severity: true,
-        firstSeen: true,
-        lastSeen: true,
-        eventCount: true,
-      },
-      orderBy: { lastSeen: "desc" },
-      take: 10,
-    }),
     prisma.release.findMany({
       where: { projectId: project.id },
       orderBy: { createdAt: "desc" },
-      take: 10,
+      take: 6,
       select: {
         version: true,
         createdAt: true,
+        firstSeen: true,
+        lastSeen: true,
         eventCount: true,
         errorCount: true,
         traceCount: true,
@@ -294,121 +225,14 @@ export async function getProjectMetricsIntelligence(
     prisma.event.count({
       where: { projectId: project.id },
     }),
+    prisma.replaySession.count({
+      where: { projectId: project.id },
+    }),
   ]);
 
   const hasTelemetry = currentEvents.length > 0 || currentSessions.length > 0;
 
-  // 1. PROJECT HEALTH SNAPSHOT CALCULATIONS
-  const currentRequests = currentEvents.filter(
-    (e) => e.type === "TRACE" || e.durationMs !== null || e.operation !== null || e.requestId !== null
-  );
-  const currentFailedRequests = currentRequests.filter(
-    (e) => isFailedStatus(e.status) || e.type === "ERROR"
-  );
-  const currentErrors = currentEvents.filter((e) => e.type === "ERROR");
-
-  const prevRequests = previousEvents.filter(
-    (e) => e.type === "TRACE" || e.durationMs !== null || e.operation !== null
-  );
-  const prevFailedRequests = prevRequests.filter((e) => isFailedStatus(e.status));
-
-  // Error Rate: failed requests / total requests (or errors / (requests + errors) if only errors logged)
-  const currentErrorRate =
-    currentRequests.length > 0
-      ? (currentFailedRequests.length / currentRequests.length) * 100
-      : currentErrors.length > 0
-      ? 100
-      : null;
-
-  const prevErrorRate =
-    prevRequests.length > 0
-      ? (prevFailedRequests.length / prevRequests.length) * 100
-      : null;
-
-  const errorRateCompRaw = calculateMetricComparison(currentErrorRate, prevErrorRate, true, true);
-  const errorRateComp: MetricComparison = {
-    current: currentErrorRate ?? 0,
-    previous: prevErrorRate,
-    relativeDiffPct: errorRateCompRaw.relativeDiffPct,
-    percentagePointsDiff: errorRateCompRaw.percentagePointsDiff,
-    direction:
-      errorRateCompRaw.isImprovement === true
-        ? "down"
-        : errorRateCompRaw.isImprovement === false
-        ? "up"
-        : "flat",
-    isImprovement: errorRateCompRaw.isImprovement ?? true,
-    timeWindowLabel: `vs previous ${timeRange.key}`,
-    sufficientBaseline: prevRequests.length >= 5,
-  };
-
-  // Request Volume
-  const reqVolCompRaw = calculateMetricComparison(currentRequests.length, prevRequests.length, false, false);
-  const requestVolumeComp: MetricComparison = {
-    current: currentRequests.length,
-    previous: prevRequests.length,
-    relativeDiffPct: reqVolCompRaw.relativeDiffPct,
-    direction:
-      currentRequests.length > prevRequests.length
-        ? "up"
-        : currentRequests.length < prevRequests.length
-        ? "down"
-        : "flat",
-    isImprovement: currentRequests.length >= prevRequests.length,
-    timeWindowLabel: `vs previous ${timeRange.key}`,
-    sufficientBaseline: previousEvents.length > 0,
-  };
-
-  // P95 Latency
-  const currentLatencies = currentRequests
-    .map((r) => r.durationMs)
-    .filter((d): d is number => typeof d === "number" && d >= 0);
-  const prevLatencies = prevRequests
-    .map((r) => r.durationMs)
-    .filter((d): d is number => typeof d === "number" && d >= 0);
-
-  const currentP95 = calculatePercentile(currentLatencies, 95);
-  const prevP95 = calculatePercentile(prevLatencies, 95);
-
-  const p95CompRaw = calculateMetricComparison(currentP95, prevP95, false, true);
-  const p95LatencyComp: MetricComparison = {
-    current: currentP95 ?? 0,
-    previous: prevP95,
-    relativeDiffPct: p95CompRaw.relativeDiffPct,
-    direction:
-      p95CompRaw.isImprovement === true
-        ? "down"
-        : p95CompRaw.isImprovement === false
-        ? "up"
-        : "flat",
-    isImprovement: p95CompRaw.isImprovement ?? true,
-    timeWindowLabel: `vs previous ${timeRange.key}`,
-    sufficientBaseline: prevLatencies.length >= 5,
-  };
-
-  // Failed Requests
-  const failedReqCompRaw = calculateMetricComparison(
-    currentFailedRequests.length,
-    prevFailedRequests.length,
-    false,
-    true
-  );
-  const failedRequestsComp: MetricComparison = {
-    current: currentFailedRequests.length,
-    previous: prevFailedRequests.length,
-    relativeDiffPct: failedReqCompRaw.relativeDiffPct,
-    direction:
-      currentFailedRequests.length > prevFailedRequests.length
-        ? "up"
-        : currentFailedRequests.length < prevFailedRequests.length
-        ? "down"
-        : "flat",
-    isImprovement: failedReqCompRaw.isImprovement ?? true,
-    timeWindowLabel: `vs previous ${timeRange.key}`,
-    sufficientBaseline: previousEvents.length > 0,
-  };
-
-  // Affected Users: Extract distinct users
+  // Extract identified users helper
   function extractUserIdentifiers(
     events: { user: unknown }[],
     sessions: { userKey: string | null }[]
@@ -429,6 +253,136 @@ export async function getProjectMetricsIntelligence(
     return userSet;
   }
 
+  // 1. PRIMARY TELEMETRY POPULATIONS
+  const currentRequests = currentEvents.filter(
+    (e) => e.type === "TRACE" || e.durationMs !== null || e.operation !== null || e.requestId !== null
+  );
+  const currentFailedRequests = currentRequests.filter(
+    (e) => isFailedStatus(e.status) || e.type === "ERROR"
+  );
+  const currentErrors = currentEvents.filter((e) => e.type === "ERROR");
+
+  const prevRequests = previousEvents.filter(
+    (e) => e.type === "TRACE" || e.durationMs !== null || e.operation !== null
+  );
+  const prevFailedRequests = prevRequests.filter((e) => isFailedStatus(e.status));
+
+  // ERROR RATE CALCULATION: failed requests / observed requests * 100
+  const currentErrorRate =
+    currentRequests.length > 0
+      ? (currentFailedRequests.length / currentRequests.length) * 100
+      : currentErrors.length > 0
+      ? 100
+      : null;
+
+  const prevErrorRate =
+    prevRequests.length > 0
+      ? (prevFailedRequests.length / prevRequests.length) * 100
+      : null;
+
+  const errorRateComp = calculateMetricComparison(currentErrorRate, prevErrorRate, true, true);
+  const hasErrorRateBaseline = prevRequests.length >= 5 && errorRateComp.percentagePointsDiff !== null;
+
+  const errorRateOverview: MetricOverviewItem = {
+    label: "ERROR RATE",
+    value: currentErrorRate !== null ? `${currentErrorRate.toFixed(1)}%` : "—",
+    rawNumber: currentErrorRate,
+    delta: hasErrorRateBaseline
+      ? `${errorRateComp.percentagePointsDiff! > 0 ? "↑" : errorRateComp.percentagePointsDiff! < 0 ? "↓" : "—"} ${Math.abs(errorRateComp.percentagePointsDiff!)} pp`
+      : "Baseline unavailable",
+    deltaDirection:
+      hasErrorRateBaseline
+        ? errorRateComp.percentagePointsDiff! > 0
+          ? "up"
+          : errorRateComp.percentagePointsDiff! < 0
+          ? "down"
+          : "flat"
+        : null,
+    isImprovement: errorRateComp.isImprovement,
+    qualityState:
+      currentRequests.length === 0 && currentErrors.length === 0
+        ? "INSUFFICIENT"
+        : currentRequests.length < 5
+        ? "LIMITED"
+        : "OBSERVED",
+    qualityLabel:
+      currentRequests.length === 0 && currentErrors.length === 0
+        ? "Insufficient telemetry"
+        : currentRequests.length < 5
+        ? "Limited sample"
+        : "Observed",
+  };
+
+  // REQUESTS CALCULATION
+  const reqVolComp = calculateMetricComparison(currentRequests.length, prevRequests.length, false, false);
+  const hasRequestsBaseline = previousEvents.length > 0 && reqVolComp.relativeDiffPct !== null;
+
+  const requestsOverview: MetricOverviewItem = {
+    label: "REQUESTS",
+    value: currentRequests.length.toLocaleString(),
+    rawNumber: currentRequests.length,
+    delta: hasRequestsBaseline
+      ? `${reqVolComp.relativeDiffPct! > 0 ? "↑" : reqVolComp.relativeDiffPct! < 0 ? "↓" : "—"} ${Math.abs(reqVolComp.relativeDiffPct!)}%`
+      : "Baseline unavailable",
+    deltaDirection:
+      hasRequestsBaseline
+        ? reqVolComp.relativeDiffPct! > 0
+          ? "up"
+          : reqVolComp.relativeDiffPct! < 0
+          ? "down"
+          : "flat"
+        : null,
+    isImprovement: reqVolComp.isImprovement,
+    qualityState: currentRequests.length > 0 ? "OBSERVED" : "NOT_CAPTURED",
+    qualityLabel: currentRequests.length > 0 ? "Observed" : "Not captured",
+  };
+
+  // P95 LATENCY CALCULATION
+  const currentLatencies = currentRequests
+    .map((r) => r.durationMs)
+    .filter((d): d is number => typeof d === "number" && d >= 0);
+  const prevLatencies = prevRequests
+    .map((r) => r.durationMs)
+    .filter((d): d is number => typeof d === "number" && d >= 0);
+
+  const currentP95 = calculatePercentile(currentLatencies, 95);
+  const prevP95 = calculatePercentile(prevLatencies, 95);
+
+  const p95Comp = calculateMetricComparison(currentP95, prevP95, false, true);
+  const hasP95Baseline = prevLatencies.length >= 5 && p95Comp.relativeDiffPct !== null;
+
+  const p95LatencyOverview: MetricOverviewItem = {
+    label: "P95 LATENCY",
+    value: currentP95 !== null ? `${currentP95}ms` : "—",
+    rawNumber: currentP95,
+    delta: hasP95Baseline
+      ? `${p95Comp.relativeDiffPct! > 0 ? "↑" : p95Comp.relativeDiffPct! < 0 ? "↓" : "—"} ${Math.abs(p95Comp.relativeDiffPct!)}%`
+      : "Baseline unavailable",
+    deltaDirection:
+      hasP95Baseline
+        ? p95Comp.relativeDiffPct! > 0
+          ? "up"
+          : p95Comp.relativeDiffPct! < 0
+          ? "down"
+          : "flat"
+        : null,
+    isImprovement: p95Comp.isImprovement,
+    qualityState:
+      currentLatencies.length === 0
+        ? "NOT_CAPTURED"
+        : currentLatencies.length < 5
+        ? "LIMITED"
+        : "OBSERVED",
+    qualityLabel:
+      currentLatencies.length === 0
+        ? "No duration traces"
+        : currentLatencies.length < 5
+        ? "Limited sample"
+        : "Observed",
+  };
+
+  // AFFECTED USERS CALCULATION
+  const allIdentifiedUsers = extractUserIdentifiers(currentEvents, currentSessions);
   const currentAffectedEvents = currentEvents.filter(
     (e) => e.type === "ERROR" || isFailedStatus(e.status)
   );
@@ -440,49 +394,42 @@ export async function getProjectMetricsIntelligence(
 
   const affectedUsersCount = currentAffectedUsersSet.size;
   const prevAffectedUsersCount = previousAffectedUsersSet.size;
+  const hasUsersBaseline = previousEvents.length > 0 && allIdentifiedUsers.size > 0;
+  const usersDiff = affectedUsersCount - prevAffectedUsersCount;
 
-  const usersCompRaw = calculateMetricComparison(affectedUsersCount, prevAffectedUsersCount, false, true);
-  const affectedUsersComp: MetricComparison = {
-    current: affectedUsersCount,
-    previous: prevAffectedUsersCount,
-    relativeDiffPct: usersCompRaw.relativeDiffPct,
-    direction:
-      affectedUsersCount > prevAffectedUsersCount
-        ? "up"
-        : affectedUsersCount < prevAffectedUsersCount
-        ? "down"
-        : "flat",
-    isImprovement: usersCompRaw.isImprovement ?? true,
-    timeWindowLabel: `vs previous ${timeRange.key}`,
-    sufficientBaseline: previousEvents.length > 0,
+  const affectedUsersOverview: MetricOverviewItem = {
+    label: "AFFECTED USERS",
+    value: allIdentifiedUsers.size > 0 ? affectedUsersCount.toLocaleString() : "—",
+    rawNumber: allIdentifiedUsers.size > 0 ? affectedUsersCount : null,
+    delta: hasUsersBaseline
+      ? `${usersDiff > 0 ? "↑" : usersDiff < 0 ? "↓" : "—"} ${Math.abs(usersDiff)}`
+      : "Baseline unavailable",
+    deltaDirection:
+      hasUsersBaseline
+        ? usersDiff > 0
+          ? "up"
+          : usersDiff < 0
+          ? "down"
+          : "flat"
+        : null,
+    isImprovement: usersDiff <= 0,
+    qualityState: allIdentifiedUsers.size > 0 ? "OBSERVED" : "NOT_CAPTURED",
+    qualityLabel: allIdentifiedUsers.size > 0 ? "Observed" : "Identity not captured",
   };
 
-  // Active Issues
-  const activeIssuesComp: MetricComparison = {
-    current: openIssues.length,
-    previous: null,
-    relativeDiffPct: null,
-    direction: "flat",
-    isImprovement: true,
-    timeWindowLabel: "current open issues",
-    sufficientBaseline: true,
+  const telemetryOverview: PrimaryTelemetryOverviewData = {
+    errorRate: errorRateOverview,
+    requests: requestsOverview,
+    p95Latency: p95LatencyOverview,
+    affectedUsers: affectedUsersOverview,
+    selectedTimeRangeLabel: effectiveFilter.timeRange === "custom" ? "Custom Range" : `Last ${effectiveFilter.timeRange.toUpperCase()}`,
+    hasTelemetry,
   };
 
-  const healthSnapshot: ProjectHealthSnapshot = {
-    errorRate: errorRateComp,
-    requestVolume: requestVolumeComp,
-    p95LatencyMs: p95LatencyComp,
-    failedRequests: failedRequestsComp,
-    affectedUsers: affectedUsersComp,
-    activeIssues: activeIssuesComp,
-    totalEventsObserved: currentEvents.length,
-    hasSufficientSample: currentRequests.length >= 5 || currentErrors.length >= 5,
-  };
-
-  // 2. TIME-SERIES BUCKETING (Preserving distinction between NO_TELEMETRY vs ZERO_ERRORS)
+  // 2. PRIMARY SWITCHABLE TIME-SERIES CHART
   const bucketCount = timeRange.bucketCount;
   const intervalMs = timeRange.bucketIntervalMs;
-  const timeSeries: TimeSeriesBucket[] = [];
+  const primaryBuckets: PrimaryChartBucket[] = [];
 
   for (let i = 0; i < bucketCount; i++) {
     const bStartMs = timeRange.start.getTime() + i * intervalMs;
@@ -514,99 +461,163 @@ export async function getProjectMetricsIntelligence(
         ? 100
         : null;
 
-    timeSeries.push({
+    let bucketState: TimeBucketState = "OBSERVED_VALUE";
+    let dataStateLabel = `${bFailedRequests.length} failed of ${bRequests.length} requests`;
+
+    if (!hasTelemetryInBucket) {
+      bucketState = "NO_TELEMETRY";
+      dataStateLabel = "No telemetry observed";
+    } else if (bRequests.length === 0 && bErrors.length === 0) {
+      bucketState = "OBSERVED_ZERO";
+      dataStateLabel = "0 requests, 0 errors observed";
+    } else if (bRequests.length > 0 && bFailedRequests.length === 0 && bErrors.length === 0) {
+      bucketState = "OBSERVED_ZERO";
+      dataStateLabel = `0 errors observed (${bRequests.length} requests)`;
+    } else if (bRequests.length > 0 && bRequests.length < 3) {
+      bucketState = "INSUFFICIENT_SAMPLE";
+      dataStateLabel = `Limited sample (${bRequests.length} requests, ${bFailedRequests.length} failed)`;
+    }
+
+    primaryBuckets.push({
       timestamp: bStart.toISOString(),
-      hasTelemetry: hasTelemetryInBucket,
+      formattedTime: formatUtcDateTime(bStart),
+      compactTime: formatUtcTime(bStart),
+      state: bucketState,
       requestCount: bRequests.length,
-      errorCount: bErrors.length,
       failedRequestCount: bFailedRequests.length,
+      errorCount: bErrors.length,
       errorRate: bErrorRate !== null ? Math.round(bErrorRate * 10) / 10 : null,
       p50LatencyMs: calculatePercentile(bLatencies, 50),
       p75LatencyMs: calculatePercentile(bLatencies, 75),
       p95LatencyMs: calculatePercentile(bLatencies, 95),
       p99LatencyMs: calculatePercentile(bLatencies, 99),
-      activeSessions: bucketSessions.length,
+      dataStateLabel,
     });
   }
 
-  // Top Error Issues Breakdown
-  const issueErrorCountMap = new Map<string, { count: number; users: Set<string>; sessions: Set<string>; firstSeen: Date; lastSeen: Date }>();
+  // 3. OBSERVED CHANGES (Max 3 rows, deterministic)
+  const changes: ObservedChangeRow[] = [];
+  const evalTime = formatUtcTime(timeRange.end);
 
-  for (const ev of currentErrors) {
-    if (ev.issueId) {
-      const existing = issueErrorCountMap.get(ev.issueId) || {
-        count: 0,
-        users: new Set<string>(),
-        sessions: new Set<string>(),
-        firstSeen: ev.timestamp,
-        lastSeen: ev.timestamp,
-      };
-      existing.count++;
-      if (ev.user && typeof ev.user === "object") {
-        const u = ev.user as TelemetryUserRecord;
-        const uid = u.id || u.email || u.key;
-        if (uid) existing.users.add(String(uid));
-      }
-      if (ev.sessionId) existing.sessions.add(ev.sessionId);
-      if (ev.timestamp < existing.firstSeen) existing.firstSeen = ev.timestamp;
-      if (ev.timestamp > existing.lastSeen) existing.lastSeen = ev.timestamp;
-      issueErrorCountMap.set(ev.issueId, existing);
-    }
+  if (hasErrorRateBaseline && errorRateComp.percentagePointsDiff !== null && Math.abs(errorRateComp.percentagePointsDiff) >= 3.0) {
+    changes.push({
+      metric: "ERROR RATE",
+      change: `${errorRateComp.percentagePointsDiff > 0 ? "↑" : "↓"} ${Math.abs(errorRateComp.percentagePointsDiff)} pp`,
+      time: evalTime,
+      actionLabel: "View errors →",
+      actionHref: `/projects/${project.id}/events?type=ERROR`,
+    });
   }
 
-  const topIssues: TopErrorIssueSummary[] = openIssues
-    .map((issue) => {
-      const stats = issueErrorCountMap.get(issue.id) || {
-        count: issue.eventCount,
-        users: new Set<string>(),
-        sessions: new Set<string>(),
-        firstSeen: issue.firstSeen,
-        lastSeen: issue.lastSeen,
-      };
-      return {
-        id: issue.id,
-        title: issue.title,
-        severity: issue.severity,
-        errorCount: stats.count,
-        affectedUsers: stats.users.size,
-        affectedSessions: stats.sessions.size,
-        firstSeen: stats.firstSeen.toISOString(),
-        lastSeen: stats.lastSeen.toISOString(),
-        trend: (stats.count > 10 ? "escalating" : "stable") as "escalating" | "stable" | "declining",
-      };
-    })
-    .sort((a, b) => b.errorCount - a.errorCount)
-    .slice(0, 5);
+  if (hasP95Baseline && currentP95 !== null && prevP95 !== null && Math.abs(currentP95 - prevP95) >= 40) {
+    const latDiff = currentP95 - prevP95;
+    changes.push({
+      metric: "LATENCY (P95)",
+      change: `${latDiff > 0 ? "↑" : "↓"} ${Math.abs(latDiff)}ms`,
+      time: evalTime,
+      actionLabel: "View requests →",
+      actionHref: `/projects/${project.id}/events?type=TRACE`,
+    });
+  }
 
-  const errorBehavior: ErrorBehaviorData = {
-    timeSeries,
-    topIssues,
-    totalErrors: currentErrors.length,
-    totalFailedRequests: currentFailedRequests.length,
-    hasTelemetry,
+  if (hasRequestsBaseline && reqVolComp.relativeDiffPct !== null && Math.abs(reqVolComp.relativeDiffPct) >= 15.0) {
+    changes.push({
+      metric: "REQUEST VOLUME",
+      change: `${reqVolComp.relativeDiffPct > 0 ? "↑" : "↓"} ${Math.abs(reqVolComp.relativeDiffPct)}%`,
+      time: evalTime,
+      actionLabel: "Explore →",
+      actionHref: `/projects/${project.id}/events`,
+    });
+  }
+
+  let observedChangesState: ObservedChangesData["state"] = "no_changes";
+  let observedChangesMessage: string | undefined = undefined;
+
+  if (!hasErrorRateBaseline && !hasRequestsBaseline && !hasP95Baseline) {
+    observedChangesState = "insufficient_baseline";
+    observedChangesMessage = "Changes not evaluated — insufficient baseline telemetry.";
+  } else if (changes.length === 0) {
+    observedChangesState = "no_changes";
+    observedChangesMessage = "No significant observed changes in this interval.";
+  } else {
+    observedChangesState = "has_changes";
+  }
+
+  const observedChanges: ObservedChangesData = {
+    state: observedChangesState,
+    message: observedChangesMessage,
+    changes: changes.slice(0, 3),
   };
 
-  // 3. REQUEST PERFORMANCE
-  const durationSeconds = Math.max(1, (timeRange.end.getTime() - timeRange.start.getTime()) / 1000);
-  const overallThroughputRps = Math.round((currentRequests.length / durationSeconds) * 100) / 100;
-  const overallFailureRate =
-    currentRequests.length > 0
-      ? Math.round((currentFailedRequests.length / currentRequests.length) * 1000) / 10
-      : null;
+  // 4. FAILURE CONCENTRATION
+  const endpointMap = new Map<string, { count: number; users: Set<string> }>();
+  const serviceMap = new Map<string, { count: number; users: Set<string> }>();
+  const errorTypeMap = new Map<string, { count: number; users: Set<string> }>();
 
-  const requestPerformance: RequestPerformanceData = {
-    timeSeries,
-    overallThroughputRps,
-    overallP50LatencyMs: calculatePercentile(currentLatencies, 50),
-    overallP75LatencyMs: calculatePercentile(currentLatencies, 75),
-    overallP95LatencyMs: calculatePercentile(currentLatencies, 95),
-    overallP99LatencyMs: calculatePercentile(currentLatencies, 99),
-    overallFailureRate,
-    sampleSize: currentRequests.length,
-    hasSufficientSample: currentRequests.length >= 5,
+  let hasExplicitEndpoints = false;
+
+  for (const err of currentErrors) {
+    const ep = err.operation || err.resource;
+    if (ep && ep.trim()) {
+      hasExplicitEndpoints = true;
+      const key = ep.trim();
+      const existing = endpointMap.get(key) || { count: 0, users: new Set<string>() };
+      existing.count++;
+      if (err.user && typeof err.user === "object") {
+        const uid = (err.user as TelemetryUserRecord).id || (err.user as TelemetryUserRecord).email;
+        if (uid) existing.users.add(uid);
+      }
+      endpointMap.set(key, existing);
+    }
+
+    const svc = (err.service && err.service.trim()) || "default";
+    const svcExisting = serviceMap.get(svc) || { count: 0, users: new Set<string>() };
+    svcExisting.count++;
+    if (err.user && typeof err.user === "object") {
+      const uid = (err.user as TelemetryUserRecord).id || (err.user as TelemetryUserRecord).email;
+      if (uid) svcExisting.users.add(uid);
+    }
+    serviceMap.set(svc, svcExisting);
+
+    const type = (err.title && err.title.trim()) || "Error";
+    const typeExisting = errorTypeMap.get(type) || { count: 0, users: new Set<string>() };
+    typeExisting.count++;
+    if (err.user && typeof err.user === "object") {
+      const uid = (err.user as TelemetryUserRecord).id || (err.user as TelemetryUserRecord).email;
+      if (uid) typeExisting.users.add(uid);
+    }
+    errorTypeMap.set(type, typeExisting);
+  }
+
+  const totalErrors = currentErrors.length;
+  const toConcentrationRows = (
+    map: Map<string, { count: number; users: Set<string> }>,
+    baseExploreQuery: string
+  ): FailureConcentrationRow[] => {
+    return Array.from(map.entries())
+      .sort((a, b) => b[1].count - a[1].count)
+      .slice(0, 8)
+      .map(([name, data], idx) => ({
+        rank: idx + 1,
+        name,
+        errorCount: data.count,
+        percentageOfTotalErrors:
+          totalErrors > 0 ? Math.round((data.count / totalErrors) * 1000) / 10 : 0,
+        affectedUsers: data.users.size > 0 ? data.users.size : null,
+        actionHref: `/projects/${project.id}/events?type=ERROR&${baseExploreQuery}=${encodeURIComponent(name)}`,
+      }));
   };
 
-  // 4. SERVICE HEALTH DISTRIBUTION
+  const failureConcentration: FailureConcentrationData = {
+    dimension: "endpoint",
+    endpointAttributionAvailable: hasExplicitEndpoints,
+    totalErrors,
+    byEndpoint: toConcentrationRows(endpointMap, "operation"),
+    byService: toConcentrationRows(serviceMap, "service"),
+    byErrorType: toConcentrationRows(errorTypeMap, "query"),
+  };
+
+  // 5. SERVICE PERFORMANCE (Sorted by errors descending)
   const serviceStatsMap = new Map<
     string,
     {
@@ -619,7 +630,7 @@ export async function getProjectMetricsIntelligence(
   >();
 
   for (const ev of currentEvents) {
-    const sName = ev.service || "default";
+    const sName = (ev.service && ev.service.trim()) || "default";
     const existing = serviceStatsMap.get(sName) || {
       requests: 0,
       errors: 0,
@@ -637,50 +648,43 @@ export async function getProjectMetricsIntelligence(
       existing.errors++;
     }
     if (ev.user && typeof ev.user === "object") {
-      const u = ev.user as TelemetryUserRecord;
-      const uid = u.id || u.email;
-      if (uid) existing.users.add(String(uid));
+      const uid = (ev.user as TelemetryUserRecord).id || (ev.user as TelemetryUserRecord).email;
+      if (uid) existing.users.add(uid);
     }
     serviceStatsMap.set(sName, existing);
   }
 
-  const serviceDistributionList: ServiceHealthMetric[] = Array.from(serviceStatsMap.entries()).map(
-    ([serviceName, stats]) => {
+  const servicePerformanceRows: ServicePerformanceRow[] = Array.from(serviceStatsMap.entries())
+    .map(([serviceName, stats]) => {
       const p95 = calculatePercentile(stats.latencies, 95);
       const totalReq = stats.requests;
-      const errRate = totalReq > 0 ? (stats.failedRequests / totalReq) * 100 : stats.errors > 0 ? 100 : null;
-
-      // Deterministic impact ranking formula:
-      const rankScore = stats.errors * 3 + (p95 && p95 > 1000 ? 5 : 0) + (errRate && errRate > 5 ? 10 : 0);
-
-      const impactScoreReason =
-        stats.errors > 0
-          ? `${stats.errors} errors observed, ${errRate !== null ? errRate.toFixed(1) : 0}% failure rate`
-          : "Zero failures observed; baseline operational throughput";
+      const errRate =
+        totalReq > 0
+          ? (stats.failedRequests / totalReq) * 100
+          : stats.errors > 0
+          ? 100
+          : null;
 
       return {
-        serviceName,
-        requestVolume: stats.requests,
-        errorCount: stats.errors,
+        service: serviceName,
+        requests: stats.requests,
+        errors: stats.errors,
         errorRate: errRate !== null ? Math.round(errRate * 10) / 10 : null,
         p95LatencyMs: p95,
-        affectedUsers: stats.users.size,
-        activeIssuesCount: 0,
-        impactRank: rankScore,
-        impactScoreReason,
+        affectedUsers: stats.users.size > 0 ? stats.users.size : null,
+        actionHref: `?service=${encodeURIComponent(serviceName)}`,
       };
-    }
-  );
+    })
+    .sort((a, b) => b.errors - a.errors);
 
-  serviceDistributionList.sort((a, b) => b.impactRank - a.impactRank);
-
-  const serviceDistribution: ServiceHealthDistribution = {
-    services: serviceDistributionList,
-    hasTelemetry: serviceDistributionList.length > 0,
+  const servicePerformance: ServicePerformanceData = {
+    services: servicePerformanceRows,
+    hasTelemetry: servicePerformanceRows.length > 0,
   };
 
-  // 5. RELEASE / CHANGE IMPACT
-  const releaseImpactList: ReleaseImpactMetric[] = allReleases.map((rel) => {
+  // 6. RELEASE BEHAVIOR
+  const releaseTimelineMarkers: ReleaseMarker[] = [];
+  const releaseBehaviorRows: ReleaseBehaviorRow[] = allReleases.map((rel) => {
     const relEvents = currentEvents.filter((e) => e.release === rel.version);
     const relRequests = relEvents.filter(
       (e) => e.type === "TRACE" || e.durationMs !== null || e.operation !== null
@@ -691,7 +695,6 @@ export async function getProjectMetricsIntelligence(
       .map((r) => r.durationMs)
       .filter((d): d is number => typeof d === "number" && d >= 0);
 
-    const relUsers = extractUserIdentifiers(relEvents, []);
     const relErrorRate =
       relRequests.length > 0
         ? (relFailed.length / relRequests.length) * 100
@@ -699,72 +702,31 @@ export async function getProjectMetricsIntelligence(
         ? 100
         : null;
 
-    const firstEv = relEvents.length > 0 ? relEvents[0].timestamp.toISOString() : null;
-    const lastEv = relEvents.length > 0 ? relEvents[relEvents.length - 1].timestamp.toISOString() : null;
+    releaseTimelineMarkers.push({
+      version: rel.version,
+      deployedAt: formatUtcDateTime(rel.createdAt),
+      timestampMs: rel.createdAt.getTime(),
+    });
 
     return {
       version: rel.version,
-      createdAt: rel.createdAt.toISOString(),
-      requestCountObserved: relRequests.length,
-      errorCountObserved: relErrors.length,
-      errorRateObserved: relErrorRate !== null ? Math.round(relErrorRate * 10) / 10 : null,
-      p95LatencyMsObserved: calculatePercentile(relLatencies, 95),
-      affectedUsersObserved: relUsers.size,
-      activeIssuesObserved: openIssues.length,
-      firstEventObservedAt: firstEv,
-      lastEventObservedAt: lastEv,
-      observationContext: "Observed telemetry associated with this release identifier",
+      deployedAt: formatUtcDateTime(rel.createdAt),
+      requestCount: relRequests.length,
+      errorCount: relErrors.length,
+      errorRate: relErrorRate !== null ? Math.round(relErrorRate * 10) / 10 : null,
+      p95LatencyMs: calculatePercentile(relLatencies, 95),
+      temporalRelationship: "Observed after release",
+      actionHref: `?release=${encodeURIComponent(rel.version)}`,
     };
   });
 
-  const releaseImpact: ReleaseImpactData = {
-    releases: releaseImpactList,
-    hasTelemetry: releaseImpactList.length > 0 && releaseImpactList.some((r) => r.requestCountObserved > 0 || r.errorCountObserved > 0),
-  };
-
-  // 6. ERROR CONCENTRATION
-  const endpointErrorMap = new Map<string, number>();
-  const serviceErrorMap = new Map<string, number>();
-  const errorTypeMap = new Map<string, number>();
-
-  for (const err of currentErrors) {
-    const ep = err.operation || err.resource || "Unspecified Endpoint";
-    endpointErrorMap.set(ep, (endpointErrorMap.get(ep) || 0) + 1);
-
-    const svc = err.service || "default";
-    serviceErrorMap.set(svc, (serviceErrorMap.get(svc) || 0) + 1);
-
-    const type = err.title || "Generic Error";
-    errorTypeMap.set(type, (errorTypeMap.get(type) || 0) + 1);
-  }
-
-  const totalErrors = currentErrors.length;
-  const toConcentrationItems = (
-    map: Map<string, number>,
-    dimension: ErrorConcentrationItem["dimension"]
-  ): ErrorConcentrationItem[] => {
-    return Array.from(map.entries())
-      .map(([name, count]) => ({
-        dimension,
-        name,
-        errorCount: count,
-        percentageOfTotalErrors:
-          totalErrors > 0 ? Math.round((count / totalErrors) * 1000) / 10 : 0,
-      }))
-      .sort((a, b) => b.errorCount - a.errorCount)
-      .slice(0, 6);
-  };
-
-  const errorConcentration: ErrorConcentrationData = {
-    byEndpoint: toConcentrationItems(endpointErrorMap, "endpoint"),
-    byService: toConcentrationItems(serviceErrorMap, "service"),
-    byErrorType: toConcentrationItems(errorTypeMap, "error_type"),
-    totalErrorsObserved: totalErrors,
-    hasTelemetry: totalErrors > 0,
+  const releaseBehavior: ReleaseBehaviorData = {
+    releases: releaseBehaviorRows,
+    timelineMarkers: releaseTimelineMarkers,
+    hasTelemetry: releaseBehaviorRows.length > 0 && releaseBehaviorRows.some((r) => r.requestCount > 0 || r.errorCount > 0),
   };
 
   // 7. USER IMPACT
-  const allIdentifiedUsers = extractUserIdentifiers(currentEvents, currentSessions);
   const totalCapturedSessionsCount = currentSessions.length;
   const failedSessionsCount = currentSessions.filter((s) => s.crashedAt !== null).length;
   const affectedSessionsSet = new Set<string>();
@@ -777,39 +739,34 @@ export async function getProjectMetricsIntelligence(
   }
 
   const affectedSessionsCount = affectedSessionsSet.size;
-  const percentageOfObservedSessionsWithErrors =
+  const percentageOfSessionsWithErrors =
     totalCapturedSessionsCount > 0
       ? Math.round((affectedSessionsCount / totalCapturedSessionsCount) * 1000) / 10
       : null;
 
-  const errorOccurrencesPerAffectedUser =
+  const errorsPerAffectedUser =
     affectedUsersCount > 0
       ? Math.round((currentErrors.length / affectedUsersCount) * 10) / 10
       : null;
 
-  let userTelemetryQuality: UserImpactData["userTelemetryQuality"] = "unavailable";
-  let qualityMessage = "User impact unavailable from captured telemetry.";
-
+  let summarySentence = "User impact unavailable from captured identity telemetry.";
   if (allIdentifiedUsers.size > 0) {
-    userTelemetryQuality = "identified_users_observed";
-    qualityMessage = `Derived from ${allIdentifiedUsers.size} unique identified users across observed events.`;
+    summarySentence = `${affectedUsersCount} of ${allIdentifiedUsers.size} identified users experienced at least one observed error.`;
   } else if (totalCapturedSessionsCount > 0) {
-    userTelemetryQuality = "anonymous_sessions_only";
-    qualityMessage = `User identity not captured; evaluating ${totalCapturedSessionsCount} observed anonymous sessions.`;
+    summarySentence = `${affectedSessionsCount} of ${totalCapturedSessionsCount} observed anonymous sessions experienced at least one error.`;
   }
 
   const userImpact: UserImpactData = {
-    affectedUsersCount,
-    affectedSessionsCount,
-    totalCapturedSessionsCount,
-    failedSessionsCount,
-    percentageOfObservedSessionsWithErrors,
-    errorOccurrencesPerAffectedUser,
-    userTelemetryQuality,
-    qualityMessage,
+    affectedUsersCount: allIdentifiedUsers.size > 0 ? affectedUsersCount : null,
+    affectedSessionsCount: totalCapturedSessionsCount > 0 ? affectedSessionsCount : null,
+    sessionsWithErrorsCount: totalCapturedSessionsCount > 0 ? failedSessionsCount : null,
+    percentageOfSessionsWithErrors,
+    errorsPerAffectedUser,
+    summarySentence,
+    hasIdentityTelemetry: allIdentifiedUsers.size > 0,
   };
 
-  // 8. TELEMETRY COVERAGE / EVIDENCE QUALITY
+  // 8. TELEMETRY COVERAGE (2-column matrix of 8 signals)
   const tracesObserved = currentRequests.length;
   const errorsObserved = currentErrors.length;
   const sessionsObserved = currentSessions.length;
@@ -818,244 +775,123 @@ export async function getProjectMetricsIntelligence(
     (e) => e.type === "TRACE" && (e.operation?.toLowerCase().includes("sql") || e.operation?.toLowerCase().includes("query") || e.resource?.toLowerCase().includes("db"))
   ).length;
 
-  const getStatus = (count: number, threshold: number): CoverageStatus => {
-    if (count >= threshold) return "OBSERVED";
-    if (count > 0) return "PARTIAL";
-    return "NOT CAPTURED";
-  };
-
-  const dimensions: CoverageDimension[] = [
+  const signals: CoverageSignalItem[] = [
     {
-      name: "Request Telemetry",
-      description: "HTTP/RPC operations with duration and status tracking",
-      status: getStatus(tracesObserved, 10),
+      signal: "Request telemetry",
+      state: tracesObserved >= 10 ? "OBSERVED" : tracesObserved > 0 ? "PARTIAL" : "NOT CAPTURED",
       observedCount: tracesObserved,
-      details: `${tracesObserved} HTTP / RPC traces captured in time window`,
+      detail: `${tracesObserved} HTTP / RPC traces`,
     },
     {
-      name: "Error Telemetry",
-      description: "Captured exceptions and unhandled errors",
-      status: getStatus(errorsObserved, 1),
+      signal: "Error telemetry",
+      state: errorsObserved >= 1 ? "OBSERVED" : "NOT CAPTURED",
       observedCount: errorsObserved,
-      details: `${errorsObserved} error events captured`,
+      detail: `${errorsObserved} caught exceptions`,
     },
     {
-      name: "Session Telemetry",
-      description: "User session lifecycle and crash state tracking",
-      status: getStatus(sessionsObserved, 5),
-      observedCount: sessionsObserved,
-      details: `${sessionsObserved} client sessions recorded`,
-    },
-    {
-      name: "Distributed Trace Linkage",
-      description: "Events correlated with both traceId and requestId",
-      status: getStatus(traceLinkageCount, 5),
+      signal: "Trace linkage",
+      state: traceLinkageCount >= 5 ? "OBSERVED" : traceLinkageCount > 0 ? "PARTIAL" : "NOT CAPTURED",
       observedCount: traceLinkageCount,
-      details: `${traceLinkageCount} events have end-to-end trace correlation`,
+      detail: `${traceLinkageCount} correlated events`,
     },
     {
-      name: "Database / Resource Spans",
-      description: "Database queries and external service operations captured",
-      status: getStatus(dbSpansCount, 5),
+      signal: "Database/resource spans",
+      state: dbSpansCount >= 5 ? "OBSERVED" : dbSpansCount > 0 ? "PARTIAL" : "NOT CAPTURED",
       observedCount: dbSpansCount,
-      details: `${dbSpansCount} downstream database operations monitored`,
+      detail: `${dbSpansCount} query operations`,
     },
     {
-      name: "User Identity Resolution",
-      description: "Telemetry enriched with distinct user identifier key",
-      status: allIdentifiedUsers.size > 0 ? "OBSERVED" : "NOT CAPTURED",
-      observedCount: allIdentifiedUsers.size,
-      details:
-        allIdentifiedUsers.size > 0
-          ? `${allIdentifiedUsers.size} distinct user identities resolved`
-          : "Anonymous telemetry without user resolution",
+      signal: "Session telemetry",
+      state: sessionsObserved >= 5 ? "OBSERVED" : sessionsObserved > 0 ? "PARTIAL" : "NOT CAPTURED",
+      observedCount: sessionsObserved,
+      detail: `${sessionsObserved} client sessions`,
+    },
+    {
+      signal: "User identity",
+      state: allIdentifiedUsers.size > 0 ? "OBSERVED" : "NOT CAPTURED",
+      observedCount: allIdentifiedUsers.size > 0 ? allIdentifiedUsers.size : null,
+      detail: allIdentifiedUsers.size > 0 ? `${allIdentifiedUsers.size} user identities` : "Anonymous telemetry",
+    },
+    {
+      signal: "Replay",
+      state: replaySessionCount > 0 ? "OBSERVED" : "NOT CAPTURED",
+      observedCount: replaySessionCount,
+      detail: `${replaySessionCount} session recordings`,
+    },
+    {
+      signal: "Source resolution",
+      state: currentEvents.some((e) => e.breadcrumbs !== null) ? "OBSERVED" : "LIMITED",
+      observedCount: null,
+      detail: "Stack frame source mapping",
     },
   ];
-
-  const observedDimensionsCount = dimensions.filter((d) => d.status === "OBSERVED").length;
-  const overallObservationTier: CoverageStatus =
-    observedDimensionsCount >= 4
-      ? "OBSERVED"
-      : observedDimensionsCount >= 2
-      ? "PARTIAL"
-      : hasTelemetry
-      ? "LIMITED"
-      : "NOT CAPTURED";
-
-  const observedTelemetryGaps: string[] = [];
-  if (tracesObserved === 0) observedTelemetryGaps.push("No request traces captured in window");
-  if (allIdentifiedUsers.size === 0) observedTelemetryGaps.push("User identity attributes not present in events");
-  if (traceLinkageCount === 0 && tracesObserved > 0) observedTelemetryGaps.push("Traces lack distributed correlation IDs");
-  if (dbSpansCount === 0 && tracesObserved > 0) observedTelemetryGaps.push("No database spans detected");
 
   const telemetryCoverage: TelemetryCoverageData = {
-    dimensions,
-    overallObservationTier,
-    observedTelemetryGaps,
+    signals,
   };
 
-  // 9. TEMPORAL ANOMALIES (Deterministic rule-based detections)
-  const anomalies: TemporalAnomaly[] = [];
+  // 9. LONG-TERM TREND (3 rows)
+  const hasTrendBaseline = previousEvents.length > 0;
 
-  // Rule 1: Error rate spike (> 3x previous period with >= 3 current errors)
-  if (
-    currentErrorRate !== null &&
-    prevErrorRate !== null &&
-    prevErrorRate > 0 &&
-    currentErrorRate >= prevErrorRate * 3 &&
-    currentErrors.length >= 3
-  ) {
-    anomalies.push({
-      id: "anomaly-error-spike",
-      type: "error_spike",
-      title: "Observed Error Rate Deviation",
-      description: `Current error rate (${currentErrorRate.toFixed(1)}%) is ${(
-        currentErrorRate / prevErrorRate
-      ).toFixed(1)}x higher than baseline (${prevErrorRate.toFixed(1)}%).`,
-      timestamp: timeRange.end.toISOString(),
-      severity: "critical",
-      evidenceValue: `${currentErrorRate.toFixed(1)}% error rate (${currentErrors.length} errors)`,
-      baselineValue: `${prevErrorRate.toFixed(1)}% baseline`,
-      ruleTriggered: "current_error_rate >= 3.0 * previous_error_rate AND errors >= 3",
-    });
-  }
-
-  // Rule 2: Latency spike (> 2x previous period p95 with >= 5 requests)
-  if (
-    currentP95 !== null &&
-    prevP95 !== null &&
-    prevP95 > 0 &&
-    currentP95 >= prevP95 * 2 &&
-    currentRequests.length >= 5
-  ) {
-    anomalies.push({
-      id: "anomaly-latency-spike",
-      type: "latency_spike",
-      title: "Observed P95 Latency Degradation",
-      description: `P95 latency reached ${currentP95}ms compared to ${prevP95}ms in previous period (${(
-        currentP95 / prevP95
-      ).toFixed(1)}x slower).`,
-      timestamp: timeRange.end.toISOString(),
-      severity: "warning",
-      evidenceValue: `${currentP95}ms p95`,
-      baselineValue: `${prevP95}ms baseline`,
-      ruleTriggered: "current_p95 >= 2.0 * previous_p95 AND samples >= 5",
-    });
-  }
-
-  // Rule 3: Traffic drop (< 0.5x previous period requests with baseline >= 20)
-  if (
-    prevRequests.length >= 20 &&
-    currentRequests.length < prevRequests.length * 0.5
-  ) {
-    anomalies.push({
-      id: "anomaly-traffic-drop",
-      type: "traffic_drop",
-      title: "Observed Request Volume Reduction",
-      description: `Request throughput dropped from ${prevRequests.length} to ${currentRequests.length} (-${Math.round(
-        (1 - currentRequests.length / prevRequests.length) * 100
-      )}%).`,
-      timestamp: timeRange.end.toISOString(),
-      severity: "info",
-      evidenceValue: `${currentRequests.length} requests observed`,
-      baselineValue: `${prevRequests.length} previous requests`,
-      ruleTriggered: "current_requests < 0.5 * previous_requests AND baseline >= 20",
-    });
-  }
-
-  const temporalAnomalies: TemporalAnomaliesData = {
-    anomalies,
-    detectionPeriodLabel: `Evaluated across ${timeRange.key} window vs prior period`,
-    evaluationNote: "Detections derive strictly from thresholded mathematical deviations on captured telemetry.",
-  };
-
-  // 10. PROJECT TRENDS
-  const ppDiff = errorRateComp.percentagePointsDiff;
-  const trends: TrendComparisonPoint[] = [
+  const trendRows: ProjectTrendRow[] = [
     {
-      metricName: "Error Rate",
-      currentValue: currentErrorRate !== null ? `${currentErrorRate.toFixed(1)}%` : "No requests",
-      previousValue: prevErrorRate !== null ? `${prevErrorRate.toFixed(1)}%` : "Not observed",
-      changePct: ppDiff ?? null,
-      trendDirection:
-        ppDiff === null || ppDiff === undefined || !errorRateComp.sufficientBaseline
-          ? "not_enough_telemetry"
-          : ppDiff < 0
-          ? "improving"
-          : ppDiff > 0
-          ? "degrading"
-          : "neutral",
-      commentary:
-        errorRateComp.sufficientBaseline && ppDiff !== null && ppDiff !== undefined
-          ? `${Math.abs(ppDiff)} percentage points difference`
-          : "Insufficient baseline telemetry to evaluate longitudinal error rate shift",
+      metricName: "ERROR RATE",
+      current: currentErrorRate !== null ? `${currentErrorRate.toFixed(1)}%` : "—",
+      previous: hasErrorRateBaseline && prevErrorRate !== null ? `${prevErrorRate.toFixed(1)}%` : "No observed baseline",
+      delta: hasErrorRateBaseline && errorRateComp.percentagePointsDiff !== null
+        ? `${errorRateComp.percentagePointsDiff > 0 ? "↑" : "↓"} ${Math.abs(errorRateComp.percentagePointsDiff)} pp`
+        : "—",
+      status: hasErrorRateBaseline ? (errorRateComp.isImprovement ? "Improving" : "Degrading") : "Baseline unavailable",
     },
     {
-      metricName: "P95 Latency",
-      currentValue: currentP95 !== null ? `${currentP95}ms` : "No duration data",
-      previousValue: prevP95 !== null ? `${prevP95}ms` : "Not observed",
-      changePct: p95CompRaw.relativeDiffPct,
-      trendDirection:
-        p95CompRaw.relativeDiffPct === null || !p95LatencyComp.sufficientBaseline
-          ? "not_enough_telemetry"
-          : p95CompRaw.relativeDiffPct < 0
-          ? "improving"
-          : p95CompRaw.relativeDiffPct > 0
-          ? "degrading"
-          : "neutral",
-      commentary:
-        p95LatencyComp.sufficientBaseline && p95CompRaw.relativeDiffPct !== null
-          ? `${p95CompRaw.relativeDiffPct > 0 ? "+" : ""}${p95CompRaw.relativeDiffPct}% change in tail response time`
-          : "Insufficient latency samples in previous window for statistical comparison",
+      metricName: "P95 LATENCY",
+      current: currentP95 !== null ? `${currentP95}ms` : "—",
+      previous: hasP95Baseline && prevP95 !== null ? `${prevP95}ms` : "No observed baseline",
+      delta: hasP95Baseline && p95Comp.relativeDiffPct !== null
+        ? `${p95Comp.relativeDiffPct > 0 ? "↑" : "↓"} ${Math.abs(p95Comp.relativeDiffPct)}%`
+        : "—",
+      status: hasP95Baseline ? (p95Comp.isImprovement ? "Improving" : "Degrading") : "Baseline unavailable",
     },
     {
-      metricName: "Request Volume",
-      currentValue: `${currentRequests.length} requests`,
-      previousValue: `${prevRequests.length} requests`,
-      changePct: reqVolCompRaw.relativeDiffPct,
-      trendDirection:
-        reqVolCompRaw.relativeDiffPct === null || !requestVolumeComp.sufficientBaseline
-          ? "not_enough_telemetry"
-          : reqVolCompRaw.relativeDiffPct >= 0
-          ? "improving"
-          : "degrading",
-      commentary:
-        requestVolumeComp.sufficientBaseline && reqVolCompRaw.relativeDiffPct !== null
-          ? `${reqVolCompRaw.relativeDiffPct > 0 ? "+" : ""}${reqVolCompRaw.relativeDiffPct}% traffic variation`
-          : "Previous window request baseline not available",
+      metricName: "REQUEST VOLUME",
+      current: currentRequests.length.toLocaleString(),
+      previous: hasRequestsBaseline ? prevRequests.length.toLocaleString() : "No observed baseline",
+      delta: hasRequestsBaseline && reqVolComp.relativeDiffPct !== null
+        ? `${reqVolComp.relativeDiffPct > 0 ? "↑" : "↓"} ${Math.abs(reqVolComp.relativeDiffPct)}%`
+        : "—",
+      status: hasRequestsBaseline ? (reqVolComp.isImprovement ? "Healthy" : "Reduced") : "Baseline unavailable",
     },
   ];
 
-  const projectTrends: ProjectTrendsData = {
-    comparisons: trends,
-    evaluationWindowDays: Math.ceil(
-      (timeRange.end.getTime() - timeRange.start.getTime()) / (24 * 3600 * 1000)
-    ),
+  const longTermTrend: LongTermTrendData = {
+    rows: trendRows,
+    hasBaseline: hasTrendBaseline,
   };
 
   return {
     projectId: project.id,
     projectName: project.name,
     filterApplied: effectiveFilter,
+    totalHistoricalEvents,
+    hasTelemetry,
     timeWindow: {
       from: timeRange.start.toISOString(),
       to: timeRange.end.toISOString(),
       previousFrom: timeRange.comparisonStart?.toISOString() || "",
       previousTo: timeRange.comparisonEnd?.toISOString() || "",
-      bucketSizeMinutes: Math.round(timeRange.bucketIntervalMs / 60000),
+      label: effectiveFilter.timeRange === "custom" ? "Custom Range" : `Last ${effectiveFilter.timeRange.toUpperCase()}`,
     },
-    hasTelemetry,
-    totalHistoricalEvents,
-    healthSnapshot,
-    errorBehavior,
-    requestPerformance,
-    serviceDistribution,
-    releaseImpact,
-    errorConcentration,
+    telemetryOverview,
+    primaryChart: {
+      buckets: primaryBuckets,
+    },
+    observedChanges,
+    failureConcentration,
+    servicePerformance,
+    releaseBehavior,
     userImpact,
     telemetryCoverage,
-    temporalAnomalies,
-    projectTrends,
+    longTermTrend,
     availableEnvironments: project.environments,
     availableServices,
     availableReleases,

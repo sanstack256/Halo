@@ -3,10 +3,48 @@ import {
   calculatePercentile,
   isFailedStatus,
   resolveTimeWindow,
-} from "../project-metrics-engine";
-import { calculateMetricComparison } from "@/lib/analytics/time";
+} from "../calculations";
+import {
+  formatUtcDateTime,
+  formatUtcTime,
+  formatThroughput,
+} from "../formatters";
+import { calculateMetricComparison } from "../../analytics/time";
 
 describe("Project Metrics Calculations & Mathematical Correctness", () => {
+  describe("Timestamp & Throughput Formatters", () => {
+    it("formats UTC datetime without negative times or drift", () => {
+      const d = new Date("2026-09-08T21:14:05.000Z");
+      expect(formatUtcDateTime(d)).toBe("Sep 8, 21:14 UTC");
+      expect(formatUtcTime(d)).toBe("21:14 UTC");
+    });
+
+    it("handles null or invalid date safely", () => {
+      expect(formatUtcDateTime(null)).toBe("—");
+      expect(formatUtcDateTime("invalid")).toBe("—");
+      expect(formatUtcTime(undefined)).toBe("—");
+    });
+
+    it("calculates throughput correctly across real elapsed seconds", () => {
+      // 437 requests across 10 minutes (600 seconds)
+      const t1 = new Date("2026-09-08T21:00:00.000Z").getTime();
+      const t2 = new Date("2026-09-08T21:10:00.000Z").getTime();
+      const res = formatThroughput(437, t1, t2);
+
+      // 437 / 600 = 0.728 rps = 43.7 rpm
+      expect(res.isInsufficient).toBe(false);
+      expect(res.value).toBe("43.7 rpm");
+    });
+
+    it("displays insufficient observation interval when interval < 5s", () => {
+      const t1 = new Date("2026-09-08T21:00:00.000Z").getTime();
+      const t2 = new Date("2026-09-08T21:00:02.000Z").getTime();
+      const res = formatThroughput(10, t1, t2);
+      expect(res.isInsufficient).toBe(true);
+      expect(res.label).toBe("Insufficient observation interval");
+    });
+  });
+
   describe("Percentiles Calculation", () => {
     it("returns null for empty array", () => {
       expect(calculatePercentile([], 50)).toBeNull();
@@ -15,16 +53,13 @@ describe("Project Metrics Calculations & Mathematical Correctness", () => {
 
     it("correctly calculates median (p50) on odd and even lengths", () => {
       const odd = [10, 20, 30, 40, 50];
-      // 50% of 5 is 2.5 -> ceil is 3 -> index 2 -> 30
       expect(calculatePercentile(odd, 50)).toBe(30);
 
       const even = [10, 20, 30, 40];
-      // 50% of 4 is 2 -> index 1 -> 20
       expect(calculatePercentile(even, 50)).toBe(20);
     });
 
     it("correctly calculates p95 on distribution", () => {
-      // 100 values from 1 to 100
       const values = Array.from({ length: 100 }, (_, i) => i + 1);
       expect(calculatePercentile(values, 95)).toBe(95);
       expect(calculatePercentile(values, 99)).toBe(99);
@@ -82,14 +117,12 @@ describe("Project Metrics Calculations & Mathematical Correctness", () => {
     });
 
     it("calculates accurate percentage points difference for rate metrics", () => {
-      // e.g. error rate dropped from 15.5% to 5.2%
       const result = calculateMetricComparison(5.2, 15.5, true, true);
       expect(result.percentagePointsDiff).toBe(-10.3);
       expect(result.isImprovement).toBe(true);
     });
 
     it("calculates relative change percentage for volume metrics", () => {
-      // 100 -> 150 (+50%)
       const result = calculateMetricComparison(150, 100, false, false);
       expect(result.relativeDiffPct).toBe(50);
       expect(result.isImprovement).toBe(true);
@@ -126,12 +159,10 @@ describe("Project Metrics Calculations & Mathematical Correctness", () => {
     });
 
     it("Dataset C: Latency spike percentile tracking", () => {
-      // 9 items fast (20-30ms), 1 extreme outlier (2500ms)
       const latencies = [20, 22, 24, 25, 26, 28, 29, 30, 31, 2500];
       const p50 = calculatePercentile(latencies, 50);
       const p95 = calculatePercentile(latencies, 95);
 
-      // Median should be 26ms, P95 tail captures the 2500ms spike
       expect(p50).toBe(26);
       expect(p95).toBe(2500);
     });
@@ -152,53 +183,6 @@ describe("Project Metrics Calculations & Mathematical Correctness", () => {
     });
   });
 
-  describe("Deterministic Anomaly Detection Conditions", () => {
-    it("detects error spike when error rate exceeds 3x previous baseline with >= 3 errors", () => {
-      const currentErrorRate = 18.0;
-      const prevErrorRate = 4.0;
-      const currentErrorsCount = 6;
-
-      const isSpike =
-        currentErrorRate !== null &&
-        prevErrorRate !== null &&
-        prevErrorRate > 0 &&
-        currentErrorRate >= prevErrorRate * 3 &&
-        currentErrorsCount >= 3;
-
-      expect(isSpike).toBe(true);
-    });
-
-    it("does not trigger false error spike when error count is trivial (< 3 errors)", () => {
-      const currentErrorRate = 100.0;
-      const prevErrorRate = 10.0;
-      const currentErrorsCount = 1; // only 1 error
-
-      const isSpike =
-        currentErrorRate !== null &&
-        prevErrorRate !== null &&
-        prevErrorRate > 0 &&
-        currentErrorRate >= prevErrorRate * 3 &&
-        currentErrorsCount >= 3;
-
-      expect(isSpike).toBe(false);
-    });
-
-    it("detects latency degradation when P95 exceeds 2x previous baseline with >= 5 requests", () => {
-      const currentP95 = 950;
-      const prevP95 = 400;
-      const requestCount = 20;
-
-      const isLatencyDegraded =
-        currentP95 !== null &&
-        prevP95 !== null &&
-        prevP95 > 0 &&
-        currentP95 >= prevP95 * 2 &&
-        requestCount >= 5;
-
-      expect(isLatencyDegraded).toBe(true);
-    });
-  });
-
   describe("Time Range Resolution", () => {
     it("resolves canonical presets deterministically", () => {
       const range1h = resolveTimeWindow({ timeRange: "1h" });
@@ -216,7 +200,7 @@ describe("Project Metrics Calculations & Mathematical Correctness", () => {
 
     it("resolves custom time ranges properly with comparative period", () => {
       const from = "2026-09-01T00:00:00.000Z";
-      const to = "2026-09-03T00:00:00.000Z"; // 2 days = 48h
+      const to = "2026-09-03T00:00:00.000Z";
       const custom = resolveTimeWindow({
         timeRange: "custom",
         from,
