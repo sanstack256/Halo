@@ -17,6 +17,7 @@ import { getRecommendationModel } from "./provider";
 import { evaluateRecommendationEligibility } from "./eligibility-gate";
 import { buildSystemPrompt, buildUserPrompt } from "./prompt-builder";
 import { validateModelOutput } from "./output-validator";
+import { buildRepairCase } from "../repair-intelligence/repair-case-builder";
 import type {
     ValidatedRecommendationResult,
     RecommendationEligibilityVerdict,
@@ -32,8 +33,9 @@ export async function generateEvidenceBoundRecommendation(
 ): Promise<ValidatedRecommendationResult> {
     const { snapshot, customModel } = options;
 
-    // 1. Evaluate Eligibility Gate
+    // 1. Evaluate Eligibility Gate & Deterministic Repair Case
     const gateVerdict = evaluateRecommendationEligibility(snapshot);
+    const repairCase = buildRepairCase({ snapshot });
 
     if (!gateVerdict.canGenerateRecommendation) {
         return {
@@ -56,7 +58,9 @@ export async function generateEvidenceBoundRecommendation(
                 "Affected execution path",
             ],
             limitations: ["Refused by Halo deterministic eligibility gate."],
+            repairCase,
             audit: {
+
                 snapshotId: snapshot.snapshotId,
                 gateVerdict,
                 validation: {
@@ -152,6 +156,7 @@ export async function generateEvidenceBoundRecommendation(
             : undefined,
         unknowns: data.unknowns,
         limitations: data.limitations,
+        repairCase,
         audit: {
             snapshotId: snapshot.snapshotId,
             gateVerdict,
@@ -202,6 +207,7 @@ function buildFallbackResult(
         },
         unknowns: ["LLM-synthesized resolution steps"],
         limitations: [fallbackReason],
+        repairCase: buildRepairCase({ snapshot }),
         audit: {
             snapshotId: snapshot.snapshotId,
             gateVerdict,

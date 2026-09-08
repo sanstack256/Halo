@@ -25,6 +25,7 @@ import {
 } from "lucide-react";
 import type { DashboardRecommendationPlan } from "@/lib/investigation/recommendations";
 import type { ValidatedRecommendationResult } from "@/lib/investigation/recommendation-engine/types";
+import { RepairCaseView } from "./repair-case-view";
 
 interface Props {
     plan: DashboardRecommendationPlan;
@@ -33,7 +34,18 @@ interface Props {
 }
 
 export function RecommendationPlanView({ plan, llmResult, onJumpToEvidence }: Props) {
+    if (llmResult?.repairCase) {
+        return (
+            <RepairCaseView
+                repairCase={llmResult.repairCase}
+                llmResult={llmResult}
+                onJumpToEvidence={onJumpToEvidence}
+            />
+        );
+    }
+
     const { primary, secondary } = plan;
+
     const [copiedPatch, setCopiedPatch] = useState(false);
     const [showAudit, setShowAudit] = useState(false);
 

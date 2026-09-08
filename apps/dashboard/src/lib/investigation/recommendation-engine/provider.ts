@@ -12,6 +12,7 @@
 import type { EvidenceSnapshot } from "../evidence-snapshot";
 import type { RecommendationEligibilityVerdict } from "./types";
 import { validateProposedPatch } from "./patch-validator";
+import { buildRepairCase } from "../repair-intelligence/repair-case-builder";
 
 export interface ModelPrompt {
     system: string;
@@ -196,41 +197,24 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
         };
     }
 
-    const anchor =
-        snapshot.runtime.anchorError ||
-        snapshot.evidence.find((e) => e.type === "ERROR") ||
-        snapshot.evidence[0];
+    // Build the deterministic, evidence-bound Repair Case
+    const repairCase = buildRepairCase({ snapshot });
+    const { failureModel, protectionAnalysis, repairEligibility, repairOptions, proposedPatch } = repairCase;
+
+    const anchor = snapshot.runtime.anchorError || snapshot.evidence.find((e) => e.type === "ERROR");
     const anchorId = anchor?.id;
-    const errorTitle = anchor?.title || "Unhandled Runtime Exception";
-    const errorMsg = (anchor as any)?.message || anchor?.description || "";
-    const service = anchor?.service || snapshot.scope.service || "app";
-
-    const frame = snapshot.runtime.primaryFailingFrame;
-    const file = snapshot.source?.filePath || frame?.filePath || "unknown";
-    const line =
-        snapshot.source?.failingLineNumber ||
-        frame?.lineNumber ||
-        1;
-    const fnName =
-        snapshot.runtime.containingFunction || frame?.functionName || "handler";
-    const expr = snapshot.runtime.failingExpression || "";
-
-    const topHypo = snapshot.investigation.hypotheses[0];
-    const deploy = snapshot.evidence.find(
-        (e) => e.type === "DEPLOYMENT" || (e as any).provenance === "vercel"
-    );
+    const file = failureModel.failingFile || "unknown";
+    const line = failureModel.failingLineNumber || 1;
+    const fnName = failureModel.containingFunction || "handler";
+    const expr = failureModel.failingExpression || "";
 
     // Build What Happened
-    let whatHappened = `${errorTitle}`;
-    if (errorMsg && errorMsg !== errorTitle) {
-        whatHappened += `: ${errorMsg}`;
-    }
-    whatHappened += ` occurred in service '${service}' at ${file}:${line} inside function '${fnName}'.`;
+    let whatHappened = `${failureModel.errorTitle} occurred in service '${failureModel.service}' at ${file}:${line} inside function '${fnName}'.`;
     if (expr) {
-        whatHappened += ` The failure was triggered by an unhandled operation on '${expr}'.`;
+        whatHappened += ` Execution reached expression '${expr}'.`;
     }
-    if (topHypo && topHypo.description) {
-        whatHappened += ` ${topHypo.description}`;
+    if (failureModel.runtimeValueStatus === "NOT_CAPTURED" && expr) {
+        whatHappened += ` Runtime value of '${expr}' was not captured in telemetry; cannot prove whether the value was undefined or if invocation threw internally.`;
     }
 
     // Build Claims strictly citing real evidence IDs
@@ -240,83 +224,73 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
         evidenceIds: string[];
     }> = [];
 
-    // Claim 1: Observed Error
-    if (anchorId && snapshot.evidenceMap[anchorId]) {
+    // Observed Facts
+    for (const f of failureModel.knownFacts) {
         claims.push({
-            statement: `Verified runtime exception '${errorTitle}' was observed in service '${service}'.`,
+            statement: f.claim,
             category: "OBSERVED",
-            evidenceIds: [anchorId],
+            evidenceIds: f.evidenceIds.filter((id) => snapshot.evidenceMap[id]),
         });
     }
 
-    // Claim 2: Temporal / Causal Trigger (Derived)
-    if (deploy && anchor && deploy.id !== anchor.id && snapshot.evidenceMap[deploy.id]) {
-        const delaySec = Math.max(
-            0,
-            Math.round(
-                (new Date(anchor.timestamp).getTime() - new Date(deploy.timestamp).getTime()) / 1000
-            )
-        );
+    // Derived Facts
+    for (const f of failureModel.derivedFacts) {
         claims.push({
-            statement: `Failure occurred ${delaySec}s following deployment '${deploy.title}' in service '${deploy.service || service}'.`,
+            statement: f.claim,
             category: "DERIVED",
-            evidenceIds: [deploy.id, anchorId].filter(Boolean) as string[],
+            evidenceIds: f.evidenceIds.filter((id) => snapshot.evidenceMap[id]),
         });
-    } else if (topHypo) {
-        const validIds = topHypo.evidenceIds.filter((id) => snapshot.evidenceMap[id]);
+    }
+
+    // Supported Facts
+    for (const f of failureModel.supportedFacts) {
         claims.push({
-            statement: `${topHypo.title}: ${topHypo.description}`,
-            category: "DERIVED",
-            evidenceIds: validIds.length > 0 ? validIds : anchorId ? [anchorId] : [],
+            statement: f.claim,
+            category: "SUPPORTED",
+            evidenceIds: f.evidenceIds.filter((id) => snapshot.evidenceMap[id]),
         });
-    } else {
+    }
+
+    // Protection finding claim
+    if (protectionAnalysis.guards.length > 0) {
         claims.push({
-            statement: `Execution terminated during invocation of '${fnName}' in ${file}.`,
+            statement: protectionAnalysis.summary,
             category: "DERIVED",
+            evidenceIds: anchorId && snapshot.evidenceMap[anchorId] ? [anchorId] : [],
+        });
+    }
+
+    // Unknowns
+    for (const u of failureModel.unknowns) {
+        claims.push({
+            statement: u.claim,
+            category: "UNKNOWN",
+            evidenceIds: [],
+        });
+    }
+
+    // Ensure at least 1 claim
+    if (claims.length === 0) {
+        claims.push({
+            statement: `Runtime exception observed in ${failureModel.service}`,
+            category: "OBSERVED",
             evidenceIds: anchorId ? [anchorId] : [],
         });
     }
 
-    // Claim 3: Supported Context
-    const otherErrors = snapshot.evidence.filter((e) => e.id !== anchorId).slice(0, 2);
-    if (otherErrors.length > 0) {
-        claims.push({
-            statement: `Correlated incidents (${otherErrors.map((e) => e.title).join(", ")}) were recorded within the incident window.`,
-            category: "SUPPORTED",
-            evidenceIds: otherErrors.map((e) => e.id),
-        });
-    } else if (snapshot.runtime.callChain.length > 0) {
-        claims.push({
-            statement: `Call chain confirms execution traversed ${snapshot.runtime.callChain.map((c) => c.functionName).slice(0, 3).join(" -> ")} before unhandled termination.`,
-            category: "SUPPORTED",
-            evidenceIds: anchorId ? [anchorId] : [],
-        });
-    }
+    // Recommendation Action
+    let action = repairEligibility.reason;
+    let reasoning = protectionAnalysis.detailedReasoning;
 
-    // Claim 4: Unknown
-    claims.push({
-        statement: "Preceding client request headers and upstream network payload remain unobserved.",
-        category: "UNKNOWN",
-        evidenceIds: [],
-    });
-
-    // Build Action / Recommendation
-    let action = `Add defensive validation in ${fnName} to handle unexpected null or undefined runtime values.`;
-    let reasoning = `Telemetry and runtime stack frames establish that an unhandled exception occurred at ${file}:${line}.`;
-
-    if (expr) {
-        action = `Add guard check or optional chaining for '${expr}' before property access in ${fnName}.`;
-        reasoning = `AST analysis confirms that '${expr}' was evaluated without prior verification of undefined or null.`;
-    } else if (errorTitle.toLowerCase().includes("timeout")) {
-        action = `Increase downstream timeout limits and add retry logic with exponential backoff for ${service}.`;
-        reasoning = `Observed timeouts indicate downstream service latency exceeded the client request deadline.`;
-    } else if (
-        errorTitle.toLowerCase().includes("database") ||
-        errorTitle.toLowerCase().includes("connection") ||
-        errorTitle.toLowerCase().includes("pool")
-    ) {
-        action = `Check database connection pool limits and verify connectivity parameters for ${service}.`;
-        reasoning = `Connection failure telemetry indicates resource exhaustion or unreached database endpoint.`;
+    if (repairEligibility.state === "REPAIR_READY" && repairOptions.length > 0) {
+        action = repairOptions[0]!.title;
+        reasoning = repairOptions[0]!.approach;
+    } else if (repairEligibility.state === "REPAIR_UNDERDETERMINED") {
+        action = `Capture runtime telemetry for '${expr || "failing expression"}' before applying code modifications.`;
+        reasoning = repairEligibility.reason;
+    } else if (repairEligibility.state === "REPAIR_PLAUSIBLE" && repairOptions.length > 0) {
+        action = `Evaluate repair options: ${repairOptions.map((o) => o.title).join(" OR ")}`;
+        reasoning = repairEligibility.reason;
     }
 
     const recommendation = {
@@ -333,108 +307,55 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
     };
 
     // Proposed Patch
-    let proposedPatch: {
+    let outputPatch: {
         status: "AVAILABLE" | "NOT_SAFE_TO_GENERATE" | "SOURCE_UNAVAILABLE" | "NOT_APPLICABLE";
         files: Array<{ path: string; diff: string; explanation: string }>;
         refusalReason?: string;
     };
 
-    const patchEligibility = gateVerdict?.patchEligibility || "NOT_SAFE_TO_GENERATE";
-    let safePatchStatus: "AVAILABLE" | "NOT_SAFE_TO_GENERATE" | "SOURCE_UNAVAILABLE" | "NOT_APPLICABLE" = "NOT_SAFE_TO_GENERATE";
-    if (patchEligibility === "CAN_GENERATE_PATCH") {
-        safePatchStatus = "AVAILABLE";
-    } else if (patchEligibility === "UNSAFE_MISSING_SOURCE" || !snapshot.source) {
-        safePatchStatus = "SOURCE_UNAVAILABLE";
-    } else if (patchEligibility === "NOT_APPLICABLE") {
-        safePatchStatus = "NOT_APPLICABLE";
-    } else {
-        safePatchStatus = "NOT_SAFE_TO_GENERATE";
-    }
-
-    if (safePatchStatus !== "AVAILABLE") {
-        proposedPatch = {
-            status: safePatchStatus,
+    if (
+        (repairEligibility.state === "REPAIR_READY" || repairEligibility.state === "REPAIR_PLAUSIBLE") &&
+        proposedPatch &&
+        proposedPatch.validationStatus === "VALID"
+    ) {
+        outputPatch = {
+            status: "AVAILABLE",
+            files: [
+                {
+                    path: proposedPatch.targetFile,
+                    diff: proposedPatch.unifiedDiff,
+                    explanation: repairOptions[0]?.title || "Minimal verified patch proposal",
+                },
+            ],
+        };
+    } else if (!snapshot.source || snapshot.source.resolutionStatus !== "exact_file") {
+        outputPatch = {
+            status: "SOURCE_UNAVAILABLE",
             files: [],
-            refusalReason:
-                gateVerdict?.patchReason ||
-                "Code patch generation is not permitted for this incident type.",
+            refusalReason: "Source code is unavailable for the incident release.",
         };
     } else {
-        const src = snapshot.source;
-        if (src && src.lines && src.lines.length > 0) {
-            const targetLineObj = src.lines.find(
-                (l) => l.lineNumber === line || l.isFailingLine
-            );
-            const originalLine = targetLineObj?.content;
-
-            if (originalLine && expr && originalLine.includes(expr)) {
-                let patchedLine = originalLine;
-                if (expr.includes(".")) {
-                    const safeExpr = expr.replace(/\./g, "?.");
-                    patchedLine = originalLine.replace(expr, safeExpr);
-                } else {
-                    patchedLine = originalLine.replace(expr, `${expr} ?? null`);
-                }
-
-                const candidatePatch = {
-                    status: "AVAILABLE" as const,
-                    files: [
-                        {
-                            path: src.filePath,
-                            diff: `@@ -${line},1 +${line},1 @@\n-${originalLine}\n+${patchedLine}`,
-                            explanation: `Safely verify '${expr}' before access to prevent unhandled runtime exception.`,
-                        },
-                    ],
-                };
-
-                // Validate diff application and AST syntax before proposing
-                const effectiveGateVerdict: RecommendationEligibilityVerdict = gateVerdict || {
-                    canGenerateRecommendation: true,
-                    patchEligibility: "CAN_GENERATE_PATCH",
-                    recommendationReason: "Deterministic synthesis eligible",
-                    patchReason: "Deterministic synthesis eligible",
-                };
-                const patchCheck = validateProposedPatch(candidatePatch, snapshot, effectiveGateVerdict);
-                if (patchCheck.isValid) {
-                    proposedPatch = candidatePatch;
-                } else {
-                    proposedPatch = {
-                        status: "NOT_SAFE_TO_GENERATE",
-                        files: [],
-                        refusalReason:
-                            patchCheck.refusalReason ||
-                            "Automated patch requires human confirmation for dynamic runtime values.",
-                    };
-                }
-            } else {
-                proposedPatch = {
-                    status: "NOT_SAFE_TO_GENERATE",
-                    files: [],
-                    refusalReason:
-                        "Automated patch requires human confirmation for dynamic runtime values.",
-                };
-            }
-        } else {
-            proposedPatch = {
-                status: "SOURCE_UNAVAILABLE",
-                files: [],
-                refusalReason: "Source code is unavailable for the incident release.",
-            };
-        }
+        outputPatch = {
+            status: "NOT_SAFE_TO_GENERATE",
+            files: [],
+            refusalReason: repairEligibility.reason,
+        };
     }
 
     return {
-        status: "RECOMMENDATION",
+        status: repairEligibility.state === "REPAIR_BLOCKED" ? "NO_SAFE_RECOMMENDATION" : "RECOMMENDATION",
         whatHappened,
         claims,
         recommendation,
-        proposedPatch,
-        unknowns:
-            snapshot.sufficiency.missingEvidence.length > 0
-                ? snapshot.sufficiency.missingEvidence
-                : ["Pre-incident client request headers"],
-        limitations: ["Derived strictly from verified telemetry and resolved source code."],
-        confidenceLevel: snapshot.sufficiency.status === "SUFFICIENT" ? "High" : "Medium",
+        proposedPatch: outputPatch,
+        unknowns: failureModel.unknowns.map((u) => u.claim),
+        limitations: repairCase.sideEffects.contractBreaks,
+        confidenceLevel:
+            repairEligibility.state === "REPAIR_READY"
+                ? "High"
+                : repairEligibility.state === "REPAIR_PLAUSIBLE"
+                ? "Medium"
+                : "Low",
     };
 }
 

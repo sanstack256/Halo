@@ -193,6 +193,9 @@ export interface ValidatedRecommendationResult {
     /** Limitations and caveats */
     limitations: string[];
 
+    /** Full evidence-driven Repair Case */
+    repairCase?: import("../repair-intelligence/types").RepairCase;
+
     /** Audit and inspectability metadata */
     audit: {
         snapshotId: string;
@@ -205,3 +208,4 @@ export interface ValidatedRecommendationResult {
         };
     };
 }
+

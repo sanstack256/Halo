@@ -18,6 +18,7 @@ import {
     type RecommendationEligibilityVerdict,
 } from "./types";
 import { validateProposedPatch } from "./patch-validator";
+import { buildFailureModel } from "../repair-intelligence/failure-model";
 
 export function validateModelOutput(
     rawText: string,
@@ -146,6 +147,28 @@ export function validateModelOutput(
             "Model claimed automated tests/builds passed, but Halo did not execute test runners for this incident."
         );
     }
+
+    // Check for uncaptured runtime value inferences (Section 9)
+    const failureModel = buildFailureModel(snapshot);
+    if (failureModel.runtimeValueStatus === "NOT_CAPTURED" && failureModel.failingExpression) {
+        const expr = failureModel.failingExpression.toLowerCase();
+        for (const claim of data.claims) {
+            if (claim.category === "OBSERVED") {
+                const s = claim.statement.toLowerCase();
+                if (
+                    s.includes(expr) &&
+                    (s.includes("undefined") || s.includes("null")) &&
+                    (s.includes("was") || s.includes("is") || s.includes("evaluated to"))
+                ) {
+                    factualConsistencyValid = false;
+                    rejectionReasons.push(
+                        `Model claimed runtime value of '${failureModel.failingExpression}' was undefined/null as an OBSERVED fact, but telemetry did not capture its dynamic runtime value.`
+                    );
+                }
+            }
+        }
+    }
+
 
     // 6. Proposed Patch Validation
     let patchValid = true;
