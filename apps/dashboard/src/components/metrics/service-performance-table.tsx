@@ -36,7 +36,8 @@ export function ServicePerformanceTable({
               <tr className="border-b border-border/50 text-[11px] uppercase tracking-wider text-muted-foreground">
                 <th className="py-2.5 font-medium">SERVICE</th>
                 <th className="py-2.5 font-medium text-right">REQUESTS</th>
-                <th className="py-2.5 font-medium text-right">ERRORS</th>
+                <th className="py-2.5 font-medium text-right">FAILED REQ</th>
+                <th className="py-2.5 font-medium text-right">ERROR EVENTS</th>
                 <th className="py-2.5 font-medium text-right">ERROR RATE</th>
                 <th className="py-2.5 font-medium text-right">P95</th>
                 <th className="py-2.5 font-medium text-right">AFFECTED USERS</th>
@@ -49,17 +50,26 @@ export function ServicePerformanceTable({
                   key={row.service}
                   className="h-[52px] hover:bg-secondary/15 transition-colors font-mono"
                 >
-                  <td className="py-3 font-semibold text-foreground max-w-[200px] truncate">
+                  <td className="py-3 font-semibold text-foreground max-w-[180px] truncate">
                     {row.service}
                   </td>
                   <td className="py-3 text-right text-foreground">
                     {row.requests > 0 ? row.requests.toLocaleString() : "—"}
                   </td>
                   <td className="py-3 text-right text-rose-400 font-semibold">
-                    {row.errors > 0 ? row.errors.toLocaleString() : "0"}
+                    {row.failedRequests > 0 ? row.failedRequests.toLocaleString() : "0"}
+                  </td>
+                  <td className="py-3 text-right text-amber-400">
+                    {row.errorEvents > 0 ? row.errorEvents.toLocaleString() : "0"}
                   </td>
                   <td className="py-3 text-right">
-                    {row.errorRate !== null ? `${row.errorRate}%` : "—"}
+                    {row.errorRate !== null ? (
+                      `${row.errorRate}%`
+                    ) : (
+                      <span className="text-muted-foreground" title="No observed request denominator">
+                        —
+                      </span>
+                    )}
                   </td>
                   <td className="py-3 text-right">
                     {row.p95LatencyMs !== null ? `${row.p95LatencyMs}ms` : "—"}

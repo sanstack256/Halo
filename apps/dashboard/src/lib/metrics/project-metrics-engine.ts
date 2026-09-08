@@ -642,7 +642,7 @@ export async function getProjectMetricsIntelligence(
       users: new Set<string>(),
     };
 
-    if (ev.type === "TRACE" || ev.durationMs !== null || ev.operation !== null) {
+    if (ev.type === "TRACE" || ev.durationMs !== null || ev.operation !== null || ev.requestId !== null) {
       existing.requests++;
       if (typeof ev.durationMs === "number") existing.latencies.push(ev.durationMs);
       if (isFailedStatus(ev.status)) existing.failedRequests++;
@@ -665,14 +665,15 @@ export async function getProjectMetricsIntelligence(
       return {
         service: serviceName,
         requests: stats.requests,
-        errors: stats.errors,
+        failedRequests: stats.failedRequests,
+        errorEvents: stats.errors,
         errorRate: errRate,
         p95LatencyMs: p95,
         affectedUsers: stats.users.size > 0 ? stats.users.size : null,
         actionHref: `?service=${encodeURIComponent(serviceName)}`,
       };
     })
-    .sort((a, b) => b.errors - a.errors);
+    .sort((a, b) => b.failedRequests - a.failedRequests || b.errorEvents - a.errorEvents);
 
   const servicePerformance: ServicePerformanceData = {
     services: servicePerformanceRows,
@@ -684,7 +685,7 @@ export async function getProjectMetricsIntelligence(
   const releaseBehaviorRows: ReleaseBehaviorRow[] = allReleases.map((rel) => {
     const relEvents = currentEvents.filter((e) => e.release === rel.version);
     const relRequests = relEvents.filter(
-      (e) => e.type === "TRACE" || e.durationMs !== null || e.operation !== null
+      (e) => e.type === "TRACE" || e.durationMs !== null || e.operation !== null || e.requestId !== null
     );
     const relErrors = relEvents.filter((e) => e.type === "ERROR");
     const relFailed = relRequests.filter((e) => isFailedStatus(e.status));
@@ -704,8 +705,9 @@ export async function getProjectMetricsIntelligence(
       version: rel.version,
       deployedAt: formatUtcDateTime(rel.createdAt),
       requestCount: relRequests.length,
+      failedRequestCount: relFailed.length,
       errorCount: relErrors.length,
-      errorRate: relErrorRate !== null ? Math.round(relErrorRate * 10) / 10 : null,
+      errorRate: relErrorRate,
       p95LatencyMs: calculatePercentile(relLatencies, 95),
       temporalRelationship: "Observed after release",
       actionHref: `?release=${encodeURIComponent(rel.version)}`,
@@ -720,7 +722,6 @@ export async function getProjectMetricsIntelligence(
 
   // 7. USER IMPACT
   const totalCapturedSessionsCount = currentSessions.length;
-  const failedSessionsCount = currentSessions.filter((s) => s.crashedAt !== null).length;
   const affectedSessionsSet = new Set<string>();
 
   for (const ev of currentAffectedEvents) {
@@ -745,13 +746,14 @@ export async function getProjectMetricsIntelligence(
   if (allIdentifiedUsers.size > 0) {
     summarySentence = `${affectedUsersCount} of ${allIdentifiedUsers.size} identified users experienced at least one observed error.`;
   } else if (totalCapturedSessionsCount > 0) {
-    summarySentence = `${affectedSessionsCount} of ${totalCapturedSessionsCount} observed anonymous sessions experienced at least one error.`;
+    summarySentence = `${affectedSessionsCount} of ${totalCapturedSessionsCount} observed client sessions experienced at least one error.`;
   }
 
   const userImpact: UserImpactData = {
     affectedUsersCount: allIdentifiedUsers.size > 0 ? affectedUsersCount : null,
+    totalIdentifiedUsersCount: allIdentifiedUsers.size > 0 ? allIdentifiedUsers.size : null,
     affectedSessionsCount: totalCapturedSessionsCount > 0 ? affectedSessionsCount : null,
-    sessionsWithErrorsCount: totalCapturedSessionsCount > 0 ? failedSessionsCount : null,
+    totalSessionsCount: totalCapturedSessionsCount > 0 ? totalCapturedSessionsCount : null,
     percentageOfSessionsWithErrors,
     errorsPerAffectedUser,
     summarySentence,

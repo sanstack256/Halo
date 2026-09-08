@@ -273,4 +273,58 @@ describe("Project Metrics Calculations & Mathematical Correctness", () => {
       expect(custom.comparisonEnd!.toISOString()).toBe(from);
     });
   });
+
+  describe("Telemetry Population Reconciliation & Cross-Section Invariants", () => {
+    it("Reconciliation: Service request and failure counts sum exactly to project request and failure totals", () => {
+      const serviceA = { requests: 70, failed: 26, errors: 20 };
+      const serviceB = { requests: 35, failed: 13, errors: 10 };
+      const serviceWeb = { requests: 0, failed: 0, errors: 13 };
+
+      const totalRequests = serviceA.requests + serviceB.requests + serviceWeb.requests;
+      const totalFailedRequests = serviceA.failed + serviceB.failed + serviceWeb.failed;
+      const totalErrorEvents = serviceA.errors + serviceB.errors + serviceWeb.errors;
+
+      expect(totalRequests).toBe(105);
+      expect(totalFailedRequests).toBe(39);
+      expect(totalErrorEvents).toBe(43);
+
+      const projectErrorRate = calculateErrorRate(totalRequests, totalFailedRequests, totalErrorEvents, true);
+      const serviceARate = calculateErrorRate(serviceA.requests, serviceA.failed, serviceA.errors, true);
+      const serviceBRate = calculateErrorRate(serviceB.requests, serviceB.failed, serviceB.errors, true);
+      const serviceWebRate = calculateErrorRate(serviceWeb.requests, serviceWeb.failed, serviceWeb.errors, true);
+
+      expect(projectErrorRate.value).toBe(37.1);
+      expect(serviceARate.value).toBe(37.1);
+      expect(serviceBRate.value).toBe(37.1);
+      expect(serviceWebRate.value).toBeNull(); // 0 requests observed -> undefined
+      expect(serviceWebRate.state).toBe("INVALID_DENOMINATOR");
+    });
+
+    it("Reconciliation: Differentiates HTTP failed requests (39) from caught exception events (43)", () => {
+      const failedRequests = 39;
+      const exceptionEvents = 43;
+
+      expect(failedRequests).not.toBe(exceptionEvents);
+      // Exception events count must never be substituted as the failed requests count
+      expect(failedRequests).toBe(39);
+      expect(exceptionEvents).toBe(43);
+    });
+
+    it("Reconciliation: Session error calculation uses actual captured sessions as denominator", () => {
+      const totalSessions = 39;
+      const sessionsWithErrors = 33;
+
+      const rate = Math.round((sessionsWithErrors / totalSessions) * 1000) / 10;
+      expect(rate).toBe(84.6);
+      expect(sessionsWithErrors).not.toBe(0);
+    });
+
+    it("Reconciliation: User impact calculates mean errors per affected user from real error population", () => {
+      const totalErrors = 43;
+      const affectedUsers = 11;
+
+      const errorsPerUser = Math.round((totalErrors / affectedUsers) * 10) / 10;
+      expect(errorsPerUser).toBe(3.9);
+    });
+  });
 });

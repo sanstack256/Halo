@@ -67,7 +67,8 @@ export function ReleaseBehaviorView({
                   <th className="py-2.5 font-medium">RELEASE</th>
                   <th className="py-2.5 font-medium">DEPLOYED</th>
                   <th className="py-2.5 font-medium text-right">REQUESTS</th>
-                  <th className="py-2.5 font-medium text-right">ERRORS</th>
+                  <th className="py-2.5 font-medium text-right">FAILED REQ</th>
+                  <th className="py-2.5 font-medium text-right">ERROR EVENTS</th>
                   <th className="py-2.5 font-medium text-right">ERROR RATE</th>
                   <th className="py-2.5 font-medium text-right">P95</th>
                   <th className="py-2.5 font-medium text-right">ACTION</th>
@@ -89,6 +90,9 @@ export function ReleaseBehaviorView({
                       {rel.requestCount.toLocaleString()}
                     </td>
                     <td className="py-2.5 text-right text-rose-400 font-semibold">
+                      {rel.failedRequestCount.toLocaleString()}
+                    </td>
+                    <td className="py-2.5 text-right text-amber-400">
                       {rel.errorCount.toLocaleString()}
                     </td>
                     <td className="py-2.5 text-right">

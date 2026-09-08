@@ -92,7 +92,8 @@ export interface FailureConcentrationData {
 export interface ServicePerformanceRow {
   service: string;
   requests: number;
-  errors: number;
+  failedRequests: number;
+  errorEvents: number;
   errorRate: number | null;
   p95LatencyMs: number | null;
   affectedUsers: number | null;
@@ -108,6 +109,7 @@ export interface ReleaseBehaviorRow {
   version: string;
   deployedAt: string;
   requestCount: number;
+  failedRequestCount: number;
   errorCount: number;
   errorRate: number | null;
   p95LatencyMs: number | null;
@@ -129,8 +131,9 @@ export interface ReleaseBehaviorData {
 
 export interface UserImpactData {
   affectedUsersCount: number | null;
+  totalIdentifiedUsersCount: number | null;
   affectedSessionsCount: number | null;
-  sessionsWithErrorsCount: number | null;
+  totalSessionsCount: number | null;
   percentageOfSessionsWithErrors: number | null;
   errorsPerAffectedUser: number | null;
   summarySentence: string;

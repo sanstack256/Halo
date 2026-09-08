@@ -9,8 +9,9 @@ interface UserImpactViewProps {
 export function UserImpactView({ data }: UserImpactViewProps) {
   const {
     affectedUsersCount,
+    totalIdentifiedUsersCount,
     affectedSessionsCount,
-    sessionsWithErrorsCount,
+    totalSessionsCount,
     percentageOfSessionsWithErrors,
     errorsPerAffectedUser,
     summarySentence,
@@ -20,25 +21,28 @@ export function UserImpactView({ data }: UserImpactViewProps) {
     {
       label: "AFFECTED USERS",
       value: affectedUsersCount !== null ? affectedUsersCount.toLocaleString() : "—",
-      subtext: "Distinct user identities",
+      subtext:
+        affectedUsersCount !== null && totalIdentifiedUsersCount !== null
+          ? `${affectedUsersCount} of ${totalIdentifiedUsersCount} identified users`
+          : "Distinct user identities",
     },
     {
       label: "AFFECTED SESSIONS",
       value: affectedSessionsCount !== null ? affectedSessionsCount.toLocaleString() : "—",
-      subtext: "Sessions with errors",
+      subtext: "Sessions with errors or failures",
     },
     {
       label: "SESSIONS WITH ERRORS",
       value: percentageOfSessionsWithErrors !== null ? `${percentageOfSessionsWithErrors}%` : "—",
       subtext:
-        sessionsWithErrorsCount !== null
-          ? `${sessionsWithErrorsCount} failed sessions`
+        affectedSessionsCount !== null && totalSessionsCount !== null
+          ? `${affectedSessionsCount} of ${totalSessionsCount} observed sessions`
           : "Session telemetry",
     },
     {
       label: "ERRORS / AFFECTED USER",
       value: errorsPerAffectedUser !== null ? `${errorsPerAffectedUser}` : "—",
-      subtext: "Mean errors per user",
+      subtext: "Mean errors per affected user",
     },
   ];
 
