@@ -57,143 +57,96 @@ export default function ProjectQuickStart({
     ];
 
     return (
-        <section
-            className="
-                overflow-hidden
-                rounded-xl
-                border
-                border-border
-                bg-surface
-            "
-        >
+        <div className="space-y-2.5">
+            <section
+                className="
+                    overflow-hidden
+                    rounded-xl
+                    border
+                    border-border
+                    bg-surface
+                "
+            >
+                {/* Header */}
+                <div className="border-b border-border px-5 py-5">
+                    <h2 className="text-base font-semibold text-primary">
+                        Quick Start
+                    </h2>
+                    <p className="mt-1 text-xs leading-5 text-secondary">
+                        Connect your application to Halo.
+                    </p>
+                </div>
 
-            {/* Header */}
-
-            <div className="border-b border-border px-5 py-5">
-
-                <h2 className="text-base font-semibold text-primary">
-                    Quick Start
-                </h2>
-
-                <p className="mt-1 text-xs leading-5 text-secondary">
-                    Connect your application to Halo.
-                </p>
-
-            </div>
-
-            {/* Steps */}
-
-            <div className="divide-y divide-border">
-
-                {steps.map((step) => {
-
-                    const content = (
-                        <div className="flex gap-3 px-5 py-4">
-
-                            {/* Status */}
-
-                            <div className="mt-0.5 shrink-0">
-
-                                {step.completed ? (
-                                    <CheckCircle2
-                                        className="
-                                            h-4
-                                            w-4
-                                            text-accent
-                                        "
-                                        strokeWidth={1.8}
-                                    />
-                                ) : (
-                                    <Circle
-                                        className="
-                                            h-4
-                                            w-4
-                                            text-muted
-                                        "
-                                        strokeWidth={1.8}
-                                    />
-                                )}
-
-                            </div>
-
-                            {/* Content */}
-
-                            <div className="min-w-0 flex-1">
-
-                                <div className="flex items-start justify-between gap-2">
-
-                                    <h3
-                                        className="
-                                            text-sm
-                                            font-medium
-                                            text-primary
-                                        "
-                                    >
-                                        {step.title}
-                                    </h3>
-
-                                    {step.href &&
-                                        !step.completed && (
-                                            <ArrowRight
-                                                className="
-                                                    mt-0.5
-                                                    h-3.5
-                                                    w-3.5
-                                                    shrink-0
-                                                    text-muted
-                                                    transition-colors
-                                                    group-hover:text-accent
-                                                "
-                                            />
-                                        )}
-
+                {/* Steps */}
+                <div className="divide-y divide-border">
+                    {steps.map((step) => {
+                        const content = (
+                            <div className="flex gap-3 px-5 py-4">
+                                {/* Status */}
+                                <div className="mt-0.5 shrink-0">
+                                    {step.completed ? (
+                                        <CheckCircle2
+                                            className="h-4 w-4 text-accent"
+                                            strokeWidth={1.8}
+                                        />
+                                    ) : (
+                                        <Circle
+                                            className="h-4 w-4 text-muted"
+                                            strokeWidth={1.8}
+                                        />
+                                    )}
                                 </div>
 
-                                <p
-                                    className="
-                                        mt-1
-                                        text-xs
-                                        leading-5
-                                        text-secondary
-                                    "
-                                >
-                                    {step.description}
-                                </p>
+                                {/* Content */}
+                                <div className="min-w-0 flex-1">
+                                    <div className="flex items-start justify-between gap-2">
+                                        <h3 className="text-sm font-medium text-primary">
+                                            {step.title}
+                                        </h3>
 
+                                        {step.href && !step.completed && (
+                                            <ArrowRight className="mt-0.5 h-3.5 w-3.5 shrink-0 text-muted transition-colors group-hover:text-accent" />
+                                        )}
+                                    </div>
+
+                                    <p className="mt-1 text-xs leading-5 text-secondary">
+                                        {step.description}
+                                    </p>
+                                </div>
                             </div>
-
-                        </div>
-                    );
-
-                    if (
-                        step.href &&
-                        !step.completed
-                    ) {
-                        return (
-                            <Link
-                                key={step.title}
-                                href={step.href}
-                                className="
-                                    group
-                                    block
-                                    transition-colors
-                                    hover:bg-white/[0.02]
-                                "
-                            >
-                                {content}
-                            </Link>
                         );
-                    }
 
-                    return (
-                        <div key={step.title}>
-                            {content}
-                        </div>
-                    );
-                })}
+                        if (step.href && !step.completed) {
+                            return (
+                                <Link
+                                    key={step.title}
+                                    href={step.href}
+                                    className="group block transition-colors hover:bg-white/[0.02]"
+                                >
+                                    {content}
+                                </Link>
+                            );
+                        }
 
+                        return (
+                            <div key={step.title}>
+                                {content}
+                            </div>
+                        );
+                    })}
+                </div>
+            </section>
+
+            {/* Secondary Action Directly Below Quick Start */}
+            <div className="px-1">
+                <Link
+                    href={`/projects/${projectId}/sdk`}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-secondary hover:text-accent transition-colors group"
+                >
+                    <span>See SDK setup guide</span>
+                    <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                </Link>
             </div>
-
-        </section>
+        </div>
     );
 }

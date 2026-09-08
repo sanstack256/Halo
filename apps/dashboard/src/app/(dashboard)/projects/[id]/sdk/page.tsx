@@ -1,14 +1,11 @@
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import {
-    ArrowLeft,
-    Check,
-    Terminal,
-} from "lucide-react";
+import { ArrowLeft, ArrowRight, Check } from "lucide-react";
 
-import { getProjectHeader } from "@/actions/project";
+import { getProject } from "@/actions/project";
 import { getApiKeys } from "@/actions/api-key";
 import { CodeSnippet } from "./code-snippet";
+import { OptionalReplaySection } from "./optional-replay";
 
 type Props = {
     params: Promise<{
@@ -21,235 +18,149 @@ export default async function ProjectSdkPage({
 }: Props) {
     const { id } = await params;
 
-    const project = await getProjectHeader(id);
+    let project;
+    try {
+        project = await getProject(id);
+    } catch {
+        notFound();
+    }
 
     if (!project) {
         notFound();
     }
 
-    const apiKeys = await getApiKeys(id);
+    const apiKeys = await getApiKeys(project.id).catch(() => []);
     const hasApiKey = apiKeys.length > 0;
-    const apiKeySample = hasApiKey ? apiKeys[0].prefix + "_••••••••" : "hl_live_your_project_key";
+    const apiKeySample = hasApiKey ? `${apiKeys[0].prefix}_••••••••` : "hl_live_your_project_key";
+    const hasEvents = (project.events?.length ?? 0) > 0;
 
-    return (
-        <div className="mx-auto max-w-4xl space-y-10">
-            {/* Header */}
-            <div>
-                <Link
-                    href={`/projects/${id}`}
-                    className="inline-flex items-center gap-2 text-sm text-muted transition-colors hover:text-primary"
-                >
-                    <ArrowLeft className="h-4 w-4" />
-                    Back to project
-                </Link>
-
-                <div className="mt-8">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-accent/10 text-accent">
-                            <Terminal className="h-5 w-5" strokeWidth={1.8} />
-                        </div>
-
-                        <div>
-                            <p className="text-sm text-secondary">{project.name}</p>
-                            <h1 className="mt-1 text-3xl font-semibold tracking-tight text-primary">
-                                Install Halo SDK
-                            </h1>
-                        </div>
-                    </div>
-
-                    <p className="mt-4 max-w-2xl text-sm leading-6 text-secondary">
-                        Connect your application to Halo so it can capture errors, messages, breadcrumbs, users, tags, and other telemetry.
-                    </p>
-                </div>
-            </div>
-
-            {/* API key warning */}
-            {!hasApiKey && (
-                <section className="rounded-xl border border-accent/20 bg-accent/[0.04] p-6">
-                    <h2 className="font-medium text-primary">Generate an API key first</h2>
-                    <p className="mt-2 text-sm leading-6 text-secondary">
-                        Your application needs a project API key before it can send events to Halo.
-                    </p>
-
-                    <Link
-                        href={`/projects/${id}/api-keys`}
-                        className="halo-btn halo-btn-primary mt-5 inline-flex"
-                    >
-                        Generate API Key
-                    </Link>
-                </section>
-            )}
-
-            {/* Step 1 */}
-            <section className="overflow-hidden rounded-xl border border-border bg-surface">
-                <div className="border-b border-border px-6 py-5">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10 text-sm font-medium text-accent">
-                            1
-                        </div>
-                        <div>
-                            <h2 className="font-semibold text-primary">Install the SDK</h2>
-                            <p className="mt-1 text-sm text-secondary">
-                                Add the Halo package to your application.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="p-6 space-y-3">
-                    <p className="text-sm text-secondary">
-                        Your current Halo SDK installation command is:
-                    </p>
-
-                    <CodeSnippet code="pnpm add @halo-trace/sdk" />
-
-                    <p className="text-xs leading-5 text-muted">
-                        Halo SDK is compatible with Node.js, Next.js, Express, Bun, and browser runtimes.
-                    </p>
-                </div>
-            </section>
-
-            {/* Step 2 */}
-            <section className="overflow-hidden rounded-xl border border-border bg-surface">
-                <div className="border-b border-border px-6 py-5">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10 text-sm font-medium text-accent">
-                            2
-                        </div>
-                        <div>
-                            <h2 className="font-semibold text-primary">Configure your API key</h2>
-                            <p className="mt-1 text-sm text-secondary">
-                                Store your key in an environment variable.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="p-6 space-y-3">
-                    <CodeSnippet code={`HALO_API_KEY=${apiKeySample}`} />
-
-                    <p className="text-xs leading-5 text-muted">
-                        Never commit your API key to source control. Keep it in your `.env.local` or secret store.
-                    </p>
-                </div>
-            </section>
-
-            {/* Step 3 */}
-            <section className="overflow-hidden rounded-xl border border-border bg-surface">
-                <div className="border-b border-border px-6 py-5">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10 text-sm font-medium text-accent">
-                            3
-                        </div>
-                        <div>
-                            <h2 className="font-semibold text-primary">Initialize Halo</h2>
-                            <p className="mt-1 text-sm text-secondary">
-                                Create a Halo client in your application entrypoint.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="p-6">
-                    <CodeSnippet
-                        code={`import { Halo } from "@halo-trace/sdk";
+    const initCode = `import { Halo } from "@halo-trace/sdk";
 
 const halo = new Halo({
-    apiKey: process.env.HALO_API_KEY!,
-});`}
-                    />
-                </div>
-            </section>
+  apiKey: process.env.HALO_API_KEY!,
+});`;
 
-            {/* Step 4 */}
-            <section className="overflow-hidden rounded-xl border border-border bg-surface">
-                <div className="border-b border-border px-6 py-5">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10 text-sm font-medium text-accent">
-                            4
-                        </div>
-                        <div>
-                            <h2 className="font-semibold text-primary">Send your first event</h2>
-                            <p className="mt-1 text-sm text-secondary">
-                                Verify that Halo can receive telemetry.
-                            </p>
-                        </div>
-                    </div>
-                </div>
+    const eventCode = `await halo.captureMessage("Hello from Halo");`;
 
-                <div className="p-6 space-y-4">
-                    <CodeSnippet
-                        code={`await halo.captureMessage("Hello from Halo SDK!");`}
-                    />
-
-                    <div className="flex items-start gap-3 rounded-xl bg-surface-elevated p-4">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                        <p className="text-sm leading-6 text-secondary">
-                            Once Halo receives this event, the project will immediately update and show live telemetry.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Step 5 */}
-            <section className="overflow-hidden rounded-xl border border-border bg-surface">
-                <div className="border-b border-border px-6 py-5">
-                    <div className="flex items-center gap-3">
-                        <div className="flex h-7 w-7 items-center justify-center rounded-full bg-accent/10 text-sm font-medium text-accent">
-                            5
-                        </div>
-                        <div>
-                            <h2 className="font-semibold text-primary">Enable Browser Session Replay (Optional)</h2>
-                            <p className="mt-1 text-sm text-secondary">
-                                Record and reconstruct real DOM interactions leading up to frontend errors.
-                            </p>
-                        </div>
-                    </div>
-                </div>
-
-                <div className="p-6 space-y-4">
-                    <p className="text-sm text-secondary">
-                        Install the lightweight browser recording package:
-                    </p>
-
-                    <CodeSnippet code="pnpm add @halo-trace/replay" />
-
-                    <p className="text-sm text-secondary pt-2">
-                        Initialize in your browser entrypoint (`app/layout.tsx` or `index.ts`):
-                    </p>
-
-                    <CodeSnippet
-                        code={`import { HaloReplay } from "@halo-trace/replay";
-
-const replay = new HaloReplay({
-    apiKey: process.env.NEXT_PUBLIC_HALO_API_KEY!,
-    errorTriggered: true, // Captures 60s pre-error buffer on unhandled exceptions
-    privacy: {
-        maskAllText: true, // Privacy-safe by default
-    },
-});
-
-replay.start();`}
-                    />
-
-                    <div className="flex items-start gap-3 rounded-xl bg-surface-elevated p-4">
-                        <Check className="mt-0.5 h-4 w-4 shrink-0 text-accent" />
-                        <p className="text-sm leading-6 text-secondary">
-                            Replays will be automatically uploaded in chunked batches and linked to issues in the Investigation Workspace.
-                        </p>
-                    </div>
-                </div>
-            </section>
-
-            {/* Completion */}
-            <div className="flex justify-end">
+    return (
+        <div className="w-full max-w-[760px] mx-auto px-5 py-6">
+            {/* Navigation back */}
+            <div>
                 <Link
-                    href={`/projects/${id}`}
-                    className="halo-btn halo-btn-secondary"
+                    href={`/projects/${project.id}`}
+                    className="inline-flex items-center gap-1.5 text-xs font-medium text-secondary transition-colors hover:text-primary"
                 >
-                    Return to project
-                    <ArrowLeft className="h-4 w-4 rotate-180 ml-1.5" />
+                    <ArrowLeft className="h-3.5 w-3.5" />
+                    <span>Back to project</span>
                 </Link>
+            </div>
+
+            {/* Header with Project Context */}
+            <div className="mt-8 mb-8">
+                <p className="text-xs font-medium text-muted lowercase">
+                    {project.name}
+                </p>
+                <h1 className="mt-1.5 text-2xl font-semibold tracking-tight text-primary">
+                    Install Halo SDK
+                </h1>
+                <p className="mt-1 text-sm text-secondary">
+                    Send your first telemetry to Halo.
+                </p>
+            </div>
+
+            {/* Setup Flow — 4 Primary Steps */}
+            <div className="space-y-7">
+                {/* Step 01: Install */}
+                <div className="space-y-3">
+                    <div className="flex items-baseline gap-3">
+                        <span className="font-mono text-xs font-semibold text-muted">01</span>
+                        <div>
+                            <h2 className="text-sm font-semibold text-primary">Install</h2>
+                            <p className="mt-0.5 text-xs text-secondary">
+                                Add the Halo SDK to your application.
+                            </p>
+                        </div>
+                    </div>
+                    <CodeSnippet code="pnpm add @halo-trace/sdk" language="bash" />
+                </div>
+
+                {/* Step 02: Configure */}
+                <div className="space-y-3">
+                    <div className="flex items-baseline gap-3">
+                        <span className="font-mono text-xs font-semibold text-muted">02</span>
+                        <div>
+                            <h2 className="text-sm font-semibold text-primary">Configure</h2>
+                            <p className="mt-0.5 text-xs text-secondary">
+                                Add your project&apos;s API key to your environment.
+                            </p>
+                        </div>
+                    </div>
+                    <CodeSnippet code={`HALO_API_KEY=${apiKeySample}`} language="env" />
+                </div>
+
+                {/* Step 03: Initialize */}
+                <div className="space-y-3">
+                    <div className="flex items-baseline gap-3">
+                        <span className="font-mono text-xs font-semibold text-muted">03</span>
+                        <div>
+                            <h2 className="text-sm font-semibold text-primary">Initialize</h2>
+                            <p className="mt-0.5 text-xs text-secondary">
+                                Create a Halo client in your application.
+                            </p>
+                        </div>
+                    </div>
+                    <CodeSnippet code={initCode} language="typescript" />
+                </div>
+
+                {/* Step 04: Send an event */}
+                <div className="space-y-3">
+                    <div className="flex items-baseline gap-3">
+                        <span className="font-mono text-xs font-semibold text-muted">04</span>
+                        <div>
+                            <h2 className="text-sm font-semibold text-primary">Send your first event</h2>
+                            <p className="mt-0.5 text-xs text-secondary">
+                                Verify that Halo is receiving telemetry.
+                            </p>
+                        </div>
+                    </div>
+                    <CodeSnippet code={eventCode} language="typescript" />
+                    <p className="text-xs text-secondary leading-normal">
+                        Once Halo receives the event, it will appear in your project telemetry.
+                    </p>
+                </div>
+
+                {/* Optional Section: Browser Replay */}
+                <OptionalReplaySection />
+            </div>
+
+            {/* Completion state */}
+            <div className="border-t border-border pt-6 mt-8">
+                <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                    <div>
+                        <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-medium text-primary">
+                                SDK setup complete?
+                            </h3>
+                            {hasEvents && (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-emerald-500/10 px-2 py-0.5 text-[11px] font-medium text-[#35d08a]">
+                                    <Check className="h-3 w-3" />
+                                    Telemetry received ✓
+                                </span>
+                            )}
+                        </div>
+                        <p className="mt-1 text-xs text-secondary">
+                            Send an event from your application and check the project for new telemetry.
+                        </p>
+                    </div>
+
+                    <Link
+                        href={`/projects/${project.id}`}
+                        className="inline-flex items-center gap-1.5 text-xs font-medium text-secondary hover:text-accent transition-colors self-start sm:self-auto group"
+                    >
+                        <span>Back to project</span>
+                        <ArrowRight className="h-3.5 w-3.5 transition-transform group-hover:translate-x-0.5" />
+                    </Link>
+                </div>
             </div>
         </div>
     );

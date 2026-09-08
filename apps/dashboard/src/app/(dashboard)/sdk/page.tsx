@@ -1,15 +1,19 @@
-import { Halo } from "@halo-trace/sdk";
+import { redirect } from "next/navigation";
+import { getProjects } from "@/actions/project";
+import { getSession } from "@/lib/session";
 
 export default async function SdkPage() {
-  const halo = new Halo({
-    apiKey: "hl_live_83c633b628d2d060b4dea3f31c0953f59be324f7408dba6f30b610c5e8bdec92",
-  });
+    const session = await getSession();
 
-  console.log(await halo.captureMessage("Hello Halo"));
+    if (!session) {
+        redirect("/login");
+    }
 
-  return (
-    <div className="p-10 text-white">
-      SDK Loaded Successfully
-    </div>
-  );
+    const projects = await getProjects();
+
+    if (projects.length > 0) {
+        redirect(`/projects/${projects[0].id}/sdk`);
+    }
+
+    redirect("/projects");
 }
