@@ -135,6 +135,9 @@ export interface RepairOption {
     evidenceReferences: string[];
     isRecommended: boolean;
     selectionRationale?: string;
+    patch?: ProposedPatch;
+    validationAssertion?: string;
+    regressionTestSnippet?: string;
 }
 
 export interface ProposedPatchValidationChecks {

@@ -39,7 +39,7 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
     const repairCase = propRepairCase || llmResult?.repairCase;
     const [copiedPatch, setCopiedPatch] = useState(false);
     const [selectedOptionId, setSelectedOptionId] = useState<string | undefined>(
-        repairCase?.selectedOptionId || repairCase?.repairOptions[0]?.id
+        repairCase?.selectedOptionId
     );
 
     if (!repairCase) {
@@ -58,6 +58,9 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
         evidenceGaps,
         validationBlueprint,
     } = repairCase;
+
+    const selectedOption = repairOptions.find((opt) => opt.id === selectedOptionId);
+    const activePatch = selectedOption?.patch || proposedPatch;
 
     const copyCodePatch = (diffText: string) => {
         if (diffText) {
@@ -415,15 +418,32 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
             {/* 4. REPAIR OPTIONS UI */}
             {repairOptions.length > 0 && (
                 <div className="space-y-3">
-                    <div className="flex items-center justify-between">
+                    <div className="flex items-center justify-between flex-wrap gap-2">
                         <span className="text-xs font-mono uppercase tracking-wider text-white font-semibold flex items-center gap-2">
                             <Layers className="w-4 h-4 text-accent" />
-                            Repair Alternatives & Tradeoffs
+                            Repair Alternatives &amp; Tradeoffs
                         </span>
-                        {repairEligibility.state === "REPAIR_UNDERDETERMINED" && (
-                            <span className="text-[11px] text-amber-400 font-mono">
-                                No option selected: Intended behavior is underdetermined
-                            </span>
+                        {selectedOption ? (
+                            <div className="flex items-center gap-2">
+                                <span className="text-[11px] text-accent font-mono flex items-center gap-1.5 bg-accent/10 border border-accent/20 px-2.5 py-0.5 rounded-full">
+                                    <Check className="w-3.5 h-3.5" />
+                                    Active Selection: Option {String.fromCharCode(65 + repairOptions.indexOf(selectedOption))} ({selectedOption.id.includes("guard") ? "Defensive Guard" : "Precondition Validation"})
+                                </span>
+                                <button
+                                    type="button"
+                                    onClick={() => setSelectedOptionId(undefined)}
+                                    className="text-[11px] text-zinc-400 hover:text-zinc-200 underline font-mono cursor-pointer"
+                                    title="Unselect to return to underdetermined state"
+                                >
+                                    Reset
+                                </button>
+                            </div>
+                        ) : (
+                            repairEligibility.state === "REPAIR_UNDERDETERMINED" && (
+                                <span className="text-[11px] text-amber-400 font-mono">
+                                    No option selected: Intended behavior is underdetermined. Click an option below to preview its patch.
+                                </span>
+                            )
                         )}
                     </div>
 
@@ -435,17 +455,24 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
                             return (
                                 <div
                                     key={option.id}
-                                    onClick={() => setSelectedOptionId(option.id)}
-                                    className={`p-4 rounded-lg border transition-all cursor-pointer space-y-3 ${
+                                    onClick={() => setSelectedOptionId(isSelected ? undefined : option.id)}
+                                    className={`p-4 rounded-lg border transition-all cursor-pointer space-y-3 relative ${
                                         isSelected
-                                            ? "bg-zinc-900 border-accent/60 ring-1 ring-accent/30"
-                                            : "bg-zinc-900/40 border-border hover:border-zinc-700"
+                                            ? "bg-zinc-900 border-accent/70 ring-1 ring-accent/40 shadow-lg shadow-accent/5"
+                                            : "bg-zinc-900/40 border-border hover:border-zinc-700 hover:bg-zinc-900/60"
                                     }`}
                                 >
                                     <div className="flex items-center justify-between gap-2">
-                                        <span className="text-xs font-mono font-bold text-accent">
-                                            OPTION {optionLetter}
-                                        </span>
+                                        <div className="flex items-center gap-2">
+                                            <span className="text-xs font-mono font-bold text-accent">
+                                                OPTION {optionLetter}
+                                            </span>
+                                            {isSelected && (
+                                                <span className="px-2 py-0.5 rounded text-[10px] font-mono bg-accent/20 text-accent font-semibold flex items-center gap-1">
+                                                    <Check className="w-3 h-3" /> ACTIVE SELECTION
+                                                </span>
+                                            )}
+                                        </div>
                                         {option.isRecommended && (
                                             <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/20">
                                                 RECOMMENDED
@@ -483,6 +510,14 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
                                             </div>
                                         ))}
                                     </div>
+
+                                    {/* Click preview hint */}
+                                    <div className="pt-2 border-t border-border/60 flex items-center justify-between text-[11px] font-mono">
+                                        <span className={isSelected ? "text-accent font-medium" : "text-zinc-500"}>
+                                            {isSelected ? "Previewing patch & test blueprint below" : "Click to select strategy & view patch"}
+                                        </span>
+                                        <ArrowRight className={`w-3.5 h-3.5 ${isSelected ? "text-accent translate-x-0.5 transition-transform" : "text-zinc-600"}`} />
+                                    </div>
                                 </div>
                             );
                         })}
@@ -491,12 +526,12 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
             )}
 
             {/* 5. PROPOSED PATCH UI */}
-            {proposedPatch && proposedPatch.validationStatus === "VALID" && (
+            {activePatch && activePatch.validationStatus === "VALID" ? (
                 <div className="space-y-3 pt-2">
                     <div className="flex items-center justify-between flex-wrap gap-2">
                         <div className="flex items-center gap-2 text-xs font-mono uppercase tracking-wider text-white font-semibold">
                             <Code2 className="w-4 h-4 text-accent" />
-                            Proposed Patch (Deterministic AST Verified)
+                            Proposed Patch {selectedOption ? `— Option ${String.fromCharCode(65 + repairOptions.indexOf(selectedOption))}: ${selectedOption.title}` : "(Deterministic AST Verified)"}
                         </div>
                         <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-zinc-800 text-zinc-400 border border-zinc-700">
                             PROPOSED — NOT APPLIED
@@ -507,12 +542,12 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
                         {/* Patch File Header */}
                         <div className="bg-zinc-900 px-4 py-2.5 border-b border-border flex items-center justify-between">
                             <span className="text-zinc-300 text-xs font-medium truncate">
-                                {proposedPatch.targetFile}
+                                {activePatch.targetFile}
                             </span>
                             <button
                                 type="button"
-                                onClick={() => copyCodePatch(proposedPatch.unifiedDiff)}
-                                className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors"
+                                onClick={() => copyCodePatch(activePatch.unifiedDiff)}
+                                className="inline-flex items-center gap-1.5 text-xs text-zinc-400 hover:text-white transition-colors cursor-pointer"
                             >
                                 {copiedPatch ? (
                                     <>
@@ -530,7 +565,7 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
 
                         {/* Diff Content */}
                         <pre className="p-4 text-xs overflow-x-auto leading-relaxed">
-                            {proposedPatch.unifiedDiff.split("\n").map((line, idx) => {
+                            {activePatch.unifiedDiff.split("\n").map((line, idx) => {
                                 if (line.startsWith("+")) {
                                     return (
                                         <div key={idx} className="text-emerald-400 bg-emerald-950/20 px-1 -mx-1">
@@ -575,7 +610,29 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
                         </div>
                     </div>
                 </div>
-            )}
+            ) : repairEligibility.state === "REPAIR_UNDERDETERMINED" && repairOptions.length > 0 ? (
+                <div className="p-5 rounded-lg bg-zinc-900/30 border border-dashed border-zinc-800 text-center space-y-2 pt-2">
+                    <div className="flex items-center justify-center gap-2 text-xs font-mono text-zinc-400">
+                        <Code2 className="w-4 h-4 text-accent" />
+                        <span className="font-semibold uppercase tracking-wider">Proposed Patch Preview</span>
+                    </div>
+                    <p className="text-xs text-zinc-400 max-w-lg mx-auto leading-relaxed">
+                        Intended runtime contract is underdetermined. Select an architectural strategy above to preview its syntax-verified diff.
+                    </p>
+                    <div className="flex items-center justify-center gap-3 pt-2">
+                        {repairOptions.map((opt, idx) => (
+                            <button
+                                key={opt.id}
+                                type="button"
+                                onClick={() => setSelectedOptionId(opt.id)}
+                                className="px-3 py-1.5 rounded text-xs font-mono bg-zinc-800 hover:bg-zinc-700 text-zinc-200 border border-zinc-700 transition-colors cursor-pointer"
+                            >
+                                Preview Option {String.fromCharCode(65 + idx)} ({opt.id.includes("guard") ? "Defensive Guard" : "Validate Preconditions"})
+                            </button>
+                        ))}
+                    </div>
+                </div>
+            ) : null}
 
             {/* 6. BLAST RADIUS & SIDE EFFECT ANALYSIS */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
@@ -617,6 +674,22 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
                         <Flame className="w-4 h-4 text-amber-400" />
                         Side Effect Considerations
                     </div>
+
+                    {/* Selected Strategy Specific Callout */}
+                    {selectedOption && (
+                        <div className="p-3 rounded bg-amber-500/10 border border-amber-500/20 text-xs text-amber-200/90 space-y-1">
+                            <div className="flex items-center gap-1.5 text-amber-300 font-mono font-semibold text-[11px] uppercase tracking-wider">
+                                <AlertCircle className="w-3.5 h-3.5" />
+                                Selected Strategy Trade-off (Option {String.fromCharCode(65 + repairOptions.indexOf(selectedOption))}):
+                            </div>
+                            {selectedOption.tradeoffs.map((t, idx) => (
+                                <div key={idx} className="text-xs text-zinc-300 leading-relaxed pl-1">
+                                    • {t}
+                                </div>
+                            ))}
+                        </div>
+                    )}
+
                     <ul className="space-y-1.5 text-xs text-zinc-300">
                         {sideEffects.contractBreaks.map((item, idx) => (
                             <li key={idx} className="flex items-start gap-1.5 text-zinc-300">
@@ -654,9 +727,16 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
 
             {/* 8. INCIDENT-SPECIFIC VALIDATION BLUEPRINT */}
             <div className="p-4 rounded-lg bg-zinc-900/40 border border-border space-y-3">
-                <div className="flex items-center gap-2 text-xs font-mono text-white font-semibold uppercase tracking-wider">
-                    <FileText className="w-4 h-4 text-accent" />
-                    Incident-Specific Validation Blueprint
+                <div className="flex items-center justify-between flex-wrap gap-2">
+                    <div className="flex items-center gap-2 text-xs font-mono text-white font-semibold uppercase tracking-wider">
+                        <FileText className="w-4 h-4 text-accent" />
+                        Incident-Specific Validation Blueprint
+                    </div>
+                    {selectedOption && (
+                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-accent/10 text-accent border border-accent/20">
+                            ADAPTED FOR OPTION {String.fromCharCode(65 + repairOptions.indexOf(selectedOption))}
+                        </span>
+                    )}
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs font-mono">
@@ -666,18 +746,22 @@ export function RepairCaseView({ repairCase: propRepairCase, llmResult, onJumpTo
                     </div>
                     <div className="p-2.5 rounded bg-black/30 border border-zinc-800 space-y-1">
                         <span className="text-zinc-500 text-[10px] block">FAILURE ASSERTION</span>
-                        <p className="text-zinc-300 font-sans text-xs">{validationBlueprint.failureAssertion}</p>
+                        <p className="text-zinc-300 font-sans text-xs">
+                            {selectedOption?.validationAssertion || validationBlueprint.failureAssertion}
+                        </p>
                     </div>
                 </div>
 
                 {/* Regression Test Recommendation */}
-                {validationBlueprint.newTestRecommendation && (
+                {(selectedOption?.regressionTestSnippet || validationBlueprint.newTestRecommendation) && (
                     <div className="space-y-1.5 pt-1">
-                        <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
-                            Recommended Regression Test ({validationBlueprint.newTestRecommendation.testName}):
-                        </span>
+                        <div className="flex items-center justify-between">
+                            <span className="text-[11px] font-mono text-zinc-400 uppercase tracking-wider block">
+                                Recommended Regression Test ({selectedOption ? `Option ${String.fromCharCode(65 + repairOptions.indexOf(selectedOption))}` : validationBlueprint.newTestRecommendation?.testName}):
+                            </span>
+                        </div>
                         <pre className="p-3 rounded bg-black/60 border border-zinc-800 text-xs text-zinc-300 font-mono overflow-x-auto">
-                            {validationBlueprint.newTestRecommendation.testCode}
+                            {selectedOption?.regressionTestSnippet || validationBlueprint.newTestRecommendation?.testCode}
                         </pre>
                     </div>
                 )}

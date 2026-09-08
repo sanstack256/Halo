@@ -118,10 +118,130 @@ export function buildRepairCase(opts: BuildRepairCaseOptions): RepairCase {
         whatWouldRefuteRepair,
     };
 
-    // 8. Generate Repair Options
-    const repairOptions: RepairOption[] = [];
+    // Helper to create and validate patches
+    function createSyntaxValidatedPatch(
+        src: NonNullable<EvidenceSnapshot["source"]>,
+        lineObj: { lineNumber: number; content: string },
+        proposedSnippet: string
+    ): ProposedPatch {
+        let syntaxValid = true;
+        const validationErrors: string[] = [];
+        try {
+            const testSource = ts.createSourceFile(
+                "patch-test.ts",
+                proposedSnippet,
+                ts.ScriptTarget.Latest,
+                true
+            );
+            const parseDiagnostics = (testSource as any).parseDiagnostics;
+            if (parseDiagnostics && parseDiagnostics.length > 0) {
+                syntaxValid = false;
+                validationErrors.push("Proposed patch snippet produced syntax parse errors.");
+            }
+        } catch (err: any) {
+            syntaxValid = false;
+            validationErrors.push(`AST syntax validation failed: ${err.message}`);
+        }
+
+        const unifiedDiff = [
+            `@@ -${lineObj.lineNumber},1 +${lineObj.lineNumber},${proposedSnippet.split("\n").length} @@`,
+            `-${lineObj.content}`,
+            ...proposedSnippet.split("\n").map(l => `+${l}`),
+        ].join("\n");
+
+        return {
+            targetFile: src.filePath,
+            originalSourceSnippet: lineObj.content,
+            proposedSourceSnippet: proposedSnippet,
+            unifiedDiff,
+            validationStatus: syntaxValid ? "VALID" : "REJECTED",
+            validationChecks: {
+                targetVerified: true,
+                historicalCommitVerified: Boolean(src.revision),
+                contextMatched: true,
+                syntaxValid,
+                minimalChanges: true,
+                noInventedSymbols: true,
+            },
+            validationErrors,
+            isApplied: false,
+        };
+    }
+
+    // 8. Generate Option-Specific Patches & Blueprints
+    const source = snapshot.source;
     const targetExpr = failureModel.failingExpression || "target expression";
     const lineNum = failureModel.failingLineNumber || 1;
+    let optionAPatch: ProposedPatch | undefined = undefined;
+    let optionBPatch: ProposedPatch | undefined = undefined;
+    let optionAAssertion: string | undefined = undefined;
+    let optionBAssertion: string | undefined = undefined;
+    let optionATest: string | undefined = undefined;
+    let optionBTest: string | undefined = undefined;
+
+    if (
+        source &&
+        source.resolutionStatus === "exact_file" &&
+        source.lines &&
+        source.lines.length > 0 &&
+        failureModel.failingLineNumber
+    ) {
+        const failingLineObj = source.lines.find(l => l.lineNumber === failureModel.failingLineNumber);
+        if (failingLineObj) {
+            const originalLine = failingLineObj.content;
+            const indent = originalLine.match(/^\s*/)?.[0] || "";
+            let targetSymbol = targetExpr.replace(/^await\s+/, "").trim();
+            if (targetSymbol.includes("(")) {
+                targetSymbol = targetSymbol.replace(/\(.*$/, "").trim();
+            }
+            if (!targetSymbol) {
+                targetSymbol = "target";
+            }
+            const containingFn = failureModel.containingFunction || "handler";
+
+            // 1. Option A: Defensive guard / safe early return
+            let proposedLineA = originalLine;
+            if (targetSymbol.includes(".") && !targetExpr.includes("(") && !targetExpr.startsWith("await")) {
+                const safeExpr = targetSymbol.replace(/\./g, "?.");
+                proposedLineA = originalLine.replace(targetSymbol, safeExpr);
+            } else if (targetSymbol.includes(".")) {
+                const safeCheck = targetSymbol.replace(/\./g, "?.");
+                proposedLineA = `${indent}if (!${safeCheck}) {\n${indent}    return;\n${indent}}\n${originalLine}`;
+            } else if (!originalLine.includes("if (") && !originalLine.includes("?.")) {
+                proposedLineA = `${indent}if (${targetSymbol}) {\n${indent}    ${originalLine.trim()}\n${indent}}`;
+            }
+
+            optionAPatch = createSyntaxValidatedPatch(source, failingLineObj, proposedLineA);
+            optionAAssertion = `Assert that '${containingFn}' safely returns without an unhandled exception when '${targetSymbol}' is missing or undefined.`;
+            optionATest = `it("gracefully returns without crash when ${targetSymbol} is missing in ${containingFn}", async () => {
+    // Arrange: test inputs without ${targetSymbol}
+    // Act & Assert: execution completes safely without unhandled error
+    await expect(async () => {
+        await ${containingFn}();
+    }).not.toThrow();
+});`;
+
+            // 2. Option B: Precondition validation / fail-fast explicit error
+            const safeCheckB = targetSymbol.replace(/\./g, "?.");
+            const isFunctionCall = targetExpr.includes("(") || targetExpr.startsWith("await");
+            const proposedLineB = isFunctionCall
+                ? `${indent}if (typeof ${safeCheckB} !== "function") {\n${indent}    throw new TypeError("Expected '${targetSymbol}' to be a function");\n${indent}}\n${originalLine}`
+                : `${indent}if (!${safeCheckB}) {\n${indent}    throw new Error("Missing required precondition '${targetSymbol}'");\n${indent}}\n${originalLine}`;
+
+            optionBPatch = createSyntaxValidatedPatch(source, failingLineObj, proposedLineB);
+            optionBAssertion = `Assert that '${containingFn}' rejects invalid callers by throwing an explicit, typed error when '${targetSymbol}' is missing or invalid.`;
+            optionBTest = `it("throws explicit typed error when ${targetSymbol} is missing or invalid in ${containingFn}", async () => {
+    // Arrange: test inputs with invalid or missing ${targetSymbol}
+    // Act & Assert: verify fail-fast domain exception is thrown
+    await expect(async () => {
+        await ${containingFn}();
+    }).rejects.toThrow("${targetSymbol}");
+});`;
+        }
+    }
+
+    // Generate Repair Options
+    const repairOptions: RepairOption[] = [];
 
     // Option A: Defensive guard / safe early return or fallback
     repairOptions.push({
@@ -141,6 +261,9 @@ export function buildRepairCase(opts: BuildRepairCaseOptions): RepairCase {
             repairEligibility.state === "REPAIR_READY"
                 ? "Recommended because the failure mechanism is localized and confirmed with zero contradicting evidence."
                 : undefined,
+        patch: optionAPatch,
+        validationAssertion: optionAAssertion,
+        regressionTestSnippet: optionATest,
     });
 
     // Option B: Explicit assertion / domain error
@@ -157,6 +280,9 @@ export function buildRepairCase(opts: BuildRepairCaseOptions): RepairCase {
         ],
         evidenceReferences: snapshot.runtime.anchorError ? [snapshot.runtime.anchorError.id] : [],
         isRecommended: false,
+        patch: optionBPatch,
+        validationAssertion: optionBAssertion,
+        regressionTestSnippet: optionBTest,
     });
 
     // Determine selected option
@@ -170,83 +296,10 @@ export function buildRepairCase(opts: BuildRepairCaseOptions): RepairCase {
         selectedOptionId = undefined;
     }
 
-    // 9. Proposed Patch Generation (Minimal Unified Diff)
+    // 9. Proposed Patch Generation (Default patch for REPAIR_READY / REPAIR_PLAUSIBLE)
     let proposedPatch: ProposedPatch | undefined = undefined;
-    const source = snapshot.source;
-
-    if (
-        (repairEligibility.state === "REPAIR_READY" || repairEligibility.state === "REPAIR_PLAUSIBLE") &&
-        source &&
-        source.resolutionStatus === "exact_file" &&
-        source.lines &&
-        source.lines.length > 0 &&
-        failureModel.failingLineNumber
-    ) {
-        const failingLineObj = source.lines.find(l => l.lineNumber === failureModel.failingLineNumber);
-        if (failingLineObj) {
-            const originalLine = failingLineObj.content;
-            const indent = originalLine.match(/^\s*/)?.[0] || "";
-            const targetSymbol = targetExpr.replace(/^await\s+/, "").replace(/\(.*$/, "");
-
-            // Generate truthful minimal patch proposal
-            let proposedLine = originalLine;
-            if (targetSymbol.includes(".") && !targetSymbol.includes("(") && !targetSymbol.startsWith("await")) {
-                const safeExpr = targetSymbol.replace(/\./g, "?.");
-                proposedLine = originalLine.replace(targetSymbol, safeExpr);
-            } else if (protectionAnalysis.status === "PROTECTION_PRESENT_BUT_INSUFFICIENT" && targetSymbol.includes(".")) {
-                // Outer object was guarded, member was not: e.g. "if (!scenario.fn) return;"
-                proposedLine = `${indent}if (!${targetSymbol}) {\n${indent}    return;\n${indent}}\n${originalLine}`;
-            } else if (!originalLine.includes("if (") && !originalLine.includes("?.")) {
-                proposedLine = `${indent}if (${targetSymbol}) {\n${indent}    ${originalLine.trim()}\n${indent}}`;
-            }
-
-
-            // Syntax validate the proposed snippet
-            let syntaxValid = true;
-            const validationErrors: string[] = [];
-            try {
-                const testSource = ts.createSourceFile(
-                    "patch-test.ts",
-                    proposedLine,
-                    ts.ScriptTarget.Latest,
-                    true
-                );
-                // Check for parse diagnostics
-                const parseDiagnostics = (testSource as any).parseDiagnostics;
-                if (parseDiagnostics && parseDiagnostics.length > 0) {
-                    syntaxValid = false;
-                    validationErrors.push("Proposed patch snippet produced syntax parse errors.");
-                }
-            } catch (err: any) {
-                syntaxValid = false;
-                validationErrors.push(`AST syntax validation failed: ${err.message}`);
-            }
-
-            const unifiedDiff = [
-                `@@ -${failingLineObj.lineNumber},1 +${failingLineObj.lineNumber},${proposedLine.split("\n").length} @@`,
-                `-${originalLine}`,
-                ...proposedLine.split("\n").map(l => `+${l}`),
-            ].join("\n");
-
-
-            proposedPatch = {
-                targetFile: source.filePath,
-                originalSourceSnippet: originalLine,
-                proposedSourceSnippet: proposedLine,
-                unifiedDiff,
-                validationStatus: syntaxValid ? "VALID" : "REJECTED",
-                validationChecks: {
-                    targetVerified: true,
-                    historicalCommitVerified: Boolean(source.revision),
-                    contextMatched: true,
-                    syntaxValid,
-                    minimalChanges: true,
-                    noInventedSymbols: true,
-                },
-                validationErrors,
-                isApplied: false, // Never applied directly to user files
-            };
-        }
+    if (repairEligibility.state === "REPAIR_READY" || repairEligibility.state === "REPAIR_PLAUSIBLE") {
+        proposedPatch = optionAPatch;
     }
 
     return {

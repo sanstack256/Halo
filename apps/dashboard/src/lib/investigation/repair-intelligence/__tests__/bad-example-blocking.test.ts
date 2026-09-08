@@ -259,6 +259,22 @@ describe("Section 74: Blocking Current False-Confidence Bad Example", () => {
         // Multiple options presented with honest tradeoffs
         expect(repairCase.repairOptions.length).toBeGreaterThanOrEqual(2);
 
+        // Option A has deterministic defensive guard patch and validation
+        const optA = repairCase.repairOptions.find(o => o.id === "option-a-defensive-guard");
+        expect(optA).toBeDefined();
+        expect(optA?.patch).toBeDefined();
+        expect(optA?.patch?.validationStatus).toBe("VALID");
+        expect(optA?.patch?.proposedSourceSnippet).toContain("if (!scenario?.fn)");
+        expect(optA?.validationAssertion).toContain("safely returns without an unhandled exception");
+
+        // Option B has deterministic precondition validation patch and validation
+        const optB = repairCase.repairOptions.find(o => o.id === "option-b-explicit-validation");
+        expect(optB).toBeDefined();
+        expect(optB?.patch).toBeDefined();
+        expect(optB?.patch?.validationStatus).toBe("VALID");
+        expect(optB?.patch?.proposedSourceSnippet).toContain('typeof scenario?.fn !== "function"');
+        expect(optB?.validationAssertion).toContain("rejects invalid callers by throwing an explicit, typed error");
+
         // Evidence needed to unlock is surfaced
         expect(repairCase.evidenceGaps.evidenceNeededToUnlock.length).toBeGreaterThan(0);
         expect(repairCase.evidenceGaps.evidenceNeededToUnlock[0]).toContain("Capture runtime evaluation of 'await scenario.fn(context)'");
