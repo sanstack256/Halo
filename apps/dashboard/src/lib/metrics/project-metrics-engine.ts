@@ -208,6 +208,7 @@ export async function getProjectMetricsIntelligence(
     currentSessions,
     openIssues,
     allReleases,
+    totalHistoricalEvents,
   ] = await Promise.all([
     prisma.event.findMany({
       where: currentEventsWhere,
@@ -289,6 +290,9 @@ export async function getProjectMetricsIntelligence(
         errorCount: true,
         traceCount: true,
       },
+    }),
+    prisma.event.count({
+      where: { projectId: project.id },
     }),
   ]);
 
@@ -1041,6 +1045,7 @@ export async function getProjectMetricsIntelligence(
       bucketSizeMinutes: Math.round(timeRange.bucketIntervalMs / 60000),
     },
     hasTelemetry,
+    totalHistoricalEvents,
     healthSnapshot,
     errorBehavior,
     requestPerformance,

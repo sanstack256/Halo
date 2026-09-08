@@ -69,7 +69,7 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
   const hasActiveCustomFilters =
     currentEnv !== "ALL" || currentService !== "ALL" || currentRelease !== "ALL" || currentRange !== "24h";
 
-  if (!metrics.hasTelemetry && metrics.healthSnapshot.totalEventsObserved === 0) {
+  if (metrics.totalHistoricalEvents === 0) {
     return <EmptyMetricsState projectId={metrics.projectId} />;
   }
 
@@ -188,6 +188,36 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
           </button>
         </div>
       </div>
+
+      {metrics.healthSnapshot.totalEventsObserved === 0 && (
+        <div className="rounded-xl border border-border bg-card p-6 text-center space-y-3">
+          <div className="inline-flex items-center gap-1.5 rounded-full border border-amber-500/20 bg-amber-500/10 px-3 py-1 text-xs font-medium text-amber-400">
+            No Telemetry in Selected Window ({currentRange})
+          </div>
+          <h3 className="text-base font-semibold text-foreground">
+            Zero Events Recorded in Active Filter Window
+          </h3>
+          <p className="text-xs text-muted-foreground max-w-md mx-auto">
+            This project contains {metrics.totalHistoricalEvents.toLocaleString()} historical events recorded. Select a wider time range (such as 7 Days or 30 Days) to inspect metrics across recorded telemetry.
+          </p>
+          <div className="flex items-center justify-center gap-2 pt-2">
+            <button
+              type="button"
+              onClick={() => updateFilter({ range: "7d" })}
+              className="rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/40 transition-colors"
+            >
+              View 7 Days
+            </button>
+            <button
+              type="button"
+              onClick={() => updateFilter({ range: "30d" })}
+              className="rounded-md border border-primary/40 bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary hover:bg-primary/20 transition-colors"
+            >
+              View 30 Days
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* A. Project Health Snapshot */}
       <ProjectHealthSnapshotView

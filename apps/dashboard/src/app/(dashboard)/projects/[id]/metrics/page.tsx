@@ -27,7 +27,7 @@ export default async function ProjectMetricsPage({
   const timeRange = (search.range as TimeRangePreset) || "24h";
 
   try {
-    const metrics = await getProjectMetricsIntelligence(id, {
+    let metrics = await getProjectMetricsIntelligence(id, {
       timeRange,
       environment: search.env,
       service: search.service,
@@ -36,9 +36,28 @@ export default async function ProjectMetricsPage({
       to: search.to,
     });
 
+    // If no explicit range was provided in URL and the default 24h window has zero events,
+    // but the project contains historical events, automatically load 30d so the user
+    // immediately sees the project's real telemetry
+    if (
+      !search.range &&
+      metrics.healthSnapshot.totalEventsObserved === 0 &&
+      metrics.totalHistoricalEvents > 0
+    ) {
+      metrics = await getProjectMetricsIntelligence(id, {
+        timeRange: "30d",
+        environment: search.env,
+        service: search.service,
+        release: search.release,
+        from: search.from,
+        to: search.to,
+      });
+    }
+
     return <ProjectMetricsDashboard metrics={metrics} />;
-  } catch (error: any) {
-    if (error?.message?.includes("Unauthorized") || error?.message?.includes("not found")) {
+  } catch (error: unknown) {
+    const err = error as { message?: string };
+    if (err?.message?.includes("Unauthorized") || err?.message?.includes("not found")) {
       notFound();
     }
     throw error;

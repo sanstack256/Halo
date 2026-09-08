@@ -200,6 +200,7 @@ export interface ProjectMetricsIntelligence {
     bucketSizeMinutes: number;
   };
   hasTelemetry: boolean;
+  totalHistoricalEvents: number;
   healthSnapshot: ProjectHealthSnapshot;
   errorBehavior: ErrorBehaviorData;
   requestPerformance: RequestPerformanceData;
