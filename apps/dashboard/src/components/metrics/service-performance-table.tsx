@@ -81,7 +81,7 @@ export function ServicePerformanceTable({
                     <button
                       type="button"
                       onClick={() => onSelectService(row.service)}
-                      className="text-primary hover:underline text-xs font-medium inline-flex items-center gap-1"
+                      className="halo-action-btn"
                     >
                       Filter <ArrowRight className="h-3 w-3" />
                     </button>

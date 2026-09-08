@@ -105,7 +105,7 @@ export function ReleaseBehaviorView({
                       <button
                         type="button"
                         onClick={() => onSelectRelease(rel.version)}
-                        className="text-primary hover:underline text-xs font-medium inline-flex items-center gap-1"
+                        className="halo-action-btn"
                       >
                         Filter <ArrowRight className="h-3 w-3" />
                       </button>

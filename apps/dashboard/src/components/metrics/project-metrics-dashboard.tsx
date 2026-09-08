@@ -2,11 +2,12 @@
 
 import { useTransition } from "react";
 import { useRouter, useSearchParams, usePathname } from "next/navigation";
-import { RefreshCw, FilterX, Globe, Server, Tag } from "lucide-react";
+import { RefreshCw, FilterX, Globe, Server, Tag, Calendar } from "lucide-react";
 import type {
   RedesignedProjectMetricsIntelligence,
   TimeRangePreset,
 } from "@/lib/metrics/types";
+import { HaloSelect, type HaloSelectOption } from "@/components/ui/halo-select";
 
 import { PrimaryTelemetryOverview } from "./primary-telemetry-overview";
 import { ObservedChangesView } from "./observed-changes-view";
@@ -21,13 +22,13 @@ interface ProjectMetricsDashboardProps {
   metrics: RedesignedProjectMetricsIntelligence;
 }
 
-const TIME_RANGES: { key: TimeRangePreset; label: string }[] = [
-  { key: "1h", label: "1 Hour" },
-  { key: "6h", label: "6 Hours" },
-  { key: "24h", label: "24 Hours" },
-  { key: "7d", label: "7 Days" },
-  { key: "30d", label: "30 Days" },
-  { key: "custom", label: "Custom" },
+const TIME_RANGE_OPTIONS: HaloSelectOption[] = [
+  { value: "1h", label: "1 Hour" },
+  { value: "6h", label: "6 Hours" },
+  { value: "24h", label: "24 Hours" },
+  { value: "7d", label: "7 Days" },
+  { value: "30d", label: "30 Days" },
+  { value: "custom", label: "Custom" },
 ];
 
 export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProps) {
@@ -76,6 +77,30 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
     currentRelease !== "ALL" ||
     currentRange !== "24h";
 
+  const envOptions: HaloSelectOption[] = [
+    { value: "ALL", label: "All Environments" },
+    ...metrics.availableEnvironments.map((env) => ({
+      value: env.id,
+      label: env.name,
+    })),
+  ];
+
+  const serviceOptions: HaloSelectOption[] = [
+    { value: "ALL", label: "All Services" },
+    ...metrics.availableServices.map((svc) => ({
+      value: svc,
+      label: svc,
+    })),
+  ];
+
+  const releaseOptions: HaloSelectOption[] = [
+    { value: "ALL", label: "All Releases" },
+    ...metrics.availableReleases.map((rel) => ({
+      value: rel,
+      label: rel,
+    })),
+  ];
+
   // Truthful Empty State if project has literally zero telemetry ever recorded
   if (metrics.totalHistoricalEvents === 0) {
     return (
@@ -93,7 +118,7 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
           <button
             type="button"
             onClick={handleRefresh}
-            className="flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/20 transition-colors"
+            className="halo-btn halo-btn-secondary halo-btn-sm"
           >
             <RefreshCw className="h-3.5 w-3.5" />
             <span>Refresh</span>
@@ -129,104 +154,80 @@ export function ProjectMetricsDashboard({ metrics }: ProjectMetricsDashboardProp
           type="button"
           onClick={handleRefresh}
           disabled={isPending}
-          className="flex items-center gap-1.5 rounded-md border border-border bg-background px-3 py-1.5 text-xs font-medium text-foreground hover:bg-secondary/20 transition-colors disabled:opacity-50"
+          className="halo-btn halo-btn-secondary halo-btn-sm disabled:opacity-50"
         >
           <RefreshCw className={`h-3.5 w-3.5 ${isPending ? "animate-spin" : ""}`} />
           <span>Refresh</span>
         </button>
       </div>
 
-      {/* 2. Global Filter Bar (Height: 36-40px) */}
-      <div className="flex flex-wrap items-center justify-between gap-2 rounded-lg border border-border bg-card p-2 text-xs">
-        <div className="flex flex-wrap items-center gap-2">
+      {/* 2. Global Filter Bar */}
+      <div className="halo-filter-surface">
+        <div className="halo-filter-group">
           {/* Time Range Selector */}
-          <div className="flex items-center rounded-md border border-border bg-background p-0.5">
-            {TIME_RANGES.map((r) => {
-              const isActive = currentRange === r.key;
-              return (
-                <button
-                  key={r.key}
-                  type="button"
-                  onClick={() => updateFilter({ range: r.key })}
-                  className={`rounded px-2.5 py-1 font-medium transition-all ${
-                    isActive
-                      ? "bg-secondary text-foreground shadow-sm font-semibold"
-                      : "text-muted-foreground hover:text-foreground"
-                  }`}
-                >
-                  {r.label}
-                </button>
-              );
-            })}
+          <div className="flex items-center gap-1.5">
+            <Calendar size={13} className="text-muted shrink-0" />
+            <HaloSelect
+              value={currentRange}
+              onChange={(val) => updateFilter({ range: val })}
+              options={TIME_RANGE_OPTIONS}
+              ariaLabel="Filter by time window"
+            />
           </div>
 
           {/* Environment Filter */}
           {metrics.availableEnvironments.length > 0 && (
-            <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1">
-              <Globe className="h-3.5 w-3.5 text-muted-foreground" />
-              <select
+            <div className="flex items-center gap-1.5">
+              <Globe size={13} className="text-muted shrink-0" />
+              <HaloSelect
                 value={currentEnv}
-                onChange={(e) => updateFilter({ env: e.target.value })}
-                className="bg-transparent text-foreground focus:outline-none cursor-pointer"
-              >
-                <option value="ALL">All Environments</option>
-                {metrics.availableEnvironments.map((env) => (
-                  <option key={env.id} value={env.id}>
-                    {env.name}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => updateFilter({ env: val })}
+                options={envOptions}
+                ariaLabel="Filter by environment"
+              />
             </div>
           )}
 
           {/* Service Filter */}
           {metrics.availableServices.length > 0 && (
-            <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1">
-              <Server className="h-3.5 w-3.5 text-muted-foreground" />
-              <select
+            <div className="flex items-center gap-1.5">
+              <Server size={13} className="text-muted shrink-0" />
+              <HaloSelect
                 value={currentService}
-                onChange={(e) => updateFilter({ service: e.target.value })}
-                className="bg-transparent text-foreground focus:outline-none cursor-pointer max-w-[130px] truncate"
-              >
-                <option value="ALL">All Services</option>
-                {metrics.availableServices.map((svc) => (
-                  <option key={svc} value={svc}>
-                    {svc}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => updateFilter({ service: val })}
+                options={serviceOptions}
+                ariaLabel="Filter by service"
+              />
             </div>
           )}
 
           {/* Release Filter */}
           {metrics.availableReleases.length > 0 && (
-            <div className="flex items-center gap-1.5 rounded-md border border-border bg-background px-2.5 py-1">
-              <Tag className="h-3.5 w-3.5 text-muted-foreground" />
-              <select
+            <div className="flex items-center gap-1.5">
+              <Tag size={13} className="text-muted shrink-0" />
+              <HaloSelect
                 value={currentRelease}
-                onChange={(e) => updateFilter({ release: e.target.value })}
-                className="bg-transparent text-foreground focus:outline-none cursor-pointer max-w-[120px] truncate"
-              >
-                <option value="ALL">All Releases</option>
-                {metrics.availableReleases.map((rel) => (
-                  <option key={rel} value={rel}>
-                    {rel}
-                  </option>
-                ))}
-              </select>
+                onChange={(val) => updateFilter({ release: val })}
+                options={releaseOptions}
+                ariaLabel="Filter by release"
+              />
             </div>
           )}
 
           {/* Reset Filters */}
           {hasActiveCustomFilters && (
-            <button
-              type="button"
-              onClick={handleResetFilters}
-              className="flex items-center gap-1 rounded-md border border-border/80 bg-secondary/30 px-2.5 py-1 text-xs font-medium text-muted-foreground hover:bg-secondary/60 hover:text-foreground transition-colors"
-            >
-              <FilterX className="h-3.5 w-3.5" />
-              <span>Reset</span>
-            </button>
+            <>
+              <div className="halo-filter-divider" />
+              <button
+                type="button"
+                onClick={handleResetFilters}
+                className="halo-filter-btn"
+                title="Reset active filters"
+              >
+                <FilterX size={13} className="shrink-0" />
+                <span>Reset</span>
+              </button>
+            </>
           )}
         </div>
 

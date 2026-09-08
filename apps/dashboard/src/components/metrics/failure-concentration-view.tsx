@@ -103,7 +103,7 @@ export function FailureConcentrationView({ data }: FailureConcentrationViewProps
                   )}
                   <Link
                     href={row.actionHref}
-                    className="text-primary hover:underline text-[11px] font-sans font-medium inline-flex items-center gap-0.5"
+                    className="halo-action-btn"
                   >
                     View <ArrowRight className="h-3 w-3" />
                   </Link>

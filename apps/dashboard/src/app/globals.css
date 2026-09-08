@@ -2976,6 +2976,39 @@ HALO INVESTIGATION
 }
 
 /* =====================================================
+   METRICS & TELEMETRY ACTION BUTTONS
+===================================================== */
+
+.halo-action-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    color: var(--accent);
+    font-size: 12px;
+    font-family: var(--font-sans);
+    font-weight: 500;
+    cursor: pointer;
+    background: transparent;
+    border: none;
+    padding: 0;
+    text-decoration: none !important;
+    transition: color var(--transition-fast), opacity var(--transition-fast);
+}
+
+.halo-action-btn:hover {
+    color: var(--accent-hover);
+    text-decoration: none !important;
+    opacity: 0.85;
+    cursor: pointer !important;
+}
+
+.halo-action-btn:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+    border-radius: 4px;
+}
+
+/* =====================================================
    WORLD-CLASS OBSERVABILITY DASHBOARDS DESIGN SYSTEM
 ===================================================== */
 

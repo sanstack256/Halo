@@ -54,7 +54,7 @@ export function ObservedChangesView({ data }: ObservedChangesViewProps) {
                 </span>
                 <Link
                   href={row.actionHref}
-                  className="flex items-center gap-1 text-primary hover:underline text-xs font-sans font-medium"
+                  className="halo-action-btn"
                 >
                   {row.actionLabel}
                 </Link>
