@@ -2,7 +2,13 @@ export type TimeRangePreset = "1h" | "6h" | "24h" | "7d" | "30d" | "custom";
 
 export type PrimaryChartMetric = "error_rate" | "requests" | "p95_latency" | "failed_requests";
 
-export type TimeBucketState = "OBSERVED_VALUE" | "OBSERVED_ZERO" | "NO_TELEMETRY" | "INSUFFICIENT_SAMPLE";
+export type TimeBucketState =
+  | "OBSERVED_VALUE"
+  | "OBSERVED_ZERO"
+  | "NO_TELEMETRY"
+  | "INSUFFICIENT_SAMPLE"
+  | "INVALID_DENOMINATOR"
+  | "UNAVAILABLE";
 
 export type CoverageState = "OBSERVED" | "PARTIAL" | "LIMITED" | "NOT CAPTURED" | "UNAVAILABLE";
 

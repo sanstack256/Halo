@@ -3,6 +3,7 @@ import {
   calculatePercentile,
   isFailedStatus,
   resolveTimeWindow,
+  calculateErrorRate,
 } from "../calculations";
 import {
   formatUtcDateTime,
@@ -180,6 +181,64 @@ describe("Project Metrics Calculations & Mathematical Correctness", () => {
       const sparseRecords = [{ status: "200", durationMs: 80 }, { status: "200", durationMs: 90 }];
       const hasSufficientSample = sparseRecords.length >= 5;
       expect(hasSufficientSample).toBe(false);
+    });
+  });
+
+  describe("Error Rate Mathematical Rigor & Denominator Invariance", () => {
+    it("CRITICAL: 0 failed / 0 requests is strictly UNDEFINED (null), NEVER 100% or 0%", () => {
+      const result = calculateErrorRate(0, 0, 0, false);
+      expect(result.value).not.toBe(100);
+      expect(result.value).not.toBe(0);
+      expect(result.value).toBeNull();
+      expect(result.state).toBe("NO_TELEMETRY");
+      expect(result.label).toBe("No telemetry observed");
+    });
+
+    it("CRITICAL: 0 requests with standalone errors returns INVALID_DENOMINATOR (null), NEVER 100%", () => {
+      const result = calculateErrorRate(0, 0, 5, true);
+      expect(result.value).not.toBe(100);
+      expect(result.value).not.toBe(0);
+      expect(result.value).toBeNull();
+      expect(result.state).toBe("INVALID_DENOMINATOR");
+      expect(result.label).toContain("Undefined");
+    });
+
+    it("10 requests, 0 failures produces exactly 0% (OBSERVED_ZERO)", () => {
+      const result = calculateErrorRate(10, 0, 0, true);
+      expect(result.value).toBe(0.0);
+      expect(result.state).toBe("OBSERVED_ZERO");
+      expect(result.label).toBe("0 failed of 10 requests (0.0%)");
+    });
+
+    it("10 requests, 2 failures produces exactly 20% (OBSERVED_VALUE)", () => {
+      const result = calculateErrorRate(10, 2, 2, true);
+      expect(result.value).toBe(20.0);
+      expect(result.state).toBe("OBSERVED_VALUE");
+      expect(result.label).toBe("2 failed of 10 requests (20.0%)");
+    });
+
+    it("100 requests, 5 failures produces exactly 5%", () => {
+      const result = calculateErrorRate(100, 5, 5, true);
+      expect(result.value).toBe(5.0);
+      expect(result.state).toBe("OBSERVED_VALUE");
+    });
+
+    it("100 requests, 20 failures produces exactly 20%", () => {
+      const result = calculateErrorRate(100, 20, 20, true);
+      expect(result.value).toBe(20.0);
+      expect(result.state).toBe("OBSERVED_VALUE");
+    });
+
+    it("100 requests, 100 failures produces exactly 100%", () => {
+      const result = calculateErrorRate(100, 100, 100, true);
+      expect(result.value).toBe(100.0);
+      expect(result.state).toBe("OBSERVED_VALUE");
+    });
+
+    it("handles zero-previous comparison without division by zero", () => {
+      const comparison = calculateMetricComparison(25, 0, true, true);
+      expect(comparison.relativeDiffPct).toBeNull();
+      expect(comparison.percentagePointsDiff).toBe(25);
     });
   });
 

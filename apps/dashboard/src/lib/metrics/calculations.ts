@@ -1,6 +1,62 @@
 import { parseTimeRange, type ResolvedTimeRange } from "../analytics/time";
 import type { TimeRangeKey } from "../analytics/types";
-import type { MetricsFilterParams } from "./types";
+import type { MetricsFilterParams, TimeBucketState } from "./types";
+
+export interface ErrorRateResult {
+  value: number | null;
+  state: TimeBucketState;
+  label: string;
+}
+
+export function calculateErrorRate(
+  requestCount: number,
+  failedRequestCount: number,
+  errorCount: number = 0,
+  hasTelemetry: boolean = true
+): ErrorRateResult {
+  if (!hasTelemetry && requestCount === 0 && errorCount === 0) {
+    return {
+      value: null,
+      state: "NO_TELEMETRY",
+      label: "No telemetry observed",
+    };
+  }
+
+  // Denominator is 0: mathematically UNDEFINED
+  if (requestCount === 0) {
+    if (errorCount > 0 || failedRequestCount > 0) {
+      return {
+        value: null,
+        state: "INVALID_DENOMINATOR",
+        label: "Undefined — 0 requests observed",
+      };
+    }
+    return {
+      value: null,
+      state: "NO_TELEMETRY",
+      label: "No observed requests",
+    };
+  }
+
+  // Denominator > 0
+  if (failedRequestCount === 0) {
+    return {
+      value: 0.0,
+      state: "OBSERVED_ZERO",
+      label: `0 failed of ${requestCount} requests (0.0%)`,
+    };
+  }
+
+  const rate = (failedRequestCount / requestCount) * 100;
+  const clampedRate = Math.min(100, Math.max(0, rate));
+  const rounded = Math.round(clampedRate * 10) / 10;
+
+  return {
+    value: rounded,
+    state: requestCount < 3 ? "INSUFFICIENT_SAMPLE" : "OBSERVED_VALUE",
+    label: `${failedRequestCount} failed of ${requestCount} requests (${rounded.toFixed(1)}%)`,
+  };
+}
 
 export function isFailedStatus(status: string | null | undefined): boolean {
   if (!status) return false;

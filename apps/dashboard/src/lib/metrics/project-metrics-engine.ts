@@ -1,7 +1,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { getOrganization } from "@/lib/organization";
-import { parseTimeRange, calculateMetricComparison, type ResolvedTimeRange } from "@/lib/analytics/time";
+import { calculateMetricComparison } from "@/lib/analytics/time";
 import { formatUtcDateTime, formatUtcTime } from "./formatters";
 import type {
   MetricsFilterParams,
@@ -44,8 +44,8 @@ interface EventFilterWhere {
   };
 }
 
-import { isFailedStatus, calculatePercentile, resolveTimeWindow } from "./calculations";
-export { isFailedStatus, calculatePercentile, resolveTimeWindow };
+import { isFailedStatus, calculatePercentile, resolveTimeWindow, calculateErrorRate } from "./calculations";
+export { isFailedStatus, calculatePercentile, resolveTimeWindow, calculateErrorRate };
 
 export async function getProjectMetricsIntelligence(
   projectIdOrSlug: string,
@@ -268,20 +268,39 @@ export async function getProjectMetricsIntelligence(
   const prevFailedRequests = prevRequests.filter((e) => isFailedStatus(e.status));
 
   // ERROR RATE CALCULATION: failed requests / observed requests * 100
-  const currentErrorRate =
-    currentRequests.length > 0
-      ? (currentFailedRequests.length / currentRequests.length) * 100
-      : currentErrors.length > 0
-      ? 100
-      : null;
+  // Handled strictly through calculateErrorRate to guarantee 0/0 is null (undefined), never 100%
+  const errorRateResult = calculateErrorRate(
+    currentRequests.length,
+    currentFailedRequests.length,
+    currentErrors.length,
+    hasTelemetry
+  );
+  const currentErrorRate = errorRateResult.value;
 
-  const prevErrorRate =
-    prevRequests.length > 0
-      ? (prevFailedRequests.length / prevRequests.length) * 100
-      : null;
+  const prevErrorRateResult = calculateErrorRate(
+    prevRequests.length,
+    prevFailedRequests.length,
+    previousEvents.filter((e) => e.type === "ERROR").length,
+    previousEvents.length > 0
+  );
+  const prevErrorRate = prevErrorRateResult.value;
 
   const errorRateComp = calculateMetricComparison(currentErrorRate, prevErrorRate, true, true);
-  const hasErrorRateBaseline = prevRequests.length >= 5 && errorRateComp.percentagePointsDiff !== null;
+  const hasErrorRateBaseline = prevRequests.length >= 5 && currentErrorRate !== null && errorRateComp.percentagePointsDiff !== null;
+
+  let errorRateQualityState: MetricOverviewItem["qualityState"] = "OBSERVED";
+  let errorRateQualityLabel = "Observed";
+
+  if (errorRateResult.state === "INVALID_DENOMINATOR") {
+    errorRateQualityState = "INSUFFICIENT";
+    errorRateQualityLabel = "Undefined — 0 requests";
+  } else if (errorRateResult.state === "NO_TELEMETRY") {
+    errorRateQualityState = "NOT_CAPTURED";
+    errorRateQualityLabel = "No telemetry";
+  } else if (errorRateResult.state === "INSUFFICIENT_SAMPLE") {
+    errorRateQualityState = "LIMITED";
+    errorRateQualityLabel = "Limited sample";
+  }
 
   const errorRateOverview: MetricOverviewItem = {
     label: "ERROR RATE",
@@ -299,18 +318,8 @@ export async function getProjectMetricsIntelligence(
           : "flat"
         : null,
     isImprovement: errorRateComp.isImprovement,
-    qualityState:
-      currentRequests.length === 0 && currentErrors.length === 0
-        ? "INSUFFICIENT"
-        : currentRequests.length < 5
-        ? "LIMITED"
-        : "OBSERVED",
-    qualityLabel:
-      currentRequests.length === 0 && currentErrors.length === 0
-        ? "Insufficient telemetry"
-        : currentRequests.length < 5
-        ? "Limited sample"
-        : "Observed",
+    qualityState: errorRateQualityState,
+    qualityLabel: errorRateQualityLabel,
   };
 
   // REQUESTS CALCULATION
@@ -454,15 +463,15 @@ export async function getProjectMetricsIntelligence(
       .map((r) => r.durationMs)
       .filter((d): d is number => typeof d === "number" && d >= 0);
 
-    const bErrorRate =
-      bRequests.length > 0
-        ? (bFailedRequests.length / bRequests.length) * 100
-        : bErrors.length > 0
-        ? 100
-        : null;
+    const bErrorRateResult = calculateErrorRate(
+      bRequests.length,
+      bFailedRequests.length,
+      bErrors.length,
+      hasTelemetryInBucket
+    );
 
-    let bucketState: TimeBucketState = "OBSERVED_VALUE";
-    let dataStateLabel = `${bFailedRequests.length} failed of ${bRequests.length} requests`;
+    let bucketState: TimeBucketState = bErrorRateResult.state;
+    let dataStateLabel = bErrorRateResult.label;
 
     if (!hasTelemetryInBucket) {
       bucketState = "NO_TELEMETRY";
@@ -470,12 +479,6 @@ export async function getProjectMetricsIntelligence(
     } else if (bRequests.length === 0 && bErrors.length === 0) {
       bucketState = "OBSERVED_ZERO";
       dataStateLabel = "0 requests, 0 errors observed";
-    } else if (bRequests.length > 0 && bFailedRequests.length === 0 && bErrors.length === 0) {
-      bucketState = "OBSERVED_ZERO";
-      dataStateLabel = `0 errors observed (${bRequests.length} requests)`;
-    } else if (bRequests.length > 0 && bRequests.length < 3) {
-      bucketState = "INSUFFICIENT_SAMPLE";
-      dataStateLabel = `Limited sample (${bRequests.length} requests, ${bFailedRequests.length} failed)`;
     }
 
     primaryBuckets.push({
@@ -486,7 +489,7 @@ export async function getProjectMetricsIntelligence(
       requestCount: bRequests.length,
       failedRequestCount: bFailedRequests.length,
       errorCount: bErrors.length,
-      errorRate: bErrorRate !== null ? Math.round(bErrorRate * 10) / 10 : null,
+      errorRate: bErrorRateResult.value,
       p50LatencyMs: calculatePercentile(bLatencies, 50),
       p75LatencyMs: calculatePercentile(bLatencies, 75),
       p95LatencyMs: calculatePercentile(bLatencies, 95),
@@ -657,19 +660,13 @@ export async function getProjectMetricsIntelligence(
   const servicePerformanceRows: ServicePerformanceRow[] = Array.from(serviceStatsMap.entries())
     .map(([serviceName, stats]) => {
       const p95 = calculatePercentile(stats.latencies, 95);
-      const totalReq = stats.requests;
-      const errRate =
-        totalReq > 0
-          ? (stats.failedRequests / totalReq) * 100
-          : stats.errors > 0
-          ? 100
-          : null;
+      const errRate = calculateErrorRate(stats.requests, stats.failedRequests, stats.errors, true).value;
 
       return {
         service: serviceName,
         requests: stats.requests,
         errors: stats.errors,
-        errorRate: errRate !== null ? Math.round(errRate * 10) / 10 : null,
+        errorRate: errRate,
         p95LatencyMs: p95,
         affectedUsers: stats.users.size > 0 ? stats.users.size : null,
         actionHref: `?service=${encodeURIComponent(serviceName)}`,
@@ -695,12 +692,7 @@ export async function getProjectMetricsIntelligence(
       .map((r) => r.durationMs)
       .filter((d): d is number => typeof d === "number" && d >= 0);
 
-    const relErrorRate =
-      relRequests.length > 0
-        ? (relFailed.length / relRequests.length) * 100
-        : relErrors.length > 0
-        ? 100
-        : null;
+    const relErrorRate = calculateErrorRate(relRequests.length, relFailed.length, relErrors.length, true).value;
 
     releaseTimelineMarkers.push({
       version: rel.version,
