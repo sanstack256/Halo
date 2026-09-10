@@ -181,6 +181,34 @@ export async function getReplaySessionForOccurrence(
         }
     }
 
+    // Direct issueId link on ReplaySession
+    if (issueId) {
+        const replay = await prisma.replaySession.findFirst({
+            where: {
+                issueId,
+                projectId: effectiveProjectId,
+                status: { in: ["AVAILABLE", "RECORDING", "PROCESSING"] },
+            },
+            include: REPLAY_SESSION_INCLUDE,
+            orderBy: { createdAt: "desc" },
+        });
+
+        if (replay) {
+            const isExactSession = targetOccurrence?.sessionId && replay.sessionId === targetOccurrence.sessionId;
+            return {
+                replaySession: replay,
+                replaySessionId: replay.id,
+                occurrenceId: targetOccurrence?.id ?? occurrenceId ?? null,
+                correlationMethod: isExactSession ? "EXACT_OCCURRENCE_SESSION" : "EXACT_SESSION_ID",
+                correlationStrength: isExactSession ? "EXACT" : "STRONG",
+                isExact: Boolean(isExactSession),
+                reason: isExactSession
+                    ? `Directly correlated via session identifier (${replay.sessionId}).`
+                    : `Correlated via issue session replay (${replay.sessionId}).`,
+            };
+        }
+    }
+
     // Tier 3: Trace ID or Request ID Correlated Match
     if (targetOccurrence && (targetOccurrence.traceId || targetOccurrence.requestId)) {
         const orConditions: any[] = [];
