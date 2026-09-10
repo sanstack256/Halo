@@ -263,19 +263,35 @@ export function ReplayPlayerClient({
         return markers.sort((a, b) => a.timeMs - b.timeMs);
     }, [events, replaySession, issueTitle]);
 
+    const [playerError, setPlayerError] = useState<string | null>(null);
+
     // Initialize rrweb-player with mouseTail: false to remove red trailing lines
     useEffect(() => {
         if (loading || events.length === 0 || !containerRef.current) return;
 
+        let isCancelled = false;
         let player: any = null;
 
         async function initPlayer() {
             try {
                 const RRWebPlayer = (await import("rrweb-player")).default;
 
-                if (!containerRef.current) return;
+                if (isCancelled || !containerRef.current) return;
 
-                containerRef.current.innerHTML = "";
+                // Safely destroy previous Svelte player instance before clearing DOM
+                if (playerInstanceRef.current) {
+                    try {
+                        playerInstanceRef.current.pause();
+                        if (typeof playerInstanceRef.current.$destroy === "function") {
+                            playerInstanceRef.current.$destroy();
+                        }
+                    } catch {}
+                    playerInstanceRef.current = null;
+                }
+
+                if (containerRef.current) {
+                    containerRef.current.innerHTML = "";
+                }
 
                 const start = events[0]?.timestamp || 0;
                 const end = events[events.length - 1]?.timestamp || start;
@@ -295,6 +311,16 @@ export function ReplayPlayerClient({
                     },
                 });
 
+                if (isCancelled) {
+                    try {
+                        player.pause();
+                        if (typeof player.$destroy === "function") {
+                            player.$destroy();
+                        }
+                    } catch {}
+                    return;
+                }
+
                 playerInstanceRef.current = player;
 
                 const replayer = player.getReplayer();
@@ -310,18 +336,33 @@ export function ReplayPlayerClient({
                         setCurrentMs(current);
                     });
                 }
-            } catch (err) {
+            } catch (err: any) {
                 console.error("Failed to initialize rrweb-player:", err);
+                setPlayerError(err.message || "Failed to initialize replay player");
             }
         }
 
         initPlayer();
 
         return () => {
+            isCancelled = true;
             if (player) {
                 try {
                     player.pause();
+                    if (typeof player.$destroy === "function") {
+                        player.$destroy();
+                    }
                 } catch {}
+                player = null;
+            }
+            if (playerInstanceRef.current) {
+                try {
+                    playerInstanceRef.current.pause();
+                    if (typeof playerInstanceRef.current.$destroy === "function") {
+                        playerInstanceRef.current.$destroy();
+                    }
+                } catch {}
+                playerInstanceRef.current = null;
             }
         };
     }, [events, loading]);
