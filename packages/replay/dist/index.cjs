@@ -20,7 +20,12 @@ var __toCommonJS = (mod) => __copyProps(__defProp({}, "__esModule", { value: tru
 // src/index.ts
 var index_exports = {};
 __export(index_exports, {
-  HaloReplay: () => HaloReplay
+  HaloReplay: () => HaloReplay,
+  ReplayRingBuffer: () => ReplayRingBuffer,
+  buildMaskerConfig: () => buildMaskerConfig,
+  initHaloReplay: () => initHaloReplay,
+  isUrlIgnored: () => isUrlIgnored,
+  sanitizeUrl: () => sanitizeUrl
 });
 module.exports = __toCommonJS(index_exports);
 
@@ -100,6 +105,38 @@ function buildMaskerConfig(options) {
     }
   };
 }
+var SENSITIVE_QUERY_PARAMS = [
+  "token",
+  "auth",
+  "key",
+  "api_key",
+  "apiKey",
+  "secret",
+  "password",
+  "pass",
+  "access_token",
+  "refresh_token",
+  "code",
+  "sessionId",
+  "session_id"
+];
+function sanitizeUrl(urlStr) {
+  if (!urlStr) return urlStr;
+  try {
+    const parsed = new URL(urlStr, "http://localhost");
+    let modified = false;
+    for (const param of SENSITIVE_QUERY_PARAMS) {
+      if (parsed.searchParams.has(param)) {
+        parsed.searchParams.set(param, "[REDACTED]");
+        modified = true;
+      }
+    }
+    if (!modified) return urlStr;
+    return parsed.pathname + parsed.search + parsed.hash;
+  } catch {
+    return urlStr;
+  }
+}
 function isUrlIgnored(url, ignorePatterns) {
   if (!ignorePatterns || ignorePatterns.length === 0) return false;
   for (const pattern of ignorePatterns) {
@@ -114,29 +151,51 @@ function isUrlIgnored(url, ignorePatterns) {
 
 // src/ring-buffer.ts
 var ReplayRingBuffer = class {
-  constructor(maxDurationSeconds = 60) {
+  constructor(maxDurationSeconds = 60, maxEvents = 5e3) {
     this.buffer = [];
-    this.maxDurationMs = maxDurationSeconds * 1e3;
+    this.maxDurationMs = Math.max(1e3, maxDurationSeconds * 1e3);
+    this.maxEvents = Math.max(100, maxEvents);
   }
   add(event) {
     this.buffer.push(event);
-    this.prune();
+    this.prune(event.timestamp);
   }
-  prune() {
-    if (this.buffer.length === 0) return;
-    const now = Date.now();
+  /**
+   * Prunes events that are older than maxDurationMs or beyond maxEvents,
+   * while rigorously ensuring that an initial FullSnapshot (type 2) or Meta (type 4)
+   * is preserved at the beginning of the buffer so DOM reconstruction never fails.
+   */
+  prune(referenceTimestamp) {
+    if (this.buffer.length <= 1) return;
+    const now = referenceTimestamp ?? (this.buffer[this.buffer.length - 1]?.timestamp || Date.now());
     const cutoff = now - this.maxDurationMs;
-    let earliestValidIndex = 0;
+    const timeNeedsPrune = this.buffer[0].timestamp < cutoff;
+    const countNeedsPrune = this.buffer.length > this.maxEvents;
+    if (!timeNeedsPrune && !countNeedsPrune) {
+      return;
+    }
+    let snapshotIndex = -1;
     for (let i = this.buffer.length - 1; i >= 0; i--) {
-      if (this.buffer[i].timestamp < cutoff) {
-        if (this.buffer[i].type === 2) {
-          earliestValidIndex = i;
+      const ev = this.buffer[i];
+      if (ev.type === 2) {
+        if (ev.timestamp <= cutoff || countNeedsPrune && this.buffer.length - i <= this.maxEvents) {
+          snapshotIndex = i;
           break;
         }
       }
     }
-    if (earliestValidIndex > 0) {
-      this.buffer = this.buffer.slice(earliestValidIndex);
+    if (snapshotIndex > 0) {
+      this.buffer = this.buffer.slice(snapshotIndex);
+    } else if (countNeedsPrune && this.buffer.length > this.maxEvents) {
+      const firstSnapshotIdx = this.buffer.findIndex((e) => e.type === 2);
+      if (firstSnapshotIdx >= 0) {
+        const snapshot = this.buffer[firstSnapshotIdx];
+        const excess = this.buffer.length - this.maxEvents;
+        const remaining = this.buffer.slice(firstSnapshotIdx + 1 + excess);
+        this.buffer = [snapshot, ...remaining];
+      } else {
+        this.buffer = this.buffer.slice(this.buffer.length - this.maxEvents);
+      }
     }
   }
   flush() {
@@ -162,8 +221,10 @@ var ReplayUploader = class {
     this.queue = [];
     this.flushTimer = null;
     this.isUploading = false;
+    this.maxQueueEvents = 1e4;
     this.endpoint = options.endpoint.replace(/\/$/, "");
     this.apiKey = options.apiKey;
+    this.projectId = options.projectId;
     this.sessionId = options.sessionId;
     this.flushIntervalMs = options.flushIntervalMs ?? 5e3;
     this.environment = options.environment;
@@ -174,6 +235,12 @@ var ReplayUploader = class {
   }
   addEvents(events) {
     this.queue.push(...events);
+    if (this.queue.length > this.maxQueueEvents) {
+      const firstSnapshot = this.queue.find((e) => e.type === 2);
+      const excess = this.queue.length - this.maxQueueEvents;
+      const remaining = this.queue.slice(excess);
+      this.queue = firstSnapshot ? [firstSnapshot, ...remaining.filter((e) => e !== firstSnapshot)] : remaining;
+    }
     this.scheduleFlush();
   }
   scheduleFlush() {
@@ -200,6 +267,7 @@ var ReplayUploader = class {
       startedAt,
       endedAt,
       meta: {
+        projectId: this.projectId,
         browser: typeof navigator !== "undefined" ? navigator.userAgent : void 0,
         os: typeof navigator !== "undefined" ? navigator.platform : void 0,
         url: typeof window !== "undefined" ? window.location.href : void 0,
@@ -220,12 +288,16 @@ var ReplayUploader = class {
         headers["Authorization"] = `Bearer ${this.apiKey}`;
       }
       const bodyStr = JSON.stringify(payload);
-      await fetch(targetUrl, {
+      const res = await fetch(targetUrl, {
         method: "POST",
         headers,
         body: bodyStr,
         keepalive: isFinal
       });
+      if (!res.ok && res.status >= 500 && !isFinal) {
+        this.queue.unshift(...eventsToUpload);
+        this.sequence--;
+      }
     } catch (err) {
       console.error("[Halo Replay] Failed to upload chunk:", err);
       if (!isFinal) {
@@ -245,27 +317,57 @@ var HaloReplay = class {
     this.isErrorTriggered = false;
     this.postErrorTimeout = null;
     this.maxSessionTimeout = null;
+    this.originalPushState = null;
+    this.originalReplaceState = null;
+    this.originalFetch = null;
+    this.originalConsoleError = null;
+    this.currentUrl = "";
     this.options = {
       endpoint: options.endpoint || "/api",
       samplingRate: options.samplingRate ?? 1,
       errorTriggered: options.errorTriggered ?? true,
       preErrorBufferSeconds: options.preErrorBufferSeconds ?? 60,
+      maxBufferEvents: options.maxBufferEvents ?? 5e3,
       postErrorDurationSeconds: options.postErrorDurationSeconds ?? 30,
       maxSessionDurationMinutes: options.maxSessionDurationMinutes ?? 60,
       flushIntervalMs: options.flushIntervalMs ?? 5e3,
+      captureNavigation: options.captureNavigation ?? true,
+      captureNetwork: options.captureNetwork ?? true,
+      captureConsole: options.captureConsole ?? true,
       ...options
     };
-    const globalSessionId = typeof window !== "undefined" ? window.__HALO_SESSION_ID__ : void 0;
-    this.sessionId = options.sessionId || globalSessionId || this.generateSessionId();
+    let canonicalId = options.sessionId;
+    if (!canonicalId && typeof window !== "undefined") {
+      try {
+        canonicalId = window.sessionStorage?.getItem("halo_session_id") || void 0;
+      } catch {
+      }
+      if (!canonicalId) {
+        canonicalId = window.__HALO_SESSION_ID__;
+      }
+    }
+    if (!canonicalId) {
+      canonicalId = this.generateSessionId();
+    }
+    this.sessionId = canonicalId;
     if (typeof window !== "undefined") {
+      try {
+        window.sessionStorage?.setItem("halo_session_id", this.sessionId);
+      } catch {
+      }
       window.__HALO_SESSION_ID__ = this.sessionId;
       window.__HALO_REPLAY__ = this;
+      this.currentUrl = window.location.href;
     }
     this.startedAt = Date.now();
-    this.ringBuffer = new ReplayRingBuffer(this.options.preErrorBufferSeconds);
+    this.ringBuffer = new ReplayRingBuffer(
+      this.options.preErrorBufferSeconds,
+      this.options.maxBufferEvents
+    );
     this.uploader = new ReplayUploader({
       endpoint: this.options.endpoint,
       apiKey: this.options.apiKey,
+      projectId: this.options.projectId,
       sessionId: this.sessionId,
       flushIntervalMs: this.options.flushIntervalMs,
       environment: this.options.environment
@@ -273,7 +375,7 @@ var HaloReplay = class {
     this.isSampled = Math.random() < (this.options.samplingRate ?? 1);
   }
   generateSessionId() {
-    return `hr_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+    return `hs_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
   }
   getSessionId() {
     return this.sessionId;
@@ -305,6 +407,15 @@ var HaloReplay = class {
         inlineImages: false,
         collectFonts: false
       }) || null;
+      if (this.options.captureNavigation) {
+        this.setupNavigationInstrumentation();
+      }
+      if (this.options.captureNetwork) {
+        this.setupNetworkInstrumentation();
+      }
+      if (this.options.captureConsole) {
+        this.setupConsoleInstrumentation();
+      }
       const maxDurationMs = (this.options.maxSessionDurationMinutes ?? 60) * 60 * 1e3;
       this.maxSessionTimeout = setTimeout(() => {
         this.stop();
@@ -328,6 +439,112 @@ var HaloReplay = class {
       this.ringBuffer.add(event);
     }
   }
+  /**
+   * Records a custom event into the rrweb stream and timeline
+   */
+  recordCustomEvent(tag, payload) {
+    const customEvent = {
+      type: 5,
+      // Custom in rrweb
+      data: {
+        tag,
+        payload
+      },
+      timestamp: Date.now()
+    };
+    this.handleEvent(customEvent);
+  }
+  setupNavigationInstrumentation() {
+    if (typeof window === "undefined" || !window.history) return;
+    const notifyNavigation = (toUrl, type) => {
+      const sanitized = sanitizeUrl(toUrl);
+      const fromSanitized = sanitizeUrl(this.currentUrl);
+      this.currentUrl = toUrl;
+      this.recordCustomEvent("halo:navigation", {
+        from: fromSanitized,
+        to: sanitized,
+        type
+      });
+    };
+    this.originalPushState = window.history.pushState;
+    window.history.pushState = (...args) => {
+      const res = this.originalPushState.apply(window.history, args);
+      const targetUrl = args[2] ? String(args[2]) : window.location.href;
+      notifyNavigation(targetUrl, "pushState");
+      return res;
+    };
+    this.originalReplaceState = window.history.replaceState;
+    window.history.replaceState = (...args) => {
+      const res = this.originalReplaceState.apply(window.history, args);
+      const targetUrl = args[2] ? String(args[2]) : window.location.href;
+      notifyNavigation(targetUrl, "replaceState");
+      return res;
+    };
+    window.addEventListener("popstate", () => {
+      notifyNavigation(window.location.href, "popstate");
+    });
+  }
+  setupNetworkInstrumentation() {
+    if (typeof window === "undefined" || !window.fetch) return;
+    this.originalFetch = window.fetch;
+    window.fetch = async (input, init) => {
+      const start = Date.now();
+      const urlStr = typeof input === "string" ? input : input instanceof URL ? input.toString() : input.url;
+      const method = (init?.method || "GET").toUpperCase();
+      if (urlStr.includes("/api/ingest/")) {
+        return this.originalFetch(input, init);
+      }
+      let traceId;
+      let requestId;
+      if (init?.headers) {
+        const headers = init.headers;
+        if (headers instanceof Headers) {
+          traceId = headers.get("x-trace-id") || headers.get("traceparent") || void 0;
+          requestId = headers.get("x-request-id") || void 0;
+        } else if (typeof headers === "object") {
+          traceId = headers["x-trace-id"] || headers["traceparent"];
+          requestId = headers["x-request-id"];
+        }
+      }
+      try {
+        const response = await this.originalFetch(input, init);
+        const durationMs = Date.now() - start;
+        this.recordCustomEvent("halo:request", {
+          method,
+          url: sanitizeUrl(urlStr),
+          status: response.status,
+          durationMs,
+          requestId,
+          traceId,
+          failed: !response.ok
+        });
+        return response;
+      } catch (err) {
+        const durationMs = Date.now() - start;
+        this.recordCustomEvent("halo:request", {
+          method,
+          url: sanitizeUrl(urlStr),
+          durationMs,
+          requestId,
+          traceId,
+          failed: true
+        });
+        throw err;
+      }
+    };
+  }
+  setupConsoleInstrumentation() {
+    if (typeof console === "undefined") return;
+    this.originalConsoleError = console.error;
+    console.error = (...args) => {
+      this.originalConsoleError.apply(console, args);
+      const message = args.map((a) => typeof a === "string" ? a : a?.message || JSON.stringify(a)).join(" ");
+      this.recordCustomEvent("halo:console", {
+        level: "error",
+        message: message.slice(0, 1e3)
+      });
+    };
+  }
   setupErrorListeners() {
     if (typeof window === "undefined") return;
     window.addEventListener("error", (e) => {
@@ -346,17 +563,30 @@ var HaloReplay = class {
   }
   /**
    * Call when an error is captured (e.g. from Halo.captureException).
+   * Supports multiple errors in the same session without timeline destruction.
    */
   triggerErrorReplay(errorMeta) {
-    if (this.isErrorTriggered) return;
-    this.isErrorTriggered = true;
-    const preErrorEvents = this.ringBuffer.flush();
-    this.uploader.addEvents(preErrorEvents);
-    this.isStreaming = true;
+    const errorTimestamp = (/* @__PURE__ */ new Date()).toISOString();
+    this.recordCustomEvent("halo:error", {
+      message: errorMeta?.title || "Unhandled Exception",
+      stack: errorMeta?.stack,
+      issueId: errorMeta?.issueId,
+      traceId: errorMeta?.traceId,
+      timestamp: errorTimestamp
+    });
+    if (!this.isErrorTriggered) {
+      this.isErrorTriggered = true;
+      const preErrorEvents = this.ringBuffer.flush();
+      this.uploader.addEvents(preErrorEvents);
+      this.isStreaming = true;
+    }
     this.uploader.flush(false, {
-      errorAt: (/* @__PURE__ */ new Date()).toISOString(),
+      errorAt: errorTimestamp,
       ...errorMeta
     });
+    if (this.postErrorTimeout) {
+      clearTimeout(this.postErrorTimeout);
+    }
     const postDurationMs = (this.options.postErrorDurationSeconds ?? 30) * 1e3;
     this.postErrorTimeout = setTimeout(() => {
       this.flushAndConclude();
@@ -372,11 +602,35 @@ var HaloReplay = class {
     }
     if (this.postErrorTimeout) clearTimeout(this.postErrorTimeout);
     if (this.maxSessionTimeout) clearTimeout(this.maxSessionTimeout);
+    if (this.originalPushState && typeof window !== "undefined" && window.history) {
+      window.history.pushState = this.originalPushState;
+    }
+    if (this.originalReplaceState && typeof window !== "undefined" && window.history) {
+      window.history.replaceState = this.originalReplaceState;
+    }
+    if (this.originalFetch && typeof window !== "undefined") {
+      window.fetch = this.originalFetch;
+    }
+    if (this.originalConsoleError && typeof console !== "undefined") {
+      console.error = this.originalConsoleError;
+    }
     this.flushAndConclude();
   }
 };
+
+// src/index.ts
+function initHaloReplay(options = {}) {
+  const replay = new HaloReplay(options);
+  replay.start();
+  return replay;
+}
 // Annotate the CommonJS export names for ESM import in node:
 0 && (module.exports = {
-  HaloReplay
+  HaloReplay,
+  ReplayRingBuffer,
+  buildMaskerConfig,
+  initHaloReplay,
+  isUrlIgnored,
+  sanitizeUrl
 });
 //# sourceMappingURL=index.cjs.map

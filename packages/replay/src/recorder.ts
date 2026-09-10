@@ -1,9 +1,9 @@
 import { record } from "rrweb";
 import type { eventWithTime } from "@rrweb/types";
-import { buildMaskerConfig, isUrlIgnored } from "./masker";
+import { buildMaskerConfig, isUrlIgnored, sanitizeUrl } from "./masker";
 import { ReplayRingBuffer } from "./ring-buffer";
 import { ReplayUploader } from "./uploader";
-import type { HaloReplayOptions } from "./types";
+import type { HaloReplayOptions, ReplayNavigationPayload, ReplayRequestPayload, ReplayConsolePayload } from "./types";
 
 export class HaloReplay {
     private options: HaloReplayOptions;
@@ -17,6 +17,11 @@ export class HaloReplay {
     private maxSessionTimeout: any = null;
     private sessionId: string;
     private startedAt: number;
+    private originalPushState: any = null;
+    private originalReplaceState: any = null;
+    private originalFetch: any = null;
+    private originalConsoleError: any = null;
+    private currentUrl: string = "";
 
     constructor(options: HaloReplayOptions = {}) {
         this.options = {
@@ -24,25 +29,54 @@ export class HaloReplay {
             samplingRate: options.samplingRate ?? 1.0,
             errorTriggered: options.errorTriggered ?? true,
             preErrorBufferSeconds: options.preErrorBufferSeconds ?? 60,
+            maxBufferEvents: options.maxBufferEvents ?? 5000,
             postErrorDurationSeconds: options.postErrorDurationSeconds ?? 30,
             maxSessionDurationMinutes: options.maxSessionDurationMinutes ?? 60,
             flushIntervalMs: options.flushIntervalMs ?? 5000,
+            captureNavigation: options.captureNavigation ?? true,
+            captureNetwork: options.captureNetwork ?? true,
+            captureConsole: options.captureConsole ?? true,
             ...options,
         };
 
-        const globalSessionId = typeof window !== "undefined" ? (window as any).__HALO_SESSION_ID__ : undefined;
-        this.sessionId = options.sessionId || globalSessionId || this.generateSessionId();
+        // Canonical session identity resolution:
+        // 1. Explicit options.sessionId
+        // 2. Browser sessionStorage (preserves session across page reloads in same tab)
+        // 3. window.__HALO_SESSION_ID__ (synced with @halo-trace/sdk)
+        // 4. Canonical generateSessionId()
+        let canonicalId = options.sessionId;
+        if (!canonicalId && typeof window !== "undefined") {
+            try {
+                canonicalId = window.sessionStorage?.getItem("halo_session_id") || undefined;
+            } catch {}
+            if (!canonicalId) {
+                canonicalId = (window as any).__HALO_SESSION_ID__;
+            }
+        }
+        if (!canonicalId) {
+            canonicalId = this.generateSessionId();
+        }
+
+        this.sessionId = canonicalId;
 
         if (typeof window !== "undefined") {
+            try {
+                window.sessionStorage?.setItem("halo_session_id", this.sessionId);
+            } catch {}
             (window as any).__HALO_SESSION_ID__ = this.sessionId;
             (window as any).__HALO_REPLAY__ = this;
+            this.currentUrl = window.location.href;
         }
 
         this.startedAt = Date.now();
-        this.ringBuffer = new ReplayRingBuffer(this.options.preErrorBufferSeconds);
+        this.ringBuffer = new ReplayRingBuffer(
+            this.options.preErrorBufferSeconds,
+            this.options.maxBufferEvents
+        );
         this.uploader = new ReplayUploader({
             endpoint: this.options.endpoint!,
             apiKey: this.options.apiKey,
+            projectId: this.options.projectId,
             sessionId: this.sessionId,
             flushIntervalMs: this.options.flushIntervalMs,
             environment: this.options.environment,
@@ -53,7 +87,7 @@ export class HaloReplay {
     }
 
     private generateSessionId(): string {
-        return `hr_${Date.now()}_${Math.random().toString(36).slice(2, 10)}`;
+        return `hs_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
     }
 
     public getSessionId(): string {
@@ -92,6 +126,21 @@ export class HaloReplay {
                 collectFonts: false,
             }) || null;
 
+            // Instrument SPA navigation
+            if (this.options.captureNavigation) {
+                this.setupNavigationInstrumentation();
+            }
+
+            // Instrument safe network request metadata
+            if (this.options.captureNetwork) {
+                this.setupNetworkInstrumentation();
+            }
+
+            // Instrument console error tracking
+            if (this.options.captureConsole) {
+                this.setupConsoleInstrumentation();
+            }
+
             // Cap maximum session duration
             const maxDurationMs = (this.options.maxSessionDurationMinutes ?? 60) * 60 * 1000;
             this.maxSessionTimeout = setTimeout(() => {
@@ -124,6 +173,132 @@ export class HaloReplay {
         }
     }
 
+    /**
+     * Records a custom event into the rrweb stream and timeline
+     */
+    public recordCustomEvent<T = any>(tag: string, payload: T): void {
+        const customEvent: eventWithTime = {
+            type: 5, // Custom in rrweb
+            data: {
+                tag,
+                payload,
+            },
+            timestamp: Date.now(),
+        };
+        this.handleEvent(customEvent);
+    }
+
+    private setupNavigationInstrumentation(): void {
+        if (typeof window === "undefined" || !window.history) return;
+
+        const notifyNavigation = (toUrl: string, type: "pushState" | "replaceState" | "popstate") => {
+            const sanitized = sanitizeUrl(toUrl);
+            const fromSanitized = sanitizeUrl(this.currentUrl);
+            this.currentUrl = toUrl;
+
+            this.recordCustomEvent<ReplayNavigationPayload>("halo:navigation", {
+                from: fromSanitized,
+                to: sanitized,
+                type,
+            });
+        };
+
+        this.originalPushState = window.history.pushState;
+        window.history.pushState = (...args: any[]) => {
+            const res = this.originalPushState.apply(window.history, args);
+            const targetUrl = args[2] ? String(args[2]) : window.location.href;
+            notifyNavigation(targetUrl, "pushState");
+            return res;
+        };
+
+        this.originalReplaceState = window.history.replaceState;
+        window.history.replaceState = (...args: any[]) => {
+            const res = this.originalReplaceState.apply(window.history, args);
+            const targetUrl = args[2] ? String(args[2]) : window.location.href;
+            notifyNavigation(targetUrl, "replaceState");
+            return res;
+        };
+
+        window.addEventListener("popstate", () => {
+            notifyNavigation(window.location.href, "popstate");
+        });
+    }
+
+    private setupNetworkInstrumentation(): void {
+        if (typeof window === "undefined" || !window.fetch) return;
+
+        this.originalFetch = window.fetch;
+        window.fetch = async (input: RequestInfo | URL, init?: RequestInit) => {
+            const start = Date.now();
+            const urlStr = typeof input === "string" ? input : (input instanceof URL ? input.toString() : input.url);
+            const method = (init?.method || "GET").toUpperCase();
+
+            // Ignore internal Halo ingestion calls to prevent self-referential loops
+            if (urlStr.includes("/api/ingest/")) {
+                return this.originalFetch(input, init);
+            }
+
+            // Extract distributed trace/request headers if present
+            let traceId: string | undefined;
+            let requestId: string | undefined;
+            if (init?.headers) {
+                const headers = init.headers;
+                if (headers instanceof Headers) {
+                    traceId = headers.get("x-trace-id") || headers.get("traceparent") || undefined;
+                    requestId = headers.get("x-request-id") || undefined;
+                } else if (typeof headers === "object") {
+                    traceId = (headers as any)["x-trace-id"] || (headers as any)["traceparent"];
+                    requestId = (headers as any)["x-request-id"];
+                }
+            }
+
+            try {
+                const response = await this.originalFetch(input, init);
+                const durationMs = Date.now() - start;
+
+                this.recordCustomEvent<ReplayRequestPayload>("halo:request", {
+                    method,
+                    url: sanitizeUrl(urlStr),
+                    status: response.status,
+                    durationMs,
+                    requestId,
+                    traceId,
+                    failed: !response.ok,
+                });
+
+                return response;
+            } catch (err: any) {
+                const durationMs = Date.now() - start;
+                this.recordCustomEvent<ReplayRequestPayload>("halo:request", {
+                    method,
+                    url: sanitizeUrl(urlStr),
+                    durationMs,
+                    requestId,
+                    traceId,
+                    failed: true,
+                });
+                throw err;
+            }
+        };
+    }
+
+    private setupConsoleInstrumentation(): void {
+        if (typeof console === "undefined") return;
+
+        this.originalConsoleError = console.error;
+        console.error = (...args: any[]) => {
+            this.originalConsoleError.apply(console, args);
+            const message = args
+                .map((a) => (typeof a === "string" ? a : a?.message || JSON.stringify(a)))
+                .join(" ");
+
+            this.recordCustomEvent<ReplayConsolePayload>("halo:console", {
+                level: "error",
+                message: message.slice(0, 1000),
+            });
+        };
+    }
+
     private setupErrorListeners(): void {
         if (typeof window === "undefined") return;
 
@@ -145,23 +320,40 @@ export class HaloReplay {
 
     /**
      * Call when an error is captured (e.g. from Halo.captureException).
+     * Supports multiple errors in the same session without timeline destruction.
      */
     public triggerErrorReplay(errorMeta?: { title?: string; stack?: string; issueId?: string; traceId?: string }): void {
-        if (this.isErrorTriggered) return;
-        this.isErrorTriggered = true;
+        const errorTimestamp = new Date().toISOString();
 
-        // Flush all pre-error events from ring buffer into uploader
-        const preErrorEvents = this.ringBuffer.flush();
-        this.uploader.addEvents(preErrorEvents);
-        this.isStreaming = true;
+        // Record error marker in custom events
+        this.recordCustomEvent("halo:error", {
+            message: errorMeta?.title || "Unhandled Exception",
+            stack: errorMeta?.stack,
+            issueId: errorMeta?.issueId,
+            traceId: errorMeta?.traceId,
+            timestamp: errorTimestamp,
+        });
+
+        if (!this.isErrorTriggered) {
+            this.isErrorTriggered = true;
+
+            // Flush all pre-error events from ring buffer into uploader
+            const preErrorEvents = this.ringBuffer.flush();
+            this.uploader.addEvents(preErrorEvents);
+            this.isStreaming = true;
+        }
 
         // Immediate flush with error metadata
         this.uploader.flush(false, {
-            errorAt: new Date().toISOString(),
+            errorAt: errorTimestamp,
             ...errorMeta,
         });
 
-        // Continue recording for postErrorDurationSeconds then finalize
+        // Reset or extend post-error capture window
+        if (this.postErrorTimeout) {
+            clearTimeout(this.postErrorTimeout);
+        }
+
         const postDurationMs = (this.options.postErrorDurationSeconds ?? 30) * 1000;
         this.postErrorTimeout = setTimeout(() => {
             this.flushAndConclude();
@@ -179,6 +371,22 @@ export class HaloReplay {
         }
         if (this.postErrorTimeout) clearTimeout(this.postErrorTimeout);
         if (this.maxSessionTimeout) clearTimeout(this.maxSessionTimeout);
+
+        // Restore original browser hooks
+        if (this.originalPushState && typeof window !== "undefined" && window.history) {
+            window.history.pushState = this.originalPushState;
+        }
+        if (this.originalReplaceState && typeof window !== "undefined" && window.history) {
+            window.history.replaceState = this.originalReplaceState;
+        }
+        if (this.originalFetch && typeof window !== "undefined") {
+            window.fetch = this.originalFetch;
+        }
+        if (this.originalConsoleError && typeof console !== "undefined") {
+            console.error = this.originalConsoleError;
+        }
+
         this.flushAndConclude();
     }
 }
+

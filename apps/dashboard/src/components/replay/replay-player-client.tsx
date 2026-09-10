@@ -4,7 +4,9 @@ import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import {
     AlertCircle,
+    Check,
     ChevronLeft,
+    ChevronRight,
     Compass,
     Copy,
     MonitorPlay,
@@ -45,9 +47,9 @@ type ReplayPlayerClientProps = {
         url?: string | null;
         browser?: string | null;
         os?: string | null;
-        startedAt: Date;
-        endedAt?: Date | null;
-        errorAt?: Date | null;
+        startedAt: Date | string;
+        endedAt?: Date | string | null;
+        errorAt?: Date | string | null;
         totalDurationMs?: number | null;
         status: string;
         issueId?: string | null;
@@ -57,6 +59,7 @@ type ReplayPlayerClientProps = {
         viewportHeight?: number | null;
     };
     issueTitle?: string;
+    initialTimeMs?: number;
 };
 
 type TimelineMarker = {
@@ -73,6 +76,7 @@ type TimelineMarker = {
 export function ReplayPlayerClient({
     replaySession,
     issueTitle,
+    initialTimeMs,
 }: ReplayPlayerClientProps) {
     const containerRef = useRef<HTMLDivElement>(null);
     const playerInstanceRef = useRef<any>(null);
@@ -84,6 +88,8 @@ export function ReplayPlayerClient({
     const [durationMs, setDurationMs] = useState(0);
     const [playbackSpeed, setPlaybackSpeed] = useState<number>(1);
     const [selectedMarker, setSelectedMarker] = useState<TimelineMarker | null>(null);
+    const [playerError, setPlayerError] = useState<string | null>(null);
+    const [copiedField, setCopiedField] = useState<string | null>(null);
 
     // Fetch real rrweb chunks from server
     useEffect(() => {
@@ -153,20 +159,20 @@ export function ReplayPlayerClient({
             rawData: { url: replaySession.url, offsetMs: 0 },
         });
 
-        // 2. Parse real user interaction events from rrweb event stream
+        // 2. Parse real user interaction and custom events from rrweb event stream
         let lastInteractionTime = -500;
 
         for (const ev of events) {
             const offsetMs = Math.max(0, ev.timestamp - startTimestamp);
 
-            // FullSnapshot (DOM re-render or route change)
+            // FullSnapshot (DOM re-render or initial page snapshot)
             if (ev.type === 2 && offsetMs > 1000) {
                 markers.push({
                     timeMs: offsetMs,
                     label: "DOM Snapshot",
                     type: "navigation",
                     icon: Navigation,
-                    detail: "Full DOM snapshot captured",
+                    detail: "Full DOM snapshot reconstructed",
                     rawData: { rrwebType: ev.type, offsetMs },
                 });
             }
@@ -175,19 +181,19 @@ export function ReplayPlayerClient({
             if (ev.type === 3 && ev.data) {
                 const source = ev.data.source;
 
-                // Mouse interaction (Click = 2, TouchStart = 4)
-                if (source === 1 && (ev.data.type === 2 || ev.data.type === 4)) {
+                // Mouse interaction (source 2: Click = 2, TouchStart = 7)
+                if (source === 2 && (ev.data.type === 2 || ev.data.type === 7)) {
                     if (offsetMs - lastInteractionTime > 300) {
                         markers.push({
                             timeMs: offsetMs,
-                            label: "User Click",
+                            label: ev.data.type === 7 ? "Touch Action" : "User Click",
                             type: "click",
                             icon: MousePointer,
-                            detail: `Click at (${ev.data.x ?? 0}, ${ev.data.y ?? 0})`,
+                            detail: `Observed pointer click at (${ev.data.x ?? 0}, ${ev.data.y ?? 0})`,
                             rawData: {
                                 rrwebType: ev.type,
                                 source,
-                                interactionType: ev.data.type === 4 ? "touch" : "click",
+                                interactionType: ev.data.type === 7 ? "touch" : "click",
                                 x: ev.data.x,
                                 y: ev.data.y,
                                 id: ev.data.id,
@@ -198,21 +204,34 @@ export function ReplayPlayerClient({
                     }
                 }
 
-                // Form Input / Typing
+                // Form Input / Typing (source 5)
                 if (source === 5 && offsetMs - lastInteractionTime > 800) {
                     markers.push({
                         timeMs: offsetMs,
                         label: "Form Input",
                         type: "input",
                         icon: Type,
-                        detail: "User entered text (masked for privacy)",
-                        rawData: { rrwebType: ev.type, source, id: ev.data.id, offsetMs },
+                        detail: `User entered input on target #${ev.data.id ?? "node"} (masked before transmission)`,
+                        rawData: { rrwebType: ev.type, source, id: ev.data.id, offsetMs, privacy: "MASKED" },
                     });
                     lastInteractionTime = offsetMs;
                 }
 
-                // Viewport Resize
+                // Scroll (source 3)
                 if (source === 3 && offsetMs - lastInteractionTime > 1500) {
+                    markers.push({
+                        timeMs: offsetMs,
+                        label: "User Scroll",
+                        type: "scroll",
+                        icon: Move,
+                        detail: `Scrolled to (${ev.data.x ?? 0}, ${ev.data.y ?? 0})`,
+                        rawData: { rrwebType: ev.type, source, x: ev.data.x, y: ev.data.y, offsetMs },
+                    });
+                    lastInteractionTime = offsetMs;
+                }
+
+                // Viewport Resize (source 4)
+                if (source === 4 && offsetMs - lastInteractionTime > 1500) {
                     markers.push({
                         timeMs: offsetMs,
                         label: "Viewport Resize",
@@ -225,21 +244,56 @@ export function ReplayPlayerClient({
                 }
             }
 
-            // Custom error or console event
-            if (ev.type === 5 && ev.data?.tag === "error") {
-                markers.push({
-                    timeMs: offsetMs,
-                    label: "Console Error",
-                    type: "error",
-                    icon: Terminal,
-                    detail: ev.data.payload?.message || "Client console exception",
-                    rawData: { rrwebType: ev.type, tag: ev.data.tag, message: ev.data.payload?.message, offsetMs },
-                });
+            // Custom rrweb events (type 5)
+            if (ev.type === 5 && ev.data) {
+                const tag = ev.data.tag;
+                const payload = ev.data.payload || {};
+
+                if (tag === "halo:navigation") {
+                    markers.push({
+                        timeMs: offsetMs,
+                        label: "Navigation",
+                        type: "navigation",
+                        icon: Compass,
+                        detail: `Navigated to ${payload.to || ""}`,
+                        rawData: { tag, ...payload, offsetMs },
+                    });
+                } else if (tag === "halo:request") {
+                    const statusStr = payload.status ? ` [${payload.status}]` : "";
+                    markers.push({
+                        timeMs: offsetMs,
+                        label: payload.failed ? "Failed Request" : "Network Request",
+                        type: payload.failed ? "error" : "custom",
+                        icon: Zap,
+                        detail: `${payload.method || "GET"} ${payload.url || ""}${statusStr}`,
+                        traceId: payload.traceId,
+                        rawData: { tag, ...payload, offsetMs },
+                    });
+                } else if (tag === "halo:console") {
+                    markers.push({
+                        timeMs: offsetMs,
+                        label: "Console Error",
+                        type: "error",
+                        icon: Terminal,
+                        detail: payload.message || "Console error logged",
+                        rawData: { tag, ...payload, offsetMs },
+                    });
+                } else if (tag === "halo:error") {
+                    markers.push({
+                        timeMs: offsetMs,
+                        label: "Exception Captured",
+                        type: "error",
+                        icon: AlertCircle,
+                        detail: payload.message || issueTitle || "Unhandled Exception",
+                        traceId: payload.traceId,
+                        rawData: { tag, ...payload, offsetMs },
+                    });
+                }
             }
         }
 
-        // 3. Error snap moment — anchored from real replaySession.errorAt
-        if (replaySession.errorAt) {
+        // 3. Error snap moment — anchored from real replaySession.errorAt if not already added
+        if (replaySession.errorAt && !markers.some(m => m.type === "error" && m.label.includes("Exception"))) {
             const errorTime = new Date(replaySession.errorAt).getTime();
             const errorOffsetMs = Math.max(0, errorTime - startTimestamp);
 
@@ -251,7 +305,7 @@ export function ReplayPlayerClient({
                 detail: issueTitle || "Unhandled Application Error",
                 traceId: replaySession.traceId,
                 rawData: {
-                    errorAt: replaySession.errorAt.toISOString(),
+                    errorAt: new Date(replaySession.errorAt).toISOString(),
                     traceId: replaySession.traceId,
                     requestId: replaySession.requestId,
                     sessionId: replaySession.sessionId,
@@ -262,8 +316,6 @@ export function ReplayPlayerClient({
 
         return markers.sort((a, b) => a.timeMs - b.timeMs);
     }, [events, replaySession, issueTitle]);
-
-    const [playerError, setPlayerError] = useState<string | null>(null);
 
     // Initialize rrweb-player with mouseTail: false to remove red trailing lines
     useEffect(() => {
@@ -306,7 +358,7 @@ export function ReplayPlayerClient({
                         height: 480,
                         autoPlay: false,
                         showController: false,
-                        mouseTail: false, // Disables the red line cursor trail!
+                        mouseTail: false, // Disables red line cursor trail
                         speed: playbackSpeed,
                     },
                 });
@@ -335,6 +387,19 @@ export function ReplayPlayerClient({
                         const current = replayer.getCurrentTime();
                         setCurrentMs(current);
                     });
+
+                    // Error-centered playback: Seek to requested initial time or error timestamp on load
+                    const errorTime = replaySession.errorAt ? new Date(replaySession.errorAt).getTime() : null;
+                    const errorOffset = errorTime ? Math.max(0, errorTime - start) : null;
+                    const targetSeek = initialTimeMs !== undefined ? initialTimeMs : (errorOffset !== null ? errorOffset : 0);
+
+                    if (targetSeek > 0 && targetSeek <= total) {
+                        try {
+                            replayer.play(targetSeek);
+                            replayer.pause();
+                            setCurrentMs(targetSeek);
+                        } catch {}
+                    }
                 }
             } catch (err: any) {
                 console.error("Failed to initialize rrweb-player:", err);
@@ -465,36 +530,74 @@ export function ReplayPlayerClient({
         ? Math.max(0, new Date(replaySession.errorAt).getTime() - startTimestamp)
         : null;
 
-    const currentFormatted = formatMs(currentMs);
-    const totalFormatted = formatMs(durationMs);
+    const jumpPrevEvent = () => {
+        const pastMarkers = timelineMarkers.filter(m => m.timeMs < currentMs - 250);
+        if (pastMarkers.length > 0) {
+            seekTo(pastMarkers[pastMarkers.length - 1].timeMs);
+        } else {
+            seekTo(0);
+        }
+    };
+
+    const jumpNextEvent = () => {
+        const futureMarkers = timelineMarkers.filter(m => m.timeMs > currentMs + 250);
+        if (futureMarkers.length > 0) {
+            seekTo(futureMarkers[0].timeMs);
+        }
+    };
+
+    const copyText = (text: string, field: string) => {
+        navigator.clipboard.writeText(text);
+        setCopiedField(field);
+        setTimeout(() => setCopiedField(null), 1500);
+    };
+
+    const copyDeepLink = () => {
+        if (typeof window === "undefined") return;
+        const url = new URL(window.location.href);
+        url.searchParams.set("t", String(Math.round(currentMs)));
+        navigator.clipboard.writeText(url.toString());
+        setCopiedField("deeplink");
+        setTimeout(() => setCopiedField(null), 1500);
+    };
+
+    const currentFormatted = formatMsPrecise(currentMs);
+    const totalFormatted = formatMsPrecise(durationMs);
 
     return (
         <div className="halo-card p-5 space-y-4 overflow-hidden">
-            {/* Header / Session Metadata Bar */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 border-b border-border pb-3">
-                <div className="flex items-center gap-3">
-                    <div className="w-8 h-8 rounded-lg bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
-                        <MonitorPlay size={16} />
-                    </div>
-                    <div>
-                        <div className="flex items-center gap-2">
-                            <h3 className="text-sm font-semibold text-white">Session Replay</h3>
-                            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-400 border border-emerald-500/20 font-semibold">
-                                Reconstructed DOM Stream
-                            </span>
-                        </div>
-                        <p className="text-xs text-secondary truncate max-w-sm">
-                            {replaySession.url || "Web Application"}
-                            {replaySession.browser ? ` · ${replaySession.browser}` : ""}
-                            {replaySession.os ? ` (${replaySession.os})` : ""}
-                            {replaySession.viewportWidth && replaySession.viewportHeight
-                                ? ` · ${replaySession.viewportWidth}×${replaySession.viewportHeight}`
-                                : ""}
-                        </p>
-                    </div>
+
+            {/* Header Toolbar */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-border">
+                <div className="flex items-center gap-2">
+                    <span className="text-sm font-semibold text-white">
+                        {replaySession.url || "Session Recording"}
+                    </span>
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-surface border border-border text-muted">
+                        {totalFormatted}
+                    </span>
                 </div>
 
                 <div className="flex items-center gap-2">
+                    <button
+                        type="button"
+                        onClick={copyDeepLink}
+                        className="halo-btn halo-btn-sm halo-btn-secondary text-xs gap-1.5"
+                        title="Copy direct link to current playback position"
+                    >
+                        {copiedField === "deeplink" ? (
+                            <>
+                                <Check size={12} className="text-teal-400" />
+                                <span className="text-teal-300">Link Copied!</span>
+                            </>
+                        ) : (
+                            <>
+                                <Copy size={12} />
+                                Share at {currentFormatted}
+                            </>
+                        )}
+                    </button>
+
                     {errorOffsetMs !== null && (
                         <>
                             <button
@@ -519,7 +622,7 @@ export function ReplayPlayerClient({
                     )}
 
                     <Link
-                        href={`/projects/${replaySession.projectId}/investigations/new?issueId=${replaySession.issueId || ""}`}
+                        href={`/projects/${replaySession.projectId}/investigations/new?issueId=${replaySession.issueId || ""}&traceId=${replaySession.traceId || ""}&sessionId=${replaySession.sessionId}`}
                         className="halo-btn halo-btn-sm halo-btn-primary text-xs gap-1.5"
                     >
                         <Sparkles size={12} />
@@ -575,7 +678,7 @@ export function ReplayPlayerClient({
                 <div className="w-full bg-[#0f141f] border-t border-white/10 p-3 space-y-2 z-10">
                     {/* Scrubber with Error Marker */}
                     <div className="flex items-center gap-3">
-                        <span className="text-[11px] font-mono text-zinc-400 w-12 text-right">
+                        <span className="text-[11px] font-mono text-zinc-400 w-16 text-right">
                             {currentFormatted}
                         </span>
 
@@ -588,7 +691,7 @@ export function ReplayPlayerClient({
                                         left: `${Math.min(100, Math.max(0, (errorOffsetMs / durationMs) * 100))}%`,
                                     }}
                                     onClick={() => seekTo(errorOffsetMs)}
-                                    title={`Exception at ${formatMs(errorOffsetMs)}`}
+                                    title={`Exception at ${formatMsPrecise(errorOffsetMs)}`}
                                 />
                             )}
 
@@ -603,7 +706,7 @@ export function ReplayPlayerClient({
                             />
                         </div>
 
-                        <span className="text-[11px] font-mono text-zinc-500 w-12">
+                        <span className="text-[11px] font-mono text-zinc-500 w-16">
                             {totalFormatted}
                         </span>
                     </div>
@@ -625,9 +728,27 @@ export function ReplayPlayerClient({
                                 type="button"
                                 onClick={() => seekTo(0)}
                                 className="halo-btn halo-btn-sm halo-btn-secondary p-1.5"
-                                title="Restart"
+                                title="Restart from beginning"
                             >
                                 <RotateCcw size={13} />
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={jumpPrevEvent}
+                                className="halo-btn halo-btn-sm halo-btn-secondary p-1.5"
+                                title="Previous recorded event"
+                            >
+                                <ChevronLeft size={13} />
+                            </button>
+
+                            <button
+                                type="button"
+                                onClick={jumpNextEvent}
+                                className="halo-btn halo-btn-sm halo-btn-secondary p-1.5"
+                                title="Next recorded event"
+                            >
+                                <ChevronRight size={13} />
                             </button>
 
                             <div className="flex items-center rounded-lg bg-surface border border-border p-0.5 text-xs font-mono">
@@ -655,11 +776,100 @@ export function ReplayPlayerClient({
                 </div>
             </div>
 
+            {/* Correlated Production Telemetry Evidence Panel */}
+            <div className="p-4 rounded-xl bg-[#0d1117] border border-white/10 space-y-3">
+                <div className="flex items-center justify-between">
+                    <span className="text-xs font-semibold uppercase tracking-wider text-white flex items-center gap-2">
+                        <Zap className="h-3.5 w-3.5 text-accent" />
+                        Correlated Telemetry Evidence
+                    </span>
+                    {replaySession.issueId && (
+                        <Link
+                            href={`/projects/${replaySession.projectId}/investigations/new?issueId=${replaySession.issueId}&traceId=${replaySession.traceId || ""}&sessionId=${replaySession.sessionId}`}
+                            className="halo-btn halo-btn-sm halo-btn-primary text-xs gap-1.5"
+                        >
+                            <Sparkles size={12} />
+                            Investigate Failure
+                        </Link>
+                    )}
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-1">
+                    {/* Session ID */}
+                    <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/10 space-y-1">
+                        <span className="text-[10px] uppercase font-mono text-zinc-500 block">Session ID</span>
+                        <div className="flex items-center justify-between gap-1">
+                            <span className="font-mono text-xs text-zinc-200 truncate">{replaySession.sessionId}</span>
+                            <button
+                                onClick={() => copyText(replaySession.sessionId, "session")}
+                                className="text-zinc-500 hover:text-white shrink-0"
+                                title="Copy Session ID"
+                            >
+                                {copiedField === "session" ? <Check size={12} className="text-teal-400" /> : <Copy size={12} />}
+                            </button>
+                        </div>
+                    </div>
+
+                    {/* Issue */}
+                    <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/10 space-y-1">
+                        <span className="text-[10px] uppercase font-mono text-zinc-500 block">Associated Issue</span>
+                        {replaySession.issueId ? (
+                            <Link
+                                href={`/projects/${replaySession.projectId}/issues/${replaySession.issueId}`}
+                                className="text-xs text-red-300 hover:underline truncate block font-medium"
+                            >
+                                {issueTitle || "Correlated Issue"}
+                            </Link>
+                        ) : (
+                            <span className="text-xs text-zinc-500 italic">None</span>
+                        )}
+                    </div>
+
+                    {/* Trace ID */}
+                    <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/10 space-y-1">
+                        <span className="text-[10px] uppercase font-mono text-zinc-500 block">Distributed Trace</span>
+                        {replaySession.traceId ? (
+                            <div className="flex items-center justify-between gap-1">
+                                <span className="font-mono text-xs text-zinc-200 truncate">{replaySession.traceId}</span>
+                                <button
+                                    onClick={() => copyText(replaySession.traceId!, "trace")}
+                                    className="text-zinc-500 hover:text-white shrink-0"
+                                    title="Copy Trace ID"
+                                >
+                                    {copiedField === "trace" ? <Check size={12} className="text-teal-400" /> : <Copy size={12} />}
+                                </button>
+                            </div>
+                        ) : (
+                            <span className="text-xs text-zinc-500 italic">Not captured</span>
+                        )}
+                    </div>
+
+                    {/* Request ID */}
+                    <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/10 space-y-1">
+                        <span className="text-[10px] uppercase font-mono text-zinc-500 block">HTTP Request ID</span>
+                        {replaySession.requestId ? (
+                            <div className="flex items-center justify-between gap-1">
+                                <span className="font-mono text-xs text-zinc-200 truncate">{replaySession.requestId}</span>
+                                <button
+                                    onClick={() => copyText(replaySession.requestId!, "request")}
+                                    className="text-zinc-500 hover:text-white shrink-0"
+                                    title="Copy Request ID"
+                                >
+                                    {copiedField === "request" ? <Check size={12} className="text-teal-400" /> : <Copy size={12} />}
+                                </button>
+                            </div>
+                        ) : (
+                            <span className="text-xs text-zinc-500 italic">Not captured</span>
+                        )}
+                    </div>
+                </div>
+            </div>
+
             {/* Session Timeline */}
             <div className="pt-2 space-y-4">
                 <div className="flex items-center justify-between pb-2 border-b border-border">
                     <span className="text-xs font-semibold uppercase tracking-wider text-white">
-                        Session Timeline
+                        Observed Session Timeline
                     </span>
                     <span className="text-[11px] font-mono text-muted">
                         {timelineMarkers.length} events · click to inspect
@@ -703,7 +913,7 @@ export function ReplayPlayerClient({
                                         <span>{marker.label}</span>
                                     </div>
                                     <span className="font-mono text-[10px] text-muted">
-                                        {formatMs(marker.timeMs)}
+                                        {formatMsPrecise(marker.timeMs)}
                                     </span>
                                 </div>
                                 <p className="text-[11px] text-muted truncate mt-1">
@@ -892,4 +1102,13 @@ function formatMs(ms: number): string {
     const s = totalSec % 60;
     return `${m}:${s.toString().padStart(2, "0")}`;
 }
+
+function formatMsPrecise(ms: number): string {
+    const totalSec = Math.floor(ms / 1000);
+    const m = Math.floor(totalSec / 60);
+    const s = totalSec % 60;
+    const millis = Math.floor(ms % 1000);
+    return `${m.toString().padStart(2, "0")}:${s.toString().padStart(2, "0")}.${millis.toString().padStart(3, "0")}`;
+}
+
 

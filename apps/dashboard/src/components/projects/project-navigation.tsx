@@ -7,6 +7,7 @@ import {
     BarChart2,
     TriangleAlert,
     Activity,
+    MonitorPlay,
     KeyRound,
     Settings,
 } from "lucide-react";
@@ -35,6 +36,11 @@ const navigation = [
         label: "Events",
         segment: "events",
         icon: Activity,
+    },
+    {
+        label: "Replays",
+        segment: "replays",
+        icon: MonitorPlay,
     },
     {
         label: "API Keys",

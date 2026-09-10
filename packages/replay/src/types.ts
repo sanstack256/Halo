@@ -30,6 +30,10 @@ export interface HaloReplayOptions {
      */
     apiKey?: string;
     /**
+     * Halo project ID.
+     */
+    projectId?: string;
+    /**
      * Halo backend endpoint base URL (e.g. "https://app.halo.run/api" or "http://localhost:3000/api").
      * Default: "/api"
      */
@@ -55,6 +59,11 @@ export interface HaloReplayOptions {
      */
     preErrorBufferSeconds?: number;
     /**
+     * Maximum number of events to retain in the ring buffer before eviction (memory bounding).
+     * Default: 5000
+     */
+    maxBufferEvents?: number;
+    /**
      * Maximum recording time after an error occurs before concluding the replay session, in seconds.
      * Default: 30
      */
@@ -77,6 +86,51 @@ export interface HaloReplayOptions {
      * Target environment name.
      */
     environment?: string;
+    /**
+     * Capture SPA navigation history transitions.
+     * Default: true
+     */
+    captureNavigation?: boolean;
+    /**
+     * Capture network fetch / XHR metadata (method, URL, status, duration, traceId).
+     * Headers, secrets, cookies, and tokens are NEVER captured.
+     * Default: true
+     */
+    captureNetwork?: boolean;
+    /**
+     * Capture console errors.
+     * Default: true
+     */
+    captureConsole?: boolean;
+}
+
+export interface ReplayNavigationPayload {
+    from?: string;
+    to: string;
+    type: "pushState" | "replaceState" | "popstate" | "initial";
+}
+
+export interface ReplayRequestPayload {
+    method: string;
+    url: string;
+    status?: number;
+    durationMs?: number;
+    requestId?: string;
+    traceId?: string;
+    failed?: boolean;
+}
+
+export interface ReplayConsolePayload {
+    level: "log" | "warn" | "error" | "info";
+    message: string;
+    stack?: string;
+}
+
+export interface ReplayErrorPayload {
+    message: string;
+    stack?: string;
+    issueId?: string;
+    traceId?: string;
 }
 
 export interface ReplayChunkPayload {
@@ -86,6 +140,7 @@ export interface ReplayChunkPayload {
     startedAt: string;
     endedAt: string;
     meta?: {
+        projectId?: string;
         browser?: string;
         os?: string;
         device?: string;
@@ -96,6 +151,7 @@ export interface ReplayChunkPayload {
         issueId?: string;
         traceId?: string;
         requestId?: string;
+        errorAt?: string;
     };
     final?: boolean;
 }

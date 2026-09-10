@@ -4,6 +4,7 @@ import type { eventWithTime } from "@rrweb/types";
 export class ReplayUploader {
     private endpoint: string;
     private apiKey?: string;
+    private projectId?: string;
     private sessionId: string;
     private sequence = 0;
     private queue: eventWithTime[] = [];
@@ -12,10 +13,12 @@ export class ReplayUploader {
     private isUploading = false;
     private environment?: string;
     private issueId?: string;
+    private maxQueueEvents = 10000;
 
     constructor(options: {
         endpoint: string;
         apiKey?: string;
+        projectId?: string;
         sessionId: string;
         flushIntervalMs?: number;
         environment?: string;
@@ -23,6 +26,7 @@ export class ReplayUploader {
     }) {
         this.endpoint = options.endpoint.replace(/\/$/, "");
         this.apiKey = options.apiKey;
+        this.projectId = options.projectId;
         this.sessionId = options.sessionId;
         this.flushIntervalMs = options.flushIntervalMs ?? 5000;
         this.environment = options.environment;
@@ -35,6 +39,15 @@ export class ReplayUploader {
 
     addEvents(events: eventWithTime[]): void {
         this.queue.push(...events);
+
+        // Backpressure safeguard: if offline or server is unreachable, prevent unbounded memory leak
+        if (this.queue.length > this.maxQueueEvents) {
+            const firstSnapshot = this.queue.find((e) => e.type === 2);
+            const excess = this.queue.length - this.maxQueueEvents;
+            const remaining = this.queue.slice(excess);
+            this.queue = firstSnapshot ? [firstSnapshot, ...remaining.filter((e) => e !== firstSnapshot)] : remaining;
+        }
+
         this.scheduleFlush();
     }
 
@@ -72,6 +85,7 @@ export class ReplayUploader {
             startedAt,
             endedAt,
             meta: {
+                projectId: this.projectId,
                 browser: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
                 os: typeof navigator !== "undefined" ? navigator.platform : undefined,
                 url: typeof window !== "undefined" ? window.location.href : undefined,
@@ -101,15 +115,21 @@ export class ReplayUploader {
              * which persists across page unloads while preserving
              * the Authorization header (unlike navigator.sendBeacon).
              */
-            await fetch(targetUrl, {
+            const res = await fetch(targetUrl, {
                 method: "POST",
                 headers,
                 body: bodyStr,
                 keepalive: isFinal,
             });
+
+            if (!res.ok && res.status >= 500 && !isFinal) {
+                // Re-queue on 5xx server errors
+                this.queue.unshift(...eventsToUpload);
+                this.sequence--;
+            }
         } catch (err) {
             console.error("[Halo Replay] Failed to upload chunk:", err);
-            // Re-queue events on failure if not final
+            // Re-queue events on network failure if not final
             if (!isFinal) {
                 this.queue.unshift(...eventsToUpload);
                 this.sequence--;
@@ -117,3 +137,4 @@ export class ReplayUploader {
         }
     }
 }
+

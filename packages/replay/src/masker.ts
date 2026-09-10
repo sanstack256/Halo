@@ -85,6 +85,40 @@ export function buildMaskerConfig(options?: ReplayPrivacyOptions) {
     };
 }
 
+const SENSITIVE_QUERY_PARAMS = [
+    "token",
+    "auth",
+    "key",
+    "api_key",
+    "apiKey",
+    "secret",
+    "password",
+    "pass",
+    "access_token",
+    "refresh_token",
+    "code",
+    "sessionId",
+    "session_id",
+];
+
+export function sanitizeUrl(urlStr: string): string {
+    if (!urlStr) return urlStr;
+    try {
+        const parsed = new URL(urlStr, "http://localhost");
+        let modified = false;
+        for (const param of SENSITIVE_QUERY_PARAMS) {
+            if (parsed.searchParams.has(param)) {
+                parsed.searchParams.set(param, "[REDACTED]");
+                modified = true;
+            }
+        }
+        if (!modified) return urlStr;
+        return parsed.pathname + parsed.search + parsed.hash;
+    } catch {
+        return urlStr;
+    }
+}
+
 export function isUrlIgnored(url: string, ignorePatterns?: (string | RegExp)[]): boolean {
     if (!ignorePatterns || ignorePatterns.length === 0) return false;
 
@@ -98,3 +132,4 @@ export function isUrlIgnored(url: string, ignorePatterns?: (string | RegExp)[]):
 
     return false;
 }
+

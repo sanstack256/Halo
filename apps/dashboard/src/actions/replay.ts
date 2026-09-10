@@ -292,6 +292,21 @@ export async function getReplaySessionForOccurrence(
     };
 }
 
+import { getOrganization } from "@/lib/organization";
+
+async function verifyProjectAccess(projectId: string): Promise<boolean> {
+    const session = await getSession();
+    if (!session?.user?.id) return false;
+    const org = await getOrganization(session.user.id);
+    if (!org) return false;
+
+    const project = await prisma.project.findFirst({
+        where: { id: projectId, organizationId: org.id },
+        select: { id: true },
+    });
+    return Boolean(project);
+}
+
 export async function getReplaySessionForIssue(issueId: string, eventId?: string) {
     const resolved = await getReplaySessionForOccurrence(issueId, eventId);
     return resolved.replaySession;
@@ -300,7 +315,12 @@ export async function getReplaySessionForIssue(issueId: string, eventId?: string
 export async function getReplaySession(replaySessionId: string) {
     if (!replaySessionId) return null;
 
-    return prisma.replaySession.findUnique({
+    const session = await getSession();
+    if (!session?.user?.id) return null;
+    const org = await getOrganization(session.user.id);
+    if (!org) return null;
+
+    const replay = await prisma.replaySession.findUnique({
         where: { id: replaySessionId },
         include: {
             project: {
@@ -325,10 +345,36 @@ export async function getReplaySession(replaySessionId: string) {
             },
         },
     });
+
+    if (!replay || replay.project.organizationId !== org.id) {
+        return null;
+    }
+
+    return replay;
 }
 
 export async function getReplayEvents(replaySessionId: string) {
     if (!replaySessionId) return [];
+
+    const session = await getSession();
+    if (!session?.user?.id) return [];
+    const org = await getOrganization(session.user.id);
+    if (!org) return [];
+
+    const replay = await prisma.replaySession.findUnique({
+        where: { id: replaySessionId },
+        select: {
+            project: {
+                select: {
+                    organizationId: true,
+                },
+            },
+        },
+    });
+
+    if (!replay || replay.project.organizationId !== org.id) {
+        return [];
+    }
 
     const chunks = await prisma.replayChunk.findMany({
         where: { replaySessionId },
@@ -349,8 +395,120 @@ export async function getReplayEvents(replaySessionId: string) {
     return allEvents;
 }
 
+export type ReplayFilterOptions = {
+    search?: string;
+    status?: string;
+    environmentId?: string;
+    timeRange?: "24h" | "7d" | "30d" | "all";
+    sortBy?: "startedAt" | "duration" | "errorAt";
+    sortOrder?: "asc" | "desc";
+    page?: number;
+    pageSize?: number;
+};
+
+export async function getProjectReplaysPaginated(
+    projectId: string,
+    options: ReplayFilterOptions = {}
+) {
+    const hasAccess = await verifyProjectAccess(projectId);
+    if (!hasAccess) {
+        return {
+            replays: [],
+            total: 0,
+            page: 1,
+            pageSize: 20,
+            totalPages: 0,
+        };
+    }
+
+    const {
+        search,
+        status,
+        environmentId,
+        timeRange = "all",
+        sortBy = "startedAt",
+        sortOrder = "desc",
+        page = 1,
+        pageSize = 20,
+    } = options;
+
+    const where: any = {
+        projectId,
+    };
+
+    if (status && status !== "ALL") {
+        where.status = status;
+    }
+
+    if (environmentId && environmentId !== "ALL") {
+        where.environmentId = environmentId;
+    }
+
+    if (timeRange && timeRange !== "all") {
+        const now = new Date();
+        const durationHours = timeRange === "24h" ? 24 : timeRange === "7d" ? 168 : 720;
+        where.startedAt = {
+            gte: new Date(now.getTime() - durationHours * 3600 * 1000),
+        };
+    }
+
+    if (search && search.trim()) {
+        const q = search.trim();
+        where.OR = [
+            { sessionId: { contains: q, mode: "insensitive" } },
+            { id: { contains: q, mode: "insensitive" } },
+            { url: { contains: q, mode: "insensitive" } },
+            { issue: { title: { contains: q, mode: "insensitive" } } },
+        ];
+    }
+
+    let orderBy: any = { startedAt: "desc" };
+    if (sortBy === "duration") {
+        orderBy = { totalDurationMs: sortOrder };
+    } else if (sortBy === "errorAt") {
+        orderBy = { errorAt: sortOrder };
+    } else {
+        orderBy = { startedAt: sortOrder };
+    }
+
+    const [total, replays] = await Promise.all([
+        prisma.replaySession.count({ where }),
+        prisma.replaySession.findMany({
+            where,
+            orderBy,
+            skip: (page - 1) * pageSize,
+            take: pageSize,
+            include: {
+                issue: {
+                    select: {
+                        id: true,
+                        title: true,
+                        severity: true,
+                    },
+                },
+                project: {
+                    select: {
+                        id: true,
+                        name: true,
+                    },
+                },
+            },
+        }),
+    ]);
+
+    return {
+        replays,
+        total,
+        page,
+        pageSize,
+        totalPages: Math.max(1, Math.ceil(total / pageSize)),
+    };
+}
+
 export async function getProjectReplays(projectId: string) {
     if (!projectId) return [];
+    const hasAccess = await verifyProjectAccess(projectId);
+    if (!hasAccess) return [];
 
     return prisma.replaySession.findMany({
         where: { projectId },

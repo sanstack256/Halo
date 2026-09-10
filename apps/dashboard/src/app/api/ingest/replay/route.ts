@@ -141,6 +141,29 @@ export async function POST(request: NextRequest) {
         }
     }
 
+    // Ensure canonical TelemetrySession exists and is linked
+    try {
+        await prisma.telemetrySession.upsert({
+            where: { id: sessionId },
+            create: {
+                id: sessionId,
+                projectId: verified.project.id,
+                environmentId: verified.environment.id,
+                startedAt: chunkStarted,
+                lastSeenAt: chunkEnded,
+                crashedAt: meta.errorAt ? new Date(meta.errorAt) : undefined,
+            },
+            update: {
+                lastSeenAt: chunkEnded,
+                crashedAt: meta.errorAt ? new Date(meta.errorAt) : undefined,
+            },
+        });
+    } catch (sessionErr) {
+        console.warn("[Replay Ingestion] Failed to sync canonical TelemetrySession:", sessionErr);
+    }
+
+    const currentDurationMs = Math.max(0, chunkEnded.getTime() - chunkStarted.getTime());
+
     // 1. Upsert ReplaySession Metadata
     const replaySession = await prisma.replaySession.upsert({
         where: {
@@ -158,22 +181,25 @@ export async function POST(request: NextRequest) {
             viewportWidth: meta.viewportWidth,
             viewportHeight: meta.viewportHeight,
             startedAt: chunkStarted,
+            endedAt: chunkEnded,
+            totalDurationMs: currentDurationMs,
             errorAt: meta.errorAt ? new Date(meta.errorAt) : undefined,
             issueId: resolvedIssueId,
             traceId: meta.traceId,
             requestId: meta.requestId,
-            status: final ? "AVAILABLE" : "RECORDING",
+            status: final || meta.errorAt ? "AVAILABLE" : "RECORDING",
             chunkCount: 1,
             expiresAt,
         },
         update: {
-            endedAt: final ? chunkEnded : undefined,
-            status: final ? "AVAILABLE" : undefined,
+            endedAt: chunkEnded,
+            status: final || meta.errorAt ? "AVAILABLE" : undefined,
             chunkCount: { increment: 1 },
             errorAt: meta.errorAt ? new Date(meta.errorAt) : undefined,
             issueId: resolvedIssueId || undefined,
             traceId: meta.traceId || undefined,
             requestId: meta.requestId || undefined,
+            url: meta.url || undefined,
         },
     });
 
@@ -205,18 +231,16 @@ export async function POST(request: NextRequest) {
         });
     }
 
-    // If final, calculate total duration
-    if (final) {
-        const totalDurationMs = Math.max(0, chunkEnded.getTime() - replaySession.startedAt.getTime());
-        await prisma.replaySession.update({
-            where: { id: replaySession.id },
-            data: {
-                totalDurationMs,
-                status: "AVAILABLE",
-                endedAt: chunkEnded,
-            },
-        });
-    }
+    // Recalculate total duration from earliest start to latest chunk end
+    const totalDurationMs = Math.max(0, chunkEnded.getTime() - replaySession.startedAt.getTime());
+    await prisma.replaySession.update({
+        where: { id: replaySession.id },
+        data: {
+            totalDurationMs,
+            ...(final ? { status: "AVAILABLE" } : {}),
+        },
+    });
+
 
     return jsonResponse(request, {
         success: true,

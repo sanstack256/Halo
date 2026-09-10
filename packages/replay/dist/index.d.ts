@@ -29,6 +29,10 @@ interface HaloReplayOptions {
      */
     apiKey?: string;
     /**
+     * Halo project ID.
+     */
+    projectId?: string;
+    /**
      * Halo backend endpoint base URL (e.g. "https://app.halo.run/api" or "http://localhost:3000/api").
      * Default: "/api"
      */
@@ -54,6 +58,11 @@ interface HaloReplayOptions {
      */
     preErrorBufferSeconds?: number;
     /**
+     * Maximum number of events to retain in the ring buffer before eviction (memory bounding).
+     * Default: 5000
+     */
+    maxBufferEvents?: number;
+    /**
      * Maximum recording time after an error occurs before concluding the replay session, in seconds.
      * Default: 30
      */
@@ -76,6 +85,47 @@ interface HaloReplayOptions {
      * Target environment name.
      */
     environment?: string;
+    /**
+     * Capture SPA navigation history transitions.
+     * Default: true
+     */
+    captureNavigation?: boolean;
+    /**
+     * Capture network fetch / XHR metadata (method, URL, status, duration, traceId).
+     * Headers, secrets, cookies, and tokens are NEVER captured.
+     * Default: true
+     */
+    captureNetwork?: boolean;
+    /**
+     * Capture console errors.
+     * Default: true
+     */
+    captureConsole?: boolean;
+}
+interface ReplayNavigationPayload {
+    from?: string;
+    to: string;
+    type: "pushState" | "replaceState" | "popstate" | "initial";
+}
+interface ReplayRequestPayload {
+    method: string;
+    url: string;
+    status?: number;
+    durationMs?: number;
+    requestId?: string;
+    traceId?: string;
+    failed?: boolean;
+}
+interface ReplayConsolePayload {
+    level: "log" | "warn" | "error" | "info";
+    message: string;
+    stack?: string;
+}
+interface ReplayErrorPayload {
+    message: string;
+    stack?: string;
+    issueId?: string;
+    traceId?: string;
 }
 interface ReplayChunkPayload {
     sessionId: string;
@@ -84,6 +134,7 @@ interface ReplayChunkPayload {
     startedAt: string;
     endedAt: string;
     meta?: {
+        projectId?: string;
         browser?: string;
         os?: string;
         device?: string;
@@ -94,6 +145,7 @@ interface ReplayChunkPayload {
         issueId?: string;
         traceId?: string;
         requestId?: string;
+        errorAt?: string;
     };
     final?: boolean;
 }
@@ -110,15 +162,28 @@ declare class HaloReplay {
     private maxSessionTimeout;
     private sessionId;
     private startedAt;
+    private originalPushState;
+    private originalReplaceState;
+    private originalFetch;
+    private originalConsoleError;
+    private currentUrl;
     constructor(options?: HaloReplayOptions);
     private generateSessionId;
     getSessionId(): string;
     setIssueId(issueId: string): void;
     start(): void;
     private handleEvent;
+    /**
+     * Records a custom event into the rrweb stream and timeline
+     */
+    recordCustomEvent<T = any>(tag: string, payload: T): void;
+    private setupNavigationInstrumentation;
+    private setupNetworkInstrumentation;
+    private setupConsoleInstrumentation;
     private setupErrorListeners;
     /**
      * Call when an error is captured (e.g. from Halo.captureException).
+     * Supports multiple errors in the same session without timeline destruction.
      */
     triggerErrorReplay(errorMeta?: {
         title?: string;
@@ -130,4 +195,58 @@ declare class HaloReplay {
     stop(): void;
 }
 
-export { HaloReplay, type HaloReplayOptions, type ReplayChunkPayload, type ReplayPrivacyOptions };
+declare class ReplayRingBuffer {
+    private buffer;
+    private maxDurationMs;
+    private maxEvents;
+    constructor(maxDurationSeconds?: number, maxEvents?: number);
+    add(event: eventWithTime): void;
+    /**
+     * Prunes events that are older than maxDurationMs or beyond maxEvents,
+     * while rigorously ensuring that an initial FullSnapshot (type 2) or Meta (type 4)
+     * is preserved at the beginning of the buffer so DOM reconstruction never fails.
+     */
+    prune(referenceTimestamp?: number): void;
+    flush(): eventWithTime[];
+    getAll(): eventWithTime[];
+    clear(): void;
+    get length(): number;
+}
+
+declare function buildMaskerConfig(options?: ReplayPrivacyOptions): {
+    maskAllInputs: boolean;
+    maskInputOptions: {
+        password: boolean;
+        email: boolean;
+        tel: boolean;
+        text: boolean;
+        color: boolean;
+        date: boolean;
+        'datetime-local': boolean;
+        file: boolean;
+        image: boolean;
+        month: boolean;
+        number: boolean;
+        range: boolean;
+        search: boolean;
+        time: boolean;
+        url: boolean;
+        week: boolean;
+        textarea: boolean;
+        select: boolean;
+    };
+    maskTextSelector: string;
+    blockSelector: string;
+    ignoreSelector: string;
+    maskTextFn: (text: string, element?: HTMLElement | null) => string;
+    maskInputFn: (text: string, element?: HTMLElement | null) => string;
+};
+declare function sanitizeUrl(urlStr: string): string;
+declare function isUrlIgnored(url: string, ignorePatterns?: (string | RegExp)[]): boolean;
+
+/**
+ * Initializes and starts Halo Session Replay in the browser.
+ */
+declare function initHaloReplay(options?: HaloReplayOptions): HaloReplay;
+
+export { HaloReplay, type HaloReplayOptions, type ReplayChunkPayload, type ReplayConsolePayload, type ReplayErrorPayload, type ReplayNavigationPayload, type ReplayPrivacyOptions, type ReplayRequestPayload, ReplayRingBuffer, buildMaskerConfig, initHaloReplay, isUrlIgnored, sanitizeUrl };

@@ -3,36 +3,65 @@ import type { eventWithTime } from "@rrweb/types";
 export class ReplayRingBuffer {
     private buffer: eventWithTime[] = [];
     private maxDurationMs: number;
+    private maxEvents: number;
 
-    constructor(maxDurationSeconds = 60) {
-        this.maxDurationMs = maxDurationSeconds * 1000;
+    constructor(maxDurationSeconds = 60, maxEvents = 5000) {
+        this.maxDurationMs = Math.max(1000, maxDurationSeconds * 1000);
+        this.maxEvents = Math.max(100, maxEvents);
     }
 
     add(event: eventWithTime): void {
         this.buffer.push(event);
-        this.prune();
+        this.prune(event.timestamp);
     }
 
-    private prune(): void {
-        if (this.buffer.length === 0) return;
-        const now = Date.now();
+    /**
+     * Prunes events that are older than maxDurationMs or beyond maxEvents,
+     * while rigorously ensuring that an initial FullSnapshot (type 2) or Meta (type 4)
+     * is preserved at the beginning of the buffer so DOM reconstruction never fails.
+     */
+    public prune(referenceTimestamp?: number): void {
+        if (this.buffer.length <= 1) return;
+
+        const now = referenceTimestamp ?? (this.buffer[this.buffer.length - 1]?.timestamp || Date.now());
         const cutoff = now - this.maxDurationMs;
 
-        // Find the index of the first FullSnapshot event before or at the cutoff window
-        // so that replay playback always has a valid initial DOM tree root
-        let earliestValidIndex = 0;
+        // 1. Check if pruning is needed due to time or event count limit
+        const timeNeedsPrune = this.buffer[0].timestamp < cutoff;
+        const countNeedsPrune = this.buffer.length > this.maxEvents;
+
+        if (!timeNeedsPrune && !countNeedsPrune) {
+            return;
+        }
+
+        // Find the most recent FullSnapshot (type 2) that is at or before cutoff
+        let snapshotIndex = -1;
         for (let i = this.buffer.length - 1; i >= 0; i--) {
-            if (this.buffer[i].timestamp < cutoff) {
-                // Keep the most recent full snapshot before cutoff
-                if (this.buffer[i].type === 2 /* FullSnapshot */) {
-                    earliestValidIndex = i;
+            const ev = this.buffer[i];
+            if (ev.type === 2 /* FullSnapshot */) {
+                if (ev.timestamp <= cutoff || (countNeedsPrune && this.buffer.length - i <= this.maxEvents)) {
+                    snapshotIndex = i;
                     break;
                 }
             }
         }
 
-        if (earliestValidIndex > 0) {
-            this.buffer = this.buffer.slice(earliestValidIndex);
+        // If a valid FullSnapshot before/at cutoff was found, prune everything before it
+        if (snapshotIndex > 0) {
+            this.buffer = this.buffer.slice(snapshotIndex);
+        } else if (countNeedsPrune && this.buffer.length > this.maxEvents) {
+            // If the session has run for a while without a new full snapshot,
+            // we must retain the very first FullSnapshot (to avoid rendering a blank page)
+            // and drop the oldest incremental events after it.
+            const firstSnapshotIdx = this.buffer.findIndex(e => e.type === 2);
+            if (firstSnapshotIdx >= 0) {
+                const snapshot = this.buffer[firstSnapshotIdx];
+                const excess = this.buffer.length - this.maxEvents;
+                const remaining = this.buffer.slice(firstSnapshotIdx + 1 + excess);
+                this.buffer = [snapshot, ...remaining];
+            } else {
+                this.buffer = this.buffer.slice(this.buffer.length - this.maxEvents);
+            }
         }
     }
 
@@ -54,3 +83,4 @@ export class ReplayRingBuffer {
         return this.buffer.length;
     }
 }
+
