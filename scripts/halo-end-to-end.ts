@@ -658,6 +658,54 @@ async function generateHighVolumeTelemetry(config: Awaited<ReturnType<typeof set
     }, 10);
     record("INGEST", "Scenario K: 25 Isolation Events", "PASS", `Ingested disjoint telemetry into Secondary Project ${secondaryProject.id}`);
 
+    console.log("Generating Scenario G: Real Session Replay Ingestion (POST /api/ingest/replay)...");
+    // SCENARIO G: Session Replay Ingestion
+    const replaySessionId = sessions[0];
+    const replayPayload = {
+        sessionId: replaySessionId,
+        sequence: 0,
+        startedAt: t(-120000),
+        endedAt: t(0),
+        final: true,
+        meta: {
+            browser: "Chrome 128.0 (macOS)",
+            os: "macOS",
+            url: `${BASE_URL}/checkout`,
+            issueId: manifest.scenarios.repeatedError.fingerprint,
+            errorAt: t(-10000),
+            viewportWidth: 1440,
+            viewportHeight: 900,
+        },
+        events: [
+            { type: 4, data: { href: `${BASE_URL}/checkout`, width: 1440, height: 900 }, timestamp: Date.now() - 60000 },
+            { type: 2, data: { node: { type: 0, childNodes: [{ type: 1, name: "html", publicId: "", systemId: "", id: 2, childNodes: [{ type: 2, tagName: "html", attributes: {}, childNodes: [{ type: 2, tagName: "body", attributes: {}, childNodes: [{ type: 2, tagName: "div", attributes: { id: "app" }, childNodes: [{ type: 2, tagName: "button", attributes: { id: "checkout" }, childNodes: [{ type: 3, textContent: "Place Order", id: 6 }], id: 5 }], id: 4 }], id: 3 }], id: 2 }], id: 1 }], id: 0 }, initialOffset: { top: 0, left: 0 } }, timestamp: Date.now() - 59000 },
+            { type: 3, data: { source: 2, positions: [{ x: 600, y: 300, id: 5, timeOffset: 1000 }] }, timestamp: Date.now() - 30000 },
+            { type: 3, data: { source: 1, type: 2, id: 5, x: 600, y: 300 }, timestamp: Date.now() - 20000 },
+            { type: 5, data: { tag: "error", payload: { message: "DatabaseConnectionTimeout: pool exhausted after 30000ms" } }, timestamp: Date.now() - 10000 },
+        ],
+    };
+
+    try {
+        const replayRes = await fetch(`${BASE_URL}/api/ingest/replay`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${primaryKey}`,
+            },
+            body: JSON.stringify(replayPayload),
+        });
+
+        if (replayRes.ok) {
+            const replayJson = await replayRes.json() as { replaySessionId: string };
+            record("INGEST", "Scenario G: Session Replay Ingestion", "PASS", `Ingested real session replay chunk for session ${replaySessionId} (ID: ${replayJson.replaySessionId})`);
+        } else {
+            const errText = await replayRes.text();
+            record("INGEST", "Scenario G: Session Replay Ingestion", "FAIL", `Replay ingest failed (${replayRes.status}): ${errText}`);
+        }
+    } catch (err: any) {
+        record("INGEST", "Scenario G: Session Replay Ingestion", "FAIL", `Replay ingest error: ${err.message}`);
+    }
+
     manifest.counts = {
         totalIngested,
         successfulIngested,
@@ -713,7 +761,19 @@ async function validateDatabaseState(projectId: string, manifest: any) {
         record("DB", "Event Persistence", "FAIL", `Database count ${totalEvents} significantly below manifest ${manifest.counts.totalIngested}`);
     }
 
-    return { totalEvents, totalTraces, totalErrors, totalIssues, totalSessions, totalReleases, repeatedIssue };
+    // Verify Session Replay Persistence
+    const replayRecord = await prisma.replaySession.findFirst({
+        where: { projectId },
+        include: { chunks: true },
+    });
+
+    if (replayRecord && replayRecord.status === "AVAILABLE" && replayRecord.chunks.length > 0) {
+        record("DB", "Session Replay Persistence", "PASS", `ReplaySession ${replayRecord.id} stored with status AVAILABLE and ${replayRecord.chunks[0].eventCount} rrweb events`);
+    } else {
+        record("DB", "Session Replay Persistence", "FAIL", `ReplaySession was not properly persisted`);
+    }
+
+    return { totalEvents, totalTraces, totalErrors, totalIssues, totalSessions, totalReleases, repeatedIssue, replayRecord };
 }
 
 // ---------------------------------------------------------------------------
