@@ -390,19 +390,69 @@ export function RuntimeReconstructionView({ reconstruction }: Props) {
                                         ? `The file \`${failure.primaryFailingFrame.filePath}\` could not be retrieved. Connect a GitHub repository in Project Settings to enable remote source resolution.`
                                         : "No file path was recorded in the stack frame.")}
                             </p>
-                            <div className="pt-3 flex flex-col items-center gap-2 border-t border-border/40 max-w-md mx-auto">
-                                <p className="text-[11px] text-muted">
-                                    Link your GitHub repository to enable commit-aware source resolution and AST line inspection.
-                                </p>
-                                <Link
-                                    href={projectId ? `/projects/${projectId}/settings` : `/settings/project`}
-                                    className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white text-black hover:bg-white/90 text-xs font-semibold transition-colors shadow-sm"
-                                >
-                                    <GitBranch size={13} />
-                                    <span>Connect your GitHub repository here</span>
-                                    <ExternalLink size={12} className="opacity-70 ml-0.5" />
-                                </Link>
-                            </div>
+                            {failure.sourceContext?.resolutionStatus === "repository_not_configured" ? (
+                                <div className="pt-3 flex flex-col items-center gap-2 border-t border-border/40 max-w-md mx-auto">
+                                    <p className="text-[11px] text-muted">
+                                        Link your GitHub repository to enable commit-aware source resolution and AST line inspection.
+                                    </p>
+                                    <Link
+                                        href={projectId ? `/projects/${projectId}/settings` : `/settings/project`}
+                                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white text-black hover:bg-white/90 text-xs font-semibold transition-colors shadow-sm"
+                                    >
+                                        <GitBranch size={13} />
+                                        <span>Connect your GitHub repository here</span>
+                                        <ExternalLink size={12} className="opacity-70 ml-0.5" />
+                                    </Link>
+                                </div>
+                            ) : failure.sourceContext?.resolutionStatus === "source_access_denied" ? (
+                                <div className="pt-3 flex flex-col items-center gap-2 border-t border-border/40 max-w-md mx-auto">
+                                    <p className="text-[11px] text-muted">
+                                        GitHub access was denied for {failure.sourceContext?.repositoryFullName || "the connected repository"}. Ensure your Personal Access Token has repository read permissions.
+                                    </p>
+                                    <Link
+                                        href={projectId ? `/projects/${projectId}/settings` : `/settings/project`}
+                                        className="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-white/10 hover:bg-white/15 text-white text-xs font-semibold transition-colors border border-white/20"
+                                    >
+                                        <GitBranch size={13} />
+                                        <span>Update GitHub Token in Settings</span>
+                                    </Link>
+                                </div>
+                            ) : failure.sourceContext?.resolutionStatus === "file_not_found" ? (
+                                <div className="pt-3 flex flex-col items-center gap-2 border-t border-border/40 max-w-md mx-auto">
+                                    <p className="text-[11px] text-muted">
+                                        Connected to <span className="font-mono text-zinc-300">{failure.sourceContext?.repositoryFullName || "GitHub"}</span>, but this file does not exist in branch <span className="font-mono text-zinc-300">{failure.sourceContext?.revision || "default"}</span>.
+                                    </p>
+                                    <div className="flex items-center gap-2">
+                                        {failure.sourceContext?.repositoryFullName && (
+                                            <a
+                                                href={`https://github.com/${failure.sourceContext.repositoryFullName}`}
+                                                target="_blank"
+                                                rel="noreferrer noopener"
+                                                className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-elevated hover:bg-surface-elevated/80 border border-border text-white text-xs font-semibold transition-colors"
+                                            >
+                                                <GitBranch size={13} />
+                                                <span>View Repository on GitHub</span>
+                                                <ExternalLink size={12} className="opacity-70 ml-0.5" />
+                                            </a>
+                                        )}
+                                        <Link
+                                            href={projectId ? `/projects/${projectId}/settings` : `/settings/project`}
+                                            className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-elevated hover:bg-surface-elevated/80 border border-border text-secondary hover:text-white text-xs font-semibold transition-colors"
+                                        >
+                                            <span>Repository Settings</span>
+                                        </Link>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="pt-3 flex flex-col items-center gap-2 border-t border-border/40 max-w-md mx-auto">
+                                    <Link
+                                        href={projectId ? `/projects/${projectId}/settings` : `/settings/project`}
+                                        className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-surface-elevated hover:bg-surface-elevated/80 border border-border text-secondary hover:text-white text-xs font-semibold transition-colors"
+                                    >
+                                        <span>Check Project Settings</span>
+                                    </Link>
+                                </div>
+                            )}
                         </div>
                     )}
                 </div>
