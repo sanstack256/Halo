@@ -84,10 +84,6 @@ const primaryNavigation: PrimarySection[] = [
             {
                 items: [
                     { label: "Home", href: "/overview", icon: Home },
-                    { label: "Active Incidents", href: "/issues?status=OPEN", icon: ShieldAlert },
-                    { label: "Recent Investigations", href: "/investigate", icon: Compass },
-                    { label: "Recent Changes", href: "/explore/errors", icon: GitBranch },
-                    { label: "Halo Discoveries", href: "/overview#discoveries", icon: Sparkles },
                 ],
             },
         ],
