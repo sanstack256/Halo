@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { getOrganization } from "@/lib/organization";
+import { redirect } from "next/navigation";
 
 const RECENT_WINDOW_MS = 24 * 60 * 60 * 1000; // 24 h
 
@@ -155,12 +156,15 @@ export type OverviewData = {
 
 export async function getOverviewData(): Promise<OverviewData> {
     const session = await getSession();
-    if (!session) throw new Error("Unauthorized");
-
-    const organization = await getOrganization(session.user.id);
-    if (!organization) {
-        return emptyOverview();
+    if (!session) {
+        redirect("/sign-in");
     }
+
+    try {
+        const organization = await getOrganization(session.user.id);
+        if (!organization) {
+            return emptyOverview();
+        }
 
     const projects = await prisma.project.findMany({
         where: { organizationId: organization.id },
@@ -190,7 +194,7 @@ export async function getOverviewData(): Promise<OverviewData> {
         // Total open issues count
         prisma.issue.count({
             where: { projectId: { in: projectIds }, status: "OPEN" },
-        }),
+        }).catch(() => 0),
 
         // Open issues (for active incidents)
         prisma.issue.findMany({
@@ -204,7 +208,7 @@ export async function getOverviewData(): Promise<OverviewData> {
                     select: { service: true, requestId: true },
                 },
             },
-        }),
+        }).catch(() => []),
 
         // Fatal open issues count
         prisma.issue.count({
@@ -213,7 +217,7 @@ export async function getOverviewData(): Promise<OverviewData> {
                 status: "OPEN",
                 severity: "FATAL",
             },
-        }),
+        }).catch(() => 0),
 
         // Error events in last 24h
         prisma.event.count({
@@ -222,7 +226,7 @@ export async function getOverviewData(): Promise<OverviewData> {
                 type: "ERROR",
                 timestamp: { gte: since },
             },
-        }),
+        }).catch(() => 0),
 
         // Total events in last 24h
         prisma.event.count({
@@ -230,13 +234,13 @@ export async function getOverviewData(): Promise<OverviewData> {
                 projectId: { in: projectIds },
                 timestamp: { gte: since },
             },
-        }),
+        }).catch(() => 0),
 
         // Telemetry sessions
         prisma.telemetrySession.findMany({
             where: { projectId: { in: projectIds } },
             select: { crashedAt: true },
-        }),
+        }).catch(() => []),
 
         // Recent releases
         prisma.release.findMany({
@@ -250,7 +254,7 @@ export async function getOverviewData(): Promise<OverviewData> {
                 firstSeen: true,
                 errorCount: true,
             },
-        }),
+        }).catch(() => []),
 
         // Grouped service telemetry
         prisma.event.groupBy({
@@ -261,7 +265,7 @@ export async function getOverviewData(): Promise<OverviewData> {
             },
             _count: { id: true },
             _max: { timestamp: true },
-        }),
+        }).catch(() => []),
 
         // Real investigations from the Investigation table
         prisma.investigation.findMany({
@@ -282,6 +286,9 @@ export async function getOverviewData(): Promise<OverviewData> {
                 createdAt: true,
                 updatedAt: true,
             },
+        }).catch((err) => {
+            console.error("[getOverviewData] Investigation query fallback:", err);
+            return [];
         }),
     ]);
 
@@ -574,6 +581,13 @@ export async function getOverviewData(): Promise<OverviewData> {
         recentInvestigations,
         serviceHealth: serviceHealthList,
     };
+    } catch (error: any) {
+        if (error?.digest?.startsWith("NEXT_REDIRECT")) {
+            throw error;
+        }
+        console.error("[getOverviewData] Unexpected error fetching overview data:", error);
+        return emptyOverview();
+    }
 }
 
 function emptyOverview(): OverviewData {
