@@ -538,6 +538,20 @@ export function ReplayPlayerClient({
                     <span className="shrink-0">{events.length} DOM events</span>
                 </div>
 
+                {/* Explicit style tag to guarantee fake simulated cursor is removed */}
+                <style>{`
+                    .replayer-wrapper .replayer-mouse,
+                    .replayer-mouse,
+                    .replayer-mouse-tail {
+                        display: none !important;
+                        visibility: hidden !important;
+                        opacity: 0 !important;
+                        pointer-events: none !important;
+                        width: 0 !important;
+                        height: 0 !important;
+                    }
+                `}</style>
+
                 {/* Player Target — rrweb reconstructs the actual recorded application here */}
                 <div
                     ref={containerRef}

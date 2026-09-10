@@ -3813,3 +3813,15 @@ a.halo-primary-cta[aria-disabled="true"] {
   animation: haloSectionFlash 2s ease-out;
   border-radius: 8px;
 }
+
+/* RRWeb Replayer — remove fake simulated mouse cursor and trail */
+.replayer-wrapper .replayer-mouse,
+.replayer-mouse,
+.replayer-mouse-tail {
+  display: none !important;
+  visibility: hidden !important;
+  opacity: 0 !important;
+  pointer-events: none !important;
+  width: 0 !important;
+  height: 0 !important;
+}
