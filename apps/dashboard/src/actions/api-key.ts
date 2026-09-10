@@ -68,25 +68,36 @@ export async function getApiKeys(projectId: string) {
     });
 }
 
-export async function verifyApiKey(apiKey: string) {
+const verifiedKeyCache = new Map<string, { key: any; expiresAt: number }>();
 
+export async function verifyApiKey(apiKey: string) {
+    if (!apiKey) return null;
+
+    const cached = verifiedKeyCache.get(apiKey);
+    if (cached && cached.expiresAt > Date.now()) {
+        return cached.key;
+    }
+
+    const prefix = apiKey.slice(0, 18);
     const keys = await prisma.apiKey.findMany({
+        where: { prefix },
         include: {
             project: true,
             environment: true,
         },
     });
 
-
     for (const key of keys) {
-
         const valid = await bcrypt.compare(
             apiKey,
             key.keyHash
         );
 
-
         if (valid) {
+            verifiedKeyCache.set(apiKey, {
+                key,
+                expiresAt: Date.now() + 5 * 60 * 1000,
+            });
             return key;
         }
     }
