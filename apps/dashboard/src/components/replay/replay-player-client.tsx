@@ -659,7 +659,7 @@ export function ReplayPlayerClient({
                 <div
                     ref={containerRef}
                     onClick={togglePlay}
-                    className="w-full min-h-[480px] bg-white flex items-center justify-center overflow-auto cursor-pointer"
+                    className="w-full min-h-[480px] bg-[#0b0f17] flex items-center justify-center overflow-auto cursor-pointer"
                 />
 
                 {/* Center Play/Pause Overlay — fades when playing */}

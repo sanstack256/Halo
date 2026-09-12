@@ -22,6 +22,7 @@ export class HaloReplay {
     private originalFetch: any = null;
     private originalConsoleError: any = null;
     private currentUrl: string = "";
+    private recordedEvents: eventWithTime[] = [];
 
     constructor(options: HaloReplayOptions = {}) {
         this.options = {
@@ -94,6 +95,18 @@ export class HaloReplay {
         return this.sessionId;
     }
 
+    public getRingBuffer(): ReplayRingBuffer {
+        return this.ringBuffer;
+    }
+
+    public getBufferEvents(): eventWithTime[] {
+        return this.ringBuffer.getAll();
+    }
+
+    public getRecordedEvents(): eventWithTime[] {
+        return [...this.recordedEvents];
+    }
+
     public setIssueId(issueId: string): void {
         this.uploader.setIssueId(issueId);
     }
@@ -164,6 +177,11 @@ export class HaloReplay {
     }
 
     private handleEvent(event: eventWithTime): void {
+        this.recordedEvents.push(event);
+        if (this.recordedEvents.length > (this.options.maxBufferEvents ?? 5000)) {
+            this.recordedEvents.shift();
+        }
+
         if (this.isStreaming || this.isSampled) {
             // Actively streaming session chunks
             this.uploader.addEvents([event]);

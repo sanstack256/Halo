@@ -143,90 +143,69 @@ async function run() {
     </html>
     `;
 
+    page.on("pageerror", (err) => console.error("BROWSER PAGE ERROR:", err));
+    page.on("console", (msg) => console.log(`BROWSER [${msg.type()}]:`, msg.text()));
+
     await context.addInitScript(() => {
         (window as any).__name = (target: any) => target;
     });
 
     await page.setContent(testAppHtml);
 
-    // Inject rrweb recording script inside the browser session from local bundle
-    const rrwebPath = path.resolve(process.cwd(), "node_modules/.pnpm/rrweb@2.1.1/node_modules/rrweb/dist/rrweb.umd.cjs");
-    await page.addScriptTag({ path: rrwebPath });
+    // Inject the real @halo-trace/replay compiled global bundle into the browser session
+    const haloReplayPath = path.resolve(process.cwd(), "packages/replay/dist/index.global.js");
+    await page.addScriptTag({ path: haloReplayPath });
 
-    // Start recording inside browser page
+    // Start genuine recording inside browser page using @halo-trace/replay
     await page.evaluate(`
         (function(args) {
-            window.__events = [];
-            const startMs = Date.now();
+            window.__recordedEvents = [];
 
-            // Custom start event
-            window.__events.push({
-                type: 5,
-                data: { tag: "halo:navigation", payload: { from: "/", to: "/checkout", type: "initial" } },
-                timestamp: startMs,
+            // Instantiate genuine HaloReplay engine from @halo-trace/replay
+            const recorder = new window.HaloReplayBundle.HaloReplay({
+                sessionId: args.sessionId,
+                projectId: args.projectId,
+                endpoint: "http://localhost:3000/api",
+                samplingRate: 1.0,
+                errorTriggered: true,
+                preErrorBufferSeconds: 60,
+                captureNavigation: true,
+                captureNetwork: true,
+                captureConsole: true,
             });
 
-            window.rrweb.record({
-                emit: function(ev) {
-                    window.__events.push(ev);
-                },
-                maskAllInputs: true,
-                maskInputOptions: { password: true, email: true, text: true, number: true },
-                maskTextSelector: 'input[name*="card"], input[name*="cvc"], input[name*="pass"]',
-                maskInputFn: function() { return "********"; },
-            });
+            // Start genuine capture engine (rrweb + input masking + auto-instrumentation)
+            recorder.start();
+            window.__haloReplayInstance = recorder;
 
-            // Simulate interaction hooks
+            // Wire real DOM and browser APIs
             document.getElementById("nav-btn")?.addEventListener("click", function() {
+                // Real browser pushState — automatically intercepted by HaloReplay
                 window.history.pushState({}, "", "/checkout/shipping");
-                window.__events.push({
-                    type: 5,
-                    data: { tag: "halo:navigation", payload: { from: "/checkout", to: "/checkout/shipping", type: "pushState" } },
-                    timestamp: Date.now(),
-                });
             });
 
-            document.getElementById("pay-btn")?.addEventListener("click", function() {
-                // Emulate request
-                window.__events.push({
-                    type: 5,
-                    data: {
-                        tag: "halo:request",
-                        payload: {
-                            method: "POST",
-                            url: "/api/v1/charge",
-                            status: 504,
-                            durationMs: 820,
-                            traceId: args.traceId,
-                            requestId: args.requestId,
-                            failed: true,
+            document.getElementById("pay-btn")?.addEventListener("click", async function() {
+                // Real browser fetch — automatically intercepted by HaloReplay
+                try {
+                    await window.fetch("/api/v1/charge", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                            "x-trace-id": args.traceId,
+                            "x-request-id": args.requestId,
                         },
-                    },
-                    timestamp: Date.now(),
-                });
+                        body: JSON.stringify({ amount: 14900 }),
+                    });
+                } catch (e) {
+                    // Real console.error — automatically intercepted by HaloReplay
+                    console.error("Payment Gateway Error: Service Unavailable (503)");
+                }
 
-                // Emulate console error
-                window.__events.push({
-                    type: 5,
-                    data: {
-                        tag: "halo:console",
-                        payload: { level: "error", message: "StripeGatewayTimeout: Connection pool exhausted after 820ms" },
-                    },
-                    timestamp: Date.now(),
-                });
-
-                // Emulate client runtime exception
-                window.__events.push({
-                    type: 5,
-                    data: {
-                        tag: "halo:error",
-                        payload: {
-                            message: "StripeGatewayTimeout: Connection pool exhausted after 820ms",
-                            stack: "Error: StripeGatewayTimeout\\n    at authorizePayment (/checkout/pay.ts:42:15)\\n    at HTMLButtonElement.onClick (/checkout/app.ts:18:9)",
-                            traceId: args.traceId,
-                        },
-                    },
-                    timestamp: Date.now(),
+                // Genuine error capture triggered on recorder
+                recorder.triggerErrorReplay({
+                    title: "StripeGatewayTimeout: Connection pool exhausted after 820ms",
+                    stack: "Error: StripeGatewayTimeout\\n    at authorizePayment (/checkout/pay.ts:42:15)\\n    at HTMLButtonElement.onClick (/checkout/app.ts:18:9)",
+                    traceId: args.traceId,
                 });
 
                 const statusEl = document.getElementById("status");
@@ -235,7 +214,7 @@ async function run() {
                     statusEl.style.color = "#f87171";
                 }
             });
-        })(${JSON.stringify({ sessionId: testSessionId, traceId: testTraceId, requestId: testRequestId })});
+        })(${JSON.stringify({ sessionId: testSessionId, traceId: testTraceId, requestId: testRequestId, projectId: PROJECT_ID })});
     `);
 
     // Perform actual browser interactions
@@ -243,13 +222,13 @@ async function run() {
     await page.click("#email");
     await page.type("#email", ".corp");
     await page.waitForTimeout(300);
-    await page.click("#nav-btn"); // SPA navigation
+    await page.click("#nav-btn"); // Real SPA navigation (triggers pushState)
     await page.waitForTimeout(400);
-    await page.click("#pay-btn"); // Click to trigger request, console error, and exception
+    await page.click("#pay-btn"); // Real user click (triggers fetch, console.error, and error capture)
     await page.waitForTimeout(800);
 
-    // Retrieve collected events from browser
-    const capturedEvents: any[] = await page.evaluate("window.__events");
+    // Retrieve collected events directly from genuine HaloReplay ring buffer
+    const capturedEvents: any[] = await page.evaluate("window.__haloReplayInstance.getBufferEvents()");
     console.log(`Browser session recorded ${capturedEvents.length} events.`);
 
     assert(capturedEvents.length > 5, "DOM Capture", `Captured ${capturedEvents.length} real events from browser session`);

@@ -1,5 +1,23 @@
 import { eventWithTime } from '@rrweb/types';
 
+declare class ReplayRingBuffer {
+    private buffer;
+    private maxDurationMs;
+    private maxEvents;
+    constructor(maxDurationSeconds?: number, maxEvents?: number);
+    add(event: eventWithTime): void;
+    /**
+     * Prunes events that are older than maxDurationMs or beyond maxEvents,
+     * while rigorously ensuring that an initial FullSnapshot (type 2) or Meta (type 4)
+     * is preserved at the beginning of the buffer so DOM reconstruction never fails.
+     */
+    prune(referenceTimestamp?: number): void;
+    flush(): eventWithTime[];
+    getAll(): eventWithTime[];
+    clear(): void;
+    get length(): number;
+}
+
 interface ReplayPrivacyOptions {
     /**
      * If true, masks all user-facing text inside HTML elements with asterisks/bars.
@@ -167,9 +185,13 @@ declare class HaloReplay {
     private originalFetch;
     private originalConsoleError;
     private currentUrl;
+    private recordedEvents;
     constructor(options?: HaloReplayOptions);
     private generateSessionId;
     getSessionId(): string;
+    getRingBuffer(): ReplayRingBuffer;
+    getBufferEvents(): eventWithTime[];
+    getRecordedEvents(): eventWithTime[];
     setIssueId(issueId: string): void;
     start(): void;
     private handleEvent;
@@ -193,24 +215,6 @@ declare class HaloReplay {
     }): void;
     flushAndConclude(): void;
     stop(): void;
-}
-
-declare class ReplayRingBuffer {
-    private buffer;
-    private maxDurationMs;
-    private maxEvents;
-    constructor(maxDurationSeconds?: number, maxEvents?: number);
-    add(event: eventWithTime): void;
-    /**
-     * Prunes events that are older than maxDurationMs or beyond maxEvents,
-     * while rigorously ensuring that an initial FullSnapshot (type 2) or Meta (type 4)
-     * is preserved at the beginning of the buffer so DOM reconstruction never fails.
-     */
-    prune(referenceTimestamp?: number): void;
-    flush(): eventWithTime[];
-    getAll(): eventWithTime[];
-    clear(): void;
-    get length(): number;
 }
 
 declare function buildMaskerConfig(options?: ReplayPrivacyOptions): {
