@@ -33,9 +33,9 @@ import { prisma } from "../apps/dashboard/src/lib/prisma";
 import { buildMaskerConfig, sanitizeUrl } from "../packages/replay/src/masker";
 import { ReplayRingBuffer } from "../packages/replay/src/ring-buffer";
 
-const BASE_URL = process.env.HALO_BASE_URL || "http://localhost:3000";
-const API_KEY = "hl_live_38022b53394bf9229b3e691f479984599ae7bc6b9fc7223f370065be055af9ee";
-const PROJECT_ID = "cmtvy6lah025csxl8zrd0x0dh"; // end to end testing halo
+const BASE_URL = process.env.HALO_BASE_URL || "http://localhost:3001";
+const API_KEY = process.env.HALO_API_KEY || "hl_live_38022b53394bf9229b3e691f479984599ae7bc6b9fc7223f370065be055af9ee";
+const PROJECT_ID = process.env.HALO_PROJECT_ID || "cmtvy6lah025csxl8zrd0x0dh"; // end to end testing halo
 
 interface TestStep {
     name: string;
@@ -150,7 +150,14 @@ async function run() {
         (window as any).__name = (target: any) => target;
     });
 
-    await page.setContent(testAppHtml);
+    await page.route(`${BASE_URL}/checkout`, (route) => {
+        route.fulfill({
+            status: 200,
+            contentType: "text/html",
+            body: testAppHtml,
+        });
+    });
+    await page.goto(`${BASE_URL}/checkout`);
 
     // Inject the real @halo-trace/replay compiled global bundle into the browser session
     const haloReplayPath = path.resolve(process.cwd(), "packages/replay/dist/index.global.js");
@@ -165,7 +172,7 @@ async function run() {
             const recorder = new window.HaloReplayBundle.HaloReplay({
                 sessionId: args.sessionId,
                 projectId: args.projectId,
-                endpoint: "http://localhost:3000/api",
+                endpoint: args.endpoint,
                 samplingRate: 1.0,
                 errorTriggered: true,
                 preErrorBufferSeconds: 60,
@@ -214,7 +221,7 @@ async function run() {
                     statusEl.style.color = "#f87171";
                 }
             });
-        })(${JSON.stringify({ sessionId: testSessionId, traceId: testTraceId, requestId: testRequestId, projectId: PROJECT_ID })});
+        })(${JSON.stringify({ sessionId: testSessionId, traceId: testTraceId, requestId: testRequestId, projectId: PROJECT_ID, endpoint: `${BASE_URL}/api` })});
     `);
 
     // Perform actual browser interactions
@@ -227,8 +234,8 @@ async function run() {
     await page.click("#pay-btn"); // Real user click (triggers fetch, console.error, and error capture)
     await page.waitForTimeout(800);
 
-    // Retrieve collected events directly from genuine HaloReplay ring buffer
-    const capturedEvents: any[] = await page.evaluate("window.__haloReplayInstance.getBufferEvents()");
+    // Retrieve collected events directly from genuine HaloReplay ring buffer / recorded events
+    const capturedEvents: any[] = await page.evaluate("window.__haloReplayInstance ? window.__haloReplayInstance.getRecordedEvents() : []");
     console.log(`Browser session recorded ${capturedEvents.length} events.`);
 
     assert(capturedEvents.length > 5, "DOM Capture", `Captured ${capturedEvents.length} real events from browser session`);

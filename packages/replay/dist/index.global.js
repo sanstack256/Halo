@@ -13183,7 +13183,7 @@ var HaloReplayBundle = (() => {
       if (this.recordedEvents.length > (this.options.maxBufferEvents ?? 5e3)) {
         this.recordedEvents.shift();
       }
-      if (this.isStreaming || this.isSampled) {
+      if (this.isStreaming || this.isSampled && !this.options.errorTriggered) {
         this.uploader.addEvents([event]);
       } else {
         this.ringBuffer.add(event);
@@ -13216,14 +13216,14 @@ var HaloReplayBundle = (() => {
           type
         });
       };
-      this.originalPushState = window.history.pushState;
+      this.originalPushState = window.history.pushState.bind(window.history);
       window.history.pushState = (...args) => {
         const res = this.originalPushState.apply(window.history, args);
         const targetUrl = args[2] ? String(args[2]) : window.location.href;
         notifyNavigation(targetUrl, "pushState");
         return res;
       };
-      this.originalReplaceState = window.history.replaceState;
+      this.originalReplaceState = window.history.replaceState.bind(window.history);
       window.history.replaceState = (...args) => {
         const res = this.originalReplaceState.apply(window.history, args);
         const targetUrl = args[2] ? String(args[2]) : window.location.href;
@@ -13236,7 +13236,7 @@ var HaloReplayBundle = (() => {
     }
     setupNetworkInstrumentation() {
       if (typeof window === "undefined" || !window.fetch) return;
-      this.originalFetch = window.fetch;
+      this.originalFetch = window.fetch.bind(window);
       window.fetch = async (input2, init) => {
         const start = Date.now();
         const urlStr = typeof input2 === "string" ? input2 : input2 instanceof URL ? input2.toString() : input2.url;
@@ -13285,7 +13285,7 @@ var HaloReplayBundle = (() => {
     }
     setupConsoleInstrumentation() {
       if (typeof console === "undefined") return;
-      this.originalConsoleError = console.error;
+      this.originalConsoleError = console.error.bind(console);
       console.error = (...args) => {
         this.originalConsoleError.apply(console, args);
         const message = args.map((a) => typeof a === "string" ? a : a?.message || JSON.stringify(a)).join(" ");
