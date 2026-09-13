@@ -193,11 +193,37 @@ export function validateModelOutput(
             }
         }
 
+        // Anti-placeholder list (Section 6)
+        const FORBIDDEN_PLACEHOLDERS = [
+            "caller",
+            "callee",
+            "target file",
+            "the target file",
+            "the relevant file",
+            "target_file",
+            "relevant file",
+            "the service",
+        ];
+
+        // Ensure actionAnswer is populated
+        if (!fixRec.actionAnswer && fixRec.summary) {
+            fixRec.actionAnswer = fixRec.summary;
+        }
+
         // Verify changes against actual files and source lines
         if (Array.isArray(fixRec.changes)) {
             for (const change of fixRec.changes) {
                 if (change.filePath) {
-                    const normalized = change.filePath.toLowerCase();
+                    const normalized = change.filePath.toLowerCase().trim();
+
+                    // Check for forbidden placeholder names
+                    if (FORBIDDEN_PLACEHOLDERS.includes(normalized)) {
+                        rejectionReasons.push(
+                            `Recommended change uses forbidden placeholder "${change.filePath}" as a repository path. Placeholders are strictly forbidden.`
+                        );
+                        sourceLocationsValid = false;
+                    }
+
                     const knownFiles = [
                         snapshot.source?.filePath?.toLowerCase(),
                         ...snapshot.runtime.callChain.map((c) => c.filePath?.toLowerCase()),
@@ -212,6 +238,13 @@ export function validateModelOutput(
                             `Recommended change references file "${change.filePath}" which was not discovered in the repository or runtime call chain.`
                         );
                         sourceLocationsValid = false;
+                    }
+                }
+
+                if (change.symbol) {
+                    const normSym = change.symbol.toLowerCase().trim();
+                    if (FORBIDDEN_PLACEHOLDERS.includes(normSym)) {
+                        warnings.push(`Symbol "${change.symbol}" resembles a placeholder name.`);
                     }
                 }
 

@@ -166,8 +166,14 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
     });
 
     const fixRecommendation: FixRecommendation = result.fixRecommendation || {
+        actionAnswer: result.action?.instruction || result.whatHappened,
+        outcomeType: result.source === "REFUSAL_INSUFFICIENT_EVIDENCE" ? "INSUFFICIENT_EVIDENCE" : "CODE_CHANGE_RECOMMENDED",
         summary: result.action?.instruction || result.whatHappened,
         diagnosis: result.whatHappened,
+        whyThisAction: result.action?.reasoning,
+        whyNotSymptomFix: "Do not apply defensive nullish checks or symptom suppression at the callee when caller contracts are violated.",
+        missingEvidence: result.unknowns,
+        nextActionBeforeRepair: result.source === "REFUSAL_INSUFFICIENT_EVIDENCE" ? "Capture correlated telemetry or reproduce in development before modifying code." : undefined,
         confidence: (result.confidence?.toUpperCase() as any) || "MEDIUM",
         evidenceReferences: Array.from(new Set(result.claims.flatMap((c) => c.evidenceIds))),
         changes: (result.patch?.files || []).map((f) => ({

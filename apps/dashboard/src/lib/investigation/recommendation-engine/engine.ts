@@ -125,8 +125,14 @@ export async function generateEvidenceBoundRecommendation(
     const data = validationResult.data;
 
     const fixRecommendation: import("./types").FixRecommendation = (data as any).fixRecommendation || {
+        actionAnswer: data.recommendation?.action || data.whatHappened,
+        outcomeType: "CODE_CHANGE_RECOMMENDED",
         summary: data.recommendation?.action || data.whatHappened,
         diagnosis: data.whatHappened,
+        whyThisAction: data.recommendation?.reasoning,
+        whyNotSymptomFix: "Do not apply defensive nullish checks or symptom suppression at the callee when caller contracts are violated.",
+        missingEvidence: [],
+        nextActionBeforeRepair: undefined,
         confidence: (data.confidenceLevel?.toUpperCase() as any) || "MEDIUM",
         evidenceReferences: Array.from(new Set(data.claims.flatMap((c) => c.evidenceIds))),
         changes: data.proposedPatch?.files?.map((f) => ({
@@ -137,6 +143,7 @@ export async function generateEvidenceBoundRecommendation(
             proposedCode: f.diff,
             isExactSourceVerified: false,
         })) || [],
+        relatedConsistencyChecks: [],
         validationSteps: ["Reproduce with verified incident payload", "Execute test suite"],
         uncertainty: data.unknowns,
         followUpSuggestions: [
@@ -146,6 +153,7 @@ export async function generateEvidenceBoundRecommendation(
             "Are there other callers that need the same change?",
             "What tests should I add?",
         ],
+        hasInsufficientEvidence: false,
     };
 
     // 6. Return Validated Production Result

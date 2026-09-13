@@ -4183,3 +4183,92 @@ a.halo-primary-cta[aria-disabled="true"] {
   color: #fbbf24;
   font-size: 12px;
 }
+
+.halo-fix-hero-action {
+  padding: 20px 24px;
+  border-radius: var(--radius-card);
+  background: linear-gradient(180deg, rgba(91, 188, 255, 0.08) 0%, rgba(8, 11, 17, 0.8) 100%);
+  border: 1px solid rgba(91, 188, 255, 0.28);
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  position: relative;
+}
+
+.halo-fix-outcome-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: 700;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+.halo-fix-outcome-code {
+  background: rgba(16, 185, 129, 0.12);
+  color: #34d399;
+  border: 1px solid rgba(16, 185, 129, 0.3);
+}
+
+.halo-fix-outcome-observability {
+  background: rgba(245, 158, 11, 0.12);
+  color: #fbbf24;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.halo-fix-outcome-fixed {
+  background: rgba(91, 188, 255, 0.12);
+  color: #60a5fa;
+  border: 1px solid rgba(91, 188, 255, 0.3);
+}
+
+.halo-fix-outcome-config {
+  background: rgba(168, 85, 247, 0.12);
+  color: #c084fc;
+  border: 1px solid rgba(168, 85, 247, 0.3);
+}
+
+.halo-fix-missing-card {
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: rgba(245, 158, 11, 0.05);
+  border: 1px solid rgba(245, 158, 11, 0.2);
+  color: #fde68a;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.halo-fix-next-action-card {
+  padding: 16px 20px;
+  border-radius: 10px;
+  background: rgba(91, 188, 255, 0.05);
+  border: 1px solid rgba(91, 188, 255, 0.2);
+  color: #bfdbfe;
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.halo-fix-panel-current {
+  padding: 12px 16px;
+  border-radius: 6px;
+  background: rgba(239, 68, 68, 0.04);
+  border: 1px solid rgba(239, 68, 68, 0.18);
+  color: #fca5a5;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  overflow-x: auto;
+}
+
+.halo-fix-panel-proposed {
+  padding: 12px 16px;
+  border-radius: 6px;
+  background: rgba(16, 185, 129, 0.06);
+  border: 1px solid rgba(16, 185, 129, 0.24);
+  color: #6ee7b7;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  overflow-x: auto;
+}

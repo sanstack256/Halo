@@ -462,4 +462,168 @@ describe("Halo Fix / Recommendation System — Test Suite", () => {
         expect(result.source).toBe("DETERMINISTIC_FALLBACK");
         expect(result.whatHappened).toContain("AI recommendation is unavailable");
     });
+
+    // -------------------------------------------------------------------------
+    // Test 11: Direct Answer to "What should I do to fix this issue?"
+    // -------------------------------------------------------------------------
+    it("Test 11: Directly answers 'What should I do to fix this issue?' with concrete action", async () => {
+        const error = makeMockEvidence();
+        const snapshot = buildCanonicalEvidenceSnapshot({
+            tenant: { projectId: "proj-recommend-test" },
+            scope: { issueId: "issue-123", anchorEventId: error.id },
+            rawEvidence: [error],
+            investigation: makeMockInvestigation([error]),
+            runtime: {
+                anchorError: error,
+                callChain: [],
+                failingExpression: "currency",
+            },
+            source: validSource,
+        });
+
+        const customModel = new MockRecommendationModel(() => {
+            return JSON.stringify({
+                status: "RECOMMENDATION",
+                whatHappened: "createPayment failed because currency was not passed by caller.",
+                claims: [{ statement: "Observed error", category: "OBSERVED", evidenceIds: [error.id] }],
+                confidenceLevel: "High",
+                fixRecommendation: {
+                    actionAnswer: "Update CheckoutForm to pass the existing currency value into createPayment.",
+                    outcomeType: "CODE_CHANGE_RECOMMENDED",
+                    summary: "Update CheckoutForm to pass the existing currency value into createPayment.",
+                    diagnosis: "The caller omits currency while createPayment requires it.",
+                    whyThisAction: "The caller already possesses the required value.",
+                    whyNotSymptomFix: "Do not make currency optional in createPayment because caller has the value.",
+                    confidence: "HIGH",
+                    evidenceReferences: [error.id],
+                    changes: [
+                        {
+                            filePath: "src/services/createPayment.ts",
+                            symbol: "createPayment",
+                            startLine: 42,
+                            endLine: 42,
+                            codeType: "EXISTING_AND_PROPOSED",
+                            explanation: "Pass currency argument",
+                            whyHere: "Contract restoration",
+                            currentCode: "throw new TypeError(\"Cannot read properties of undefined (reading 'currency')\");",
+                            proposedCode: "return process(amount, method, currency);",
+                        },
+                    ],
+                    validationSteps: ["Reproduce with checkout payload"],
+                },
+            });
+        });
+
+        const result = await generateEvidenceBoundRecommendation({ snapshot, customModel });
+        expect(result.success).toBe(true);
+        expect(result.fixRecommendation?.actionAnswer).toBe(
+            "Update CheckoutForm to pass the existing currency value into createPayment."
+        );
+        expect(result.fixRecommendation?.outcomeType).toBe("CODE_CHANGE_RECOMMENDED");
+        expect(result.fixRecommendation?.whyNotSymptomFix).toContain("Do not make currency optional");
+    });
+
+    // -------------------------------------------------------------------------
+    // Test 12: Underdetermined Failure Does NOT Force a Code Patch
+    // -------------------------------------------------------------------------
+    it("Test 12: Refuses to force a speculative source patch when failure mechanism is underdetermined", async () => {
+        const error = makeMockEvidence({
+            metadata: {
+                stack: "Error: Scenario failed\n    at runScenario (src/scenarios/runner.ts:15:11)",
+            },
+        });
+        const snapshot = buildCanonicalEvidenceSnapshot({
+            tenant: { projectId: "proj-recommend-test" },
+            scope: { issueId: "issue-underdetermined", anchorEventId: error.id },
+            rawEvidence: [error],
+            investigation: makeMockInvestigation([error]),
+            runtime: {
+                anchorError: error,
+                callChain: [],
+                failingExpression: "scenario.fn()",
+            },
+            source: {
+                filePath: "src/scenarios/runner.ts",
+                startLineNumber: 10,
+                failingLineNumber: 15,
+                lines: [
+                    { lineNumber: 14, content: "    const result =", isFailingLine: false },
+                    { lineNumber: 15, content: "        await scenario.fn(ctx);", isFailingLine: true },
+                ],
+                resolutionStatus: "exact_file",
+            },
+        });
+
+        // Use offline deterministic model
+        const result = await generateEvidenceBoundRecommendation({ snapshot });
+        expect(result.fixRecommendation?.outcomeType).toBe("OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR");
+        expect(result.fixRecommendation?.actionAnswer).toContain("Do not modify production code yet");
+        expect(result.fixRecommendation?.missingEvidence.length).toBeGreaterThan(0);
+        expect(result.fixRecommendation?.nextActionBeforeRepair).toContain("targeted instrumentation");
+        expect(result.fixRecommendation?.changes.length).toBe(0);
+    });
+
+    // -------------------------------------------------------------------------
+    // Test 13: Rejection of Placeholder Tokens
+    // -------------------------------------------------------------------------
+    it("Test 13: Fact-checker strictly rejects placeholder filenames like 'caller' or 'target file'", () => {
+        const error = makeMockEvidence();
+        const snapshot = buildCanonicalEvidenceSnapshot({
+            tenant: { projectId: "proj-test" },
+            scope: { issueId: "iss-1", anchorEventId: error.id },
+            rawEvidence: [error],
+            investigation: makeMockInvestigation([error]),
+            runtime: { anchorError: error, callChain: [] },
+            source: validSource,
+        });
+
+        const gateVerdict = evaluateRecommendationEligibility(snapshot);
+        const placeholderOutput = JSON.stringify({
+            status: "RECOMMENDATION",
+            whatHappened: "Failure in checkout",
+            claims: [{ statement: "Observed error", category: "OBSERVED", evidenceIds: [error.id] }],
+            confidenceLevel: "High",
+            fixRecommendation: {
+                actionAnswer: "Modify target file",
+                summary: "Modify target file",
+                diagnosis: "Caller omitted arg",
+                confidence: "HIGH",
+                evidenceReferences: [error.id],
+                changes: [
+                    {
+                        filePath: "target file",
+                        explanation: "Edit here",
+                        whyHere: "Unknown",
+                    },
+                ],
+                validationSteps: [],
+            },
+        });
+
+        const validation = validateModelOutput(placeholderOutput, snapshot, gateVerdict);
+        expect(validation.isValid).toBe(false);
+        expect(
+            validation.audit.rejectionReasons.some((r) => r.includes("forbidden placeholder"))
+        ).toBe(true);
+    });
+
+    // -------------------------------------------------------------------------
+    // Test 14: System Prompt Contains 10 Outcome Types and Core Objective
+    // -------------------------------------------------------------------------
+    it("Test 14: System prompt teaches the 10 outcome types and 'WHAT SHOULD I DO TO FIX THIS ISSUE?'", () => {
+        const gateVerdict = {
+            canGenerateRecommendation: true,
+            recommendationReason: "Valid evidence",
+            patchEligibility: "CAN_GENERATE_PATCH" as const,
+            patchReason: "Source available",
+        };
+
+        const systemPrompt = buildSystemPrompt(gateVerdict);
+        expect(systemPrompt).toContain("WHAT SHOULD I DO TO FIX THIS ISSUE?");
+        expect(systemPrompt).toContain("CODE_CHANGE_RECOMMENDED");
+        expect(systemPrompt).toContain("OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR");
+        expect(systemPrompt).toContain("ALREADY_FIXED");
+        expect(systemPrompt).toContain("INSUFFICIENT_EVIDENCE");
+        expect(systemPrompt).toContain("ANTI-PLACEHOLDER & ANTI-FABRICATION RULE");
+    });
 });

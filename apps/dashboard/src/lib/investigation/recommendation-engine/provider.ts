@@ -278,19 +278,65 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
         });
     }
 
-    // Recommendation Action
+    // Engineering Decision & Action Formulation ("WHAT SHOULD I DO TO FIX THIS ISSUE?")
+    let outcomeType: import("./types").FixOutcomeType = "CODE_CHANGE_RECOMMENDED";
     let action = repairEligibility.reason;
     let reasoning = protectionAnalysis.detailedReasoning;
+    let whyThisAction = "";
+    let whyNotSymptomFix = "Do not add optional chaining (?.) or defensive fallbacks at the callee. If the caller already possesses the required value or violates the function contract, suppressing the error at the callee masks the underlying bug and causes silent data corruption downstream.";
+    let missingEvidence: string[] = [];
+    let nextActionBeforeRepair: string | undefined = undefined;
 
-    if (repairEligibility.state === "REPAIR_READY" && repairOptions.length > 0) {
+    const lowerFile = file.toLowerCase();
+    const isVendor =
+        lowerFile.endsWith(".min.js") ||
+        lowerFile.includes(".min.") ||
+        lowerFile.includes("node_modules") ||
+        lowerFile.startsWith("vendor") ||
+        lowerFile.includes("/vendor");
+
+    if (isVendor) {
+        outcomeType = "INSUFFICIENT_EVIDENCE";
+        action = `Do not modify vendor code. The failure originated in third-party or minified bundle '${file}'. Verify caller inputs passed to the vendor library or map production sourcemaps.`;
+        reasoning = "Third-party libraries must not be modified in production without author source context.";
+        whyThisAction = "Inspecting caller inputs or mapping sourcemaps identifies the actual application cause.";
+        missingEvidence = ["Original author source code", "Unminified application stack trace"];
+        nextActionBeforeRepair = "Verify arguments passed into the library at the application caller boundary or supply source maps.";
+    } else if (proposedPatch && proposedPatch.validationStatus === "VALID" && repairOptions.length > 0) {
+        outcomeType = "CODE_CHANGE_RECOMMENDED";
         action = repairOptions[0]!.title;
         reasoning = repairOptions[0]!.approach;
+        whyThisAction = `Repairs the contract violation at ${file}:${line} where inconsistency was verified in the repository AST.`;
+    } else if (repairEligibility.state === "REPAIR_READY" && repairOptions.length > 0) {
+        outcomeType = "CODE_CHANGE_RECOMMENDED";
+        action = repairOptions[0]!.title;
+        reasoning = repairOptions[0]!.approach;
+        whyThisAction = `Repairs the contract violation at ${file}:${line} where inconsistency was verified in the repository AST.`;
     } else if (repairEligibility.state === "REPAIR_UNDERDETERMINED") {
-        action = `Capture runtime telemetry for '${expr || "failing expression"}' before applying code modifications.`;
+        outcomeType = "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR";
+        action = `Do not modify production code yet. Capture runtime telemetry for '${expr || "failing expression"}' before applying code modifications.`;
         reasoning = repairEligibility.reason;
+        whyThisAction = "Speculative changes risk masking runtime behavior without addressing the genuine cause.";
+        missingEvidence = [
+            `Dynamic runtime value of '${expr || "failing expression"}'`,
+            `Invocation return value or internal rejection payload from ${fnName}()`,
+            "Caller-side state prior to invocation",
+        ];
+        nextActionBeforeRepair = `Reproduce the failure with targeted instrumentation around ${fnName}() and capture the invocation outcome. Once that evidence is available, regenerate the recommendation.`;
     } else if (repairEligibility.state === "REPAIR_PLAUSIBLE" && repairOptions.length > 0) {
-        action = `Evaluate repair options: ${repairOptions.map((o) => o.title).join(" OR ")}`;
+        outcomeType = "AMBIGUOUS_ROOT_CAUSE";
+        action = `Evaluate repair options: ${repairOptions.map((o) => o.title).join(" OR ")}. Do not apply a speculative fix until caller value flow is confirmed.`;
         reasoning = repairEligibility.reason;
+        whyThisAction = "Multiple competing call sites or hypotheses exist; verifying caller arguments is required.";
+        missingEvidence = ["Caller argument propagation path", "Confirmed caller identity among multiple candidates"];
+        nextActionBeforeRepair = "Trace caller arguments in test execution or staging environment.";
+    } else {
+        outcomeType = "INSUFFICIENT_EVIDENCE";
+        action = `Do not modify production code yet. ${repairEligibility.reason}`;
+        reasoning = repairEligibility.reason;
+        whyThisAction = "Insufficient evidence to determine a safe code modification.";
+        missingEvidence = [repairEligibility.reason];
+        nextActionBeforeRepair = "Capture correlated telemetry or reproduce in development before modifying code.";
     }
 
     const recommendation = {
@@ -314,7 +360,7 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
     };
 
     if (
-        (repairEligibility.state === "REPAIR_READY" || repairEligibility.state === "REPAIR_PLAUSIBLE") &&
+        outcomeType === "CODE_CHANGE_RECOMMENDED" &&
         proposedPatch &&
         proposedPatch.validationStatus === "VALID"
     ) {
@@ -342,6 +388,35 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
         };
     }
 
+    const changesList =
+        outcomeType === "CODE_CHANGE_RECOMMENDED"
+            ? [
+                  {
+                      filePath: proposedPatch?.targetFile || snapshot.source?.filePath || file,
+                      symbol: fnName,
+                      startLine: line,
+                      endLine: line,
+                      codeType:
+                          proposedPatch?.validationStatus === "VALID"
+                              ? ("EXISTING_AND_PROPOSED" as const)
+                              : snapshot.source?.lines
+                              ? ("PROPOSED_ONLY" as const)
+                              : ("CONCEPTUAL" as const),
+                      explanation: reasoning,
+                      whyHere: `Target is at ${file}:${line} where contract violation was verified in repository AST.`,
+                      currentCode:
+                          proposedPatch?.originalSourceSnippet ||
+                          snapshot.source?.lines?.find((l) => l.isFailingLine)?.content ||
+                          "",
+                      proposedCode: proposedPatch?.proposedSourceSnippet || "",
+                      unifiedDiff: proposedPatch?.unifiedDiff || "",
+                      isExactSourceVerified: Boolean(
+                          snapshot.source && snapshot.source.resolutionStatus === "exact_file"
+                      ),
+                  },
+              ]
+            : [];
+
     return {
         status: repairEligibility.state === "REPAIR_BLOCKED" ? "NO_SAFE_RECOMMENDATION" : "RECOMMENDATION",
         whatHappened,
@@ -357,8 +432,14 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
                 ? "Medium"
                 : "Low",
         fixRecommendation: {
+            actionAnswer: action,
+            outcomeType,
             summary: action,
             diagnosis: whatHappened,
+            whyThisAction,
+            whyNotSymptomFix,
+            missingEvidence,
+            nextActionBeforeRepair,
             confidence:
                 repairEligibility.state === "REPAIR_READY"
                     ? "HIGH"
@@ -366,31 +447,7 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
                     ? "MEDIUM"
                     : "LOW",
             evidenceReferences: Array.from(new Set(claims.flatMap((c) => c.evidenceIds))),
-            changes: [
-                {
-                    filePath: proposedPatch?.targetFile || snapshot.source?.filePath || file,
-                    symbol: fnName,
-                    startLine: line,
-                    endLine: line,
-                    codeType:
-                        proposedPatch?.validationStatus === "VALID"
-                            ? "EXISTING_AND_PROPOSED"
-                            : snapshot.source?.lines
-                            ? "PROPOSED_ONLY"
-                            : "CONCEPTUAL",
-                    explanation: reasoning,
-                    whyHere: `Target is at ${file}:${line} where contract violation or unhandled execution was observed.`,
-                    currentCode:
-                        proposedPatch?.originalSourceSnippet ||
-                        snapshot.source?.lines?.find((l) => l.isFailingLine)?.content ||
-                        "",
-                    proposedCode: proposedPatch?.proposedSourceSnippet || "",
-                    unifiedDiff: proposedPatch?.unifiedDiff || "",
-                    isExactSourceVerified: Boolean(
-                        snapshot.source && snapshot.source.resolutionStatus === "exact_file"
-                    ),
-                },
-            ],
+            changes: changesList,
             relatedConsistencyChecks: [
                 "Verify all callers of the modified function to ensure arguments adhere to the updated signature.",
             ],
@@ -407,8 +464,14 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
                 "Are there other callers that need the same change?",
                 "What tests should I add?",
             ],
-            hasInsufficientEvidence: repairEligibility.state === "REPAIR_BLOCKED",
-            refusalReason: repairEligibility.state === "REPAIR_BLOCKED" ? repairEligibility.reason : undefined,
+            hasInsufficientEvidence:
+                outcomeType === "INSUFFICIENT_EVIDENCE" ||
+                outcomeType === "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR",
+            refusalReason:
+                outcomeType === "INSUFFICIENT_EVIDENCE" ||
+                outcomeType === "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR"
+                    ? action
+                    : undefined,
         },
     };
 }

@@ -117,9 +117,29 @@ export const RecommendedChangeSchema = z.object({
 });
 export type RecommendedChange = z.infer<typeof RecommendedChangeSchema>;
 
+export const FixOutcomeTypeSchema = z.enum([
+    "CODE_CHANGE_RECOMMENDED",
+    "MULTI_FILE_CHANGE_RECOMMENDED",
+    "CONFIGURATION_CHANGE_RECOMMENDED",
+    "TEST_CHANGE_RECOMMENDED",
+    "NO_CODE_CHANGE_REQUIRED",
+    "ALREADY_FIXED",
+    "INSUFFICIENT_EVIDENCE",
+    "AMBIGUOUS_ROOT_CAUSE",
+    "EXTERNAL_DEPENDENCY_ACTION",
+    "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR",
+]);
+export type FixOutcomeType = z.infer<typeof FixOutcomeTypeSchema>;
+
 export const FixRecommendationSchema = z.object({
+    actionAnswer: z.string().min(1).default("Review investigation evidence to formulate a targeted repair."),
+    outcomeType: FixOutcomeTypeSchema.default("CODE_CHANGE_RECOMMENDED"),
     summary: z.string().min(1),
     diagnosis: z.string().min(1),
+    whyThisAction: z.string().optional(),
+    whyNotSymptomFix: z.string().optional(),
+    missingEvidence: z.array(z.string()).default([]),
+    nextActionBeforeRepair: z.string().optional(),
     confidence: z.enum(["LOW", "MEDIUM", "HIGH", "VERY_HIGH"]).default("MEDIUM"),
     evidenceReferences: z.array(z.string()).default([]),
     changes: z.array(RecommendedChangeSchema).default([]),
