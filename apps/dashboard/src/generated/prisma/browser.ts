@@ -83,6 +83,11 @@ export type Verification = Prisma.VerificationModel
  */
 export type ReplaySession = Prisma.ReplaySessionModel
 /**
+ * Model Feedback
+ * 
+ */
+export type Feedback = Prisma.FeedbackModel
+/**
  * Model ReplayChunk
  * 
  */

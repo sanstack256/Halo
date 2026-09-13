@@ -123,6 +123,11 @@ export interface HaloReplayOptions {
      */
     deadClickTimeoutMs?: number;
     /**
+     * Enable Canvas 2D and WebGL context operation & frame snapshot recording.
+     * Default: false (enable explicitly for graphics / game applications)
+     */
+    recordCanvas?: boolean;
+    /**
      * Current authenticated user context for conditional capture targeting.
      */
     user?: { id?: string; email?: string; username?: string; [key: string]: any };
@@ -132,6 +137,20 @@ export interface HaloReplayOptions {
      * Evaluated against URL, user context, or application-defined state.
      */
     shouldCapture?: (context: { url: string; user?: any; [key: string]: any }) => boolean;
+}
+
+export interface FeedbackModalOptions {
+    title?: string;
+    subtitle?: string;
+    namePlaceholder?: string;
+    emailPlaceholder?: string;
+    commentsPlaceholder?: string;
+    submitButtonText?: string;
+    cancelButtonText?: string;
+    defaultName?: string;
+    defaultEmail?: string;
+    onSubmit?: (feedback: { name?: string; email?: string; comments: string }) => void | Promise<void>;
+    onClose?: () => void;
 }
 
 export type ReplayPrivacyState =

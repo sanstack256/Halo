@@ -3,9 +3,11 @@ import type { HaloReplayOptions } from "./types";
 
 export { HaloReplay } from "./recorder";
 export { ReplayRingBuffer } from "./ring-buffer";
+export { HaloFeedbackWidget } from "./feedback-widget";
 export { buildMaskerConfig, isUrlIgnored, sanitizeUrl } from "./masker";
 export type {
     HaloReplayOptions,
+    FeedbackModalOptions,
     ReplayPrivacyOptions,
     ReplayChunkPayload,
     ReplayNavigationPayload,

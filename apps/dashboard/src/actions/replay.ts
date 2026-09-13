@@ -343,6 +343,11 @@ export async function getReplaySession(replaySessionId: string) {
                     sequence: "asc",
                 },
             },
+            feedbacks: {
+                orderBy: {
+                    createdAt: "desc",
+                },
+            },
         },
     });
 

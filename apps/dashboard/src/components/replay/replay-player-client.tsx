@@ -15,6 +15,7 @@ import {
     Layers,
     Link2,
     Maximize2,
+    MessageSquare,
     Minimize2,
     MonitorPlay,
     MousePointer,
@@ -81,6 +82,13 @@ type ReplayPlayerClientProps = {
         requestId?: string | null;
         viewportWidth?: number | null;
         viewportHeight?: number | null;
+        feedbacks?: Array<{
+            id: string;
+            name?: string | null;
+            email?: string | null;
+            comments: string;
+            createdAt: Date | string;
+        }>;
     };
     issueTitle?: string;
     initialTimeMs?: number;
@@ -120,7 +128,7 @@ export function ReplayPlayerClient({
     // Baseline Parity: Historical DOM Inspector, Filter Chips & Fullscreen
     const [isInspectMode, setIsInspectMode] = useState(false);
     const [selectedDomNode, setSelectedDomNode] = useState<HistoricalDomNode | null>(null);
-    const [activeTab, setActiveTab] = useState<"timeline" | "dom">("timeline");
+    const [activeTab, setActiveTab] = useState<"timeline" | "dom" | "feedback">("timeline");
     const [filterCategory, setFilterCategory] = useState<FilterCategoryId>("all");
     const [isFullscreen, setIsFullscreen] = useState(false);
 
@@ -636,6 +644,7 @@ export function ReplayPlayerClient({
                         showController: false,
                         mouseTail: false,
                         speed: playbackSpeed,
+                        UNSAFE_replayCanvas: true,
                     },
                 });
 
@@ -1415,6 +1424,20 @@ export function ReplayPlayerClient({
                                 </span>
                             )}
                         </button>
+                        {replaySession.feedbacks && replaySession.feedbacks.length > 0 && (
+                            <button
+                                type="button"
+                                onClick={() => setActiveTab("feedback")}
+                                className={`text-xs font-semibold uppercase tracking-wider pb-1 transition-colors border-b-2 flex items-center gap-1.5 ${
+                                    activeTab === "feedback"
+                                        ? "border-amber-400 text-amber-300"
+                                        : "border-transparent text-muted hover:text-white"
+                                }`}
+                            >
+                                <MessageSquare size={12} className="text-amber-400" />
+                                User Feedback ({replaySession.feedbacks.length})
+                            </button>
+                        )}
                     </div>
 
                     <span className="text-[11px] font-mono text-muted">
@@ -1538,6 +1561,35 @@ export function ReplayPlayerClient({
                         onToggleInspect={() => setIsInspectMode(!isInspectMode)}
                         onClear={() => setSelectedDomNode(null)}
                     />
+                )}
+
+                {/* Tab 3: Associated User Feedback Panel */}
+                {activeTab === "feedback" && replaySession.feedbacks && (
+                    <div className="space-y-4" data-testid="user-feedback-list">
+                        <div className="text-xs text-muted mb-2">
+                            User feedback submitted during or linked to this session replay.
+                        </div>
+                        {replaySession.feedbacks.map((fb) => (
+                            <div
+                                key={fb.id}
+                                className="p-4 rounded-xl bg-[#080b11] border border-white/10 space-y-2 text-xs"
+                            >
+                                <div className="flex items-center justify-between border-b border-white/10 pb-2">
+                                    <div className="font-semibold text-white flex items-center gap-2">
+                                        <MessageSquare size={13} className="text-amber-400" />
+                                        <span>{fb.name || "Anonymous User"}</span>
+                                        {fb.email && <span className="text-muted font-normal">&lt;{fb.email}&gt;</span>}
+                                    </div>
+                                    <span className="font-mono text-muted text-[11px]">
+                                        {new Date(fb.createdAt).toLocaleString()}
+                                    </span>
+                                </div>
+                                <div className="text-zinc-200 bg-white/5 p-3 rounded-lg border border-white/5 font-sans leading-relaxed whitespace-pre-wrap">
+                                    {fb.comments}
+                                </div>
+                            </div>
+                        ))}
+                    </div>
                 )}
             </div>
         </div>

@@ -64,6 +64,7 @@ export const ModelName = {
   Account: 'Account',
   Verification: 'Verification',
   ReplaySession: 'ReplaySession',
+  Feedback: 'Feedback',
   ReplayChunk: 'ReplayChunk',
   Monitor: 'Monitor',
   MonitorAlert: 'MonitorAlert',
@@ -322,6 +323,22 @@ export const ReplaySessionScalarFieldEnum = {
 } as const
 
 export type ReplaySessionScalarFieldEnum = (typeof ReplaySessionScalarFieldEnum)[keyof typeof ReplaySessionScalarFieldEnum]
+
+
+export const FeedbackScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  sessionId: 'sessionId',
+  replaySessionId: 'replaySessionId',
+  name: 'name',
+  email: 'email',
+  comments: 'comments',
+  url: 'url',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FeedbackScalarFieldEnum = (typeof FeedbackScalarFieldEnum)[keyof typeof FeedbackScalarFieldEnum]
 
 
 export const ReplayChunkScalarFieldEnum = {

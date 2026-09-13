@@ -3,8 +3,10 @@ import type { eventWithTime } from "@rrweb/types";
 import { buildMaskerConfig, isUrlIgnored, sanitizeUrl } from "./masker";
 import { ReplayRingBuffer } from "./ring-buffer";
 import { ReplayUploader } from "./uploader";
+import { HaloFeedbackWidget } from "./feedback-widget";
 import type {
     HaloReplayOptions,
+    FeedbackModalOptions,
     ReplayNavigationPayload,
     ReplayRequestPayload,
     ReplayConsolePayload,
@@ -178,6 +180,42 @@ export class HaloReplay {
         this.uploader.setIssueId(issueId);
     }
 
+    public async submitFeedback(feedback: { name?: string; email?: string; comments: string }): Promise<any> {
+        if (!feedback.comments || !feedback.comments.trim()) {
+            throw new Error("Feedback comments are required");
+        }
+
+        const endpoint = (this.options.endpoint || "/api").replace(/\/$/, "");
+        const res = await fetch(`${endpoint}/feedback`, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                ...(this.options.apiKey ? { "Authorization": `Bearer ${this.options.apiKey}` } : {}),
+            },
+            body: JSON.stringify({
+                projectId: this.options.projectId,
+                replaySessionId: this.sessionId,
+                name: feedback.name,
+                email: feedback.email,
+                comments: feedback.comments,
+                url: typeof window !== "undefined" ? window.location.href : undefined,
+            }),
+        });
+
+        if (!res.ok) {
+            const errJson = await res.json().catch(() => ({}));
+            throw new Error(errJson.error || `Failed to submit feedback: ${res.status}`);
+        }
+
+        return await res.json();
+    }
+
+    public openFeedbackModal(options?: FeedbackModalOptions): HaloFeedbackWidget {
+        const widget = new HaloFeedbackWidget(options, (data) => this.submitFeedback(data));
+        widget.open();
+        return widget;
+    }
+
     public start(): void {
         if (typeof window === "undefined" || typeof document === "undefined") {
             return;
@@ -225,7 +263,7 @@ export class HaloReplay {
                 blockSelector: maskerConfig.blockSelector,
                 maskTextSelector: maskerConfig.maskTextSelector,
                 ignoreSelector: maskerConfig.ignoreSelector,
-                recordCanvas: false,
+                recordCanvas: Boolean(this.options.recordCanvas),
                 inlineImages: false,
                 collectFonts: false,
             }) || null;

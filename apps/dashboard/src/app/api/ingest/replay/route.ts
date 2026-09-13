@@ -213,6 +213,21 @@ export async function POST(request: NextRequest) {
         },
     });
 
+    // Auto-correlate any pending feedback submitted with this sessionId
+    try {
+        await prisma.feedback.updateMany({
+            where: {
+                sessionId,
+                replaySessionId: null,
+            },
+            data: {
+                replaySessionId: replaySession.id,
+            },
+        });
+    } catch (feedbackErr) {
+        console.warn("[Replay Ingestion] Failed to correlate pending feedback:", feedbackErr);
+    }
+
     // 2. Insert ReplayChunk
     if (eventCount > 0) {
         const sanitizedEvents = Array.isArray(events)

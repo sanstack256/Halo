@@ -140,6 +140,11 @@ interface HaloReplayOptions {
      */
     deadClickTimeoutMs?: number;
     /**
+     * Enable Canvas 2D and WebGL context operation & frame snapshot recording.
+     * Default: false (enable explicitly for graphics / game applications)
+     */
+    recordCanvas?: boolean;
+    /**
      * Current authenticated user context for conditional capture targeting.
      */
     user?: {
@@ -158,6 +163,23 @@ interface HaloReplayOptions {
         user?: any;
         [key: string]: any;
     }) => boolean;
+}
+interface FeedbackModalOptions {
+    title?: string;
+    subtitle?: string;
+    namePlaceholder?: string;
+    emailPlaceholder?: string;
+    commentsPlaceholder?: string;
+    submitButtonText?: string;
+    cancelButtonText?: string;
+    defaultName?: string;
+    defaultEmail?: string;
+    onSubmit?: (feedback: {
+        name?: string;
+        email?: string;
+        comments: string;
+    }) => void | Promise<void>;
+    onClose?: () => void;
 }
 type ReplayPrivacyState = "CAPTURED" | "MASKED" | "BLOCKED" | "NOT_CAPTURED" | "UNAVAILABLE";
 interface HistoricalDomNode {
@@ -260,6 +282,19 @@ interface ReplayChunkPayload {
     final?: boolean;
 }
 
+declare class HaloFeedbackWidget {
+    private container;
+    private options;
+    private onSubmitHandler;
+    constructor(options: FeedbackModalOptions | undefined, onSubmit: (feedback: {
+        name?: string;
+        email?: string;
+        comments: string;
+    }) => Promise<void>);
+    open(): void;
+    close(): void;
+}
+
 declare class HaloReplay {
     private options;
     private stopFn;
@@ -312,6 +347,12 @@ declare class HaloReplay {
     getRageClickCount(): number;
     getDeadClickCount(): number;
     setIssueId(issueId: string): void;
+    submitFeedback(feedback: {
+        name?: string;
+        email?: string;
+        comments: string;
+    }): Promise<any>;
+    openFeedbackModal(options?: FeedbackModalOptions): HaloFeedbackWidget;
     start(): void;
     private notifyMutationOrEffect;
     private handleEvent;
@@ -375,4 +416,4 @@ declare function isUrlIgnored(url: string, ignorePatterns?: (string | RegExp)[])
  */
 declare function initHaloReplay(options?: HaloReplayOptions): HaloReplay;
 
-export { HaloReplay, type HaloReplayOptions, type HistoricalDomNode, type HistoricalDomSnapshot, type ReplayChunkPayload, type ReplayConsolePayload, type ReplayDeadClickPayload, type ReplayErrorPayload, type ReplayLifecyclePayload, type ReplayNavigationPayload, type ReplayPrivacyOptions, type ReplayPrivacyState, type ReplayRageClickPayload, type ReplayRequestPayload, ReplayRingBuffer, buildMaskerConfig, initHaloReplay, isUrlIgnored, sanitizeUrl };
+export { type FeedbackModalOptions, HaloFeedbackWidget, HaloReplay, type HaloReplayOptions, type HistoricalDomNode, type HistoricalDomSnapshot, type ReplayChunkPayload, type ReplayConsolePayload, type ReplayDeadClickPayload, type ReplayErrorPayload, type ReplayLifecyclePayload, type ReplayNavigationPayload, type ReplayPrivacyOptions, type ReplayPrivacyState, type ReplayRageClickPayload, type ReplayRequestPayload, ReplayRingBuffer, buildMaskerConfig, initHaloReplay, isUrlIgnored, sanitizeUrl };

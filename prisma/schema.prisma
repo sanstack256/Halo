@@ -49,6 +49,7 @@ model Project {
   telemetrySessions   TelemetrySession[]
   monitors            Monitor[]
   investigations      Investigation[]
+  feedbacks           Feedback[]
 
   @@unique([organizationId, slug])
 }
@@ -279,12 +280,32 @@ model ReplaySession {
   chunks          ReplayChunk[]
   issue           Issue?        @relation(fields: [issueId], references: [id])
   project         Project       @relation(fields: [projectId], references: [id])
+  feedbacks       Feedback[]
 
   @@index([projectId, startedAt])
   @@index([projectId, status])
   @@index([issueId])
   @@index([sessionId])
   @@index([expiresAt])
+}
+
+model Feedback {
+  id              String         @id @default(cuid())
+  projectId       String
+  sessionId       String?
+  replaySessionId String?
+  name            String?
+  email           String?
+  comments        String
+  url             String?
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+  project         Project        @relation(fields: [projectId], references: [id])
+  replaySession   ReplaySession? @relation(fields: [replaySessionId], references: [id], onDelete: SetNull)
+
+  @@index([projectId])
+  @@index([sessionId])
+  @@index([replaySessionId])
 }
 
 model ReplayChunk {
