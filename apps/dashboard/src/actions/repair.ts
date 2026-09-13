@@ -240,8 +240,6 @@ export async function createOrGetRepairCase(params: CreateOrGetRepairCaseParams)
         });
     });
 
-    revalidatePath(`/projects/${projectId}/issues/${issueId}`);
-
     return {
         repairCase: persisted!,
         isNew: true,
