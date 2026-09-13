@@ -102,6 +102,84 @@ export interface HaloReplayOptions {
      * Default: true
      */
     captureConsole?: boolean;
+    /**
+     * Detect user frustration rage clicks (>= 3 clicks within 1000ms in tight radius).
+     * Default: true
+     */
+    detectRageClicks?: boolean;
+    /**
+     * Threshold number of rapid clicks required to trigger a rage click event.
+     * Default: 3
+     */
+    rageClickThreshold?: number;
+    /**
+     * Detect dead clicks (clicks on actionable elements that produce zero mutation/request/nav).
+     * Default: true
+     */
+    detectDeadClicks?: boolean;
+    /**
+     * Inactivity duration in ms before a click with zero effects is flagged as dead click.
+     * Default: 2500
+     */
+    deadClickTimeoutMs?: number;
+}
+
+export type ReplayPrivacyState =
+    | "CAPTURED"
+    | "MASKED"
+    | "BLOCKED"
+    | "NOT_CAPTURED"
+    | "UNAVAILABLE";
+
+export interface HistoricalDomNode {
+    tagName: string;
+    id?: string;
+    className?: string;
+    classList: string[];
+    attributes: Record<string, string>;
+    hierarchy: string;
+    childCount: number;
+    childTags: string[];
+    geometry?: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        top: number;
+        left: number;
+    };
+    textContent?: string;
+    privacyState: ReplayPrivacyState;
+    selectorPath?: string;
+}
+
+export interface HistoricalDomSnapshot {
+    timestamp: number;
+    offsetMs: number;
+    rootNodeCount: number;
+    selectedNode?: HistoricalDomNode;
+}
+
+export interface ReplayRageClickPayload {
+    count: number;
+    targetSelector: string;
+    x: number;
+    y: number;
+    durationMs: number;
+    windowStartMs: number;
+    windowEndMs: number;
+}
+
+export interface ReplayDeadClickPayload {
+    targetSelector: string;
+    x: number;
+    y: number;
+    inactiveDurationMs: number;
+}
+
+export interface ReplayLifecyclePayload {
+    event: "visibilitychange" | "pagehide" | "beforeunload" | "focus" | "blur";
+    state?: string;
 }
 
 export interface ReplayNavigationPayload {
@@ -152,6 +230,10 @@ export interface ReplayChunkPayload {
         traceId?: string;
         requestId?: string;
         errorAt?: string;
+        hasRageClicks?: boolean;
+        hasDeadClicks?: boolean;
+        rageClickCount?: number;
+        deadClickCount?: number;
     };
     final?: boolean;
 }

@@ -12,6 +12,12 @@ export type {
     ReplayRequestPayload,
     ReplayConsolePayload,
     ReplayErrorPayload,
+    ReplayRageClickPayload,
+    ReplayDeadClickPayload,
+    ReplayLifecyclePayload,
+    ReplayPrivacyState,
+    HistoricalDomNode,
+    HistoricalDomSnapshot,
 } from "./types";
 
 /**

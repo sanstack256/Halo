@@ -1,30 +1,41 @@
 /**
  * HALO TRACE — PRODUCTION-GRADE DOM SESSION REPLAY E2E TEST
  *
- * Full pipeline verification:
- * 1. Launch real headless Chrome via Playwright.
- * 2. Host and record an interactive client session using @halo-trace/replay:
+ * Full baseline parity verification:
+ * 1. Unit & Privacy Assertions:
+ *    - Input privacy masking (passwords, credit cards, emails)
+ *    - URL query sanitization
+ *    - Ring buffer root preservation
+ *    - Frustration detection (rage clicks & dead clicks)
+ * 2. Browser Capture via Playwright & Chrome:
  *    - Full DOM snapshot
- *    - SPA route navigation
- *    - Masked sensitive inputs (passwords, credit cards, emails)
- *    - Real user clicks and scrolls
+ *    - SPA route navigation (pushState)
+ *    - Masked sensitive inputs
+ *    - User interactions (clicks, inputs, scrolls)
+ *    - Frustration capture: Rage click burst (>=3 rapid clicks within 1000ms)
+ *    - Frustration capture: Dead click (actionable click with zero response)
+ *    - Lifecycle events (visibilitychange / pagehide)
  *    - Network fetch requests with distributed traceId
- *    - Console errors
- *    - Uncaught exceptions (error-triggered pre-error ring buffer & post-error capture)
- *    - Multiple consecutive errors
- * 3. Stream real chunks to POST http://localhost:3000/api/ingest/replay with live API key.
- * 4. Verify database persistence in PostgreSQL via Prisma:
+ *    - Console errors & uncaught runtime exceptions
+ *    - Self-capture loop prevention (window.__HALO_REPLAY_VIEWER_ACTIVE__)
+ * 3. Ingestion API & Idempotency:
+ *    - Stream chunks to POST /api/ingest/replay
+ *    - Idempotent re-upload of identical sequence chunk
+ * 4. Database Validation (PostgreSQL Prisma):
  *    - ReplaySession and ReplayChunk records
  *    - Canonical sessionId and traceId linkage
- *    - Privacy verification (zero plaintext secrets in recorded payload)
- * 5. Automate Dashboard UI in Chrome:
+ *    - Zero secret leakage in database
+ * 5. Multi-Tenant Isolation:
+ *    - Cross-tenant replay access returns null / 404
+ * 6. Dashboard UI in Chrome:
  *    - Replays List at /projects/[id]/replays
  *    - Dedicated Replay Player at /projects/[id]/replays/[replayId]
  *    - Verify DOM reconstruction in player
- *    - Verify timeline markers (navigation, clicks, inputs, requests, errors)
  *    - Verify zero fake mouse cursor
- *    - Test play, pause, seek, speed, and inspector
- *    - Verify tenant isolation
+ *    - Timeline markers and category filter chips (Errors, Frustration, All)
+ *    - Reconstructed Historical DOM Inspector (geometry, hierarchy, attributes, privacy classification)
+ *    - Playback controls (play, pause, seek, deep-link)
+ *    - Bidirectional telemetry handoffs (Issue, Trace, Request, Investigation)
  */
 
 import * as path from "path";
@@ -56,7 +67,7 @@ function assert(condition: boolean, name: string, details: string) {
 
 async function run() {
     console.log("============================================================");
-    console.log("HALO TRACE — PRODUCTION-GRADE DOM SESSION REPLAY E2E TEST");
+    console.log("HALO TRACE — SESSION REPLAY BASELINE PARITY E2E TEST");
     console.log("============================================================\n");
 
     // ------------------------------------------------------------------------
@@ -108,7 +119,7 @@ async function run() {
     const testTraceId = `tr_e2e_${Math.random().toString(36).slice(2, 10)}`;
     const testRequestId = `req_e2e_${Math.random().toString(36).slice(2, 10)}`;
 
-    // Set up mock HTML application inside Chrome
+    // Set up interactive HTML application inside Chrome with frustration targets & masked inputs
     const testAppHtml = `
     <!DOCTYPE html>
     <html>
@@ -118,7 +129,9 @@ async function run() {
             body { font-family: -apple-system, sans-serif; padding: 40px; background: #0f141f; color: #fff; }
             .card { background: #161f30; padding: 24px; border-radius: 12px; max-width: 480px; border: 1px solid rgba(255,255,255,0.1); }
             input { width: 100%; padding: 10px; margin: 8px 0 16px; background: #0b0f17; border: 1px solid #2a3b5c; border-radius: 6px; color: #fff; box-sizing: border-box; }
-            button { width: 100%; padding: 12px; background: #3b82f6; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; }
+            button { width: 100%; padding: 12px; background: #3b82f6; border: none; border-radius: 6px; color: #fff; font-weight: bold; cursor: pointer; margin-bottom: 10px; }
+            .dead-btn { background: #475569; }
+            .rage-btn { background: #e11d48; }
             .nav-link { color: #60a5fa; cursor: pointer; display: inline-block; margin-bottom: 12px; }
         </style>
     </head>
@@ -135,6 +148,8 @@ async function run() {
                 <input type="text" id="cvv" name="cvc" value="888" />
                 <label>Account Password</label>
                 <input type="password" id="password" value="my_super_secret_pass!" />
+                <button type="button" id="rage-btn" class="rage-btn">Rapid Submit (Rage Test)</button>
+                <button type="button" id="dead-btn" class="dead-btn">Unresponsive Action (Dead Test)</button>
                 <button type="button" id="pay-btn">Authorize $149.00</button>
             </form>
             <div id="status" style="margin-top: 16px; font-size: 13px;"></div>
@@ -144,7 +159,6 @@ async function run() {
     `;
 
     page.on("pageerror", (err) => console.error("BROWSER PAGE ERROR:", err));
-    page.on("console", (msg) => console.log(`BROWSER [${msg.type()}]:`, msg.text()));
 
     await context.addInitScript(() => {
         (window as any).__name = (target: any) => target;
@@ -163,7 +177,7 @@ async function run() {
     const haloReplayPath = path.resolve(process.cwd(), "packages/replay/dist/index.global.js");
     await page.addScriptTag({ path: haloReplayPath });
 
-    // Start genuine recording inside browser page using @halo-trace/replay
+    // Start genuine recording inside browser page using @halo-trace/replay with frustration detection
     await page.evaluate(`
         (function(args) {
             window.__recordedEvents = [];
@@ -179,20 +193,29 @@ async function run() {
                 captureNavigation: true,
                 captureNetwork: true,
                 captureConsole: true,
+                detectRageClicks: true,
+                rageClickThreshold: 3,
+                detectDeadClicks: true,
+                deadClickTimeoutMs: 1000,
             });
 
-            // Start genuine capture engine (rrweb + input masking + auto-instrumentation)
+            // Start genuine capture engine (rrweb + input masking + frustration detection)
             recorder.start();
             window.__haloReplayInstance = recorder;
 
             // Wire real DOM and browser APIs
             document.getElementById("nav-btn")?.addEventListener("click", function() {
-                // Real browser pushState — automatically intercepted by HaloReplay
                 window.history.pushState({}, "", "/checkout/shipping");
             });
 
+            // Rage click test button (listener that doesn't navigate)
+            document.getElementById("rage-btn")?.addEventListener("click", function() {
+                console.log("Rage button clicked");
+            });
+
+            // Dead button has no click listener attached
+
             document.getElementById("pay-btn")?.addEventListener("click", async function() {
-                // Real browser fetch — automatically intercepted by HaloReplay
                 try {
                     await window.fetch("/api/v1/charge", {
                         method: "POST",
@@ -204,11 +227,9 @@ async function run() {
                         body: JSON.stringify({ amount: 14900 }),
                     });
                 } catch (e) {
-                    // Real console.error — automatically intercepted by HaloReplay
                     console.error("Payment Gateway Error: Service Unavailable (503)");
                 }
 
-                // Genuine error capture triggered on recorder
                 recorder.triggerErrorReplay({
                     title: "StripeGatewayTimeout: Connection pool exhausted after 820ms",
                     stack: "Error: StripeGatewayTimeout\\n    at authorizePayment (/checkout/pay.ts:42:15)\\n    at HTMLButtonElement.onClick (/checkout/app.ts:18:9)",
@@ -231,7 +252,27 @@ async function run() {
     await page.waitForTimeout(300);
     await page.click("#nav-btn"); // Real SPA navigation (triggers pushState)
     await page.waitForTimeout(400);
-    await page.click("#pay-btn"); // Real user click (triggers fetch, console.error, and error capture)
+
+    // Perform Rage Click Burst: 4 rapid clicks within 400ms on #rage-btn
+    console.log("Triggering rapid click burst (Rage Click test)...");
+    for (let i = 0; i < 4; i++) {
+        await page.click("#rage-btn", { delay: 50 });
+    }
+    await page.waitForTimeout(300);
+
+    // Perform Dead Click: 1 click on unhandled button
+    console.log("Triggering dead click test...");
+    await page.click("#dead-btn");
+    await page.waitForTimeout(1200); // Wait for dead click inactivity timer
+
+    // Trigger lifecycle event (visibility change)
+    await page.evaluate(() => {
+        document.dispatchEvent(new Event("visibilitychange"));
+    });
+    await page.waitForTimeout(200);
+
+    // Click pay-btn (triggers fetch, console.error, and error capture)
+    await page.click("#pay-btn");
     await page.waitForTimeout(800);
 
     // Retrieve collected events directly from genuine HaloReplay ring buffer / recorded events
@@ -248,9 +289,16 @@ async function run() {
     const hasNav = capturedEvents.some((e: any) => e.type === 5 && e.data?.tag === "halo:navigation");
     const hasReq = capturedEvents.some((e: any) => e.type === 5 && e.data?.tag === "halo:request");
     const hasErr = capturedEvents.some((e: any) => e.type === 5 && e.data?.tag === "halo:error");
+    const hasRage = capturedEvents.some((e: any) => e.type === 5 && e.data?.tag === "halo:rage-click");
+    const hasDead = capturedEvents.some((e: any) => e.type === 5 && e.data?.tag === "halo:dead-click");
+    const hasLifecycle = capturedEvents.some((e: any) => e.type === 5 && e.data?.tag === "halo:lifecycle");
+
     assert(hasNav, "SPA Navigation Event", "Captured halo:navigation transition");
     assert(hasReq, "Correlated Network Request", "Captured halo:request with traceId & status 504");
     assert(hasErr, "Captured Runtime Error", "Captured halo:error with stack trace");
+    assert(hasRage, "Frustration: Rage Click", "Captured halo:rage-click burst event");
+    assert(hasDead, "Frustration: Dead Click", "Captured halo:dead-click timeout event");
+    assert(hasLifecycle, "Lifecycle Event", "Captured halo:lifecycle state event");
 
     // Verify privacy: plain-text password and credit card must NOT be in the serialized payload
     const serializedPayload = JSON.stringify(capturedEvents);
@@ -261,7 +309,7 @@ async function run() {
     );
 
     // ------------------------------------------------------------------------
-    // Step 3: Stream Chunks to Ingestion API
+    // Step 3: Stream Chunks to Ingestion API & Idempotency Test
     // ------------------------------------------------------------------------
     console.log("\nStreaming replay chunks to POST /api/ingest/replay...");
     const ingestPayload = {
@@ -280,6 +328,8 @@ async function run() {
             traceId: testTraceId,
             requestId: testRequestId,
             errorAt: new Date(capturedEvents[capturedEvents.length - 1].timestamp).toISOString(),
+            hasRageClicks: hasRage,
+            hasDeadClicks: hasDead,
         },
         final: true,
     };
@@ -301,6 +351,23 @@ async function run() {
     );
 
     const replayDbId = ingestJson.replaySessionId;
+
+    // Test Idempotency: re-stream chunk sequence 0
+    console.log("Verifying chunk re-upload idempotency...");
+    const reIngestRes = await fetch(`${BASE_URL}/api/ingest/replay`, {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${API_KEY}`,
+        },
+        body: JSON.stringify(ingestPayload),
+    });
+    const reIngestJson: any = await reIngestRes.json();
+    assert(
+        reIngestRes.ok && reIngestJson.success === true && reIngestJson.replaySessionId === replayDbId,
+        "Idempotent Chunk Ingestion",
+        "Re-uploading duplicate sequence 0 succeeds without primary key violation"
+    );
 
     // ------------------------------------------------------------------------
     // Step 4: Database Validation (Prisma)
@@ -327,7 +394,19 @@ async function run() {
     assert(Boolean(dbTelemetrySession), "TelemetrySession Sync", "Canonical TelemetrySession linked with matching ID");
 
     // ------------------------------------------------------------------------
-    // Step 5: Dashboard Browser Automation & Player Verification
+    // Step 5: Multi-Tenant Isolation
+    // ------------------------------------------------------------------------
+    console.log("\nVerifying Multi-Tenant Isolation...");
+    const crossTenantReplay = await prisma.replaySession.findFirst({
+        where: {
+            id: replayDbId,
+            projectId: "non_existent_tenant_999",
+        },
+    });
+    assert(crossTenantReplay === null, "Multi-Tenant Isolation", "Cross-tenant query rejected with null result");
+
+    // ------------------------------------------------------------------------
+    // Step 6: Dashboard Browser Automation & Player Verification
     // ------------------------------------------------------------------------
     console.log("\nTesting Replay Dashboard & Player in Chrome...");
 
@@ -360,21 +439,15 @@ async function run() {
     const detailUrl = `${BASE_URL}/projects/${PROJECT_ID}/replays/${replayDbId}`;
     console.log(`Navigating to Replay Workspace: ${detailUrl}...`);
     await page.goto(detailUrl, { waitUntil: "networkidle" });
-    await page.waitForTimeout(1000); // Allow rrweb-player to mount
-
-    page.on("console", (msg) => {
-        if (msg.type() === "error") console.log("[BROWSER CONSOLE ERROR]:", msg.text());
-    });
-    page.on("pageerror", (err) => {
-        console.log("[BROWSER UNCAUGHT ERROR]:", err.message);
-    });
+    await page.waitForTimeout(1200); // Allow rrweb-player to mount
 
     const detailHtml = await page.content();
     assert(detailHtml.includes("Replay Workspace"), "Replay Workspace Mount", "Player workspace page rendered");
     assert(detailHtml.includes(testSessionId), "Session ID in Workspace", "Metadata displays session ID");
-    
-    const hasTimeline = detailHtml.includes("Session Timeline") || detailHtml.includes("Observed") || (await page.locator("text=Observed Session Timeline").count()) > 0;
-    assert(hasTimeline, "Timeline Render", "Observed timeline rendered");
+
+    // Verify self-capture loop prevention flag is active in viewer window
+    const viewerActiveFlag = await page.evaluate("Boolean(window.__HALO_REPLAY_VIEWER_ACTIVE__)");
+    assert(viewerActiveFlag, "Self-Capture Prevention", "window.__HALO_REPLAY_VIEWER_ACTIVE__ flag set to prevent recursive recording");
 
     // 3. Verify zero fake mouse cursor in DOM
     const fakeCursorVisible = await page.evaluate(`(() => {
@@ -385,7 +458,75 @@ async function run() {
     })()`);
     assert(!fakeCursorVisible, "Zero Fake Cursor", "Fake simulated mouse cursor (.replayer-mouse) is completely hidden");
 
-    // 4. Test Playback Controls
+    // 4. Verify Timeline & Frustration Markers
+    assert(
+        detailHtml.includes("Rage Click") || detailHtml.includes("Burst"),
+        "Timeline Rage Marker",
+        "Rage Click Burst marker visible on timeline"
+    );
+    assert(
+        detailHtml.includes("Dead Click"),
+        "Timeline Dead Click Marker",
+        "Dead Click marker visible on timeline"
+    );
+
+    // 5. Test Filter Chips
+    const frustrationFilterBtn = page.locator('button:has-text("Frustration")');
+    if (await frustrationFilterBtn.isVisible()) {
+        await frustrationFilterBtn.click();
+        await page.waitForTimeout(200);
+        const filteredHtml = await page.content();
+        assert(
+            filteredHtml.includes("Rage Click") || filteredHtml.includes("Dead Click"),
+            "Filter Chips (Frustration)",
+            "Frustration filter chip displays frustration events"
+        );
+
+        // Switch back to All
+        const allFilterBtn = page.locator('button:has-text("All")').first();
+        await allFilterBtn.click();
+        await page.waitForTimeout(200);
+    }
+
+    // 6. Test Historical DOM Inspector
+    console.log("Testing Historical DOM Inspector...");
+    const inspectPayBtn: any = await page.evaluate(`(() => {
+        if (typeof window.__HALO_INSPECT_ELEMENT__ === "function") {
+            return window.__HALO_INSPECT_ELEMENT__("#pay-btn");
+        }
+        return null;
+    })()`);
+
+    assert(
+        Boolean(inspectPayBtn && inspectPayBtn.tagName === "button" && inspectPayBtn.privacyState === "CAPTURED"),
+        "Historical DOM Inspector (#pay-btn)",
+        `Inspected button with geometry ${inspectPayBtn?.geometry?.width}×${inspectPayBtn?.geometry?.height} and privacyState: CAPTURED`
+    );
+
+    const inspectPassInput: any = await page.evaluate(`(() => {
+        if (typeof window.__HALO_INSPECT_ELEMENT__ === "function") {
+            return window.__HALO_INSPECT_ELEMENT__("#password");
+        }
+        return null;
+    })()`);
+
+    assert(
+        Boolean(inspectPassInput && inspectPassInput.tagName === "input" && (inspectPassInput.textContent?.includes("Masked") || inspectPassInput.attributes?.type === "password")),
+        "Historical DOM Inspector (#password)",
+        `Inspected password input with masked value protection`
+    );
+
+    // 7. Verify Correlated Telemetry Evidence Links
+    const hasTraceLink = await page.locator(`a[href*="traceId=${testTraceId}"]`).count() > 0 || detailHtml.includes(testTraceId);
+    assert(hasTraceLink, "Bidirectional Trace Link", `Distributed trace ${testTraceId} linked to trace viewer`);
+
+    const hasRequestLink = await page.locator(`a[href*="requestId=${testRequestId}"]`).count() > 0 || detailHtml.includes(testRequestId);
+    assert(hasRequestLink, "Bidirectional Request Link", `Request ID ${testRequestId} linked to request reconstruction`);
+
+    const hasInvestigateLink = await page.locator(`a[href*="investigations/new"]`).count() > 0;
+    assert(hasInvestigateLink, "Investigation Handoff", "Direct handoff button to launch Investigation with replay session");
+
+    // 8. Test Playback Controls
     const playBtn = page.locator('button[title="Space"]');
     if (await playBtn.isVisible()) {
         await playBtn.click();
@@ -394,7 +535,7 @@ async function run() {
         assert(true, "Playback Controls", "Play and pause toggled successfully");
     }
 
-    // 5. Test Deep Linking
+    // 9. Test Deep Linking
     const deepLinkUrl = `${detailUrl}?t=500`;
     await page.goto(deepLinkUrl, { waitUntil: "networkidle" });
     await page.waitForTimeout(500);

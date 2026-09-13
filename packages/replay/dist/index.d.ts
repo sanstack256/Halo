@@ -119,6 +119,73 @@ interface HaloReplayOptions {
      * Default: true
      */
     captureConsole?: boolean;
+    /**
+     * Detect user frustration rage clicks (>= 3 clicks within 1000ms in tight radius).
+     * Default: true
+     */
+    detectRageClicks?: boolean;
+    /**
+     * Threshold number of rapid clicks required to trigger a rage click event.
+     * Default: 3
+     */
+    rageClickThreshold?: number;
+    /**
+     * Detect dead clicks (clicks on actionable elements that produce zero mutation/request/nav).
+     * Default: true
+     */
+    detectDeadClicks?: boolean;
+    /**
+     * Inactivity duration in ms before a click with zero effects is flagged as dead click.
+     * Default: 2500
+     */
+    deadClickTimeoutMs?: number;
+}
+type ReplayPrivacyState = "CAPTURED" | "MASKED" | "BLOCKED" | "NOT_CAPTURED" | "UNAVAILABLE";
+interface HistoricalDomNode {
+    tagName: string;
+    id?: string;
+    className?: string;
+    classList: string[];
+    attributes: Record<string, string>;
+    hierarchy: string;
+    childCount: number;
+    childTags: string[];
+    geometry?: {
+        x: number;
+        y: number;
+        width: number;
+        height: number;
+        top: number;
+        left: number;
+    };
+    textContent?: string;
+    privacyState: ReplayPrivacyState;
+    selectorPath?: string;
+}
+interface HistoricalDomSnapshot {
+    timestamp: number;
+    offsetMs: number;
+    rootNodeCount: number;
+    selectedNode?: HistoricalDomNode;
+}
+interface ReplayRageClickPayload {
+    count: number;
+    targetSelector: string;
+    x: number;
+    y: number;
+    durationMs: number;
+    windowStartMs: number;
+    windowEndMs: number;
+}
+interface ReplayDeadClickPayload {
+    targetSelector: string;
+    x: number;
+    y: number;
+    inactiveDurationMs: number;
+}
+interface ReplayLifecyclePayload {
+    event: "visibilitychange" | "pagehide" | "beforeunload" | "focus" | "blur";
+    state?: string;
 }
 interface ReplayNavigationPayload {
     from?: string;
@@ -164,6 +231,10 @@ interface ReplayChunkPayload {
         traceId?: string;
         requestId?: string;
         errorAt?: string;
+        hasRageClicks?: boolean;
+        hasDeadClicks?: boolean;
+        rageClickCount?: number;
+        deadClickCount?: number;
     };
     final?: boolean;
 }
@@ -186,14 +257,31 @@ declare class HaloReplay {
     private originalConsoleError;
     private currentUrl;
     private recordedEvents;
+    private recentClicks;
+    private lastRageEmitTime;
+    private pendingDeadClicks;
+    private deadClickIdCounter;
+    private hasRageClicks;
+    private hasDeadClicks;
+    private rageClickCount;
+    private deadClickCount;
+    private clickListener;
+    private visibilityListener;
+    private pagehideListener;
+    private beforeunloadListener;
     constructor(options?: HaloReplayOptions);
     private generateSessionId;
     getSessionId(): string;
     getRingBuffer(): ReplayRingBuffer;
     getBufferEvents(): eventWithTime[];
     getRecordedEvents(): eventWithTime[];
+    getHasRageClicks(): boolean;
+    getHasDeadClicks(): boolean;
+    getRageClickCount(): number;
+    getDeadClickCount(): number;
     setIssueId(issueId: string): void;
     start(): void;
+    private notifyMutationOrEffect;
     private handleEvent;
     /**
      * Records a custom event into the rrweb stream and timeline
@@ -214,6 +302,8 @@ declare class HaloReplay {
         traceId?: string;
     }): void;
     flushAndConclude(): void;
+    private setupFrustrationInstrumentation;
+    private setupLifecycleInstrumentation;
     stop(): void;
 }
 
@@ -253,4 +343,4 @@ declare function isUrlIgnored(url: string, ignorePatterns?: (string | RegExp)[])
  */
 declare function initHaloReplay(options?: HaloReplayOptions): HaloReplay;
 
-export { HaloReplay, type HaloReplayOptions, type ReplayChunkPayload, type ReplayConsolePayload, type ReplayErrorPayload, type ReplayNavigationPayload, type ReplayPrivacyOptions, type ReplayRequestPayload, ReplayRingBuffer, buildMaskerConfig, initHaloReplay, isUrlIgnored, sanitizeUrl };
+export { HaloReplay, type HaloReplayOptions, type HistoricalDomNode, type HistoricalDomSnapshot, type ReplayChunkPayload, type ReplayConsolePayload, type ReplayDeadClickPayload, type ReplayErrorPayload, type ReplayLifecyclePayload, type ReplayNavigationPayload, type ReplayPrivacyOptions, type ReplayPrivacyState, type ReplayRageClickPayload, type ReplayRequestPayload, ReplayRingBuffer, buildMaskerConfig, initHaloReplay, isUrlIgnored, sanitizeUrl };

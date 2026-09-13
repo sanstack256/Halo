@@ -13059,6 +13059,19 @@ var HaloReplayBundle = (() => {
       this.originalConsoleError = null;
       this.currentUrl = "";
       this.recordedEvents = [];
+      // Frustration signals & lifecycle instrumentation
+      this.recentClicks = [];
+      this.lastRageEmitTime = 0;
+      this.pendingDeadClicks = /* @__PURE__ */ new Map();
+      this.deadClickIdCounter = 0;
+      this.hasRageClicks = false;
+      this.hasDeadClicks = false;
+      this.rageClickCount = 0;
+      this.deadClickCount = 0;
+      this.clickListener = null;
+      this.visibilityListener = null;
+      this.pagehideListener = null;
+      this.beforeunloadListener = null;
       this.options = {
         endpoint: options.endpoint || "/api",
         samplingRate: options.samplingRate ?? 1,
@@ -13071,6 +13084,10 @@ var HaloReplayBundle = (() => {
         captureNavigation: options.captureNavigation ?? true,
         captureNetwork: options.captureNetwork ?? true,
         captureConsole: options.captureConsole ?? true,
+        detectRageClicks: options.detectRageClicks ?? true,
+        rageClickThreshold: options.rageClickThreshold ?? 3,
+        detectDeadClicks: options.detectDeadClicks ?? true,
+        deadClickTimeoutMs: options.deadClickTimeoutMs ?? 2500,
         ...options
       };
       let canonicalId = options.sessionId;
@@ -13126,11 +13143,27 @@ var HaloReplayBundle = (() => {
     getRecordedEvents() {
       return [...this.recordedEvents];
     }
+    getHasRageClicks() {
+      return this.hasRageClicks;
+    }
+    getHasDeadClicks() {
+      return this.hasDeadClicks;
+    }
+    getRageClickCount() {
+      return this.rageClickCount;
+    }
+    getDeadClickCount() {
+      return this.deadClickCount;
+    }
     setIssueId(issueId) {
       this.uploader.setIssueId(issueId);
     }
     start() {
       if (typeof window === "undefined" || typeof document === "undefined") {
+        return;
+      }
+      if (window.__HALO_REPLAY_VIEWER_ACTIVE__ || document.querySelector("[data-halo-replay-player]") || /(\/projects\/[^/]+\/replays\/[^/]+)/.test(window.location.pathname)) {
+        console.warn("[Halo Replay] Recording disabled inside Halo Replay viewer to prevent recursive capture.");
         return;
       }
       if (isUrlIgnored(window.location.href, this.options.privacy?.ignoreUrls)) {
@@ -13162,6 +13195,10 @@ var HaloReplayBundle = (() => {
         if (this.options.captureConsole) {
           this.setupConsoleInstrumentation();
         }
+        if (this.options.detectRageClicks !== false || this.options.detectDeadClicks !== false) {
+          this.setupFrustrationInstrumentation();
+        }
+        this.setupLifecycleInstrumentation();
         const maxDurationMs = (this.options.maxSessionDurationMinutes ?? 60) * 60 * 1e3;
         this.maxSessionTimeout = setTimeout(() => {
           this.stop();
@@ -13169,19 +13206,29 @@ var HaloReplayBundle = (() => {
         if (this.options.errorTriggered) {
           this.setupErrorListeners();
         }
-        if (typeof window !== "undefined") {
-          window.addEventListener("beforeunload", () => {
-            this.flushAndConclude();
-          });
-        }
       } catch (err) {
         console.error("[Halo Replay] Failed to start recording:", err);
+      }
+    }
+    notifyMutationOrEffect() {
+      if (this.pendingDeadClicks.size === 0) return;
+      for (const [id, item] of this.pendingDeadClicks.entries()) {
+        clearTimeout(item.timer);
+        this.pendingDeadClicks.delete(id);
       }
     }
     handleEvent(event) {
       this.recordedEvents.push(event);
       if (this.recordedEvents.length > (this.options.maxBufferEvents ?? 5e3)) {
         this.recordedEvents.shift();
+      }
+      if (event.type === 3) {
+        const src = event.data?.source;
+        if (src === 0 || src === 5) {
+          this.notifyMutationOrEffect();
+        }
+      } else if (event.type === 5 && event.data?.tag !== "halo:dead-click" && event.data?.tag !== "halo:rage-click" && event.data?.tag !== "halo:lifecycle") {
+        this.notifyMutationOrEffect();
       }
       if (this.isStreaming || this.isSampled && !this.options.errorTriggered) {
         this.uploader.addEvents([event]);
@@ -13332,6 +13379,10 @@ var HaloReplayBundle = (() => {
       }
       this.uploader.flush(false, {
         errorAt: errorTimestamp,
+        hasRageClicks: this.hasRageClicks,
+        hasDeadClicks: this.hasDeadClicks,
+        rageClickCount: this.rageClickCount,
+        deadClickCount: this.deadClickCount,
         ...errorMeta
       });
       if (this.postErrorTimeout) {
@@ -13343,7 +13394,102 @@ var HaloReplayBundle = (() => {
       }, postDurationMs);
     }
     flushAndConclude() {
-      this.uploader.flush(true);
+      this.uploader.flush(true, {
+        hasRageClicks: this.hasRageClicks,
+        hasDeadClicks: this.hasDeadClicks,
+        rageClickCount: this.rageClickCount,
+        deadClickCount: this.deadClickCount
+      });
+    }
+    setupFrustrationInstrumentation() {
+      if (typeof window === "undefined" || typeof document === "undefined") return;
+      this.clickListener = (e) => {
+        const now = Date.now();
+        const x = e.clientX;
+        const y = e.clientY;
+        const target = e.target;
+        const targetSelector = getElementSelector(target);
+        if (this.options.detectRageClicks !== false) {
+          this.recentClicks = this.recentClicks.filter((c) => now - c.time <= 1e3);
+          this.recentClicks.push({ time: now, x, y, selector: targetSelector });
+          const threshold = this.options.rageClickThreshold ?? 3;
+          const cluster = this.recentClicks.filter(
+            (c) => c.selector === targetSelector || Math.hypot(c.x - x, c.y - y) <= 35
+          );
+          if (cluster.length >= threshold && now - this.lastRageEmitTime > 1e3) {
+            this.lastRageEmitTime = now;
+            this.hasRageClicks = true;
+            this.rageClickCount++;
+            this.recordCustomEvent("halo:rage-click", {
+              count: cluster.length,
+              targetSelector,
+              x,
+              y,
+              durationMs: now - cluster[0].time,
+              windowStartMs: cluster[0].time,
+              windowEndMs: now
+            });
+          }
+        }
+        if (this.options.detectDeadClicks !== false && target && target instanceof HTMLElement) {
+          const isActionable = target.matches(
+            "button, button *, a, a *, input, select, textarea, [role='button'], [role='tab'], [role='menuitem'], [onclick], .btn, .button"
+          ) || typeof window.getComputedStyle === "function" && window.getComputedStyle(target).cursor === "pointer";
+          if (isActionable) {
+            const clickId = ++this.deadClickIdCounter;
+            const timeoutMs = this.options.deadClickTimeoutMs ?? 2500;
+            const timer = setTimeout(() => {
+              if (this.pendingDeadClicks.has(clickId)) {
+                this.pendingDeadClicks.delete(clickId);
+                this.hasDeadClicks = true;
+                this.deadClickCount++;
+                this.recordCustomEvent("halo:dead-click", {
+                  targetSelector,
+                  x,
+                  y,
+                  inactiveDurationMs: timeoutMs
+                });
+              }
+            }, timeoutMs);
+            this.pendingDeadClicks.set(clickId, { timer, selector: targetSelector, x, y });
+          }
+        }
+      };
+      window.addEventListener("click", this.clickListener, { capture: true, passive: true });
+    }
+    setupLifecycleInstrumentation() {
+      if (typeof window === "undefined" || typeof document === "undefined") return;
+      this.visibilityListener = () => {
+        const state = document.visibilityState;
+        this.recordCustomEvent("halo:lifecycle", {
+          event: "visibilitychange",
+          state
+        });
+        if (state === "hidden") {
+          this.uploader.flush(false, {
+            hasRageClicks: this.hasRageClicks,
+            hasDeadClicks: this.hasDeadClicks,
+            rageClickCount: this.rageClickCount,
+            deadClickCount: this.deadClickCount
+          });
+        }
+      };
+      document.addEventListener("visibilitychange", this.visibilityListener);
+      this.pagehideListener = (e) => {
+        this.recordCustomEvent("halo:lifecycle", {
+          event: "pagehide",
+          state: e.persisted ? "persisted" : "terminated"
+        });
+        this.flushAndConclude();
+      };
+      window.addEventListener("pagehide", this.pagehideListener);
+      this.beforeunloadListener = () => {
+        this.recordCustomEvent("halo:lifecycle", {
+          event: "beforeunload"
+        });
+        this.flushAndConclude();
+      };
+      window.addEventListener("beforeunload", this.beforeunloadListener);
     }
     stop() {
       if (this.stopFn) {
@@ -13352,6 +13498,26 @@ var HaloReplayBundle = (() => {
       }
       if (this.postErrorTimeout) clearTimeout(this.postErrorTimeout);
       if (this.maxSessionTimeout) clearTimeout(this.maxSessionTimeout);
+      if (this.clickListener && typeof window !== "undefined") {
+        window.removeEventListener("click", this.clickListener, { capture: true });
+        this.clickListener = null;
+      }
+      if (this.visibilityListener && typeof document !== "undefined") {
+        document.removeEventListener("visibilitychange", this.visibilityListener);
+        this.visibilityListener = null;
+      }
+      if (this.pagehideListener && typeof window !== "undefined") {
+        window.removeEventListener("pagehide", this.pagehideListener);
+        this.pagehideListener = null;
+      }
+      if (this.beforeunloadListener && typeof window !== "undefined") {
+        window.removeEventListener("beforeunload", this.beforeunloadListener);
+        this.beforeunloadListener = null;
+      }
+      for (const [id, item] of this.pendingDeadClicks.entries()) {
+        clearTimeout(item.timer);
+      }
+      this.pendingDeadClicks.clear();
       if (this.originalPushState && typeof window !== "undefined" && window.history) {
         window.history.pushState = this.originalPushState;
       }
@@ -13367,6 +13533,22 @@ var HaloReplayBundle = (() => {
       this.flushAndConclude();
     }
   };
+  function getElementSelector(el) {
+    if (!el || !(el instanceof HTMLElement)) return "unknown";
+    if (el.id) return `#${el.id}`;
+    let selector = el.tagName.toLowerCase();
+    if (el.className && typeof el.className === "string") {
+      const firstClass = el.className.trim().split(/\s+/)[0];
+      if (firstClass && !firstClass.includes(":") && !firstClass.includes("/") && !firstClass.includes("[")) {
+        selector += `.${firstClass}`;
+      }
+    }
+    const name = el.getAttribute("name");
+    if (name) {
+      selector += `[name="${name}"]`;
+    }
+    return selector;
+  }
 
   // src/index.ts
   function initHaloReplay(options = {}) {
