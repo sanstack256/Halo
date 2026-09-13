@@ -1,0 +1,41 @@
+{
+  "name": "@halo-trace/sdk-browser",
+  "version": "1.0.0",
+  "description": "Browser observability, error, HTTP, console, and performance instrumentation for Halo SDK.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@halo-trace/sdk-core": "workspace:*",
+    "@halo-trace/sdk-types": "workspace:*"
+  },
+  "peerDependencies": {
+    "@halo-trace/replay": "workspace:*"
+  },
+  "peerDependenciesMeta": {
+    "@halo-trace/replay": {
+      "optional": true
+    }
+  },
+  "devDependencies": {
+    "@halo-trace/replay": "workspace:*",
+    "tsup": "^8.5.1",
+    "typescript": "^5.0.0"
+  }
+}

@@ -1,122 +1,16 @@
-interface HaloOptions {
-    apiKey: string;
-    /**
-     * Halo backend endpoint base URL (e.g. "https://app.halo.run/api" or "http://localhost:3000/api").
-     * In browser environments, defaults to "/api".
-     * In Node/server environments, defaults to process.env.HALO_ENDPOINT.
-     */
-    endpoint?: string;
-    /**
-     * Automatically install runtime
-     * instrumentation.
-     *
-     * Defaults to true.
-     */
-    autoCapture?: boolean;
-    /**
-     * Automatically instrument fetch().
-     *
-     * Defaults to true.
-     */
-    captureHttp?: boolean;
-    service?: string;
-    environment?: string;
-    release?: string;
-    sessionId?: string;
-    enabled?: boolean;
-    /**
-     * Maximum number of breadcrumbs
-     * kept in memory.
-     */
-    maxBreadcrumbs?: number;
-    /**
-     * URL fragments that should not
-     * be instrumented.
-     */
-    ignoreUrls?: string[];
-    /**
-     * Capture a small allowlist of
-     * safe HTTP headers.
-     *
-     * Sensitive headers are never
-     * captured.
-     */
-    captureHttpHeaders?: boolean;
-}
-type HaloSeverity = "INFO" | "WARNING" | "ERROR" | "FATAL";
-interface HaloUser {
-    id?: string;
-    email?: string;
-    username?: string;
-}
-type HaloTagValue = string | number | boolean;
-interface HaloBreadcrumb {
-    timestamp?: string;
-    category: string;
-    message: string;
-    data?: Record<string, unknown>;
-}
-interface HaloCaptureOptions {
-    type: "ERROR" | "MESSAGE" | "TRACE";
-    title: string;
-    message?: string;
-    severity?: HaloSeverity;
-    timestamp?: string;
-    stack?: string;
-    fingerprint?: string;
-    metadata?: Record<string, unknown>;
-    tags?: Record<string, HaloTagValue>;
-    breadcrumbs?: HaloBreadcrumb[];
-    user?: HaloUser;
-    sessionId?: string;
-    sessionStartedAt?: string;
-    /**
-     * HTTP / distributed tracing
-     * correlation.
-     */
-    requestId?: string;
-    traceId?: string;
-    service?: string;
-    resource?: string;
-    operation?: string;
-    status?: string | number;
-    durationMs?: number;
-}
+import { CoreClient } from '@halo-trace/sdk-core';
+export * from '@halo-trace/sdk-core';
+import { HaloOptions, HaloCaptureOptions, HaloSeverity, HaloTagValue, HaloBreadcrumb, HaloUser, HaloTraceContext } from '@halo-trace/sdk-types';
+export * from '@halo-trace/sdk-types';
 
 declare class Halo {
     private client;
-    private enabled;
-    private service?;
-    private release?;
-    private environment?;
-    private user?;
-    private queue;
-    private tags;
-    private breadcrumbs;
-    private sessionId?;
-    private sessionStartedAt?;
-    private maxBreadcrumbs;
-    private onEventIngested?;
     constructor(options: HaloOptions);
-    startSession(): string;
-    endSession(): void;
-    getSessionId(): string | undefined;
-    setUser(user: HaloUser): void;
-    clearUser(): void;
-    /**
-     * Register a callback that is invoked whenever an event is ingested by the Halo backend.
-     */
-    onEventIngestedCallback(callback: (result: {
-        eventId?: string;
-        issueId?: string;
-    }) => void): void;
-    setTag(key: string, value: HaloTagValue): void;
-    removeTag(key: string): void;
-    addBreadcrumb(breadcrumb: HaloBreadcrumb): void;
-    clearBreadcrumbs(): void;
-    flush(): Promise<void>;
-    captureMessage(message: string): Promise<void>;
-    captureException(error: unknown): Promise<void>;
+    static init(options: HaloOptions): Halo;
+    static getClient(): CoreClient | null;
+    getClientInstance(): CoreClient;
+    captureException(error: unknown, additional?: Partial<HaloCaptureOptions>): any;
+    captureMessage(message: string, severity?: HaloSeverity, additional?: Partial<HaloCaptureOptions>): any;
     capturePerformance(options: {
         title: string;
         durationMs: number;
@@ -125,11 +19,50 @@ declare class Halo {
         status?: string | number;
         service?: string;
         metadata?: Record<string, unknown>;
-        requestId?: string;
-        traceId?: string;
-        tags?: Record<string, string | number | boolean>;
-    }): Promise<void>;
-    capture(event: HaloCaptureOptions): Promise<void>;
+        tags?: Record<string, HaloTagValue>;
+    }): any;
+    addBreadcrumb(breadcrumb: Omit<HaloBreadcrumb, "timestamp"> & {
+        timestamp?: string;
+    }): void;
+    setUser(user: HaloUser): this;
+    clearUser(): this;
+    setTag(key: string, value: HaloTagValue): this;
+    setTags(tags: Record<string, HaloTagValue>): this;
+    setContext(name: string, data: Record<string, unknown>): this;
+    setRelease(release: string): this;
+    setEnvironment(environment: string): this;
+    startSpan(name: string, operation?: string): {
+        spanId: string;
+        parentSpanId: string;
+    };
+    getSessionId(): string;
+    getTraceContext(): HaloTraceContext;
+    get replay(): {
+        start: () => void;
+        stop: () => void;
+        flush: () => void;
+        openFeedbackModal: (options?: any) => any;
+        getSessionId: () => string;
+    };
+    get feedback(): {
+        open: (options?: any) => any;
+    };
+    openFeedbackModal(options?: any): any;
+    flush(): Promise<void>;
+    close(): void;
+    static captureException(error: unknown, additional?: Partial<HaloCaptureOptions>): any;
+    static captureMessage(message: string, severity?: HaloSeverity, additional?: Partial<HaloCaptureOptions>): any;
+    static addBreadcrumb(breadcrumb: Omit<HaloBreadcrumb, "timestamp"> & {
+        timestamp?: string;
+    }): void;
+    static setUser(user: HaloUser): void;
+    static clearUser(): void;
+    static setTag(key: string, value: HaloTagValue): void;
+    static setContext(name: string, data: Record<string, unknown>): void;
+    static getSessionId(): string | undefined;
+    static getTraceContext(): HaloTraceContext | undefined;
+    static flush(): Promise<void>;
+    static close(): void;
 }
 
-export { Halo, type HaloBreadcrumb, type HaloCaptureOptions, type HaloOptions, type HaloSeverity, type HaloTagValue, type HaloUser };
+export { Halo, Halo as default };

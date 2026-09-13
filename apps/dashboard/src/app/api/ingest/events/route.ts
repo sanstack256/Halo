@@ -34,96 +34,131 @@ export async function POST(request: NextRequest) {
         );
     }
 
-    const body = await request.json();
+    let body: any;
+    try {
+        body = await request.json();
+    } catch {
+        return jsonResponse(request, { error: "Invalid JSON payload" }, { status: 400 });
+    }
 
-    const event = await createEvent({
-        type: body.type,
-        severity: body.severity,
+    const rawEvents: any[] = Array.isArray(body?.events) ? body.events : [body];
 
-        title: body.title,
-        message: body.message,
+    if (rawEvents.length === 0) {
+        return jsonResponse(request, { error: "No events provided" }, { status: 400 });
+    }
 
-        stack: body.stack,
-        fingerprint: body.fingerprint,
+    const processedEvents: any[] = [];
 
-        metadata: body.metadata,
-        tags: body.tags,
-        breadcrumbs: body.breadcrumbs,
-        user: body.user,
+    for (const item of rawEvents) {
+        if (!item || typeof item !== "object") continue;
 
-        timestamp: body.timestamp,
+        // Preserve envelope fields in metadata
+        const enrichedMetadata = {
+            ...(item.metadata || {}),
+            ...(item.runtime ? { runtime: item.runtime } : {}),
+            ...(item.platform ? { platform: item.platform } : {}),
+            ...(item.spanId ? { spanId: item.spanId } : {}),
+            ...(item.parentSpanId ? { parentSpanId: item.parentSpanId } : {}),
+            ...(item.evidenceStatus ? { evidenceStatus: item.evidenceStatus } : {}),
+            ...(item.clock ? { clock: item.clock } : {}),
+        };
 
-        sdkName: body.sdkName,
-        sdkVersion: body.sdkVersion,
-        release: body.release,
+        const event = await createEvent({
+            type: item.type || item.eventType || "MESSAGE",
+            severity: item.severity || "INFO",
 
-        service: body.service,
-        resource: body.resource,
-        operation: body.operation,
-        status: body.status,
-        durationMs: body.durationMs,
+            title: item.title || "Event",
+            message: item.message,
 
-        requestId: body.requestId,
-        traceId: body.traceId,
+            stack: item.stack,
+            fingerprint: item.fingerprint,
 
-        sessionId: body.sessionId,
-        sessionStartedAt:
-            body.sessionStartedAt,
+            metadata: enrichedMetadata,
+            tags: item.tags,
+            breadcrumbs: item.breadcrumbs,
+            user: item.user,
 
-        projectId:
-            verified.project.id,
+            timestamp: item.timestamp || new Date().toISOString(),
 
-        environmentId:
-            verified.environment.id,
-    });
+            sdkName: item.sdkName,
+            sdkVersion: item.sdkVersion,
+            release: item.release,
 
-    // Auto-correlate: If an error event with an issueId was created, associate any matching unlinked ReplaySessions
-    if (event.issueId) {
-        try {
-            const { prisma } = await import("@/lib/prisma");
+            service: item.service,
+            resource: item.resource,
+            operation: item.operation,
+            status: item.status,
+            durationMs: item.durationMs,
 
-            if (event.sessionId) {
-                await prisma.replaySession.updateMany({
-                    where: {
-                        sessionId: event.sessionId,
-                        issueId: null,
-                    },
-                    data: {
-                        issueId: event.issueId,
-                        traceId: event.traceId ?? undefined,
-                        requestId: event.requestId ?? undefined,
-                    },
-                });
-            } else {
-                // Link recent unassigned replay in the same project
-                const recentReplay = await prisma.replaySession.findFirst({
-                    where: {
-                        projectId: verified.project.id,
-                        issueId: null,
-                        startedAt: { lte: new Date(event.timestamp.getTime() + 60000) },
-                        createdAt: { gte: new Date(event.timestamp.getTime() - 10 * 60000) },
-                    },
-                    orderBy: { createdAt: "desc" },
-                });
-                if (recentReplay) {
-                    await prisma.replaySession.update({
-                        where: { id: recentReplay.id },
+            requestId: item.requestId,
+            traceId: item.traceId,
+
+            sessionId: item.sessionId,
+            sessionStartedAt: item.sessionStartedAt,
+
+            projectId: verified.project.id,
+            environmentId: verified.environment.id,
+        });
+
+        // Auto-correlate: If an error event with an issueId was created, associate any matching unlinked ReplaySessions
+        if (event.issueId) {
+            try {
+                const { prisma } = await import("@/lib/prisma");
+
+                if (event.sessionId) {
+                    await prisma.replaySession.updateMany({
+                        where: {
+                            sessionId: event.sessionId,
+                            issueId: null,
+                        },
                         data: {
                             issueId: event.issueId,
                             traceId: event.traceId ?? undefined,
                             requestId: event.requestId ?? undefined,
                         },
                     });
+                } else {
+                    // Link recent unassigned replay in the same project
+                    const recentReplay = await prisma.replaySession.findFirst({
+                        where: {
+                            projectId: verified.project.id,
+                            issueId: null,
+                            startedAt: { lte: new Date(event.timestamp.getTime() + 60000) },
+                            createdAt: { gte: new Date(event.timestamp.getTime() - 10 * 60000) },
+                        },
+                        orderBy: { createdAt: "desc" },
+                    });
+                    if (recentReplay) {
+                        await prisma.replaySession.update({
+                            where: { id: recentReplay.id },
+                            data: {
+                                issueId: event.issueId,
+                                traceId: event.traceId ?? undefined,
+                                requestId: event.requestId ?? undefined,
+                            },
+                        });
+                    }
                 }
+            } catch (corrErr) {
+                console.error("[Halo Ingest] Failed to correlate replay with event:", corrErr);
             }
-        } catch (corrErr) {
-            console.error("[Halo Ingest] Failed to correlate replay with event:", corrErr);
         }
+
+        processedEvents.push(event);
     }
 
+    if (Array.isArray(body?.events)) {
+        return jsonResponse(request, {
+            success: true,
+            processedCount: processedEvents.length,
+            eventIds: processedEvents.map((e) => e.id),
+        });
+    }
+
+    const single = processedEvents[0];
     return jsonResponse(request, {
         success: true,
-        eventId: event.id,
-        issueId: event.issueId ?? undefined,
+        eventId: single?.id,
+        issueId: single?.issueId ?? undefined,
     });
 }

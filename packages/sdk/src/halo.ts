@@ -1,517 +1,212 @@
-import { HaloClient } from "./client";
-import {
-    registerGlobalHandlers,
-} from "./capture";
-import { EventQueue } from "./queue";
-
-import {
-    getRequestContext,
-} from "./request-context";
-
-import {
-    registerHttpInstrumentation,
-} from "./http";
-
+import { BrowserClient } from "@halo-trace/sdk-browser";
+import { NodeClient } from "@halo-trace/sdk-node";
+import type { CoreClient } from "@halo-trace/sdk-core";
 import type {
     HaloBreadcrumb,
     HaloCaptureOptions,
     HaloOptions,
+    HaloSeverity,
     HaloTagValue,
+    HaloTraceContext,
     HaloUser,
-} from "./types";
+} from "@halo-trace/sdk-types";
 
-const SDK_NAME =
-    "@halo/sdk";
-
-const SDK_VERSION =
-    "0.1.0";
-
-function createSessionId() {
-    return `hs_${Date.now()}_${Math.random()
-        .toString(36)
-        .slice(2, 12)}`;
-}
+let globalHaloInstance: Halo | null = null;
 
 export class Halo {
-    private client: HaloClient;
+    private client: CoreClient;
 
-    private enabled: boolean;
-
-    private service?: string;
-
-    private release?: string;
-
-    private environment?: string;
-
-    private user?: HaloUser;
-
-    private queue: EventQueue;
-
-    private tags: Record<
-        string,
-        HaloTagValue
-    > = {};
-
-    private breadcrumbs:
-        HaloBreadcrumb[] = [];
-
-    private sessionId?: string;
-
-    private sessionStartedAt?: string;
-
-    private maxBreadcrumbs: number;
-
-    private onEventIngested?: (result: {
-        eventId?: string;
-        issueId?: string;
-    }) => void;
-
-    constructor(
-        options: HaloOptions,
-    ) {
-        let endpoint = options.endpoint;
-
-        if (!endpoint) {
-            if (typeof process !== "undefined" && process.env?.HALO_ENDPOINT) {
-                endpoint = process.env.HALO_ENDPOINT;
-            } else if (typeof window !== "undefined") {
-                endpoint = "/api";
-            } else if (process.env?.NODE_ENV !== "production") {
-                // Development fallback with explicit warning
-                endpoint = "http://localhost:3000/api";
-                console.warn(
-                    "[Halo] No endpoint specified. Defaulting to 'http://localhost:3000/api' for local development. In production, pass 'endpoint' to Halo options or set HALO_ENDPOINT."
-                );
-            } else {
-                throw new Error(
-                    "[Halo] 'endpoint' is required when initializing Halo in a production server/runtime environment. Please provide options.endpoint or set HALO_ENDPOINT."
-                );
-            }
+    constructor(options: HaloOptions) {
+        if (typeof window !== "undefined" && typeof document !== "undefined") {
+            this.client = new BrowserClient(options);
+        } else {
+            this.client = new NodeClient(options);
         }
+        globalHaloInstance = this;
+    }
 
-        endpoint = endpoint.replace(/\/$/, "");
-
-        this.client =
-            new HaloClient(
-                endpoint,
-                options.apiKey,
-            );
-
-        this.queue =
-            new EventQueue(
-                async (
-                    event: unknown,
-                ) => {
-                    const res = await this.client.post(
-                        "/ingest/events",
-                        event,
-                    );
-                    if (res && typeof res === "object") {
-                        const parsed = res as { eventId?: string; issueId?: string };
-                        this.onEventIngested?.(parsed);
-
-                        // If Replay SDK is active on the window, sync the issueId
-                        if (typeof window !== "undefined" && parsed.issueId) {
-                            try {
-                                (window as any).__HALO_REPLAY__?.setIssueId(parsed.issueId);
-                            } catch {
-                                // ignore
-                            }
-                        }
-                    }
-                    return res;
-                },
-            );
-
-        this.enabled =
-            options.enabled ?? true;
-
-        this.service =
-            options.service;
-
-        this.release =
-            options.release;
-
-        this.environment =
-            options.environment;
-
-        this.maxBreadcrumbs =
-            Math.max(
-                1,
-                options.maxBreadcrumbs ??
-                    100,
-            );
-
-        // Sync with browser global session if present, or generate default session for browser
-        const globalSessionId = typeof window !== "undefined" ? (window as any).__HALO_SESSION_ID__ : undefined;
-        this.sessionId = options.sessionId || globalSessionId || (typeof window !== "undefined" ? createSessionId() : undefined);
-
-        if (this.sessionId) {
-            this.sessionStartedAt =
-                new Date().toISOString();
-
-            if (typeof window !== "undefined") {
-                (window as any).__HALO_SESSION_ID__ = this.sessionId;
-                (window as any).__HALO_SDK__ = this;
-            }
+    public static init(options: HaloOptions): Halo {
+        if (globalHaloInstance) {
+            globalHaloInstance.close();
         }
-
-        /*
-         * Level 2 automatic
-         * instrumentation.
-         */
-        if (
-            options.autoCapture !==
-            false
-        ) {
-            registerGlobalHandlers(
-                this,
-            );
-
-            if (
-                options.captureHttp !==
-                false
-            ) {
-                registerHttpInstrumentation(
-                    this,
-                    {
-                        endpoint,
-
-                        captureHeaders:
-                            options.captureHttpHeaders,
-
-                        ignoreUrls:
-                            options.ignoreUrls,
-                    },
-                );
-            }
-        }
+        globalHaloInstance = new Halo(options);
+        return globalHaloInstance;
     }
 
-    startSession() {
-        this.sessionId =
-            createSessionId();
-
-        this.sessionStartedAt =
-            new Date().toISOString();
-
-        if (typeof window !== "undefined") {
-            (window as any).__HALO_SESSION_ID__ = this.sessionId;
-            (window as any).__HALO_SDK__ = this;
-        }
-
-        return this.sessionId;
+    public static getClient(): CoreClient | null {
+        return globalHaloInstance?.client || null;
     }
 
-    endSession() {
-        /*
-         * lastSeenAt is derived from
-         * the final received event.
-         *
-         * No synthetic event is sent.
-         */
+    public getClientInstance(): CoreClient {
+        return this.client;
     }
 
-    getSessionId() {
-        return this.sessionId;
+    public captureException(error: unknown, additional?: Partial<HaloCaptureOptions>): any {
+        return this.client.captureException(error, additional);
     }
 
-    setUser(
-        user: HaloUser,
-    ) {
-        this.user = user;
+    public captureMessage(message: string, severity: HaloSeverity = "INFO", additional?: Partial<HaloCaptureOptions>): any {
+        return this.client.captureMessage(message, severity, additional);
     }
 
-    clearUser() {
-        this.user = undefined;
+    public capturePerformance(options: {
+        title: string;
+        durationMs: number;
+        operation?: string;
+        resource?: string;
+        status?: string | number;
+        service?: string;
+        metadata?: Record<string, unknown>;
+        tags?: Record<string, HaloTagValue>;
+    }): any {
+        return this.client.capturePerformance(options);
     }
 
-    /**
-     * Register a callback that is invoked whenever an event is ingested by the Halo backend.
-     */
-    onEventIngestedCallback(
-        callback: (result: {
-            eventId?: string;
-            issueId?: string;
-        }) => void,
-    ) {
-        this.onEventIngested = callback;
+    public addBreadcrumb(breadcrumb: Omit<HaloBreadcrumb, "timestamp"> & { timestamp?: string }): void {
+        this.client.addBreadcrumb(breadcrumb);
     }
 
-    setTag(
-        key: string,
-        value: HaloTagValue,
-    ) {
-        this.tags[key] = value;
+    public setUser(user: HaloUser): this {
+        this.client.setUser(user);
+        return this;
     }
 
-    removeTag(
-        key: string,
-    ) {
-        delete this.tags[key];
+    public clearUser(): this {
+        this.client.clearUser();
+        return this;
     }
 
-    addBreadcrumb(
-        breadcrumb: HaloBreadcrumb,
-    ) {
-        this.breadcrumbs.push({
-            ...breadcrumb,
-
-            timestamp:
-                breadcrumb.timestamp ??
-                new Date().toISOString(),
-        });
-
-        while (
-            this.breadcrumbs.length >
-            this.maxBreadcrumbs
-        ) {
-            this.breadcrumbs.shift();
-        }
+    public setTag(key: string, value: HaloTagValue): this {
+        this.client.setTag(key, value);
+        return this;
     }
 
-    clearBreadcrumbs() {
-        this.breadcrumbs = [];
+    public setTags(tags: Record<string, HaloTagValue>): this {
+        this.client.setTags(tags);
+        return this;
     }
 
-    async flush() {
-        await this.queue.flush();
+    public setContext(name: string, data: Record<string, unknown>): this {
+        this.client.setContext(name, data);
+        return this;
     }
 
-    async captureMessage(
-        message: string,
-    ) {
-        return this.capture({
-            type: "MESSAGE",
-
-            title: message,
-
-            message,
-
-            severity: "INFO",
-        });
+    public setRelease(release: string): this {
+        this.client.setRelease(release);
+        return this;
     }
 
-    async captureException(
-        error: unknown,
-    ) {
-        const exception =
-            error instanceof Error
-                ? error
-                : new Error(
-                      String(error),
-                  );
-
-        const context =
-            getRequestContext();
-
-        // If Replay SDK is running on the client, trigger error replay recording with trace & request context
-        if (typeof window !== "undefined" && (window as any).__HALO_REPLAY__) {
-            try {
-                (window as any).__HALO_REPLAY__.triggerErrorReplay({
-                    title: exception.message || exception.name,
-                    stack: exception.stack,
-                    traceId: context?.traceId,
-                    requestId: context?.requestId,
-                });
-            } catch {
-                // ignore
-            }
-        }
-
-        return this.capture({
-            type: "ERROR",
-
-            title:
-                exception.message ||
-                exception.name,
-
-            message:
-                exception.message,
-
-            severity: "ERROR",
-
-            stack:
-                exception.stack,
-
-            requestId:
-                context?.requestId,
-
-            traceId:
-                context?.traceId,
-        });
+    public setEnvironment(environment: string): this {
+        this.client.setEnvironment(environment);
+        return this;
     }
 
-    async capturePerformance(
-        options: {
-            title: string;
-
-            durationMs: number;
-
-            operation?: string;
-
-            resource?: string;
-
-            status?: string | number;
-
-            service?: string;
-
-            metadata?: Record<
-                string,
-                unknown
-            >;
-
-            requestId?: string;
-
-            traceId?: string;
-
-            tags?: Record<
-                string,
-                string | number | boolean
-            >;
-        },
-    ) {
-        return this.capture({
-            type: "TRACE",
-
-            title:
-                options.title,
-
-            severity: "INFO",
-
-            durationMs:
-                options.durationMs,
-
-            operation:
-                options.operation,
-
-            resource:
-                options.resource,
-
-            status:
-                options.status,
-
-            service:
-                options.service,
-
-            tags:
-                options.tags,
-
-            metadata:
-                options.metadata,
-
-            requestId:
-                options.requestId,
-
-            traceId:
-                options.traceId,
-        });
+    public startSpan(name: string, operation?: string): { spanId: string; parentSpanId: string } {
+        return this.client.startSpan(name, operation);
     }
 
-    async capture(
-        event: HaloCaptureOptions,
-    ) {
-        if (!this.enabled) {
-            return;
-        }
+    public getSessionId(): string {
+        return this.client.getSessionId();
+    }
 
-        const context =
-            getRequestContext();
+    public getTraceContext(): HaloTraceContext {
+        return this.client.getTraceContext();
+    }
 
-        return this.queue.enqueue({
-            type:
-                event.type,
-
-            title:
-                event.title,
-
-            message:
-                event.message,
-
-            severity:
-                event.severity ??
-                "INFO",
-
-            timestamp:
-                event.timestamp ??
-                new Date().toISOString(),
-
-            stack:
-                event.stack,
-
-            fingerprint:
-                event.fingerprint,
-
-            metadata:
-                event.metadata,
-
-            tags: {
-                ...this.tags,
-
-                ...(event.tags ??
-                    {}),
+    public get replay(): {
+        start: () => void;
+        stop: () => void;
+        flush: () => void;
+        openFeedbackModal: (options?: any) => any;
+        getSessionId: () => string;
+    } {
+        const browserClient = this.client instanceof BrowserClient ? this.client : null;
+        return {
+            start: () => {
+                // If already initialized, bridge starts automatically
             },
+            stop: () => {
+                browserClient?.replay.stop();
+            },
+            flush: () => {
+                browserClient?.replay.flush();
+            },
+            openFeedbackModal: (options?: any) => {
+                return browserClient?.openFeedbackModal(options);
+            },
+            getSessionId: () => {
+                return this.getSessionId();
+            },
+        };
+    }
 
-            breadcrumbs: [
-                ...this.breadcrumbs,
+    public get feedback(): {
+        open: (options?: any) => any;
+    } {
+        return {
+            open: (options?: any) => {
+                return this.openFeedbackModal(options);
+            },
+        };
+    }
 
-                ...(event.breadcrumbs ??
-                    []),
-            ],
+    public openFeedbackModal(options?: any): any {
+        if (this.client instanceof BrowserClient) {
+            return this.client.openFeedbackModal(options);
+        }
+        return null;
+    }
 
-            user:
-                event.user ??
-                this.user,
+    public async flush(): Promise<void> {
+        await this.client.flush();
+    }
 
-            sessionId:
-                event.sessionId ??
-                this.sessionId,
+    public close(): void {
+        this.client.close();
+    }
 
-            sdkName:
-                SDK_NAME,
+    // Static helpers for global convenience
+    public static captureException(error: unknown, additional?: Partial<HaloCaptureOptions>): any {
+        return globalHaloInstance?.captureException(error, additional);
+    }
 
-            sdkVersion:
-                SDK_VERSION,
+    public static captureMessage(message: string, severity?: HaloSeverity, additional?: Partial<HaloCaptureOptions>): any {
+        return globalHaloInstance?.captureMessage(message, severity, additional);
+    }
 
-            release:
-                this.release,
+    public static addBreadcrumb(breadcrumb: Omit<HaloBreadcrumb, "timestamp"> & { timestamp?: string }): void {
+        globalHaloInstance?.addBreadcrumb(breadcrumb);
+    }
 
-            environment:
-                this.environment,
+    public static setUser(user: HaloUser): void {
+        globalHaloInstance?.setUser(user);
+    }
 
-            sessionStartedAt:
-                this.sessionStartedAt,
+    public static clearUser(): void {
+        globalHaloInstance?.clearUser();
+    }
 
-            /*
-             * Explicit event context
-             * takes priority.
-             *
-             * Otherwise inherit the
-             * active HTTP context.
-             */
-            requestId:
-                event.requestId ??
-                context?.requestId,
+    public static setTag(key: string, value: HaloTagValue): void {
+        globalHaloInstance?.setTag(key, value);
+    }
 
-            traceId:
-                event.traceId ??
-                context?.traceId,
+    public static setContext(name: string, data: Record<string, unknown>): void {
+        globalHaloInstance?.setContext(name, data);
+    }
 
-            service:
-                event.service ??
-                this.service,
+    public static getSessionId(): string | undefined {
+        return globalHaloInstance?.getSessionId();
+    }
 
-            resource:
-                event.resource,
+    public static getTraceContext(): HaloTraceContext | undefined {
+        return globalHaloInstance?.getTraceContext();
+    }
 
-            operation:
-                event.operation,
+    public static async flush(): Promise<void> {
+        await globalHaloInstance?.flush();
+    }
 
-            status:
-                event.status,
-
-            durationMs:
-                event.durationMs,
-        });
+    public static close(): void {
+        globalHaloInstance?.close();
     }
 }

@@ -1,0 +1,1 @@
+{"version":3,"sources":["../src/nextjs.ts"],"sourcesContent":["export * from \"@halo-trace/sdk-nextjs\";\n"],"mappings":";;;;;;;;;;;;;;;;;AAAA;AAAA;AAAA,2BAAc,mCAAd;","names":[]}

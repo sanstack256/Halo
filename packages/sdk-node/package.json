@@ -1,0 +1,33 @@
+{
+  "name": "@halo-trace/sdk-node",
+  "version": "1.0.0",
+  "description": "Node.js runtime observability, process lifecycle, HTTP, and AsyncLocalStorage for Halo SDK.",
+  "type": "module",
+  "main": "./dist/index.cjs",
+  "module": "./dist/index.js",
+  "types": "./dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "import": "./dist/index.js",
+      "require": "./dist/index.cjs"
+    }
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsup",
+    "typecheck": "tsc --noEmit"
+  },
+  "license": "MIT",
+  "dependencies": {
+    "@halo-trace/sdk-core": "workspace:*",
+    "@halo-trace/sdk-types": "workspace:*"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "tsup": "^8.5.1",
+    "typescript": "^5.0.0"
+  }
+}

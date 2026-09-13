@@ -1,7 +1,7 @@
 {
   "name": "@halo-trace/sdk",
   "version": "1.0.0",
-  "description": "Official SDK for Halo Trace observability and production investigation.",
+  "description": "Official unified SDK platform for Halo Trace observability, runtime telemetry, and session replay.",
   "type": "module",
   "main": "./dist/index.cjs",
   "module": "./dist/index.js",
@@ -11,6 +11,31 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "require": "./dist/index.cjs"
+    },
+    "./browser": {
+      "types": "./dist/browser.d.ts",
+      "import": "./dist/browser.js",
+      "require": "./dist/browser.cjs"
+    },
+    "./node": {
+      "types": "./dist/node.d.ts",
+      "import": "./dist/node.js",
+      "require": "./dist/node.cjs"
+    },
+    "./react": {
+      "types": "./dist/react.d.ts",
+      "import": "./dist/react.js",
+      "require": "./dist/react.cjs"
+    },
+    "./nextjs": {
+      "types": "./dist/nextjs.d.ts",
+      "import": "./dist/nextjs.js",
+      "require": "./dist/nextjs.cjs"
+    },
+    "./replay": {
+      "types": "./dist/replay.d.ts",
+      "import": "./dist/replay.js",
+      "require": "./dist/replay.cjs"
     }
   },
   "files": [
@@ -22,10 +47,6 @@
     "typecheck": "tsc --noEmit",
     "prepublishOnly": "pnpm run build && pnpm run typecheck"
   },
-  "publishConfig": {
-    "access": "public",
-    "registry": "https://registry.npmjs.org/"
-  },
   "keywords": [
     "halo",
     "halo-trace",
@@ -34,13 +55,21 @@
     "error-monitoring",
     "debugging",
     "developer-tools",
-    "tracing"
+    "tracing",
+    "session-replay"
   ],
   "license": "MIT",
-  "devDependencies": {
-    "tsup": "^8.5.1"
-  },
   "dependencies": {
-    "@halo-trace/sdk": "1.0.0"
+    "@halo-trace/replay": "workspace:*",
+    "@halo-trace/sdk-browser": "workspace:*",
+    "@halo-trace/sdk-core": "workspace:*",
+    "@halo-trace/sdk-nextjs": "workspace:*",
+    "@halo-trace/sdk-node": "workspace:*",
+    "@halo-trace/sdk-react": "workspace:*",
+    "@halo-trace/sdk-types": "workspace:*"
+  },
+  "devDependencies": {
+    "tsup": "^8.5.1",
+    "typescript": "^5.0.0"
   }
 }

@@ -153,9 +153,6 @@ importers:
 
   packages/replay:
     dependencies:
-      '@halo-trace/sdk':
-        specifier: workspace:*
-        version: link:../sdk
       rrweb:
         specifier: ^2.0.0-alpha.18
         version: 2.1.1
@@ -175,13 +172,168 @@ importers:
 
   packages/sdk:
     dependencies:
-      '@halo-trace/sdk':
-        specifier: 1.0.0
-        version: 1.0.0
+      '@halo-trace/replay':
+        specifier: workspace:*
+        version: link:../replay
+      '@halo-trace/sdk-browser':
+        specifier: workspace:*
+        version: link:../sdk-browser
+      '@halo-trace/sdk-core':
+        specifier: workspace:*
+        version: link:../sdk-core
+      '@halo-trace/sdk-nextjs':
+        specifier: workspace:*
+        version: link:../sdk-nextjs
+      '@halo-trace/sdk-node':
+        specifier: workspace:*
+        version: link:../sdk-node
+      '@halo-trace/sdk-react':
+        specifier: workspace:*
+        version: link:../sdk-react
+      '@halo-trace/sdk-types':
+        specifier: workspace:*
+        version: link:../sdk-types
     devDependencies:
       tsup:
         specifier: ^8.5.1
         version: 8.5.1(jiti@2.7.0)(postcss@8.5.25)(tsx@4.23.10)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/sdk-browser:
+    dependencies:
+      '@halo-trace/sdk-core':
+        specifier: workspace:*
+        version: link:../sdk-core
+      '@halo-trace/sdk-types':
+        specifier: workspace:*
+        version: link:../sdk-types
+    devDependencies:
+      '@halo-trace/replay':
+        specifier: workspace:*
+        version: link:../replay
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.25)(tsx@4.23.10)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/sdk-core:
+    dependencies:
+      '@halo-trace/sdk-types':
+        specifier: workspace:*
+        version: link:../sdk-types
+    devDependencies:
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.25)(tsx@4.23.10)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/sdk-nextjs:
+    dependencies:
+      '@halo-trace/sdk-browser':
+        specifier: workspace:*
+        version: link:../sdk-browser
+      '@halo-trace/sdk-core':
+        specifier: workspace:*
+        version: link:../sdk-core
+      '@halo-trace/sdk-node':
+        specifier: workspace:*
+        version: link:../sdk-node
+      '@halo-trace/sdk-react':
+        specifier: workspace:*
+        version: link:../sdk-react
+      '@halo-trace/sdk-types':
+        specifier: workspace:*
+        version: link:../sdk-types
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.43
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.4(@types/react@19.2.18)
+      next:
+        specifier: ^16.0.0
+        version: 16.2.11(@babel/core@7.29.7)(@playwright/test@1.62.1)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)
+      react:
+        specifier: ^19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.2.4
+        version: 19.2.4(react@19.2.4)
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.25)(tsx@4.23.10)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/sdk-node:
+    dependencies:
+      '@halo-trace/sdk-core':
+        specifier: workspace:*
+        version: link:../sdk-core
+      '@halo-trace/sdk-types':
+        specifier: workspace:*
+        version: link:../sdk-types
+    devDependencies:
+      '@types/node':
+        specifier: ^20.0.0
+        version: 20.19.43
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.25)(tsx@4.23.10)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/sdk-react:
+    dependencies:
+      '@halo-trace/sdk-browser':
+        specifier: workspace:*
+        version: link:../sdk-browser
+      '@halo-trace/sdk-core':
+        specifier: workspace:*
+        version: link:../sdk-core
+      '@halo-trace/sdk-types':
+        specifier: workspace:*
+        version: link:../sdk-types
+    devDependencies:
+      '@types/react':
+        specifier: ^19.0.0
+        version: 19.2.18
+      '@types/react-dom':
+        specifier: ^19.0.0
+        version: 19.2.4(@types/react@19.2.18)
+      react:
+        specifier: ^19.2.4
+        version: 19.2.4
+      react-dom:
+        specifier: ^19.2.4
+        version: 19.2.4(react@19.2.4)
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.25)(tsx@4.23.10)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
+
+  packages/sdk-types:
+    devDependencies:
+      tsup:
+        specifier: ^8.5.1
+        version: 8.5.1(jiti@2.7.0)(postcss@8.5.25)(tsx@4.23.10)(typescript@5.9.3)
+      typescript:
+        specifier: ^5.0.0
+        version: 5.9.3
 
 packages:
 
@@ -759,9 +911,6 @@ packages:
 
   '@floating-ui/utils@0.2.12':
     resolution: {integrity: sha512-HpCo8tmWzLVad5s2d19EhAz5zqrrQ6s69qd6moPMQvkOuSwDT1YgRfWSVuc4ennqrgv3OHppiOGMQ7oC13yIww==}
-
-  '@halo-trace/sdk@1.0.0':
-    resolution: {integrity: sha512-Wd7GfC/O1QNRN1LdG3fKjDUH4XN9MTeIWBrvx7B6PXNlUaFUZBGmoZDgdxiCnupCcpo5iBYUhaGxKl2hiOcvsA==}
 
   '@hookform/resolvers@5.7.1':
     resolution: {integrity: sha512-8wS/P4UDr5sQDe4nFaV51TVyfDPrWgNIXweqG0Bs9Z5LSuzKLb+RQNPvkN2oHM5SRrJyWrVH/F+LOUcFjUyvwQ==}
@@ -4668,8 +4817,6 @@ snapshots:
       react-dom: 19.2.4(react@19.2.4)
 
   '@floating-ui/utils@0.2.12': {}
-
-  '@halo-trace/sdk@1.0.0': {}
 
   '@hookform/resolvers@5.7.1(@standard-schema/spec@1.1.0)(ajv@8.20.0)(effect@3.20.0)(react-hook-form@7.84.0(react@19.2.4))(valibot@1.4.2(typescript@5.9.3))(zod@4.4.3)':
     dependencies:
