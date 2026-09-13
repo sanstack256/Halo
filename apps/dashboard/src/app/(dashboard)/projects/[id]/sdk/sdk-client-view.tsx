@@ -53,6 +53,11 @@ export function SdkClientView({ project, initialStatus }: Props) {
         scope: false,
         transport: false,
     });
+    const [mounted, setMounted] = useState(false);
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
 
     const apiKey = status.apiKeys[0]?.prefix
         ? `${status.apiKeys[0].prefix}_••••••••`
@@ -725,9 +730,9 @@ replay: {
                                         </span>
                                     )}
                                 </div>
-                                <p className="text-xs text-muted mt-0.5">
+                                <p className="text-xs text-muted mt-0.5" suppressHydrationWarning>
                                     {status.hasTelemetry && status.latestEvent
-                                        ? `Last event: "${status.latestEvent.title}" (${status.latestEvent.type}) received at ${new Date(status.latestEvent.timestamp).toLocaleTimeString()}`
+                                        ? `Last event: "${status.latestEvent.title}" (${status.latestEvent.type}) ${mounted ? `received at ${new Date(status.latestEvent.timestamp).toLocaleTimeString()}` : "received"}`
                                         : "Send an event from your application code or use the 'Send test event' button above."}
                                 </p>
                             </div>
