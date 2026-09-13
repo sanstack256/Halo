@@ -243,6 +243,11 @@ export class HaloReplay {
             this.recordedEvents.shift();
         }
 
+        // Sanitize href in rrweb Meta events (type 4) to strip sensitive tokens/keys from recorded stream
+        if (event.type === 4 && (event.data as any)?.href) {
+            (event.data as any).href = sanitizeUrl((event.data as any).href);
+        }
+
         // Only genuine DOM mutations (source 0), form inputs (source 5), or navigation/requests resolve pending dead clicks.
         // Mouse moves (source 1) and pointer clicks/ups/downs (source 2) do NOT cancel dead clicks.
         if (event.type === 3) {

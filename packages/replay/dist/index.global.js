@@ -12859,15 +12859,21 @@ var HaloReplayBundle = (() => {
   function sanitizeUrl(urlStr) {
     if (!urlStr) return urlStr;
     try {
+      const hasOrigin = urlStr.startsWith("http://") || urlStr.startsWith("https://");
       const parsed = new URL(urlStr, "http://localhost");
       let modified = false;
-      for (const param of SENSITIVE_QUERY_PARAMS) {
-        if (parsed.searchParams.has(param)) {
-          parsed.searchParams.set(param, "[REDACTED]");
+      const keys = Array.from(parsed.searchParams.keys());
+      for (const key of keys) {
+        const lower = key.toLowerCase();
+        if (SENSITIVE_QUERY_PARAMS.some((p) => p.toLowerCase() === lower) || lower.includes("token") || lower.includes("secret") || lower.includes("auth") || lower.includes("key") || lower.includes("pass")) {
+          parsed.searchParams.set(key, "[REDACTED]");
           modified = true;
         }
       }
       if (!modified) return urlStr;
+      if (hasOrigin) {
+        return parsed.origin + parsed.pathname + parsed.search + parsed.hash;
+      }
       return parsed.pathname + parsed.search + parsed.hash;
     } catch {
       return urlStr;
@@ -13006,7 +13012,7 @@ var HaloReplayBundle = (() => {
           projectId: this.projectId,
           browser: typeof navigator !== "undefined" ? navigator.userAgent : void 0,
           os: typeof navigator !== "undefined" ? navigator.platform : void 0,
-          url: typeof window !== "undefined" ? window.location.href : void 0,
+          url: typeof window !== "undefined" ? sanitizeUrl(window.location.href) : void 0,
           userAgent: typeof navigator !== "undefined" ? navigator.userAgent : void 0,
           viewportWidth: typeof window !== "undefined" ? window.innerWidth : void 0,
           viewportHeight: typeof window !== "undefined" ? window.innerHeight : void 0,
@@ -13221,6 +13227,9 @@ var HaloReplayBundle = (() => {
       this.recordedEvents.push(event);
       if (this.recordedEvents.length > (this.options.maxBufferEvents ?? 5e3)) {
         this.recordedEvents.shift();
+      }
+      if (event.type === 4 && event.data?.href) {
+        event.data.href = sanitizeUrl(event.data.href);
       }
       if (event.type === 3) {
         const src = event.data?.source;

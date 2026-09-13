@@ -1,5 +1,6 @@
 import type { ReplayChunkPayload } from "./types";
 import type { eventWithTime } from "@rrweb/types";
+import { sanitizeUrl } from "./masker";
 
 export class ReplayUploader {
     private endpoint: string;
@@ -88,7 +89,7 @@ export class ReplayUploader {
                 projectId: this.projectId,
                 browser: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
                 os: typeof navigator !== "undefined" ? navigator.platform : undefined,
-                url: typeof window !== "undefined" ? window.location.href : undefined,
+                url: typeof window !== "undefined" ? sanitizeUrl(window.location.href) : undefined,
                 userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
                 viewportWidth: typeof window !== "undefined" ? window.innerWidth : undefined,
                 viewportHeight: typeof window !== "undefined" ? window.innerHeight : undefined,

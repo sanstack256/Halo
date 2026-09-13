@@ -914,12 +914,13 @@ export function ReplayPlayerClient({
         }
     }, [isPlaying, currentMs, durationMs]);
 
-    const seekTo = useCallback((ms: number) => {
+    const seekTo = useCallback((ms: number, play?: boolean) => {
         const player = playerInstanceRef.current;
         if (!player) return;
-        player.goto(ms, true);
+        const shouldPlay = play !== undefined ? play : isPlaying;
+        player.goto(ms, shouldPlay);
         setCurrentMs(ms);
-    }, []);
+    }, [isPlaying]);
 
     const setSpeed = useCallback((speed: number) => {
         setPlaybackSpeed(speed);
@@ -943,6 +944,15 @@ export function ReplayPlayerClient({
         const errorOffset = Math.max(0, errorTime - start - 5000);
         seekTo(errorOffset);
     }, [replaySession.errorAt, events, seekTo]);
+
+    useEffect(() => {
+        (window as any).__HALO_SEEK_TO__ = (ms: number, play = false) => {
+            seekTo(ms, play);
+        };
+        return () => {
+            delete (window as any).__HALO_SEEK_TO__;
+        };
+    }, [seekTo]);
 
     if (loading) {
         return <ReplayStatus status="PROCESSING" message="Loading replay chunks from storage..." />;

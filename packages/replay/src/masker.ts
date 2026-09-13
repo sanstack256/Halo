@@ -104,15 +104,28 @@ const SENSITIVE_QUERY_PARAMS = [
 export function sanitizeUrl(urlStr: string): string {
     if (!urlStr) return urlStr;
     try {
+        const hasOrigin = urlStr.startsWith("http://") || urlStr.startsWith("https://");
         const parsed = new URL(urlStr, "http://localhost");
         let modified = false;
-        for (const param of SENSITIVE_QUERY_PARAMS) {
-            if (parsed.searchParams.has(param)) {
-                parsed.searchParams.set(param, "[REDACTED]");
+        const keys = Array.from(parsed.searchParams.keys());
+        for (const key of keys) {
+            const lower = key.toLowerCase();
+            if (
+                SENSITIVE_QUERY_PARAMS.some((p) => p.toLowerCase() === lower) ||
+                lower.includes("token") ||
+                lower.includes("secret") ||
+                lower.includes("auth") ||
+                lower.includes("key") ||
+                lower.includes("pass")
+            ) {
+                parsed.searchParams.set(key, "[REDACTED]");
                 modified = true;
             }
         }
         if (!modified) return urlStr;
+        if (hasOrigin) {
+            return parsed.origin + parsed.pathname + parsed.search + parsed.hash;
+        }
         return parsed.pathname + parsed.search + parsed.hash;
     } catch {
         return urlStr;

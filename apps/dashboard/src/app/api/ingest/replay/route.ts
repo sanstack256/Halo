@@ -164,6 +164,8 @@ export async function POST(request: NextRequest) {
 
     const currentDurationMs = Math.max(0, chunkEnded.getTime() - chunkStarted.getTime());
 
+    const sanitizedUrl = sanitizeUrl(meta.url);
+
     // 1. Upsert ReplaySession Metadata
     const replaySession = await prisma.replaySession.upsert({
         where: {
@@ -176,7 +178,7 @@ export async function POST(request: NextRequest) {
             browser: meta.browser,
             os: meta.os,
             device: meta.device,
-            url: meta.url,
+            url: sanitizedUrl,
             userAgent: meta.userAgent,
             viewportWidth: meta.viewportWidth,
             viewportHeight: meta.viewportHeight,
@@ -199,12 +201,21 @@ export async function POST(request: NextRequest) {
             issueId: resolvedIssueId || undefined,
             traceId: meta.traceId || undefined,
             requestId: meta.requestId || undefined,
-            url: meta.url || undefined,
+            url: sanitizedUrl || undefined,
         },
     });
 
     // 2. Insert ReplayChunk
     if (eventCount > 0) {
+        const sanitizedEvents = Array.isArray(events)
+            ? events.map((ev: any) => {
+                  if (ev?.type === 4 && ev.data?.href) {
+                      return { ...ev, data: { ...ev.data, href: sanitizeUrl(ev.data.href) } };
+                  }
+                  return ev;
+              })
+            : [];
+
         await prisma.replayChunk.upsert({
             where: {
                 replaySessionId_sequence: {
@@ -215,14 +226,14 @@ export async function POST(request: NextRequest) {
             create: {
                 replaySessionId: replaySession.id,
                 sequence,
-                events,
+                events: sanitizedEvents,
                 startedAt: chunkStarted,
                 endedAt: chunkEnded,
                 eventCount,
                 sizeBytes,
             },
             update: {
-                events,
+                events: sanitizedEvents,
                 startedAt: chunkStarted,
                 endedAt: chunkEnded,
                 eventCount,
@@ -241,10 +252,25 @@ export async function POST(request: NextRequest) {
         },
     });
 
-
     return jsonResponse(request, {
         success: true,
         replaySessionId: replaySession.id,
         sequence,
     });
+}
+
+function sanitizeUrl(urlStr?: string | null): string | null {
+    if (!urlStr) return null;
+    try {
+        const parsed = new URL(urlStr);
+        const SENSITIVE_PARAM_REGEX = /^(.*_)?(token|auth|key|secret|password|session|jwt|api_key|access_token|refresh_token|credential|code)$/i;
+        for (const key of Array.from(parsed.searchParams.keys())) {
+            if (SENSITIVE_PARAM_REGEX.test(key)) {
+                parsed.searchParams.set(key, "[REDACTED]");
+            }
+        }
+        return parsed.toString();
+    } catch {
+        return urlStr;
+    }
 }
