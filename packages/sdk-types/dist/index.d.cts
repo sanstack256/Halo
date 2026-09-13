@@ -46,6 +46,7 @@ interface HaloClientClock {
 interface HaloEnvelope<TData = Record<string, unknown>> {
     eventId: string;
     eventType: HaloEventType;
+    type?: HaloEventType;
     timestamp: string;
     timestampPrecision: "ms" | "ns";
     projectId?: string;

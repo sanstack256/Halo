@@ -71,6 +71,7 @@ export class EnvelopeBuilder {
         const envelope: HaloEnvelope = {
             eventId: generateEventId(),
             eventType: options.type || "MESSAGE",
+            type: options.type || "MESSAGE",
             timestamp: iso,
             timestampPrecision: "ms",
             sessionId: options.sessionId || session?.getSessionId(),

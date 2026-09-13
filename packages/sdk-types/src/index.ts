@@ -86,6 +86,7 @@ export interface HaloClientClock {
 export interface HaloEnvelope<TData = Record<string, unknown>> {
     eventId: string;
     eventType: HaloEventType;
+    type?: HaloEventType; // Legacy & ingest compatibility alias
     timestamp: string;
     timestampPrecision: "ms" | "ns";
     projectId?: string;

@@ -14527,6 +14527,7 @@ var HaloBundle = (() => {
       const envelope = {
         eventId: generateEventId(),
         eventType: options.type || "MESSAGE",
+        type: options.type || "MESSAGE",
         timestamp: iso,
         timestampPrecision: "ms",
         sessionId: options.sessionId || session?.getSessionId(),
