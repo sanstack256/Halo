@@ -25,7 +25,9 @@ const cachedClient = global.prisma as any;
 if (
     cachedClient &&
     (!cachedClient.repairCase ||
+     !cachedClient.issueRecommendation ||
      !cachedClient._runtimeDataModel?.models?.RepairCase ||
+     !cachedClient._runtimeDataModel?.models?.IssueRecommendation ||
      !cachedClient._runtimeDataModel?.models?.Project?.fields?.some((f: any) => f.name === "aiProvider") ||
      !cachedClient._runtimeDataModel?.models?.ReplaySession?.fields?.some((f: any) => f.name === "triggerType"))
 ) {

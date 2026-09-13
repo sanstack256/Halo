@@ -419,7 +419,8 @@ export const ModelName = {
   RepairCase: 'RepairCase',
   RepairChange: 'RepairChange',
   RepairValidation: 'RepairValidation',
-  RepairEvent: 'RepairEvent'
+  RepairEvent: 'RepairEvent',
+  IssueRecommendation: 'IssueRecommendation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -435,7 +436,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent"
+    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2141,6 +2142,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    IssueRecommendation: {
+      payload: Prisma.$IssueRecommendationPayload<ExtArgs>
+      fields: Prisma.IssueRecommendationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.IssueRecommendationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IssueRecommendationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.IssueRecommendationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IssueRecommendationPayload>
+        }
+        findFirst: {
+          args: Prisma.IssueRecommendationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IssueRecommendationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.IssueRecommendationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IssueRecommendationPayload>
+        }
+        findMany: {
+          args: Prisma.IssueRecommendationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IssueRecommendationPayload>[]
+        }
+        create: {
+          args: Prisma.IssueRecommendationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IssueRecommendationPayload>
+        }
+        createMany: {
+          args: Prisma.IssueRecommendationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.IssueRecommendationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IssueRecommendationPayload>[]
+        }
+        delete: {
+          args: Prisma.IssueRecommendationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IssueRecommendationPayload>
+        }
+        update: {
+          args: Prisma.IssueRecommendationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IssueRecommendationPayload>
+        }
+        deleteMany: {
+          args: Prisma.IssueRecommendationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.IssueRecommendationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.IssueRecommendationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IssueRecommendationPayload>[]
+        }
+        upsert: {
+          args: Prisma.IssueRecommendationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IssueRecommendationPayload>
+        }
+        aggregate: {
+          args: Prisma.IssueRecommendationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateIssueRecommendation>
+        }
+        groupBy: {
+          args: Prisma.IssueRecommendationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.IssueRecommendationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.IssueRecommendationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.IssueRecommendationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2616,6 +2691,24 @@ export const RepairEventScalarFieldEnum = {
 } as const
 
 export type RepairEventScalarFieldEnum = (typeof RepairEventScalarFieldEnum)[keyof typeof RepairEventScalarFieldEnum]
+
+
+export const IssueRecommendationScalarFieldEnum = {
+  id: 'id',
+  issueId: 'issueId',
+  investigationId: 'investigationId',
+  version: 'version',
+  snapshotHash: 'snapshotHash',
+  isStale: 'isStale',
+  recommendation: 'recommendation',
+  followUpHistory: 'followUpHistory',
+  modelProvider: 'modelProvider',
+  modelName: 'modelName',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IssueRecommendationScalarFieldEnum = (typeof IssueRecommendationScalarFieldEnum)[keyof typeof IssueRecommendationScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -3174,6 +3267,7 @@ export type GlobalOmitConfig = {
   repairChange?: Prisma.RepairChangeOmit
   repairValidation?: Prisma.RepairValidationOmit
   repairEvent?: Prisma.RepairEventOmit
+  issueRecommendation?: Prisma.IssueRecommendationOmit
 }
 
 /* Types for Logging */

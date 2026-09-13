@@ -309,6 +309,7 @@ export type InvestigationWhereInput = {
   monitor?: Prisma.XOR<Prisma.MonitorNullableScalarRelationFilter, Prisma.MonitorWhereInput> | null
   alert?: Prisma.XOR<Prisma.MonitorAlertNullableScalarRelationFilter, Prisma.MonitorAlertWhereInput> | null
   repairCases?: Prisma.RepairCaseListRelationFilter
+  recommendations?: Prisma.IssueRecommendationListRelationFilter
 }
 
 export type InvestigationOrderByWithRelationInput = {
@@ -333,6 +334,7 @@ export type InvestigationOrderByWithRelationInput = {
   monitor?: Prisma.MonitorOrderByWithRelationInput
   alert?: Prisma.MonitorAlertOrderByWithRelationInput
   repairCases?: Prisma.RepairCaseOrderByRelationAggregateInput
+  recommendations?: Prisma.IssueRecommendationOrderByRelationAggregateInput
 }
 
 export type InvestigationWhereUniqueInput = Prisma.AtLeast<{
@@ -360,6 +362,7 @@ export type InvestigationWhereUniqueInput = Prisma.AtLeast<{
   monitor?: Prisma.XOR<Prisma.MonitorNullableScalarRelationFilter, Prisma.MonitorWhereInput> | null
   alert?: Prisma.XOR<Prisma.MonitorAlertNullableScalarRelationFilter, Prisma.MonitorAlertWhereInput> | null
   repairCases?: Prisma.RepairCaseListRelationFilter
+  recommendations?: Prisma.IssueRecommendationListRelationFilter
 }, "id" | "alertId">
 
 export type InvestigationOrderByWithAggregationInput = {
@@ -426,6 +429,7 @@ export type InvestigationCreateInput = {
   monitor?: Prisma.MonitorCreateNestedOneWithoutInvestigationsInput
   alert?: Prisma.MonitorAlertCreateNestedOneWithoutInvestigationInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateInput = {
@@ -446,6 +450,7 @@ export type InvestigationUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUpdateInput = {
@@ -466,6 +471,7 @@ export type InvestigationUpdateInput = {
   monitor?: Prisma.MonitorUpdateOneWithoutInvestigationsNestedInput
   alert?: Prisma.MonitorAlertUpdateOneWithoutInvestigationNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateInput = {
@@ -486,6 +492,7 @@ export type InvestigationUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateManyInput = {
@@ -799,6 +806,22 @@ export type InvestigationUpdateOneWithoutRepairCasesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.InvestigationUpdateToOneWithWhereWithoutRepairCasesInput, Prisma.InvestigationUpdateWithoutRepairCasesInput>, Prisma.InvestigationUncheckedUpdateWithoutRepairCasesInput>
 }
 
+export type InvestigationCreateNestedOneWithoutRecommendationsInput = {
+  create?: Prisma.XOR<Prisma.InvestigationCreateWithoutRecommendationsInput, Prisma.InvestigationUncheckedCreateWithoutRecommendationsInput>
+  connectOrCreate?: Prisma.InvestigationCreateOrConnectWithoutRecommendationsInput
+  connect?: Prisma.InvestigationWhereUniqueInput
+}
+
+export type InvestigationUpdateOneWithoutRecommendationsNestedInput = {
+  create?: Prisma.XOR<Prisma.InvestigationCreateWithoutRecommendationsInput, Prisma.InvestigationUncheckedCreateWithoutRecommendationsInput>
+  connectOrCreate?: Prisma.InvestigationCreateOrConnectWithoutRecommendationsInput
+  upsert?: Prisma.InvestigationUpsertWithoutRecommendationsInput
+  disconnect?: Prisma.InvestigationWhereInput | boolean
+  delete?: Prisma.InvestigationWhereInput | boolean
+  connect?: Prisma.InvestigationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InvestigationUpdateToOneWithWhereWithoutRecommendationsInput, Prisma.InvestigationUpdateWithoutRecommendationsInput>, Prisma.InvestigationUncheckedUpdateWithoutRecommendationsInput>
+}
+
 export type InvestigationCreateWithoutProjectInput = {
   id?: string
   status?: $Enums.InvestigationStatus
@@ -816,6 +839,7 @@ export type InvestigationCreateWithoutProjectInput = {
   monitor?: Prisma.MonitorCreateNestedOneWithoutInvestigationsInput
   alert?: Prisma.MonitorAlertCreateNestedOneWithoutInvestigationInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutProjectInput = {
@@ -835,6 +859,7 @@ export type InvestigationUncheckedCreateWithoutProjectInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutProjectInput = {
@@ -902,6 +927,7 @@ export type InvestigationCreateWithoutIssueInput = {
   monitor?: Prisma.MonitorCreateNestedOneWithoutInvestigationsInput
   alert?: Prisma.MonitorAlertCreateNestedOneWithoutInvestigationInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutIssueInput = {
@@ -921,6 +947,7 @@ export type InvestigationUncheckedCreateWithoutIssueInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutIssueInput = {
@@ -966,6 +993,7 @@ export type InvestigationCreateWithoutMonitorInput = {
   issue?: Prisma.IssueCreateNestedOneWithoutInvestigationsInput
   alert?: Prisma.MonitorAlertCreateNestedOneWithoutInvestigationInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutMonitorInput = {
@@ -985,6 +1013,7 @@ export type InvestigationUncheckedCreateWithoutMonitorInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutMonitorInput = {
@@ -1030,6 +1059,7 @@ export type InvestigationCreateWithoutAlertInput = {
   issue?: Prisma.IssueCreateNestedOneWithoutInvestigationsInput
   monitor?: Prisma.MonitorCreateNestedOneWithoutInvestigationsInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutAlertInput = {
@@ -1049,6 +1079,7 @@ export type InvestigationUncheckedCreateWithoutAlertInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutAlertInput = {
@@ -1084,6 +1115,7 @@ export type InvestigationUpdateWithoutAlertInput = {
   issue?: Prisma.IssueUpdateOneWithoutInvestigationsNestedInput
   monitor?: Prisma.MonitorUpdateOneWithoutInvestigationsNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutAlertInput = {
@@ -1103,6 +1135,7 @@ export type InvestigationUncheckedUpdateWithoutAlertInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateWithoutRepairCasesInput = {
@@ -1122,6 +1155,7 @@ export type InvestigationCreateWithoutRepairCasesInput = {
   issue?: Prisma.IssueCreateNestedOneWithoutInvestigationsInput
   monitor?: Prisma.MonitorCreateNestedOneWithoutInvestigationsInput
   alert?: Prisma.MonitorAlertCreateNestedOneWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutRepairCasesInput = {
@@ -1141,6 +1175,7 @@ export type InvestigationUncheckedCreateWithoutRepairCasesInput = {
   context?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  recommendations?: Prisma.IssueRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutRepairCasesInput = {
@@ -1176,6 +1211,7 @@ export type InvestigationUpdateWithoutRepairCasesInput = {
   issue?: Prisma.IssueUpdateOneWithoutInvestigationsNestedInput
   monitor?: Prisma.MonitorUpdateOneWithoutInvestigationsNestedInput
   alert?: Prisma.MonitorAlertUpdateOneWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutRepairCasesInput = {
@@ -1195,6 +1231,103 @@ export type InvestigationUncheckedUpdateWithoutRepairCasesInput = {
   context?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  recommendations?: Prisma.IssueRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+}
+
+export type InvestigationCreateWithoutRecommendationsInput = {
+  id?: string
+  status?: $Enums.InvestigationStatus
+  title: string
+  summary?: string | null
+  rootCause?: string | null
+  confidenceScore?: number | null
+  startedAt?: Date | string
+  completedAt?: Date | string | null
+  evidenceCount?: number
+  context?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutInvestigationsInput
+  issue?: Prisma.IssueCreateNestedOneWithoutInvestigationsInput
+  monitor?: Prisma.MonitorCreateNestedOneWithoutInvestigationsInput
+  alert?: Prisma.MonitorAlertCreateNestedOneWithoutInvestigationInput
+  repairCases?: Prisma.RepairCaseCreateNestedManyWithoutInvestigationInput
+}
+
+export type InvestigationUncheckedCreateWithoutRecommendationsInput = {
+  id?: string
+  projectId: string
+  issueId?: string | null
+  monitorId?: string | null
+  alertId?: string | null
+  status?: $Enums.InvestigationStatus
+  title: string
+  summary?: string | null
+  rootCause?: string | null
+  confidenceScore?: number | null
+  startedAt?: Date | string
+  completedAt?: Date | string | null
+  evidenceCount?: number
+  context?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutInvestigationInput
+}
+
+export type InvestigationCreateOrConnectWithoutRecommendationsInput = {
+  where: Prisma.InvestigationWhereUniqueInput
+  create: Prisma.XOR<Prisma.InvestigationCreateWithoutRecommendationsInput, Prisma.InvestigationUncheckedCreateWithoutRecommendationsInput>
+}
+
+export type InvestigationUpsertWithoutRecommendationsInput = {
+  update: Prisma.XOR<Prisma.InvestigationUpdateWithoutRecommendationsInput, Prisma.InvestigationUncheckedUpdateWithoutRecommendationsInput>
+  create: Prisma.XOR<Prisma.InvestigationCreateWithoutRecommendationsInput, Prisma.InvestigationUncheckedCreateWithoutRecommendationsInput>
+  where?: Prisma.InvestigationWhereInput
+}
+
+export type InvestigationUpdateToOneWithWhereWithoutRecommendationsInput = {
+  where?: Prisma.InvestigationWhereInput
+  data: Prisma.XOR<Prisma.InvestigationUpdateWithoutRecommendationsInput, Prisma.InvestigationUncheckedUpdateWithoutRecommendationsInput>
+}
+
+export type InvestigationUpdateWithoutRecommendationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumInvestigationStatusFieldUpdateOperationsInput | $Enums.InvestigationStatus
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootCause?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  context?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutInvestigationsNestedInput
+  issue?: Prisma.IssueUpdateOneWithoutInvestigationsNestedInput
+  monitor?: Prisma.MonitorUpdateOneWithoutInvestigationsNestedInput
+  alert?: Prisma.MonitorAlertUpdateOneWithoutInvestigationNestedInput
+  repairCases?: Prisma.RepairCaseUpdateManyWithoutInvestigationNestedInput
+}
+
+export type InvestigationUncheckedUpdateWithoutRecommendationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  monitorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alertId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumInvestigationStatusFieldUpdateOperationsInput | $Enums.InvestigationStatus
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootCause?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  context?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateManyProjectInput = {
@@ -1232,6 +1365,7 @@ export type InvestigationUpdateWithoutProjectInput = {
   monitor?: Prisma.MonitorUpdateOneWithoutInvestigationsNestedInput
   alert?: Prisma.MonitorAlertUpdateOneWithoutInvestigationNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutProjectInput = {
@@ -1251,6 +1385,7 @@ export type InvestigationUncheckedUpdateWithoutProjectInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateManyWithoutProjectInput = {
@@ -1306,6 +1441,7 @@ export type InvestigationUpdateWithoutIssueInput = {
   monitor?: Prisma.MonitorUpdateOneWithoutInvestigationsNestedInput
   alert?: Prisma.MonitorAlertUpdateOneWithoutInvestigationNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutIssueInput = {
@@ -1325,6 +1461,7 @@ export type InvestigationUncheckedUpdateWithoutIssueInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateManyWithoutIssueInput = {
@@ -1380,6 +1517,7 @@ export type InvestigationUpdateWithoutMonitorInput = {
   issue?: Prisma.IssueUpdateOneWithoutInvestigationsNestedInput
   alert?: Prisma.MonitorAlertUpdateOneWithoutInvestigationNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutMonitorInput = {
@@ -1399,6 +1537,7 @@ export type InvestigationUncheckedUpdateWithoutMonitorInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateManyWithoutMonitorInput = {
@@ -1426,10 +1565,12 @@ export type InvestigationUncheckedUpdateManyWithoutMonitorInput = {
 
 export type InvestigationCountOutputType = {
   repairCases: number
+  recommendations: number
 }
 
 export type InvestigationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   repairCases?: boolean | InvestigationCountOutputTypeCountRepairCasesArgs
+  recommendations?: boolean | InvestigationCountOutputTypeCountRecommendationsArgs
 }
 
 /**
@@ -1447,6 +1588,13 @@ export type InvestigationCountOutputTypeDefaultArgs<ExtArgs extends runtime.Type
  */
 export type InvestigationCountOutputTypeCountRepairCasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.RepairCaseWhereInput
+}
+
+/**
+ * InvestigationCountOutputType without action
+ */
+export type InvestigationCountOutputTypeCountRecommendationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.IssueRecommendationWhereInput
 }
 
 
@@ -1472,6 +1620,7 @@ export type InvestigationSelect<ExtArgs extends runtime.Types.Extensions.Interna
   monitor?: boolean | Prisma.Investigation$monitorArgs<ExtArgs>
   alert?: boolean | Prisma.Investigation$alertArgs<ExtArgs>
   repairCases?: boolean | Prisma.Investigation$repairCasesArgs<ExtArgs>
+  recommendations?: boolean | Prisma.Investigation$recommendationsArgs<ExtArgs>
   _count?: boolean | Prisma.InvestigationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["investigation"]>
 
@@ -1547,6 +1696,7 @@ export type InvestigationInclude<ExtArgs extends runtime.Types.Extensions.Intern
   monitor?: boolean | Prisma.Investigation$monitorArgs<ExtArgs>
   alert?: boolean | Prisma.Investigation$alertArgs<ExtArgs>
   repairCases?: boolean | Prisma.Investigation$repairCasesArgs<ExtArgs>
+  recommendations?: boolean | Prisma.Investigation$recommendationsArgs<ExtArgs>
   _count?: boolean | Prisma.InvestigationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type InvestigationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1570,6 +1720,7 @@ export type $InvestigationPayload<ExtArgs extends runtime.Types.Extensions.Inter
     monitor: Prisma.$MonitorPayload<ExtArgs> | null
     alert: Prisma.$MonitorAlertPayload<ExtArgs> | null
     repairCases: Prisma.$RepairCasePayload<ExtArgs>[]
+    recommendations: Prisma.$IssueRecommendationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1987,6 +2138,7 @@ export interface Prisma__InvestigationClient<T, Null = never, ExtArgs extends ru
   monitor<T extends Prisma.Investigation$monitorArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Investigation$monitorArgs<ExtArgs>>): Prisma.Prisma__MonitorClient<runtime.Types.Result.GetResult<Prisma.$MonitorPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   alert<T extends Prisma.Investigation$alertArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Investigation$alertArgs<ExtArgs>>): Prisma.Prisma__MonitorAlertClient<runtime.Types.Result.GetResult<Prisma.$MonitorAlertPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   repairCases<T extends Prisma.Investigation$repairCasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Investigation$repairCasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairCasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  recommendations<T extends Prisma.Investigation$recommendationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Investigation$recommendationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IssueRecommendationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2511,6 +2663,30 @@ export type Investigation$repairCasesArgs<ExtArgs extends runtime.Types.Extensio
   take?: number
   skip?: number
   distinct?: Prisma.RepairCaseScalarFieldEnum | Prisma.RepairCaseScalarFieldEnum[]
+}
+
+/**
+ * Investigation.recommendations
+ */
+export type Investigation$recommendationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the IssueRecommendation
+   */
+  select?: Prisma.IssueRecommendationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the IssueRecommendation
+   */
+  omit?: Prisma.IssueRecommendationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.IssueRecommendationInclude<ExtArgs> | null
+  where?: Prisma.IssueRecommendationWhereInput
+  orderBy?: Prisma.IssueRecommendationOrderByWithRelationInput | Prisma.IssueRecommendationOrderByWithRelationInput[]
+  cursor?: Prisma.IssueRecommendationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.IssueRecommendationScalarFieldEnum | Prisma.IssueRecommendationScalarFieldEnum[]
 }
 
 /**

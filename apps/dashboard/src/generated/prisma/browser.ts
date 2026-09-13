@@ -132,3 +132,8 @@ export type RepairValidation = Prisma.RepairValidationModel
  * 
  */
 export type RepairEvent = Prisma.RepairEventModel
+/**
+ * Model IssueRecommendation
+ * 
+ */
+export type IssueRecommendation = Prisma.IssueRecommendationModel

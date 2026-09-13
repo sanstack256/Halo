@@ -170,13 +170,100 @@ export function validateModelOutput(
     }
 
 
-    // 6. Proposed Patch Validation
+    // 6. Proposed Patch & FixRecommendation Fact-Checking
     let patchValid = true;
     if (data.proposedPatch?.status === "AVAILABLE") {
         const patchResult = validateProposedPatch(data.proposedPatch, snapshot, gateVerdict);
         if (!patchResult.isValid) {
             patchValid = false;
             rejectionReasons.push(patchResult.validationNote);
+        }
+    }
+
+    // 7. Structured FixRecommendation Fact-Checking
+    const fixRec = (data as any).fixRecommendation;
+    if (fixRec) {
+        // Verify evidence references
+        if (Array.isArray(fixRec.evidenceReferences)) {
+            for (const evId of fixRec.evidenceReferences) {
+                if (!snapshot.evidenceMap[evId]) {
+                    rejectionReasons.push(`Fix recommendation cites non-existent evidence ID "${evId}".`);
+                    evidenceCitationsValid = false;
+                }
+            }
+        }
+
+        // Verify changes against actual files and source lines
+        if (Array.isArray(fixRec.changes)) {
+            for (const change of fixRec.changes) {
+                if (change.filePath) {
+                    const normalized = change.filePath.toLowerCase();
+                    const knownFiles = [
+                        snapshot.source?.filePath?.toLowerCase(),
+                        ...snapshot.runtime.callChain.map((c) => c.filePath?.toLowerCase()),
+                    ].filter(Boolean);
+
+                    const fileFound = knownFiles.some(
+                        (kf) => kf && (kf.endsWith(normalized) || normalized.endsWith(kf))
+                    );
+
+                    if (!fileFound && knownFiles.length > 0) {
+                        rejectionReasons.push(
+                            `Recommended change references file "${change.filePath}" which was not discovered in the repository or runtime call chain.`
+                        );
+                        sourceLocationsValid = false;
+                    }
+                }
+
+                // Verify line number ranges
+                if (change.startLine && snapshot.source?.lines && snapshot.source.lines.length > 0) {
+                    const minLine = snapshot.source.lines[0].lineNumber;
+                    const maxLine = snapshot.source.lines[snapshot.source.lines.length - 1].lineNumber;
+                    if (change.startLine < minLine - 5 || change.startLine > maxLine + 5) {
+                        rejectionReasons.push(
+                            `Recommended change references line ${change.startLine}, which is outside the verified source context range (${minLine}-${maxLine}).`
+                        );
+                        sourceLocationsValid = false;
+                    }
+                }
+
+                // Verify currentCode against actual source
+                if (change.currentCode && snapshot.source?.lines) {
+                    const fullSourceText = snapshot.source.lines.map((l) => l.content).join("\n");
+                    const snippet = change.currentCode.trim();
+                    if (snippet && !fullSourceText.includes(snippet)) {
+                        warnings.push(
+                            `Proposed currentCode in ${change.filePath ?? "file"} does not match exact source text. Downgrading to conceptual snippet.`
+                        );
+                        change.codeType = "CONCEPTUAL";
+                        change.isExactSourceVerified = false;
+                    } else if (snippet) {
+                        change.isExactSourceVerified = true;
+                    }
+                }
+
+                // Anti-symptom-masking check
+                if (change.proposedCode) {
+                    const code = change.proposedCode;
+                    if (
+                        (code.includes("?.") || code.includes("|| {}") || code.includes("try {")) &&
+                        snapshot.runtime.failingExpression
+                    ) {
+                        warnings.push(
+                            "Caution: Proposed change contains defensive fallback or optional chaining. Verify caller contract before applying."
+                        );
+                    }
+                }
+            }
+        }
+
+        // Epistemic certainty check: Prevent claiming VERY_HIGH root cause when upstream cause is unresolved
+        if (
+            failureModel.runtimeValueStatus === "NOT_CAPTURED" &&
+            fixRec.confidence === "VERY_HIGH"
+        ) {
+            fixRec.confidence = "MEDIUM";
+            warnings.push("Confidence downgraded from VERY_HIGH to MEDIUM because upstream dynamic values were not captured in telemetry.");
         }
     }
 

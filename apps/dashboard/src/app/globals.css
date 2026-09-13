@@ -4026,3 +4026,160 @@ a.halo-primary-cta[aria-disabled="true"] {
 .halo-validation-step:last-child {
   border-bottom: none;
 }
+
+/* =====================================================
+   HALO FIX / RECOMMENDATION SYSTEM (GLOBAL STYLES)
+===================================================== */
+
+.halo-fix-container {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  padding: 24px;
+  position: relative;
+  overflow: hidden;
+}
+
+.halo-fix-header {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  padding-bottom: 20px;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+@media (min-width: 640px) {
+  .halo-fix-header {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.halo-fix-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 3px 9px;
+  border-radius: 6px;
+  font-size: 11px;
+  font-family: var(--font-mono);
+  font-weight: 600;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+  color: var(--text-secondary);
+}
+
+.halo-fix-badge-high {
+  background: rgba(16, 185, 129, 0.1);
+  color: #34d399;
+  border-color: rgba(16, 185, 129, 0.25);
+}
+
+.halo-fix-badge-medium {
+  background: rgba(91, 188, 255, 0.1);
+  color: var(--accent);
+  border-color: rgba(91, 188, 255, 0.25);
+}
+
+.halo-fix-badge-low {
+  background: rgba(245, 158, 11, 0.1);
+  color: #fbbf24;
+  border-color: rgba(245, 158, 11, 0.25);
+}
+
+.halo-fix-badge-existing {
+  background: rgba(91, 188, 255, 0.08);
+  color: #93c5fd;
+  border-color: rgba(91, 188, 255, 0.2);
+}
+
+.halo-fix-badge-proposed {
+  background: rgba(16, 185, 129, 0.08);
+  color: #6ee7b7;
+  border-color: rgba(16, 185, 129, 0.2);
+}
+
+.halo-fix-badge-conceptual {
+  background: rgba(161, 161, 170, 0.1);
+  color: #d4d4d8;
+  border-color: rgba(161, 161, 170, 0.2);
+}
+
+.halo-fix-code-block {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-card);
+  background: #06090e;
+  overflow: hidden;
+  font-family: var(--font-mono);
+}
+
+.halo-fix-code-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 8px 16px;
+  background: rgba(255, 255, 255, 0.02);
+  border-bottom: 1px solid var(--border-subtle);
+  font-size: 11px;
+}
+
+.halo-fix-code-content {
+  padding: 14px 16px;
+  font-size: 12px;
+  line-height: 1.65;
+  overflow-x: auto;
+}
+
+.halo-fix-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  border-radius: 9999px;
+  border: 1px solid var(--border-subtle);
+  background: rgba(255, 255, 255, 0.02);
+  font-size: 11px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  transition: all 0.15s ease;
+  cursor: pointer;
+}
+
+.halo-fix-chip:hover {
+  background: rgba(91, 188, 255, 0.08);
+  color: var(--text-primary);
+  border-color: var(--accent);
+}
+
+.halo-fix-evidence-tag {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  padding: 2px 7px;
+  border-radius: 4px;
+  border: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+  font-size: 10px;
+  font-family: var(--font-mono);
+  color: var(--text-secondary);
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+.halo-fix-evidence-tag:hover {
+  color: var(--accent);
+  border-color: var(--accent);
+}
+
+.halo-fix-stale-banner {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  border-radius: 8px;
+  border: 1px solid rgba(245, 158, 11, 0.3);
+  background: rgba(245, 158, 11, 0.08);
+  color: #fbbf24;
+  font-size: 12px;
+}

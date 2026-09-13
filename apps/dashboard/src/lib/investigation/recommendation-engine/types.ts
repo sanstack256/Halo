@@ -95,6 +95,43 @@ export const ModelProposedPatchSchema = z.object({
 });
 export type ModelProposedPatch = z.infer<typeof ModelProposedPatchSchema>;
 
+export const CodeSnippetTypeSchema = z.enum([
+    "EXISTING_AND_PROPOSED",
+    "PROPOSED_ONLY",
+    "CONCEPTUAL",
+]);
+export type CodeSnippetType = z.infer<typeof CodeSnippetTypeSchema>;
+
+export const RecommendedChangeSchema = z.object({
+    filePath: z.string().optional(),
+    symbol: z.string().optional(),
+    startLine: z.number().int().positive().optional(),
+    endLine: z.number().int().positive().optional(),
+    codeType: CodeSnippetTypeSchema.default("CONCEPTUAL"),
+    explanation: z.string().min(1),
+    whyHere: z.string().min(1),
+    currentCode: z.string().optional(),
+    proposedCode: z.string().optional(),
+    unifiedDiff: z.string().optional(),
+    isExactSourceVerified: z.boolean().default(false),
+});
+export type RecommendedChange = z.infer<typeof RecommendedChangeSchema>;
+
+export const FixRecommendationSchema = z.object({
+    summary: z.string().min(1),
+    diagnosis: z.string().min(1),
+    confidence: z.enum(["LOW", "MEDIUM", "HIGH", "VERY_HIGH"]).default("MEDIUM"),
+    evidenceReferences: z.array(z.string()).default([]),
+    changes: z.array(RecommendedChangeSchema).default([]),
+    relatedConsistencyChecks: z.array(z.string()).default([]),
+    validationSteps: z.array(z.string()).default([]),
+    uncertainty: z.array(z.string()).default([]),
+    followUpSuggestions: z.array(z.string()).default([]),
+    hasInsufficientEvidence: z.boolean().default(false),
+    refusalReason: z.string().optional(),
+});
+export type FixRecommendation = z.infer<typeof FixRecommendationSchema>;
+
 export const StructuredModelRecommendationSchema = z.object({
     status: RecommendationStatusSchema,
     whatHappened: z.string().min(1),
@@ -104,6 +141,7 @@ export const StructuredModelRecommendationSchema = z.object({
     unknowns: z.array(z.string()).default([]),
     limitations: z.array(z.string()).default([]),
     confidenceLevel: z.enum(["Low", "Medium", "High", "Very High"]).default("Medium"),
+    fixRecommendation: FixRecommendationSchema.optional(),
 });
 export type StructuredModelRecommendation = z.infer<
     typeof StructuredModelRecommendationSchema
@@ -207,5 +245,19 @@ export interface ValidatedRecommendationResult {
             durationMs: number;
         };
     };
+    fixRecommendation?: FixRecommendation;
+}
+
+
+export interface FollowUpQuestionMessage {
+    role: "user" | "assistant";
+    content: string;
+    timestamp: string;
+    citations?: string[];
+    referencedCallers?: Array<{
+        filePath: string;
+        lineNumber?: number;
+        snippet?: string;
+    }>;
 }
 

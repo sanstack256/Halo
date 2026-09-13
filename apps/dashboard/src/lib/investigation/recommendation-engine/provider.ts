@@ -356,6 +356,60 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
                 : repairEligibility.state === "REPAIR_PLAUSIBLE"
                 ? "Medium"
                 : "Low",
+        fixRecommendation: {
+            summary: action,
+            diagnosis: whatHappened,
+            confidence:
+                repairEligibility.state === "REPAIR_READY"
+                    ? "HIGH"
+                    : repairEligibility.state === "REPAIR_PLAUSIBLE"
+                    ? "MEDIUM"
+                    : "LOW",
+            evidenceReferences: Array.from(new Set(claims.flatMap((c) => c.evidenceIds))),
+            changes: [
+                {
+                    filePath: proposedPatch?.targetFile || snapshot.source?.filePath || file,
+                    symbol: fnName,
+                    startLine: line,
+                    endLine: line,
+                    codeType:
+                        proposedPatch?.validationStatus === "VALID"
+                            ? "EXISTING_AND_PROPOSED"
+                            : snapshot.source?.lines
+                            ? "PROPOSED_ONLY"
+                            : "CONCEPTUAL",
+                    explanation: reasoning,
+                    whyHere: `Target is at ${file}:${line} where contract violation or unhandled execution was observed.`,
+                    currentCode:
+                        proposedPatch?.originalSourceSnippet ||
+                        snapshot.source?.lines?.find((l) => l.isFailingLine)?.content ||
+                        "",
+                    proposedCode: proposedPatch?.proposedSourceSnippet || "",
+                    unifiedDiff: proposedPatch?.unifiedDiff || "",
+                    isExactSourceVerified: Boolean(
+                        snapshot.source && snapshot.source.resolutionStatus === "exact_file"
+                    ),
+                },
+            ],
+            relatedConsistencyChecks: [
+                "Verify all callers of the modified function to ensure arguments adhere to the updated signature.",
+            ],
+            validationSteps: [
+                "Reproduce with exact incident payload to confirm failure condition.",
+                "Execute unit/integration test suite covering the affected component.",
+                "Verify no regression on adjacent invocation paths.",
+            ],
+            uncertainty: failureModel.unknowns.map((u) => u.claim),
+            followUpSuggestions: [
+                "Why do you recommend changing the caller instead of the service?",
+                "Which evidence led to this recommendation?",
+                "What happens if we only add optional chaining?",
+                "Are there other callers that need the same change?",
+                "What tests should I add?",
+            ],
+            hasInsufficientEvidence: repairEligibility.state === "REPAIR_BLOCKED",
+            refusalReason: repairEligibility.state === "REPAIR_BLOCKED" ? repairEligibility.reason : undefined,
+        },
     };
 }
 

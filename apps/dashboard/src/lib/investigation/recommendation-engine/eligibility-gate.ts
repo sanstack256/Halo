@@ -90,6 +90,24 @@ export function evaluateRecommendationEligibility(
         };
     }
 
+    // Check for vendor or unmapped minified bundles
+    const lowerPath = (source.filePath ?? "").toLowerCase();
+    if (
+        lowerPath.endsWith(".min.js") ||
+        lowerPath.includes(".min.") ||
+        lowerPath.includes("node_modules") ||
+        lowerPath.startsWith("vendor") ||
+        lowerPath.includes("/vendor")
+    ) {
+        return {
+            canGenerateRecommendation: false,
+            recommendationReason:
+                "Source points to a vendor or unmapped minified bundle; cannot generate a safe recommendation without original author source.",
+            patchEligibility: "NOT_APPLICABLE",
+            patchReason: "Cannot propose patches for vendor or unmapped minified bundle.",
+        };
+    }
+
     // Check lines and failing line number
     if (!source.lines || source.lines.length === 0 || !source.failingLineNumber || source.failingLineNumber <= 0) {
         return {

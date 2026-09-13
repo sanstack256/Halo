@@ -73,7 +73,8 @@ export const ModelName = {
   RepairCase: 'RepairCase',
   RepairChange: 'RepairChange',
   RepairValidation: 'RepairValidation',
-  RepairEvent: 'RepairEvent'
+  RepairEvent: 'RepairEvent',
+  IssueRecommendation: 'IssueRecommendation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -528,6 +529,24 @@ export const RepairEventScalarFieldEnum = {
 } as const
 
 export type RepairEventScalarFieldEnum = (typeof RepairEventScalarFieldEnum)[keyof typeof RepairEventScalarFieldEnum]
+
+
+export const IssueRecommendationScalarFieldEnum = {
+  id: 'id',
+  issueId: 'issueId',
+  investigationId: 'investigationId',
+  version: 'version',
+  snapshotHash: 'snapshotHash',
+  isStale: 'isStale',
+  recommendation: 'recommendation',
+  followUpHistory: 'followUpHistory',
+  modelProvider: 'modelProvider',
+  modelName: 'modelName',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IssueRecommendationScalarFieldEnum = (typeof IssueRecommendationScalarFieldEnum)[keyof typeof IssueRecommendationScalarFieldEnum]
 
 
 export const SortOrder = {

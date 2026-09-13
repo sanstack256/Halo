@@ -124,6 +124,30 @@ export async function generateEvidenceBoundRecommendation(
 
     const data = validationResult.data;
 
+    const fixRecommendation: import("./types").FixRecommendation = (data as any).fixRecommendation || {
+        summary: data.recommendation?.action || data.whatHappened,
+        diagnosis: data.whatHappened,
+        confidence: (data.confidenceLevel?.toUpperCase() as any) || "MEDIUM",
+        evidenceReferences: Array.from(new Set(data.claims.flatMap((c) => c.evidenceIds))),
+        changes: data.proposedPatch?.files?.map((f) => ({
+            filePath: f.path,
+            codeType: "PROPOSED_ONLY" as const,
+            explanation: f.explanation,
+            whyHere: "Target identified from failing stack trace and application call chain.",
+            proposedCode: f.diff,
+            isExactSourceVerified: false,
+        })) || [],
+        validationSteps: ["Reproduce with verified incident payload", "Execute test suite"],
+        uncertainty: data.unknowns,
+        followUpSuggestions: [
+            "Why do you recommend changing the caller instead of the service?",
+            "Which evidence led to this recommendation?",
+            "What happens if we only add optional chaining?",
+            "Are there other callers that need the same change?",
+            "What tests should I add?",
+        ],
+    };
+
     // 6. Return Validated Production Result
     return {
         success: true,
@@ -157,6 +181,7 @@ export async function generateEvidenceBoundRecommendation(
         unknowns: data.unknowns,
         limitations: data.limitations,
         repairCase,
+        fixRecommendation,
         audit: {
             snapshotId: snapshot.snapshotId,
             gateVerdict,

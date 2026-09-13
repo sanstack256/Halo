@@ -187,6 +187,7 @@ model Issue {
   replaySessions ReplaySession[]
   investigations Investigation[]
   repairCases    RepairCase[]
+  recommendations IssueRecommendation[]
 
   @@unique([projectId, fingerprint])
 }
@@ -505,6 +506,7 @@ model Investigation {
   monitor         Monitor?            @relation(fields: [monitorId], references: [id], onDelete: SetNull)
   alert           MonitorAlert?       @relation(fields: [alertId], references: [id], onDelete: SetNull)
   repairCases     RepairCase[]
+  recommendations IssueRecommendation[]
 
   @@index([projectId, createdAt])
   @@index([monitorId])
@@ -659,6 +661,27 @@ model RepairEvent {
   repairCase   RepairCase @relation(fields: [repairCaseId], references: [id], onDelete: Cascade)
 
   @@index([repairCaseId, createdAt])
+}
+
+model IssueRecommendation {
+  id              String         @id @default(cuid())
+  issueId         String
+  investigationId String?
+  version         Int            @default(1)
+  snapshotHash    String
+  isStale         Boolean        @default(false)
+  recommendation  Json
+  followUpHistory Json?
+  modelProvider   String
+  modelName       String
+  createdAt       DateTime       @default(now())
+  updatedAt       DateTime       @updatedAt
+
+  issue           Issue          @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  investigation   Investigation? @relation(fields: [investigationId], references: [id], onDelete: SetNull)
+
+  @@index([issueId, version])
+  @@index([investigationId])
 }
 
 

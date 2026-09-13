@@ -89,6 +89,8 @@ import { generateEvidenceBoundRecommendation, type ValidatedRecommendationResult
 import { getProjectRecommendationModel } from "@/actions/project-ai";
 import { detectAnchorRuntimeOrigin } from "@/lib/investigation/interpreter";
 import { buildCallChains } from "@/lib/investigation/runtime/call-chain";
+import { FixRecommendationView } from "@/components/investigation/fix-recommendation-view";
+import { getPersistedRecommendation } from "@/actions/fix-recommendation";
 
 export default async function InvestigationPage({
     params,
@@ -382,11 +384,10 @@ export default async function InvestigationPage({
         // Resolve project's configured AI recommendation model (Halo Managed, Gemini BYOK, or OpenAI BYOK)
         const customModel = await getProjectRecommendationModel(id);
 
-        // Run Evidence-Bound Recommendation Engine
-        const llmRecommendation = await generateEvidenceBoundRecommendation({
-            snapshot,
-            customModel,
-        });
+        // Check for existing persisted recommendation for this issue (on-demand pattern)
+        const persistedRecommendation = issueId
+            ? await getPersistedRecommendation({ projectId: id, issueId })
+            : null;
 
         return (
             <InvestigationView
@@ -403,7 +404,8 @@ export default async function InvestigationPage({
                 intervalContext={intervalContext}
                 releaseContext={releaseContext}
                 userTimezone={userTimezone}
-                llmRecommendation={llmRecommendation}
+                persistedRecommendation={persistedRecommendation}
+                customModelName={customModel.name}
                 issueId={issueId}
             />
         );
@@ -436,7 +438,8 @@ function InvestigationView({
     intervalContext,
     releaseContext,
     userTimezone = "UTC",
-    llmRecommendation,
+    persistedRecommendation,
+    customModelName,
     issueId,
 }: {
     investigation: Investigation;
@@ -521,7 +524,8 @@ function InvestigationView({
         project: { id: string; name: string };
     } | null;
     userTimezone?: string;
-    llmRecommendation?: ValidatedRecommendationResult;
+    persistedRecommendation?: any;
+    customModelName?: string;
     issueId?: string;
 }) {
     const {
@@ -1466,10 +1470,18 @@ function InvestigationView({
                 </div>
             </section>
 
-            {/* G. RECOMMENDATIONS (ACTIONS) */}
-            <RecommendationPlanView
-                plan={interpreted.recommendations}
-                llmResult={llmRecommendation}
+            {/* G. FIX / RECOMMENDATION (ENGINEERING ACTIONS) */}
+            <FixRecommendationView
+                projectId={projectId}
+                issueId={issueId || ""}
+                investigationId={(investigation as any)?.id || monitorContext?.investigationRecord?.id}
+                eventId={incidentAnchorId}
+                initialRecommendation={persistedRecommendation?.recommendation || null}
+                initialStale={persistedRecommendation?.isStale ?? false}
+                initialVersion={persistedRecommendation?.version ?? 1}
+                initialHistory={persistedRecommendation?.followUpHistory || []}
+                initialRecommendationId={persistedRecommendation?.id}
+                modelName={persistedRecommendation?.modelName || customModelName || "Halo Engine"}
             />
         </div>
     );
