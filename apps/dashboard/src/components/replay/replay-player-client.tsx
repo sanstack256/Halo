@@ -37,6 +37,7 @@ import {
 } from "lucide-react";
 import type { HistoricalDomNode, ReplayPrivacyState } from "@halo-trace/replay";
 import { getReplayEvents } from "@/actions/replay";
+import { formatBrowserAndOs } from "@/lib/device-parser";
 import { ReplayStatus } from "./replay-status";
 import "rrweb-player/dist/style.css";
 
@@ -1019,6 +1020,15 @@ export function ReplayPlayerClient({
     const currentFormatted = formatMsPrecise(currentMs);
     const totalFormatted = formatMsPrecise(durationMs);
 
+    const isUrl = Boolean(
+        replaySession.url &&
+        (replaySession.url.startsWith("http://") ||
+         replaySession.url.startsWith("https://") ||
+         replaySession.url.startsWith("/"))
+    );
+
+    const deviceInfo = formatBrowserAndOs(replaySession.browser, replaySession.os);
+
     return (
         <div
             ref={rootRef}
@@ -1031,22 +1041,40 @@ export function ReplayPlayerClient({
         >
             {/* Header Toolbar */}
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-2 border-b border-border">
-                <div className="flex items-center gap-2">
-                    <span className="text-sm font-semibold text-white">
-                        {replaySession.url || "Session Recording"}
-                    </span>
-                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-surface border border-border text-muted">
+                <div className="flex items-center flex-wrap gap-2">
+                    {isUrl ? (
+                        <a
+                            href={replaySession.url!}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-sm font-semibold text-white hover:text-accent transition-colors inline-flex items-center gap-1.5 max-w-[280px] sm:max-w-md truncate group"
+                            title={replaySession.url!}
+                        >
+                            <span className="truncate">{replaySession.url}</span>
+                            <ExternalLink size={12} className="text-zinc-500 group-hover:text-accent transition-colors shrink-0" />
+                        </a>
+                    ) : (
+                        <span className="text-sm font-semibold text-white truncate max-w-[280px] sm:max-w-md">
+                            {replaySession.url || "Session Recording"}
+                        </span>
+                    )}
+
+                    <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-surface border border-border text-muted shrink-0">
                         {totalFormatted}
                     </span>
+
                     {replaySession.status === "RECORDING" && (
-                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/30 text-blue-300 flex items-center gap-1.5">
+                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/30 text-blue-300 flex items-center gap-1.5 shrink-0">
                             <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
                             Recording
                         </span>
                     )}
-                    {replaySession.browser && (
-                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-surface border border-border text-zinc-400">
-                            {replaySession.browser}
+
+                    {(deviceInfo.browser !== "Browser" || deviceInfo.os !== "Unknown OS") && (
+                        <span className="text-[11px] font-mono px-2.5 py-0.5 rounded bg-surface border border-border text-zinc-300 inline-flex items-center gap-1.5 shrink-0">
+                            <span>{deviceInfo.browser}</span>
+                            <span className="text-zinc-600">•</span>
+                            <span>{deviceInfo.os}</span>
                         </span>
                     )}
                 </div>

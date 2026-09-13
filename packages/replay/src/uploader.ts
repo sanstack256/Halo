@@ -94,6 +94,9 @@ export class ReplayUploader {
             ? new Date(eventsToUpload[eventsToUpload.length - 1].timestamp).toISOString()
             : new Date().toISOString();
 
+        const rawUserAgent = typeof navigator !== "undefined" ? navigator.userAgent : undefined;
+        const rawPlatform = typeof navigator !== "undefined" ? navigator.platform : undefined;
+
         const payload: ReplayChunkPayload = {
             sessionId: this.sessionId,
             sequence: this.sequence++,
@@ -102,10 +105,10 @@ export class ReplayUploader {
             endedAt,
             meta: {
                 projectId: this.projectId,
-                browser: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
-                os: typeof navigator !== "undefined" ? navigator.platform : undefined,
+                browser: getCleanBrowser(rawUserAgent),
+                os: getCleanOs(rawPlatform, rawUserAgent),
                 url: typeof window !== "undefined" ? sanitizeUrl(window.location.href) : undefined,
-                userAgent: typeof navigator !== "undefined" ? navigator.userAgent : undefined,
+                userAgent: rawUserAgent,
                 viewportWidth: typeof window !== "undefined" ? window.innerWidth : undefined,
                 viewportHeight: typeof window !== "undefined" ? window.innerHeight : undefined,
                 issueId: this.issueId,
@@ -152,5 +155,26 @@ export class ReplayUploader {
             }
         }
     }
+}
+
+function getCleanBrowser(ua?: string): string | undefined {
+    if (!ua) return undefined;
+    if (/HeadlessChrome/i.test(ua)) return "Headless Chrome";
+    if (/Edg(?:e)?\//i.test(ua)) return "Edge";
+    if (/OPR\/|Opera/i.test(ua)) return "Opera";
+    if (/Chrome\/|CriOS\//i.test(ua)) return "Chrome";
+    if (/Firefox\/|FxiOS\//i.test(ua)) return "Firefox";
+    if (/Safari\//i.test(ua) && !/Chrome|CriOS/i.test(ua)) return "Safari";
+    return "Browser";
+}
+
+function getCleanOs(platform?: string, ua?: string): string | undefined {
+    const combined = `${platform || ""} ${ua || ""}`;
+    if (/iPhone|iPad|iPod/i.test(combined)) return "iOS";
+    if (/Macintosh|Mac OS X|MacIntel|macOS|Darwin/i.test(combined)) return "macOS";
+    if (/Windows|Win32|Win64/i.test(combined)) return "Windows";
+    if (/Android/i.test(combined)) return "Android";
+    if (/Linux|X11/i.test(combined)) return "Linux";
+    return platform || undefined;
 }
 

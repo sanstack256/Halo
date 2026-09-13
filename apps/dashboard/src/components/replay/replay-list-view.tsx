@@ -22,6 +22,7 @@ import {
 import { RelativeTime } from "@/components/ui/relative-time";
 import { HaloSelect } from "@/components/ui/halo-select";
 import { formatDeterministicDateTime, formatDeterministicTime } from "@/lib/date-format";
+import { formatBrowserAndOs } from "@/lib/device-parser";
 import { getProjectReplaysPaginated, ReplayFilterOptions } from "@/actions/replay";
 
 type ReplaySessionItem = {
@@ -328,7 +329,7 @@ export function ReplayListView({
                                                     )}
                                                 </div>
                                                 <div className="text-[10px] text-zinc-500 truncate max-w-[140px] mt-0.5">
-                                                    {replay.os || replay.browser || "Standard Browser"}
+                                                    {formatBrowserAndOs(replay.browser, replay.os).label}
                                                 </div>
                                             </td>
 

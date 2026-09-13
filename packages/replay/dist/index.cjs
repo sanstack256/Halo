@@ -13014,6 +13014,8 @@ var ReplayUploader = class {
     this.queue = [];
     const startedAt = eventsToUpload.length > 0 ? new Date(eventsToUpload[0].timestamp).toISOString() : (/* @__PURE__ */ new Date()).toISOString();
     const endedAt = eventsToUpload.length > 0 ? new Date(eventsToUpload[eventsToUpload.length - 1].timestamp).toISOString() : (/* @__PURE__ */ new Date()).toISOString();
+    const rawUserAgent = typeof navigator !== "undefined" ? navigator.userAgent : void 0;
+    const rawPlatform = typeof navigator !== "undefined" ? navigator.platform : void 0;
     const payload = {
       sessionId: this.sessionId,
       sequence: this.sequence++,
@@ -13022,10 +13024,10 @@ var ReplayUploader = class {
       endedAt,
       meta: {
         projectId: this.projectId,
-        browser: typeof navigator !== "undefined" ? navigator.userAgent : void 0,
-        os: typeof navigator !== "undefined" ? navigator.platform : void 0,
+        browser: getCleanBrowser(rawUserAgent),
+        os: getCleanOs(rawPlatform, rawUserAgent),
         url: typeof window !== "undefined" ? sanitizeUrl(window.location.href) : void 0,
-        userAgent: typeof navigator !== "undefined" ? navigator.userAgent : void 0,
+        userAgent: rawUserAgent,
         viewportWidth: typeof window !== "undefined" ? window.innerWidth : void 0,
         viewportHeight: typeof window !== "undefined" ? window.innerHeight : void 0,
         issueId: this.issueId,
@@ -13061,6 +13063,25 @@ var ReplayUploader = class {
     }
   }
 };
+function getCleanBrowser(ua) {
+  if (!ua) return void 0;
+  if (/HeadlessChrome/i.test(ua)) return "Headless Chrome";
+  if (/Edg(?:e)?\//i.test(ua)) return "Edge";
+  if (/OPR\/|Opera/i.test(ua)) return "Opera";
+  if (/Chrome\/|CriOS\//i.test(ua)) return "Chrome";
+  if (/Firefox\/|FxiOS\//i.test(ua)) return "Firefox";
+  if (/Safari\//i.test(ua) && !/Chrome|CriOS/i.test(ua)) return "Safari";
+  return "Browser";
+}
+function getCleanOs(platform, ua) {
+  const combined = `${platform || ""} ${ua || ""}`;
+  if (/iPhone|iPad|iPod/i.test(combined)) return "iOS";
+  if (/Macintosh|Mac OS X|MacIntel|macOS|Darwin/i.test(combined)) return "macOS";
+  if (/Windows|Win32|Win64/i.test(combined)) return "Windows";
+  if (/Android/i.test(combined)) return "Android";
+  if (/Linux|X11/i.test(combined)) return "Linux";
+  return platform || void 0;
+}
 
 // src/feedback-widget.ts
 var HaloFeedbackWidget = class {

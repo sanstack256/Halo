@@ -3,6 +3,7 @@ import { verifyApiKey } from "@/actions/api-key";
 import { prisma } from "@/lib/prisma";
 import { getOrgEntitlements } from "@/lib/entitlements";
 import { handleOptions, jsonResponse } from "@/lib/cors";
+import { parseBrowserName, parseOsName } from "@/lib/device-parser";
 
 export async function OPTIONS(request: NextRequest) {
     return handleOptions(request);
@@ -183,6 +184,8 @@ export async function POST(request: NextRequest) {
         const currentDurationMs = Math.max(0, chunkEnded.getTime() - chunkStarted.getTime());
 
         const sanitizedUrl = sanitizeUrl(meta.url);
+        const resolvedBrowser = parseBrowserName(meta.browser || meta.userAgent);
+        const resolvedOs = parseOsName(meta.os, meta.browser || meta.userAgent);
 
         // 1. Upsert ReplaySession Metadata
         const replaySession = await prisma.replaySession.upsert({
@@ -193,8 +196,8 @@ export async function POST(request: NextRequest) {
                 sessionId,
                 projectId: verified.project.id,
                 environmentId: verified.environment.id,
-                browser: meta.browser,
-                os: meta.os,
+                browser: resolvedBrowser !== "Browser" ? resolvedBrowser : (meta.browser || null),
+                os: resolvedOs !== "Unknown OS" ? resolvedOs : (meta.os || null),
                 device: meta.device,
                 url: sanitizedUrl,
                 userAgent: meta.userAgent,
@@ -218,6 +221,8 @@ export async function POST(request: NextRequest) {
                 endedAt: chunkEnded,
                 status: final || meta.errorAt ? "AVAILABLE" : undefined,
                 chunkCount: { increment: 1 },
+                browser: resolvedBrowser !== "Browser" ? resolvedBrowser : undefined,
+                os: resolvedOs !== "Unknown OS" ? resolvedOs : undefined,
                 errorAt: meta.errorAt ? new Date(meta.errorAt) : undefined,
                 triggerType: meta.triggerType || undefined,
                 captureReason: meta.captureReason || undefined,
