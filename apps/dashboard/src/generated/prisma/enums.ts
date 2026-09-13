@@ -144,3 +144,52 @@ export const AiConnectionStatus = {
 } as const
 
 export type AiConnectionStatus = (typeof AiConnectionStatus)[keyof typeof AiConnectionStatus]
+
+
+export const RepairCaseStatus = {
+  AVAILABLE: 'AVAILABLE',
+  ANALYZING: 'ANALYZING',
+  READY: 'READY',
+  CHANGES_PROPOSED: 'CHANGES_PROPOSED',
+  VALIDATION_RUNNING: 'VALIDATION_RUNNING',
+  VALIDATED: 'VALIDATED',
+  FAILED: 'FAILED',
+  BLOCKED: 'BLOCKED'
+} as const
+
+export type RepairCaseStatus = (typeof RepairCaseStatus)[keyof typeof RepairCaseStatus]
+
+
+export const RepairOutcome = {
+  REPAIRABLE: 'REPAIRABLE',
+  PARTIALLY_REPAIRABLE: 'PARTIALLY_REPAIRABLE',
+  BLOCKED: 'BLOCKED',
+  AMBIGUOUS: 'AMBIGUOUS',
+  NO_CODE_CHANGE_REQUIRED: 'NO_CODE_CHANGE_REQUIRED',
+  ALREADY_FIXED: 'ALREADY_FIXED',
+  VALIDATION_FAILED: 'VALIDATION_FAILED'
+} as const
+
+export type RepairOutcome = (typeof RepairOutcome)[keyof typeof RepairOutcome]
+
+
+export const RepairConfidenceLevel = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH',
+  VERY_HIGH: 'VERY_HIGH'
+} as const
+
+export type RepairConfidenceLevel = (typeof RepairConfidenceLevel)[keyof typeof RepairConfidenceLevel]
+
+
+export const ValidationRunStatus = {
+  NOT_RUN: 'NOT_RUN',
+  RUNNING: 'RUNNING',
+  PASSED: 'PASSED',
+  FAILED: 'FAILED',
+  BLOCKED: 'BLOCKED',
+  NOT_APPLICABLE: 'NOT_APPLICABLE'
+} as const
+
+export type ValidationRunStatus = (typeof ValidationRunStatus)[keyof typeof ValidationRunStatus]

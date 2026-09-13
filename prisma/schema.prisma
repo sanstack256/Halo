@@ -50,6 +50,7 @@ model Project {
   monitors            Monitor[]
   investigations      Investigation[]
   feedbacks           Feedback[]
+  repairCases         RepairCase[]
 
   @@unique([organizationId, slug])
 }
@@ -185,6 +186,7 @@ model Issue {
   project        Project         @relation(fields: [projectId], references: [id])
   replaySessions ReplaySession[]
   investigations Investigation[]
+  repairCases    RepairCase[]
 
   @@unique([projectId, fingerprint])
 }
@@ -502,6 +504,7 @@ model Investigation {
   issue           Issue?              @relation(fields: [issueId], references: [id], onDelete: SetNull)
   monitor         Monitor?            @relation(fields: [monitorId], references: [id], onDelete: SetNull)
   alert           MonitorAlert?       @relation(fields: [alertId], references: [id], onDelete: SetNull)
+  repairCases     RepairCase[]
 
   @@index([projectId, createdAt])
   @@index([monitorId])
@@ -519,4 +522,143 @@ enum AiConnectionStatus {
   CONNECTED
   FAILED
 }
+
+enum RepairCaseStatus {
+  AVAILABLE
+  ANALYZING
+  READY
+  CHANGES_PROPOSED
+  VALIDATION_RUNNING
+  VALIDATED
+  FAILED
+  BLOCKED
+}
+
+enum RepairOutcome {
+  REPAIRABLE
+  PARTIALLY_REPAIRABLE
+  BLOCKED
+  AMBIGUOUS
+  NO_CODE_CHANGE_REQUIRED
+  ALREADY_FIXED
+  VALIDATION_FAILED
+}
+
+enum RepairConfidenceLevel {
+  LOW
+  MEDIUM
+  HIGH
+  VERY_HIGH
+}
+
+enum ValidationRunStatus {
+  NOT_RUN
+  RUNNING
+  PASSED
+  FAILED
+  BLOCKED
+  NOT_APPLICABLE
+}
+
+model RepairCase {
+  id                    String                @id @default(cuid())
+  projectId             String
+  issueId               String
+  investigationId       String?
+  status                RepairCaseStatus      @default(AVAILABLE)
+  outcome               RepairOutcome?
+  evidenceSnapshotId    String
+  repositorySnapshotId  String?
+  version               Int                   @default(1)
+  title                 String
+  whatBroke             String
+  whyItBroke            String
+  failureMechanism      String
+  upstreamReasonStatus  String                @default("UNRESOLVED")
+  upstreamReason        String?
+  brokenBoundary        Json?
+  confidenceLevel       RepairConfidenceLevel @default(MEDIUM)
+  confidenceReason      String
+  remainingUncertainty  String?
+  context               Json?
+  createdAt             DateTime              @default(now())
+  updatedAt             DateTime              @updatedAt
+
+  project               Project               @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  issue                 Issue                 @relation(fields: [issueId], references: [id], onDelete: Cascade)
+  investigation         Investigation?        @relation(fields: [investigationId], references: [id], onDelete: SetNull)
+  changes               RepairChange[]
+  validations           RepairValidation[]
+  events                RepairEvent[]
+
+  @@index([projectId, createdAt])
+  @@index([issueId])
+  @@index([investigationId])
+}
+
+model RepairChange {
+  id             String                @id @default(cuid())
+  repairCaseId   String
+  filePath       String
+  symbol         String?
+  sourceRange    Json?
+  reason         String
+  whyThisFile    String?
+  beforeSnippet  String
+  afterSnippet   String
+  unifiedDiff    String
+  confidence     RepairConfidenceLevel @default(HIGH)
+  evidenceIds    String[]
+  order          Int                   @default(0)
+  applied        Boolean               @default(false)
+  appliedAt      DateTime?
+  createdAt      DateTime              @default(now())
+  updatedAt      DateTime              @updatedAt
+
+  repairCase     RepairCase            @relation(fields: [repairCaseId], references: [id], onDelete: Cascade)
+
+  @@index([repairCaseId])
+  @@index([filePath])
+}
+
+model RepairValidation {
+  id                  String              @id @default(cuid())
+  repairCaseId        String
+  status              ValidationRunStatus @default(NOT_RUN)
+  typecheckPassed     Boolean?
+  typecheckOutput     String?
+  testsPassed         Boolean?
+  testOutput          String?
+  buildPassed         Boolean?
+  buildOutput         String?
+  reproductionPassed  Boolean?
+  reproductionOutput  String?
+  telemetryVerified   Boolean?
+  telemetryOutput     String?
+  patchAppliesCleanly Boolean?
+  errors              Json?
+  durationMs          Int?
+  executedAt          DateTime?
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  repairCase          RepairCase          @relation(fields: [repairCaseId], references: [id], onDelete: Cascade)
+
+  @@index([repairCaseId])
+  @@index([status])
+}
+
+model RepairEvent {
+  id           String     @id @default(cuid())
+  repairCaseId String
+  eventType    String
+  message      String
+  payload      Json?
+  createdAt    DateTime   @default(now())
+
+  repairCase   RepairCase @relation(fields: [repairCaseId], references: [id], onDelete: Cascade)
+
+  @@index([repairCaseId, createdAt])
+}
+
 

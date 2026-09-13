@@ -276,6 +276,7 @@ export type IssueWhereInput = {
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   replaySessions?: Prisma.ReplaySessionListRelationFilter
   investigations?: Prisma.InvestigationListRelationFilter
+  repairCases?: Prisma.RepairCaseListRelationFilter
 }
 
 export type IssueOrderByWithRelationInput = {
@@ -295,6 +296,7 @@ export type IssueOrderByWithRelationInput = {
   project?: Prisma.ProjectOrderByWithRelationInput
   replaySessions?: Prisma.ReplaySessionOrderByRelationAggregateInput
   investigations?: Prisma.InvestigationOrderByRelationAggregateInput
+  repairCases?: Prisma.RepairCaseOrderByRelationAggregateInput
 }
 
 export type IssueWhereUniqueInput = Prisma.AtLeast<{
@@ -318,6 +320,7 @@ export type IssueWhereUniqueInput = Prisma.AtLeast<{
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   replaySessions?: Prisma.ReplaySessionListRelationFilter
   investigations?: Prisma.InvestigationListRelationFilter
+  repairCases?: Prisma.RepairCaseListRelationFilter
 }, "id" | "projectId_fingerprint">
 
 export type IssueOrderByWithAggregationInput = {
@@ -374,6 +377,7 @@ export type IssueCreateInput = {
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutIssueInput
   investigations?: Prisma.InvestigationCreateNestedManyWithoutIssueInput
+  repairCases?: Prisma.RepairCaseCreateNestedManyWithoutIssueInput
 }
 
 export type IssueUncheckedCreateInput = {
@@ -392,6 +396,7 @@ export type IssueUncheckedCreateInput = {
   events?: Prisma.EventUncheckedCreateNestedManyWithoutIssueInput
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutIssueInput
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutIssueInput
+  repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutIssueInput
 }
 
 export type IssueUpdateInput = {
@@ -410,6 +415,7 @@ export type IssueUpdateInput = {
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutIssueNestedInput
   investigations?: Prisma.InvestigationUpdateManyWithoutIssueNestedInput
+  repairCases?: Prisma.RepairCaseUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueUncheckedUpdateInput = {
@@ -428,6 +434,7 @@ export type IssueUncheckedUpdateInput = {
   events?: Prisma.EventUncheckedUpdateManyWithoutIssueNestedInput
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutIssueNestedInput
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutIssueNestedInput
+  repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueCreateManyInput = {
@@ -547,6 +554,11 @@ export type IssueSumOrderByAggregateInput = {
   eventCount?: Prisma.SortOrder
 }
 
+export type IssueScalarRelationFilter = {
+  is?: Prisma.IssueWhereInput
+  isNot?: Prisma.IssueWhereInput
+}
+
 export type IssueCreateNestedManyWithoutProjectInput = {
   create?: Prisma.XOR<Prisma.IssueCreateWithoutProjectInput, Prisma.IssueUncheckedCreateWithoutProjectInput> | Prisma.IssueCreateWithoutProjectInput[] | Prisma.IssueUncheckedCreateWithoutProjectInput[]
   connectOrCreate?: Prisma.IssueCreateOrConnectWithoutProjectInput | Prisma.IssueCreateOrConnectWithoutProjectInput[]
@@ -641,6 +653,20 @@ export type IssueUpdateOneWithoutInvestigationsNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.IssueUpdateToOneWithWhereWithoutInvestigationsInput, Prisma.IssueUpdateWithoutInvestigationsInput>, Prisma.IssueUncheckedUpdateWithoutInvestigationsInput>
 }
 
+export type IssueCreateNestedOneWithoutRepairCasesInput = {
+  create?: Prisma.XOR<Prisma.IssueCreateWithoutRepairCasesInput, Prisma.IssueUncheckedCreateWithoutRepairCasesInput>
+  connectOrCreate?: Prisma.IssueCreateOrConnectWithoutRepairCasesInput
+  connect?: Prisma.IssueWhereUniqueInput
+}
+
+export type IssueUpdateOneRequiredWithoutRepairCasesNestedInput = {
+  create?: Prisma.XOR<Prisma.IssueCreateWithoutRepairCasesInput, Prisma.IssueUncheckedCreateWithoutRepairCasesInput>
+  connectOrCreate?: Prisma.IssueCreateOrConnectWithoutRepairCasesInput
+  upsert?: Prisma.IssueUpsertWithoutRepairCasesInput
+  connect?: Prisma.IssueWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.IssueUpdateToOneWithWhereWithoutRepairCasesInput, Prisma.IssueUpdateWithoutRepairCasesInput>, Prisma.IssueUncheckedUpdateWithoutRepairCasesInput>
+}
+
 export type IssueCreateWithoutProjectInput = {
   id?: string
   fingerprint: string
@@ -656,6 +682,7 @@ export type IssueCreateWithoutProjectInput = {
   events?: Prisma.EventCreateNestedManyWithoutIssueInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutIssueInput
   investigations?: Prisma.InvestigationCreateNestedManyWithoutIssueInput
+  repairCases?: Prisma.RepairCaseCreateNestedManyWithoutIssueInput
 }
 
 export type IssueUncheckedCreateWithoutProjectInput = {
@@ -673,6 +700,7 @@ export type IssueUncheckedCreateWithoutProjectInput = {
   events?: Prisma.EventUncheckedCreateNestedManyWithoutIssueInput
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutIssueInput
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutIssueInput
+  repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutIssueInput
 }
 
 export type IssueCreateOrConnectWithoutProjectInput = {
@@ -734,6 +762,7 @@ export type IssueCreateWithoutEventsInput = {
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutIssueInput
   investigations?: Prisma.InvestigationCreateNestedManyWithoutIssueInput
+  repairCases?: Prisma.RepairCaseCreateNestedManyWithoutIssueInput
 }
 
 export type IssueUncheckedCreateWithoutEventsInput = {
@@ -751,6 +780,7 @@ export type IssueUncheckedCreateWithoutEventsInput = {
   lastEventId?: string | null
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutIssueInput
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutIssueInput
+  repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutIssueInput
 }
 
 export type IssueCreateOrConnectWithoutEventsInput = {
@@ -784,6 +814,7 @@ export type IssueUpdateWithoutEventsInput = {
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutIssueNestedInput
   investigations?: Prisma.InvestigationUpdateManyWithoutIssueNestedInput
+  repairCases?: Prisma.RepairCaseUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueUncheckedUpdateWithoutEventsInput = {
@@ -801,6 +832,7 @@ export type IssueUncheckedUpdateWithoutEventsInput = {
   lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutIssueNestedInput
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutIssueNestedInput
+  repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueCreateWithoutReplaySessionsInput = {
@@ -818,6 +850,7 @@ export type IssueCreateWithoutReplaySessionsInput = {
   events?: Prisma.EventCreateNestedManyWithoutIssueInput
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
   investigations?: Prisma.InvestigationCreateNestedManyWithoutIssueInput
+  repairCases?: Prisma.RepairCaseCreateNestedManyWithoutIssueInput
 }
 
 export type IssueUncheckedCreateWithoutReplaySessionsInput = {
@@ -835,6 +868,7 @@ export type IssueUncheckedCreateWithoutReplaySessionsInput = {
   lastEventId?: string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutIssueInput
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutIssueInput
+  repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutIssueInput
 }
 
 export type IssueCreateOrConnectWithoutReplaySessionsInput = {
@@ -868,6 +902,7 @@ export type IssueUpdateWithoutReplaySessionsInput = {
   events?: Prisma.EventUpdateManyWithoutIssueNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
   investigations?: Prisma.InvestigationUpdateManyWithoutIssueNestedInput
+  repairCases?: Prisma.RepairCaseUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueUncheckedUpdateWithoutReplaySessionsInput = {
@@ -885,6 +920,7 @@ export type IssueUncheckedUpdateWithoutReplaySessionsInput = {
   lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutIssueNestedInput
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutIssueNestedInput
+  repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueCreateWithoutInvestigationsInput = {
@@ -902,6 +938,7 @@ export type IssueCreateWithoutInvestigationsInput = {
   events?: Prisma.EventCreateNestedManyWithoutIssueInput
   project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
   replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutIssueInput
+  repairCases?: Prisma.RepairCaseCreateNestedManyWithoutIssueInput
 }
 
 export type IssueUncheckedCreateWithoutInvestigationsInput = {
@@ -919,6 +956,7 @@ export type IssueUncheckedCreateWithoutInvestigationsInput = {
   lastEventId?: string | null
   events?: Prisma.EventUncheckedCreateNestedManyWithoutIssueInput
   replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutIssueInput
+  repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutIssueInput
 }
 
 export type IssueCreateOrConnectWithoutInvestigationsInput = {
@@ -952,6 +990,7 @@ export type IssueUpdateWithoutInvestigationsInput = {
   events?: Prisma.EventUpdateManyWithoutIssueNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutIssueNestedInput
+  repairCases?: Prisma.RepairCaseUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueUncheckedUpdateWithoutInvestigationsInput = {
@@ -969,6 +1008,95 @@ export type IssueUncheckedUpdateWithoutInvestigationsInput = {
   lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
   events?: Prisma.EventUncheckedUpdateManyWithoutIssueNestedInput
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutIssueNestedInput
+  repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutIssueNestedInput
+}
+
+export type IssueCreateWithoutRepairCasesInput = {
+  id?: string
+  fingerprint: string
+  title: string
+  status?: $Enums.IssueStatus
+  firstSeen?: Date | string
+  lastSeen?: Date | string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  eventCount?: number
+  severity?: $Enums.EventSeverity
+  lastEventId?: string | null
+  events?: Prisma.EventCreateNestedManyWithoutIssueInput
+  project: Prisma.ProjectCreateNestedOneWithoutIssuesInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutIssueInput
+  investigations?: Prisma.InvestigationCreateNestedManyWithoutIssueInput
+}
+
+export type IssueUncheckedCreateWithoutRepairCasesInput = {
+  id?: string
+  fingerprint: string
+  title: string
+  status?: $Enums.IssueStatus
+  firstSeen?: Date | string
+  lastSeen?: Date | string
+  projectId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  eventCount?: number
+  severity?: $Enums.EventSeverity
+  lastEventId?: string | null
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutIssueInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutIssueInput
+  investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutIssueInput
+}
+
+export type IssueCreateOrConnectWithoutRepairCasesInput = {
+  where: Prisma.IssueWhereUniqueInput
+  create: Prisma.XOR<Prisma.IssueCreateWithoutRepairCasesInput, Prisma.IssueUncheckedCreateWithoutRepairCasesInput>
+}
+
+export type IssueUpsertWithoutRepairCasesInput = {
+  update: Prisma.XOR<Prisma.IssueUpdateWithoutRepairCasesInput, Prisma.IssueUncheckedUpdateWithoutRepairCasesInput>
+  create: Prisma.XOR<Prisma.IssueCreateWithoutRepairCasesInput, Prisma.IssueUncheckedCreateWithoutRepairCasesInput>
+  where?: Prisma.IssueWhereInput
+}
+
+export type IssueUpdateToOneWithWhereWithoutRepairCasesInput = {
+  where?: Prisma.IssueWhereInput
+  data: Prisma.XOR<Prisma.IssueUpdateWithoutRepairCasesInput, Prisma.IssueUncheckedUpdateWithoutRepairCasesInput>
+}
+
+export type IssueUpdateWithoutRepairCasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
+  firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  events?: Prisma.EventUpdateManyWithoutIssueNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutIssuesNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutIssueNestedInput
+  investigations?: Prisma.InvestigationUpdateManyWithoutIssueNestedInput
+}
+
+export type IssueUncheckedUpdateWithoutRepairCasesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumIssueStatusFieldUpdateOperationsInput | $Enums.IssueStatus
+  firstSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  lastSeen?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  eventCount?: Prisma.IntFieldUpdateOperationsInput | number
+  severity?: Prisma.EnumEventSeverityFieldUpdateOperationsInput | $Enums.EventSeverity
+  lastEventId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  events?: Prisma.EventUncheckedUpdateManyWithoutIssueNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutIssueNestedInput
+  investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueCreateManyProjectInput = {
@@ -1000,6 +1128,7 @@ export type IssueUpdateWithoutProjectInput = {
   events?: Prisma.EventUpdateManyWithoutIssueNestedInput
   replaySessions?: Prisma.ReplaySessionUpdateManyWithoutIssueNestedInput
   investigations?: Prisma.InvestigationUpdateManyWithoutIssueNestedInput
+  repairCases?: Prisma.RepairCaseUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueUncheckedUpdateWithoutProjectInput = {
@@ -1017,6 +1146,7 @@ export type IssueUncheckedUpdateWithoutProjectInput = {
   events?: Prisma.EventUncheckedUpdateManyWithoutIssueNestedInput
   replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutIssueNestedInput
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutIssueNestedInput
+  repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutIssueNestedInput
 }
 
 export type IssueUncheckedUpdateManyWithoutProjectInput = {
@@ -1042,12 +1172,14 @@ export type IssueCountOutputType = {
   events: number
   replaySessions: number
   investigations: number
+  repairCases: number
 }
 
 export type IssueCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   events?: boolean | IssueCountOutputTypeCountEventsArgs
   replaySessions?: boolean | IssueCountOutputTypeCountReplaySessionsArgs
   investigations?: boolean | IssueCountOutputTypeCountInvestigationsArgs
+  repairCases?: boolean | IssueCountOutputTypeCountRepairCasesArgs
 }
 
 /**
@@ -1081,6 +1213,13 @@ export type IssueCountOutputTypeCountInvestigationsArgs<ExtArgs extends runtime.
   where?: Prisma.InvestigationWhereInput
 }
 
+/**
+ * IssueCountOutputType without action
+ */
+export type IssueCountOutputTypeCountRepairCasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RepairCaseWhereInput
+}
+
 
 export type IssueSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1099,6 +1238,7 @@ export type IssueSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   replaySessions?: boolean | Prisma.Issue$replaySessionsArgs<ExtArgs>
   investigations?: boolean | Prisma.Issue$investigationsArgs<ExtArgs>
+  repairCases?: boolean | Prisma.Issue$repairCasesArgs<ExtArgs>
   _count?: boolean | Prisma.IssueCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["issue"]>
 
@@ -1155,6 +1295,7 @@ export type IssueInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs =
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   replaySessions?: boolean | Prisma.Issue$replaySessionsArgs<ExtArgs>
   investigations?: boolean | Prisma.Issue$investigationsArgs<ExtArgs>
+  repairCases?: boolean | Prisma.Issue$repairCasesArgs<ExtArgs>
   _count?: boolean | Prisma.IssueCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type IssueIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1171,6 +1312,7 @@ export type $IssuePayload<ExtArgs extends runtime.Types.Extensions.InternalArgs 
     project: Prisma.$ProjectPayload<ExtArgs>
     replaySessions: Prisma.$ReplaySessionPayload<ExtArgs>[]
     investigations: Prisma.$InvestigationPayload<ExtArgs>[]
+    repairCases: Prisma.$RepairCasePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1583,6 +1725,7 @@ export interface Prisma__IssueClient<T, Null = never, ExtArgs extends runtime.Ty
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   replaySessions<T extends Prisma.Issue$replaySessionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$replaySessionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ReplaySessionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   investigations<T extends Prisma.Issue$investigationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$investigationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvestigationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  repairCases<T extends Prisma.Issue$repairCasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Issue$repairCasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairCasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2094,6 +2237,30 @@ export type Issue$investigationsArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.InvestigationScalarFieldEnum | Prisma.InvestigationScalarFieldEnum[]
+}
+
+/**
+ * Issue.repairCases
+ */
+export type Issue$repairCasesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RepairCase
+   */
+  select?: Prisma.RepairCaseSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RepairCase
+   */
+  omit?: Prisma.RepairCaseOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RepairCaseInclude<ExtArgs> | null
+  where?: Prisma.RepairCaseWhereInput
+  orderBy?: Prisma.RepairCaseOrderByWithRelationInput | Prisma.RepairCaseOrderByWithRelationInput[]
+  cursor?: Prisma.RepairCaseWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RepairCaseScalarFieldEnum | Prisma.RepairCaseScalarFieldEnum[]
 }
 
 /**

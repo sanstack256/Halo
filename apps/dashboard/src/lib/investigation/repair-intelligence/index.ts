@@ -12,3 +12,7 @@ export * from "./repair-eligibility";
 export * from "./blast-radius-analyzer";
 export * from "./validation-blueprint-builder";
 export * from "./repair-case-builder";
+export * from "./contract-mismatch-engine";
+export * from "./patch-engine";
+export * from "./validation-engine";
+export * from "./repair-orchestrator";

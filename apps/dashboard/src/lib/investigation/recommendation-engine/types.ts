@@ -194,7 +194,7 @@ export interface ValidatedRecommendationResult {
     limitations: string[];
 
     /** Full evidence-driven Repair Case */
-    repairCase?: import("../repair-intelligence/types").RepairCase;
+    repairCase?: import("../repair-intelligence/types").RepairCase | import("../repair-intelligence/types").LegacyRepairCase;
 
     /** Audit and inspectability metadata */
     audit: {

@@ -29,6 +29,7 @@ import {
     Wifi,
     Zap,
     FileWarning,
+    Wrench,
 } from "lucide-react";
 import { ReplayPlayerClient } from "@/components/replay/replay-player-client";
 import { ReplayStatus } from "@/components/replay/replay-status";
@@ -183,9 +184,17 @@ export function IssueDetailView({ issue, replaySession, hasReplayAccess = true }
 
                     <Link
                         href={`/projects/${issue.projectId}/investigations/new?issueId=${issue.id}${activeEvent ? `&eventId=${activeEvent.id}` : ""}`}
-                        className="halo-btn halo-btn-sm halo-btn-primary flex items-center gap-1.5"
+                        className="halo-btn halo-btn-sm halo-btn-secondary flex items-center gap-1.5"
                     >
                         <span>Investigate</span>
+                    </Link>
+
+                    <Link
+                        href={`/projects/${issue.projectId}/issues/${issue.id}/repair${activeEvent ? `?eventId=${activeEvent.id}` : ""}`}
+                        className="halo-btn halo-btn-sm halo-btn-primary flex items-center gap-1.5"
+                    >
+                        <Wrench size={14} />
+                        <span>Repair</span>
                     </Link>
                 </div>
             </div>

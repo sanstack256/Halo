@@ -69,7 +69,11 @@ export const ModelName = {
   Monitor: 'Monitor',
   MonitorAlert: 'MonitorAlert',
   MonitorAlertNotification: 'MonitorAlertNotification',
-  Investigation: 'Investigation'
+  Investigation: 'Investigation',
+  RepairCase: 'RepairCase',
+  RepairChange: 'RepairChange',
+  RepairValidation: 'RepairValidation',
+  RepairEvent: 'RepairEvent'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -436,6 +440,94 @@ export const InvestigationScalarFieldEnum = {
 } as const
 
 export type InvestigationScalarFieldEnum = (typeof InvestigationScalarFieldEnum)[keyof typeof InvestigationScalarFieldEnum]
+
+
+export const RepairCaseScalarFieldEnum = {
+  id: 'id',
+  projectId: 'projectId',
+  issueId: 'issueId',
+  investigationId: 'investigationId',
+  status: 'status',
+  outcome: 'outcome',
+  evidenceSnapshotId: 'evidenceSnapshotId',
+  repositorySnapshotId: 'repositorySnapshotId',
+  version: 'version',
+  title: 'title',
+  whatBroke: 'whatBroke',
+  whyItBroke: 'whyItBroke',
+  failureMechanism: 'failureMechanism',
+  upstreamReasonStatus: 'upstreamReasonStatus',
+  upstreamReason: 'upstreamReason',
+  brokenBoundary: 'brokenBoundary',
+  confidenceLevel: 'confidenceLevel',
+  confidenceReason: 'confidenceReason',
+  remainingUncertainty: 'remainingUncertainty',
+  context: 'context',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RepairCaseScalarFieldEnum = (typeof RepairCaseScalarFieldEnum)[keyof typeof RepairCaseScalarFieldEnum]
+
+
+export const RepairChangeScalarFieldEnum = {
+  id: 'id',
+  repairCaseId: 'repairCaseId',
+  filePath: 'filePath',
+  symbol: 'symbol',
+  sourceRange: 'sourceRange',
+  reason: 'reason',
+  whyThisFile: 'whyThisFile',
+  beforeSnippet: 'beforeSnippet',
+  afterSnippet: 'afterSnippet',
+  unifiedDiff: 'unifiedDiff',
+  confidence: 'confidence',
+  evidenceIds: 'evidenceIds',
+  order: 'order',
+  applied: 'applied',
+  appliedAt: 'appliedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RepairChangeScalarFieldEnum = (typeof RepairChangeScalarFieldEnum)[keyof typeof RepairChangeScalarFieldEnum]
+
+
+export const RepairValidationScalarFieldEnum = {
+  id: 'id',
+  repairCaseId: 'repairCaseId',
+  status: 'status',
+  typecheckPassed: 'typecheckPassed',
+  typecheckOutput: 'typecheckOutput',
+  testsPassed: 'testsPassed',
+  testOutput: 'testOutput',
+  buildPassed: 'buildPassed',
+  buildOutput: 'buildOutput',
+  reproductionPassed: 'reproductionPassed',
+  reproductionOutput: 'reproductionOutput',
+  telemetryVerified: 'telemetryVerified',
+  telemetryOutput: 'telemetryOutput',
+  patchAppliesCleanly: 'patchAppliesCleanly',
+  errors: 'errors',
+  durationMs: 'durationMs',
+  executedAt: 'executedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RepairValidationScalarFieldEnum = (typeof RepairValidationScalarFieldEnum)[keyof typeof RepairValidationScalarFieldEnum]
+
+
+export const RepairEventScalarFieldEnum = {
+  id: 'id',
+  repairCaseId: 'repairCaseId',
+  eventType: 'eventType',
+  message: 'message',
+  payload: 'payload',
+  createdAt: 'createdAt'
+} as const
+
+export type RepairEventScalarFieldEnum = (typeof RepairEventScalarFieldEnum)[keyof typeof RepairEventScalarFieldEnum]
 
 
 export const SortOrder = {

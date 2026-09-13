@@ -16,9 +16,12 @@
     "db:studio:neon": "DATABASE_URL=\"$NEON_DATABASE_URL\" prisma studio"
   },
   "devDependencies": {
+    "@playwright/test": "^1.62.1",
     "@types/node": "^26.1.1",
+    "playwright": "^1.62.1",
     "prisma": "7.9.1",
     "tsx": "^4.23.10",
-    "typescript": "^7.0.2"
+    "typescript": "^7.0.2",
+    "vitest": "^4.1.10"
   }
 }

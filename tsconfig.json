@@ -1,0 +1,21 @@
+{
+  "compilerOptions": {
+    "target": "ES2022",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "module": "preserve",
+    "moduleResolution": "bundler",
+    "skipLibCheck": true,
+    "strict": true,
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@/*": ["./apps/dashboard/src/*"],
+      "@halo/investigation-engine": ["./packages/investigation-engine/src"]
+    }
+  },
+  "include": [
+    "scripts/**/*",
+    "prisma.config.ts"
+  ]
+}

@@ -33,10 +33,7 @@
   "exclude": [
     "node_modules",
     "vitest.config.ts",
-    "vitest.config.mjs",
-    "**/*.test.ts",
-    "**/*.test.tsx",
-    "**/__tests__/**"
+    "vitest.config.mjs"
   ]
 }
 

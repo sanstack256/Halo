@@ -35,6 +35,7 @@ import {
     Terminal,
     XCircle,
     Zap,
+    Wrench,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -403,6 +404,7 @@ export default async function InvestigationPage({
                 releaseContext={releaseContext}
                 userTimezone={userTimezone}
                 llmRecommendation={llmRecommendation}
+                issueId={issueId}
             />
         );
     } catch (error) {
@@ -435,6 +437,7 @@ function InvestigationView({
     releaseContext,
     userTimezone = "UTC",
     llmRecommendation,
+    issueId,
 }: {
     investigation: Investigation;
     resolvedReplay: ResolvedOccurrenceReplay | null;
@@ -519,6 +522,7 @@ function InvestigationView({
     } | null;
     userTimezone?: string;
     llmRecommendation?: ValidatedRecommendationResult;
+    issueId?: string;
 }) {
     const {
         status,
@@ -583,10 +587,21 @@ function InvestigationView({
     return (
         <div className="halo-investigation max-w-5xl mx-auto space-y-8 pb-16">
             <div className="mb-4 flex items-center justify-between">
-                <BackButton
-                    fallbackHref={backHref}
-                    label={backLabel}
-                />
+                <div className="flex items-center gap-3">
+                    <BackButton
+                        fallbackHref={backHref}
+                        label={backLabel}
+                    />
+                    {issueId && (
+                        <Link
+                            href={`/projects/${projectId}/issues/${issueId}/repair${incidentAnchorId ? `?eventId=${incidentAnchorId}` : ""}`}
+                            className="halo-btn halo-btn-sm halo-btn-primary flex items-center gap-1.5 font-mono text-xs"
+                        >
+                            <Wrench size={13} />
+                            <span>Open Repair Case</span>
+                        </Link>
+                    )}
+                </div>
                 <div className="text-xs font-mono text-zinc-500">
                     {intervalContext ? (
                         <div className="flex items-center gap-2">

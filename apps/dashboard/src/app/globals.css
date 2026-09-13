@@ -3825,3 +3825,204 @@ a.halo-primary-cta[aria-disabled="true"] {
   width: 0 !important;
   height: 0 !important;
 }
+
+/* =====================================================
+   HALO REPAIR CASE SYSTEM
+===================================================== */
+
+.halo-repair-workspace {
+  max-width: 1240px;
+  margin: 0 auto;
+  padding-bottom: 80px;
+}
+
+.halo-repair-header {
+  border-bottom: 1px solid var(--border-default);
+  padding-bottom: 24px;
+  margin-bottom: 32px;
+}
+
+.halo-repair-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 10px;
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  border: 1px solid var(--border-strong);
+  background: var(--surface-elevated);
+}
+
+.halo-repair-badge-validated {
+  color: var(--success);
+  background: rgba(53, 208, 138, 0.08);
+  border-color: rgba(53, 208, 138, 0.25);
+}
+
+.halo-repair-badge-proposed {
+  color: var(--accent);
+  background: var(--accent-subtle);
+  border-color: rgba(91, 188, 255, 0.25);
+}
+
+.halo-repair-badge-blocked {
+  color: var(--warning);
+  background: rgba(242, 184, 75, 0.08);
+  border-color: rgba(242, 184, 75, 0.25);
+}
+
+.halo-repair-badge-failed {
+  color: var(--danger);
+  background: rgba(255, 92, 103, 0.08);
+  border-color: rgba(255, 92, 103, 0.25);
+}
+
+.halo-contract-boundary-card {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  overflow: hidden;
+}
+
+.halo-contract-boundary-header {
+  padding: 16px 20px;
+  border-bottom: 1px solid var(--border-subtle);
+  background: var(--surface-elevated);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.halo-contract-chain-grid {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 20px;
+}
+
+@media (max-width: 768px) {
+  .halo-contract-chain-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+.halo-contract-node {
+  border: 1px solid var(--border-subtle);
+  border-radius: var(--radius-sm);
+  background: var(--surface-raised);
+  padding: 14px;
+}
+
+.halo-contract-node-title {
+  font-family: var(--font-mono);
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.halo-contract-arrow-container {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4px;
+  color: var(--accent);
+}
+
+.halo-contract-arrow-label {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.halo-contract-discrepancy {
+  border-top: 1px solid var(--border-subtle);
+  padding: 14px 20px;
+  background: rgba(242, 184, 75, 0.04);
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--text-secondary);
+  line-height: 1.6;
+}
+
+.halo-diff-viewer {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
+  background: #020408;
+  overflow: hidden;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+}
+
+.halo-diff-toolbar {
+  padding: 12px 18px;
+  background: var(--surface-elevated);
+  border-bottom: 1px solid var(--border-subtle);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.halo-diff-line {
+  display: flex;
+  padding: 2px 16px;
+  white-space: pre-wrap;
+  word-break: break-all;
+}
+
+.halo-diff-line-add {
+  background: rgba(53, 208, 138, 0.12);
+  color: #5cf4af;
+  border-left: 3px solid var(--success);
+}
+
+.halo-diff-line-remove {
+  background: rgba(255, 92, 103, 0.12);
+  color: #ff8e96;
+  border-left: 3px solid var(--danger);
+}
+
+.halo-diff-line-context {
+  color: var(--text-secondary);
+  border-left: 3px solid transparent;
+}
+
+.halo-diff-line-header {
+  background: rgba(91, 188, 255, 0.08);
+  color: var(--accent);
+  padding: 4px 16px;
+  font-size: 11px;
+}
+
+.halo-validation-card {
+  border: 1px solid var(--border-default);
+  border-radius: var(--radius-card);
+  background: var(--surface);
+  padding: 20px;
+}
+
+.halo-validation-step {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 0;
+  border-bottom: 1px solid var(--border-subtle);
+}
+
+.halo-validation-step:last-child {
+  border-bottom: none;
+}

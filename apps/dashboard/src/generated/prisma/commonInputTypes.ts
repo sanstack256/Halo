@@ -569,6 +569,87 @@ export type EnumInvestigationStatusWithAggregatesFilter<$PrismaModel = never> = 
   _max?: Prisma.NestedEnumInvestigationStatusFilter<$PrismaModel>
 }
 
+export type EnumRepairCaseStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.RepairCaseStatus | Prisma.EnumRepairCaseStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RepairCaseStatus[] | Prisma.ListEnumRepairCaseStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RepairCaseStatus[] | Prisma.ListEnumRepairCaseStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRepairCaseStatusFilter<$PrismaModel> | $Enums.RepairCaseStatus
+}
+
+export type EnumRepairOutcomeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.RepairOutcome | Prisma.EnumRepairOutcomeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.RepairOutcome[] | Prisma.ListEnumRepairOutcomeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.RepairOutcome[] | Prisma.ListEnumRepairOutcomeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumRepairOutcomeNullableFilter<$PrismaModel> | $Enums.RepairOutcome | null
+}
+
+export type EnumRepairConfidenceLevelFilter<$PrismaModel = never> = {
+  equals?: $Enums.RepairConfidenceLevel | Prisma.EnumRepairConfidenceLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.RepairConfidenceLevel[] | Prisma.ListEnumRepairConfidenceLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RepairConfidenceLevel[] | Prisma.ListEnumRepairConfidenceLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRepairConfidenceLevelFilter<$PrismaModel> | $Enums.RepairConfidenceLevel
+}
+
+export type EnumRepairCaseStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RepairCaseStatus | Prisma.EnumRepairCaseStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RepairCaseStatus[] | Prisma.ListEnumRepairCaseStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RepairCaseStatus[] | Prisma.ListEnumRepairCaseStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRepairCaseStatusWithAggregatesFilter<$PrismaModel> | $Enums.RepairCaseStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRepairCaseStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRepairCaseStatusFilter<$PrismaModel>
+}
+
+export type EnumRepairOutcomeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RepairOutcome | Prisma.EnumRepairOutcomeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.RepairOutcome[] | Prisma.ListEnumRepairOutcomeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.RepairOutcome[] | Prisma.ListEnumRepairOutcomeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumRepairOutcomeNullableWithAggregatesFilter<$PrismaModel> | $Enums.RepairOutcome | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRepairOutcomeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRepairOutcomeNullableFilter<$PrismaModel>
+}
+
+export type EnumRepairConfidenceLevelWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RepairConfidenceLevel | Prisma.EnumRepairConfidenceLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.RepairConfidenceLevel[] | Prisma.ListEnumRepairConfidenceLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RepairConfidenceLevel[] | Prisma.ListEnumRepairConfidenceLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRepairConfidenceLevelWithAggregatesFilter<$PrismaModel> | $Enums.RepairConfidenceLevel
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRepairConfidenceLevelFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRepairConfidenceLevelFilter<$PrismaModel>
+}
+
+export type EnumValidationRunStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ValidationRunStatus | Prisma.EnumValidationRunStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ValidationRunStatus[] | Prisma.ListEnumValidationRunStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ValidationRunStatus[] | Prisma.ListEnumValidationRunStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumValidationRunStatusFilter<$PrismaModel> | $Enums.ValidationRunStatus
+}
+
+export type BoolNullableFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedBoolNullableFilter<$PrismaModel> | boolean | null
+}
+
+export type EnumValidationRunStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ValidationRunStatus | Prisma.EnumValidationRunStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ValidationRunStatus[] | Prisma.ListEnumValidationRunStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ValidationRunStatus[] | Prisma.ListEnumValidationRunStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumValidationRunStatusWithAggregatesFilter<$PrismaModel> | $Enums.ValidationRunStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumValidationRunStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumValidationRunStatusFilter<$PrismaModel>
+}
+
+export type BoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedBoolNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedBoolNullableFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1070,6 +1151,87 @@ export type NestedEnumInvestigationStatusWithAggregatesFilter<$PrismaModel = nev
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumInvestigationStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumInvestigationStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumRepairCaseStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.RepairCaseStatus | Prisma.EnumRepairCaseStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RepairCaseStatus[] | Prisma.ListEnumRepairCaseStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RepairCaseStatus[] | Prisma.ListEnumRepairCaseStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRepairCaseStatusFilter<$PrismaModel> | $Enums.RepairCaseStatus
+}
+
+export type NestedEnumRepairOutcomeNullableFilter<$PrismaModel = never> = {
+  equals?: $Enums.RepairOutcome | Prisma.EnumRepairOutcomeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.RepairOutcome[] | Prisma.ListEnumRepairOutcomeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.RepairOutcome[] | Prisma.ListEnumRepairOutcomeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumRepairOutcomeNullableFilter<$PrismaModel> | $Enums.RepairOutcome | null
+}
+
+export type NestedEnumRepairConfidenceLevelFilter<$PrismaModel = never> = {
+  equals?: $Enums.RepairConfidenceLevel | Prisma.EnumRepairConfidenceLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.RepairConfidenceLevel[] | Prisma.ListEnumRepairConfidenceLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RepairConfidenceLevel[] | Prisma.ListEnumRepairConfidenceLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRepairConfidenceLevelFilter<$PrismaModel> | $Enums.RepairConfidenceLevel
+}
+
+export type NestedEnumRepairCaseStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RepairCaseStatus | Prisma.EnumRepairCaseStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RepairCaseStatus[] | Prisma.ListEnumRepairCaseStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RepairCaseStatus[] | Prisma.ListEnumRepairCaseStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRepairCaseStatusWithAggregatesFilter<$PrismaModel> | $Enums.RepairCaseStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRepairCaseStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRepairCaseStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumRepairOutcomeNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RepairOutcome | Prisma.EnumRepairOutcomeFieldRefInput<$PrismaModel> | null
+  in?: $Enums.RepairOutcome[] | Prisma.ListEnumRepairOutcomeFieldRefInput<$PrismaModel> | null
+  notIn?: $Enums.RepairOutcome[] | Prisma.ListEnumRepairOutcomeFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedEnumRepairOutcomeNullableWithAggregatesFilter<$PrismaModel> | $Enums.RepairOutcome | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRepairOutcomeNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRepairOutcomeNullableFilter<$PrismaModel>
+}
+
+export type NestedEnumRepairConfidenceLevelWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RepairConfidenceLevel | Prisma.EnumRepairConfidenceLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.RepairConfidenceLevel[] | Prisma.ListEnumRepairConfidenceLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RepairConfidenceLevel[] | Prisma.ListEnumRepairConfidenceLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRepairConfidenceLevelWithAggregatesFilter<$PrismaModel> | $Enums.RepairConfidenceLevel
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRepairConfidenceLevelFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRepairConfidenceLevelFilter<$PrismaModel>
+}
+
+export type NestedEnumValidationRunStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.ValidationRunStatus | Prisma.EnumValidationRunStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ValidationRunStatus[] | Prisma.ListEnumValidationRunStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ValidationRunStatus[] | Prisma.ListEnumValidationRunStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumValidationRunStatusFilter<$PrismaModel> | $Enums.ValidationRunStatus
+}
+
+export type NestedBoolNullableFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedBoolNullableFilter<$PrismaModel> | boolean | null
+}
+
+export type NestedEnumValidationRunStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ValidationRunStatus | Prisma.EnumValidationRunStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.ValidationRunStatus[] | Prisma.ListEnumValidationRunStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ValidationRunStatus[] | Prisma.ListEnumValidationRunStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumValidationRunStatusWithAggregatesFilter<$PrismaModel> | $Enums.ValidationRunStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumValidationRunStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumValidationRunStatusFilter<$PrismaModel>
+}
+
+export type NestedBoolNullableWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: boolean | Prisma.BooleanFieldRefInput<$PrismaModel> | null
+  not?: Prisma.NestedBoolNullableWithAggregatesFilter<$PrismaModel> | boolean | null
+  _count?: Prisma.NestedIntNullableFilter<$PrismaModel>
+  _min?: Prisma.NestedBoolNullableFilter<$PrismaModel>
+  _max?: Prisma.NestedBoolNullableFilter<$PrismaModel>
 }
 
 

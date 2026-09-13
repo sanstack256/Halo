@@ -136,3 +136,23 @@ export type MonitorAlertNotification = Prisma.MonitorAlertNotificationModel
  * 
  */
 export type Investigation = Prisma.InvestigationModel
+/**
+ * Model RepairCase
+ * 
+ */
+export type RepairCase = Prisma.RepairCaseModel
+/**
+ * Model RepairChange
+ * 
+ */
+export type RepairChange = Prisma.RepairChangeModel
+/**
+ * Model RepairValidation
+ * 
+ */
+export type RepairValidation = Prisma.RepairValidationModel
+/**
+ * Model RepairEvent
+ * 
+ */
+export type RepairEvent = Prisma.RepairEventModel

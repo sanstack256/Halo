@@ -26,11 +26,11 @@ import {
     Flame,
     Check,
 } from "lucide-react";
-import type { RepairCase, RepairEligibilityState, ProtectionStatus } from "@/lib/investigation/repair-intelligence/types";
+import type { RepairCase, LegacyRepairCase, RepairEligibilityState, ProtectionStatus } from "@/lib/investigation/repair-intelligence/types";
 import type { ValidatedRecommendationResult } from "@/lib/investigation/recommendation-engine/types";
 
 interface Props {
-    repairCase?: RepairCase;
+    repairCase?: RepairCase | LegacyRepairCase;
     llmResult?: ValidatedRecommendationResult;
     onJumpToEvidence?: (evidenceId: string) => void;
 }

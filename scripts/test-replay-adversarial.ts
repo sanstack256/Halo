@@ -87,7 +87,7 @@ async function main() {
             </html>
             `;
 
-            await page.route(`${BASE_URL}/autonomous-app`, (route) => {
+            await page.route(`${BASE_URL}/autonomous-app`, (route: any) => {
                 route.fulfill({ status: 200, contentType: "text/html", body: autoAppHtml });
             });
             await page.goto(`${BASE_URL}/autonomous-app`);
@@ -189,7 +189,7 @@ async function main() {
             </html>
             `;
 
-            await page.route(`${BASE_URL}/temporal-app`, (route) => {
+            await page.route(`${BASE_URL}/temporal-app`, (route: any) => {
                 route.fulfill({ status: 200, contentType: "text/html", body: temporalAppHtml });
             });
             await page.goto(`${BASE_URL}/temporal-app`);
@@ -283,7 +283,7 @@ async function main() {
 
             // Seek and verify reconstructed DOM at t1, t2, t3, t4 directly in rrweb iframe
             const getIframeStatusText = async (seekMs: number): Promise<string> => {
-                return await page.evaluate(async (ms) => {
+                return await page.evaluate(async (ms: number) => {
                     if (typeof (window as any).__HALO_SEEK_TO__ === "function") {
                         (window as any).__HALO_SEEK_TO__(ms);
                     } else {
@@ -293,7 +293,7 @@ async function main() {
                             input.dispatchEvent(new Event("change", { bubbles: true }));
                         }
                     }
-                    await new Promise((r) => setTimeout(r, 400));
+                    const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
                     const iframe = document.querySelector("iframe");
                     if (!iframe || !iframe.contentDocument) return "NO_IFRAME";
                     const status = iframe.contentDocument.getElementById("order-status");
@@ -373,7 +373,7 @@ async function main() {
 
             const targetUrlWithSecrets = `${BASE_URL}/privacy-app?token=${CANARY.URL_PARAM}&authKey=SECRET_PARAM_KEY`;
 
-            await page.route(`${BASE_URL}/privacy-app*`, (route) => {
+            await page.route(`${BASE_URL}/privacy-app*`, (route: any) => {
                 route.fulfill({ status: 200, contentType: "text/html", body: privacyAppHtml });
             });
             await page.goto(targetUrlWithSecrets);
@@ -671,7 +671,7 @@ async function main() {
             </html>
             `;
 
-            await page.route(`${BASE_URL}/release-app`, (route) => {
+            await page.route(`${BASE_URL}/release-app`, (route: any) => {
                 route.fulfill({ status: 200, contentType: "text/html", body: releaseA_Html });
             });
             await page.goto(`${BASE_URL}/release-app`);
@@ -725,7 +725,7 @@ async function main() {
             </body>
             </html>
             `;
-            await page.route(`${BASE_URL}/release-app`, (route) => {
+            await page.route(`${BASE_URL}/release-app`, (route: any) => {
                 route.fulfill({ status: 200, contentType: "text/html", body: releaseB_Html });
             });
 

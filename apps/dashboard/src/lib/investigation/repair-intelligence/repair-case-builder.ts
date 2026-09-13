@@ -23,7 +23,7 @@ import { evaluateRepairEligibility } from "./repair-eligibility";
 import { analyzeBlastRadius } from "./blast-radius-analyzer";
 import { buildValidationBlueprint } from "./validation-blueprint-builder";
 import type {
-    RepairCase,
+    LegacyRepairCase,
     RepairOption,
     EvidenceToDecisionAnalysis,
     ProposedPatch,
@@ -42,7 +42,7 @@ interface BuildRepairCaseOptions {
 /**
  * Builds the canonical RepairCase from an EvidenceSnapshot.
  */
-export function buildRepairCase(opts: BuildRepairCaseOptions): RepairCase {
+export function buildRepairCase(opts: BuildRepairCaseOptions): LegacyRepairCase {
     const { snapshot } = opts;
 
     // 1. Build Failure Model

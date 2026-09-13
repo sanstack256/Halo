@@ -47,6 +47,13 @@ interface CheckResult {
     details: string;
 }
 
+interface BrowserEvalArgs {
+    sessId: string;
+    projId: string;
+    base: string;
+    key: string;
+}
+
 const checks: CheckResult[] = [];
 
 function record(suite: string, name: string, passed: boolean, details: string) {
@@ -87,7 +94,7 @@ async function setupTestApp(page: Page, title: string) {
     </html>
     `;
 
-    await page.route("http://localhost:3000/test-sandbox*", (route) => {
+    await page.route("http://localhost:3000/test-sandbox*", (route: any) => {
         route.fulfill({
             status: 200,
             contentType: "text/html",
@@ -139,7 +146,7 @@ async function main() {
             const normalSessionId = `test_normal_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
             let replayUploadCalls = 0;
 
-            page.on("request", (req) => {
+            page.on("request", (req: any) => {
                 if (req.url().includes("/api/ingest/replay")) {
                     replayUploadCalls++;
                     console.log(`[ALERT] Ingestion call detected for normal session: ${req.url()}`);
@@ -149,7 +156,7 @@ async function main() {
             await setupTestApp(page, "Normal Browsing Session");
 
             // Initialize recorder in OBSERVING mode (samplingRate: 0.0, errorTriggered: true)
-            await page.evaluate(({ sessId, projId, base, key }) => {
+            await page.evaluate(({ sessId, projId, base, key }: BrowserEvalArgs) => {
                 const rec = new (window as any).HaloReplayBundle.HaloReplay({
                     sessionId: sessId,
                     projectId: projId,
@@ -237,7 +244,7 @@ async function main() {
             errorSessionId = `test_err_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
             let replayUploadCalls = 0;
 
-            page.on("request", (req) => {
+            page.on("request", (req: any) => {
                 if (req.url().includes("/api/ingest/replay")) {
                     replayUploadCalls++;
                 }
@@ -245,7 +252,7 @@ async function main() {
 
             await setupTestApp(page, "Error-Triggered Session");
 
-            await page.evaluate(({ sessId, projId, base, key }) => {
+            await page.evaluate(({ sessId, projId, base, key }: BrowserEvalArgs) => {
                 const rec = new (window as any).HaloReplayBundle.HaloReplay({
                     sessionId: sessId,
                     projectId: projId,
@@ -353,7 +360,7 @@ async function main() {
 
             await setupTestApp(page, "Autonomous Failure Session");
 
-            await page.evaluate(({ sessId, projId, base, key }) => {
+            await page.evaluate(({ sessId, projId, base, key }: BrowserEvalArgs) => {
                 const rec = new (window as any).HaloReplayBundle.HaloReplay({
                     sessionId: sessId,
                     projectId: projId,
@@ -409,7 +416,7 @@ async function main() {
 
             await setupTestApp(page, "Rage Click Session");
 
-            await page.evaluate(({ sessId, projId, base, key }) => {
+            await page.evaluate(({ sessId, projId, base, key }: BrowserEvalArgs) => {
                 const rec = new (window as any).HaloReplayBundle.HaloReplay({
                     sessionId: sessId,
                     projectId: projId,
@@ -460,7 +467,7 @@ async function main() {
 
             await setupTestApp(page, "Dead Click Session");
 
-            await page.evaluate(({ sessId, projId, base, key }) => {
+            await page.evaluate(({ sessId, projId, base, key }: BrowserEvalArgs) => {
                 const rec = new (window as any).HaloReplayBundle.HaloReplay({
                     sessionId: sessId,
                     projectId: projId,
@@ -508,7 +515,7 @@ async function main() {
             const netSessionId = `test_net_${Date.now()}_${Math.random().toString(36).slice(2, 7)}`;
 
             // Route mock failure for /api/v1/failing-service
-            await page.route("**/api/v1/failing-service", (route) => {
+            await page.route("**/api/v1/failing-service", (route: any) => {
                 route.fulfill({
                     status: 500,
                     contentType: "application/json",
@@ -518,7 +525,7 @@ async function main() {
 
             await setupTestApp(page, "Network 5xx Session");
 
-            await page.evaluate(({ sessId, projId, base, key }) => {
+            await page.evaluate(({ sessId, projId, base, key }: BrowserEvalArgs) => {
                 const rec = new (window as any).HaloReplayBundle.HaloReplay({
                     sessionId: sessId,
                     projectId: projId,
@@ -574,7 +581,7 @@ async function main() {
 
             await setupTestApp(page, "Manual Capture Session");
 
-            await page.evaluate(({ sessId, projId, base, key }) => {
+            await page.evaluate(({ sessId, projId, base, key }: BrowserEvalArgs) => {
                 const rec = new (window as any).HaloReplayBundle.HaloReplay({
                     sessionId: sessId,
                     projectId: projId,
@@ -627,7 +634,7 @@ async function main() {
 
             await setupTestApp(page, "Multiple Triggers Session");
 
-            await page.evaluate(({ sessId, projId, base, key }) => {
+            await page.evaluate(({ sessId, projId, base, key }: BrowserEvalArgs) => {
                 const rec = new (window as any).HaloReplayBundle.HaloReplay({
                     sessionId: sessId,
                     projectId: projId,

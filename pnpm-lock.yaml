@@ -8,18 +8,27 @@ importers:
 
   .:
     devDependencies:
+      '@playwright/test':
+        specifier: ^1.62.1
+        version: 1.62.1
       '@types/node':
         specifier: ^26.1.1
         version: 26.1.2
+      playwright:
+        specifier: ^1.62.1
+        version: 1.62.1
       prisma:
         specifier: 7.9.1
-        version: 7.9.1(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@7.0.2)
+        version: 7.9.1(@types/react@19.2.18)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@7.0.2)
       tsx:
         specifier: ^4.23.10
         version: 4.23.10
       typescript:
         specifier: ^7.0.2
         version: 7.0.2
+      vitest:
+        specifier: ^4.1.10
+        version: 4.1.10(@types/node@26.1.2)(vite@8.2.1(@types/node@26.1.2)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.10))
 
   apps/dashboard:
     dependencies:
@@ -138,6 +147,9 @@ importers:
       typescript:
         specifier: ^5
         version: 5.9.3
+      vitest:
+        specifier: ^4.1.10
+        version: 4.1.10(@types/node@20.19.43)(vite@8.2.1(@types/node@20.19.43)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.10))
 
   packages/config: {}
 
@@ -5819,7 +5831,6 @@ snapshots:
       magic-string: 0.30.21
     optionalDependencies:
       vite: 8.2.1(@types/node@20.19.43)(esbuild@0.28.1)(jiti@2.7.0)(tsx@4.23.10)
-    optional: true
 
   '@vitest/mocker@4.1.10(vite@8.2.1(@types/node@26.1.2)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.10))':
     dependencies:
@@ -7505,7 +7516,7 @@ snapshots:
       - react
       - react-dom
 
-  prisma@7.9.1(@types/react-dom@19.2.4(@types/react@19.2.18))(@types/react@19.2.18)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@7.0.2):
+  prisma@7.9.1(@types/react@19.2.18)(react-dom@19.2.4(react@19.2.4))(react@19.2.4)(typescript@7.0.2):
     dependencies:
       '@prisma/config': 7.9.1
       '@prisma/dev': 0.24.17(typescript@7.0.2)
@@ -8164,7 +8175,6 @@ snapshots:
       fsevents: 2.3.3
       jiti: 2.7.0
       tsx: 4.23.10
-    optional: true
 
   vite@8.2.1(@types/node@26.1.2)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.10):
     dependencies:
@@ -8220,7 +8230,6 @@ snapshots:
       '@types/node': 20.19.43
     transitivePeerDependencies:
       - msw
-    optional: true
 
   vitest@4.1.10(@types/node@26.1.2)(vite@8.2.1(@types/node@26.1.2)(esbuild@0.27.7)(jiti@2.7.0)(tsx@4.23.10)):
     dependencies:
