@@ -28,7 +28,11 @@ export class HaloReplay {
     private originalPushState: any = null;
     private originalReplaceState: any = null;
     private originalFetch: any = null;
+    private originalConsoleLog: any = null;
+    private originalConsoleInfo: any = null;
+    private originalConsoleWarn: any = null;
     private originalConsoleError: any = null;
+    private currentUser: any = null;
     private currentUrl: string = "";
     private recordedEvents: eventWithTime[] = [];
 
@@ -111,6 +115,27 @@ export class HaloReplay {
 
         // Determine if this session is randomly sampled
         this.isSampled = Math.random() < (this.options.samplingRate ?? 1.0);
+        this.currentUser = this.options.user || null;
+    }
+
+    public setUser(user: { id?: string; email?: string; username?: string; [key: string]: any } | null): void {
+        this.currentUser = user;
+        if (typeof window !== "undefined" && user) {
+            (window as any).__HALO_USER__ = user;
+        }
+        if (this.options.shouldCapture && typeof window !== "undefined") {
+            const shouldCapture = this.options.shouldCapture({
+                url: window.location.href,
+                user: this.currentUser,
+            });
+            if (!shouldCapture && this.stopFn) {
+                this.stop();
+            }
+        }
+    }
+
+    public getUser(): any {
+        return this.currentUser;
     }
 
     private generateSessionId(): string {
@@ -170,6 +195,20 @@ export class HaloReplay {
 
         if (isUrlIgnored(window.location.href, this.options.privacy?.ignoreUrls)) {
             return;
+        }
+
+        if (this.options.shouldCapture) {
+            try {
+                const allowed = this.options.shouldCapture({
+                    url: window.location.href,
+                    user: this.currentUser,
+                });
+                if (!allowed) {
+                    return;
+                }
+            } catch (err) {
+                console.warn("[Halo Replay] shouldCapture evaluation error:", err);
+            }
         }
 
         const maskerConfig = buildMaskerConfig(this.options.privacy);
@@ -369,13 +408,17 @@ export class HaloReplay {
                 return response;
             } catch (err: any) {
                 const durationMs = Date.now() - start;
+                const isAborted = err?.name === "AbortError" || Boolean((init as any)?.signal?.aborted);
                 this.recordCustomEvent<ReplayRequestPayload>("halo:request", {
                     method,
                     url: sanitizeUrl(urlStr),
+                    status: 0,
                     durationMs,
                     requestId,
                     traceId,
                     failed: true,
+                    aborted: isAborted,
+                    error: err?.message || String(err),
                 });
                 throw err;
             }
@@ -385,18 +428,29 @@ export class HaloReplay {
     private setupConsoleInstrumentation(): void {
         if (typeof console === "undefined") return;
 
+        this.originalConsoleLog = console.log.bind(console);
+        this.originalConsoleInfo = console.info.bind(console);
+        this.originalConsoleWarn = console.warn.bind(console);
         this.originalConsoleError = console.error.bind(console);
-        console.error = (...args: any[]) => {
-            this.originalConsoleError.apply(console, args);
-            const message = args
-                .map((a) => (typeof a === "string" ? a : a?.message || JSON.stringify(a)))
-                .join(" ");
 
-            this.recordCustomEvent<ReplayConsolePayload>("halo:console", {
-                level: "error",
-                message: message.slice(0, 1000),
-            });
+        const createConsoleWrapper = (level: "log" | "info" | "warn" | "error", originalFn: any) => {
+            return (...args: any[]) => {
+                originalFn.apply(console, args);
+                const message = args
+                    .map((a) => (typeof a === "string" ? a : a?.message || JSON.stringify(a)))
+                    .join(" ");
+
+                this.recordCustomEvent<ReplayConsolePayload>("halo:console", {
+                    level,
+                    message: message.slice(0, 1000),
+                });
+            };
         };
+
+        console.log = createConsoleWrapper("log", this.originalConsoleLog);
+        console.info = createConsoleWrapper("info", this.originalConsoleInfo);
+        console.warn = createConsoleWrapper("warn", this.originalConsoleWarn);
+        console.error = createConsoleWrapper("error", this.originalConsoleError);
     }
 
     private setupErrorListeners(): void {
@@ -625,6 +679,15 @@ export class HaloReplay {
         }
         if (this.originalFetch && typeof window !== "undefined") {
             window.fetch = this.originalFetch;
+        }
+        if (this.originalConsoleLog && typeof console !== "undefined") {
+            console.log = this.originalConsoleLog;
+        }
+        if (this.originalConsoleInfo && typeof console !== "undefined") {
+            console.info = this.originalConsoleInfo;
+        }
+        if (this.originalConsoleWarn && typeof console !== "undefined") {
+            console.warn = this.originalConsoleWarn;
         }
         if (this.originalConsoleError && typeof console !== "undefined") {
             console.error = this.originalConsoleError;

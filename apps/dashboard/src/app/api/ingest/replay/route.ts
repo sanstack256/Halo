@@ -100,6 +100,14 @@ export async function POST(request: NextRequest) {
         );
     }
 
+    if (events && !Array.isArray(events)) {
+        return jsonResponse(
+            request,
+            { error: "Events payload must be an array" },
+            { status: 400 }
+        );
+    }
+
     const chunkStarted = startedAt ? new Date(startedAt) : new Date();
     const chunkEnded = endedAt ? new Date(endedAt) : new Date();
     const eventCount = Array.isArray(events) ? events.length : 0;

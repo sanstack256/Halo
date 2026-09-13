@@ -122,6 +122,16 @@ export interface HaloReplayOptions {
      * Default: 2500
      */
     deadClickTimeoutMs?: number;
+    /**
+     * Current authenticated user context for conditional capture targeting.
+     */
+    user?: { id?: string; email?: string; username?: string; [key: string]: any };
+    /**
+     * Conditional capture targeting predicate.
+     * Return true to record the session, false to skip/abort capture.
+     * Evaluated against URL, user context, or application-defined state.
+     */
+    shouldCapture?: (context: { url: string; user?: any; [key: string]: any }) => boolean;
 }
 
 export type ReplayPrivacyState =
@@ -196,6 +206,8 @@ export interface ReplayRequestPayload {
     requestId?: string;
     traceId?: string;
     failed?: boolean;
+    aborted?: boolean;
+    error?: string;
 }
 
 export interface ReplayConsolePayload {

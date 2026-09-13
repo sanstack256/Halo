@@ -13062,7 +13062,11 @@ var HaloReplay = class {
     this.originalPushState = null;
     this.originalReplaceState = null;
     this.originalFetch = null;
+    this.originalConsoleLog = null;
+    this.originalConsoleInfo = null;
+    this.originalConsoleWarn = null;
     this.originalConsoleError = null;
+    this.currentUser = null;
     this.currentUrl = "";
     this.recordedEvents = [];
     // Frustration signals & lifecycle instrumentation
@@ -13133,6 +13137,25 @@ var HaloReplay = class {
       environment: this.options.environment
     });
     this.isSampled = Math.random() < (this.options.samplingRate ?? 1);
+    this.currentUser = this.options.user || null;
+  }
+  setUser(user) {
+    this.currentUser = user;
+    if (typeof window !== "undefined" && user) {
+      window.__HALO_USER__ = user;
+    }
+    if (this.options.shouldCapture && typeof window !== "undefined") {
+      const shouldCapture = this.options.shouldCapture({
+        url: window.location.href,
+        user: this.currentUser
+      });
+      if (!shouldCapture && this.stopFn) {
+        this.stop();
+      }
+    }
+  }
+  getUser() {
+    return this.currentUser;
   }
   generateSessionId() {
     return `hs_${Date.now()}_${Math.random().toString(36).slice(2, 12)}`;
@@ -13174,6 +13197,19 @@ var HaloReplay = class {
     }
     if (isUrlIgnored(window.location.href, this.options.privacy?.ignoreUrls)) {
       return;
+    }
+    if (this.options.shouldCapture) {
+      try {
+        const allowed = this.options.shouldCapture({
+          url: window.location.href,
+          user: this.currentUser
+        });
+        if (!allowed) {
+          return;
+        }
+      } catch (err) {
+        console.warn("[Halo Replay] shouldCapture evaluation error:", err);
+      }
     }
     const maskerConfig = buildMaskerConfig(this.options.privacy);
     try {
@@ -13327,13 +13363,17 @@ var HaloReplay = class {
         return response;
       } catch (err) {
         const durationMs = Date.now() - start;
+        const isAborted = err?.name === "AbortError" || Boolean(init?.signal?.aborted);
         this.recordCustomEvent("halo:request", {
           method,
           url: sanitizeUrl(urlStr),
+          status: 0,
           durationMs,
           requestId,
           traceId,
-          failed: true
+          failed: true,
+          aborted: isAborted,
+          error: err?.message || String(err)
         });
         throw err;
       }
@@ -13341,15 +13381,24 @@ var HaloReplay = class {
   }
   setupConsoleInstrumentation() {
     if (typeof console === "undefined") return;
+    this.originalConsoleLog = console.log.bind(console);
+    this.originalConsoleInfo = console.info.bind(console);
+    this.originalConsoleWarn = console.warn.bind(console);
     this.originalConsoleError = console.error.bind(console);
-    console.error = (...args) => {
-      this.originalConsoleError.apply(console, args);
-      const message = args.map((a) => typeof a === "string" ? a : a?.message || JSON.stringify(a)).join(" ");
-      this.recordCustomEvent("halo:console", {
-        level: "error",
-        message: message.slice(0, 1e3)
-      });
+    const createConsoleWrapper = (level, originalFn) => {
+      return (...args) => {
+        originalFn.apply(console, args);
+        const message = args.map((a) => typeof a === "string" ? a : a?.message || JSON.stringify(a)).join(" ");
+        this.recordCustomEvent("halo:console", {
+          level,
+          message: message.slice(0, 1e3)
+        });
+      };
     };
+    console.log = createConsoleWrapper("log", this.originalConsoleLog);
+    console.info = createConsoleWrapper("info", this.originalConsoleInfo);
+    console.warn = createConsoleWrapper("warn", this.originalConsoleWarn);
+    console.error = createConsoleWrapper("error", this.originalConsoleError);
   }
   setupErrorListeners() {
     if (typeof window === "undefined") return;
@@ -13535,6 +13584,15 @@ var HaloReplay = class {
     }
     if (this.originalFetch && typeof window !== "undefined") {
       window.fetch = this.originalFetch;
+    }
+    if (this.originalConsoleLog && typeof console !== "undefined") {
+      console.log = this.originalConsoleLog;
+    }
+    if (this.originalConsoleInfo && typeof console !== "undefined") {
+      console.info = this.originalConsoleInfo;
+    }
+    if (this.originalConsoleWarn && typeof console !== "undefined") {
+      console.warn = this.originalConsoleWarn;
     }
     if (this.originalConsoleError && typeof console !== "undefined") {
       console.error = this.originalConsoleError;

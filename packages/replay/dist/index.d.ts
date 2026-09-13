@@ -139,6 +139,25 @@ interface HaloReplayOptions {
      * Default: 2500
      */
     deadClickTimeoutMs?: number;
+    /**
+     * Current authenticated user context for conditional capture targeting.
+     */
+    user?: {
+        id?: string;
+        email?: string;
+        username?: string;
+        [key: string]: any;
+    };
+    /**
+     * Conditional capture targeting predicate.
+     * Return true to record the session, false to skip/abort capture.
+     * Evaluated against URL, user context, or application-defined state.
+     */
+    shouldCapture?: (context: {
+        url: string;
+        user?: any;
+        [key: string]: any;
+    }) => boolean;
 }
 type ReplayPrivacyState = "CAPTURED" | "MASKED" | "BLOCKED" | "NOT_CAPTURED" | "UNAVAILABLE";
 interface HistoricalDomNode {
@@ -200,6 +219,8 @@ interface ReplayRequestPayload {
     requestId?: string;
     traceId?: string;
     failed?: boolean;
+    aborted?: boolean;
+    error?: string;
 }
 interface ReplayConsolePayload {
     level: "log" | "warn" | "error" | "info";
@@ -254,7 +275,11 @@ declare class HaloReplay {
     private originalPushState;
     private originalReplaceState;
     private originalFetch;
+    private originalConsoleLog;
+    private originalConsoleInfo;
+    private originalConsoleWarn;
     private originalConsoleError;
+    private currentUser;
     private currentUrl;
     private recordedEvents;
     private recentClicks;
@@ -270,6 +295,13 @@ declare class HaloReplay {
     private pagehideListener;
     private beforeunloadListener;
     constructor(options?: HaloReplayOptions);
+    setUser(user: {
+        id?: string;
+        email?: string;
+        username?: string;
+        [key: string]: any;
+    } | null): void;
+    getUser(): any;
     private generateSessionId;
     getSessionId(): string;
     getRingBuffer(): ReplayRingBuffer;
