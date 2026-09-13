@@ -38,6 +38,9 @@ type ReplaySessionItem = {
     startedAt: Date | string;
     endedAt?: Date | string | null;
     errorAt?: Date | string | null;
+    triggerType?: string | null;
+    captureReason?: string | null;
+    triggerTimestamp?: Date | string | null;
     status: string;
     totalDurationMs?: number | null;
     chunkCount: number;
@@ -203,11 +206,13 @@ export function ReplayListView({
                         <MonitorPlay className="h-6 w-6" />
                     </div>
                     <div className="space-y-1">
-                        <h3 className="text-sm font-semibold text-white">No session replays found</h3>
+                        <h3 className="text-sm font-semibold text-white">
+                            {search || statusFilter !== "ALL" ? "No session replays found" : "No replay evidence yet"}
+                        </h3>
                         <p className="text-xs text-zinc-400 max-w-md mx-auto">
                             {search || statusFilter !== "ALL"
                                 ? "No replays match your current search and filter criteria."
-                                : "Install @halo-trace/replay in your frontend client to capture real DOM sessions and correlate them with runtime exceptions."}
+                                : "Halo keeps recent browser evidence in a bounded ring buffer and persists replay captures when an error, interaction anomaly, or sampling rule triggers it."}
                         </p>
                     </div>
                     <div className="pt-2">
@@ -229,7 +234,7 @@ export function ReplayListView({
                                     <th className="py-3 px-4">Status</th>
                                     <th className="py-3 px-4">Duration</th>
                                     <th className="py-3 px-4">Viewport / OS</th>
-                                    <th className="py-3 px-4">Associated Issue / Error</th>
+                                    <th className="py-3 px-4">Capture Trigger / Context</th>
                                     <th className="py-3 px-4">Recorded</th>
                                     <th className="py-3 px-4 text-right">Action</th>
                                 </tr>
@@ -327,7 +332,7 @@ export function ReplayListView({
                                                 </div>
                                             </td>
 
-                                            {/* Correlated Issue */}
+                                            {/* Capture Trigger & Context */}
                                             <td className="py-3 px-4">
                                                 {replay.issue ? (
                                                     <Link
@@ -337,13 +342,79 @@ export function ReplayListView({
                                                         <TriangleAlert className="h-3.5 w-3.5 text-red-400 shrink-0" />
                                                         <span className="truncate font-medium">{replay.issue.title}</span>
                                                     </Link>
-                                                ) : replay.errorAt ? (
-                                                    <span className="inline-flex items-center gap-1 text-red-400 text-[11px]">
-                                                        <TriangleAlert className="h-3 w-3 shrink-0" />
-                                                        Exception at {formatDeterministicTime(new Date(replay.errorAt))}
-                                                    </span>
+                                                ) : replay.triggerType === "ERROR" || replay.errorAt ? (
+                                                    <div className="space-y-0.5">
+                                                        <span className="inline-flex items-center gap-1 text-red-400 text-[11px] font-medium">
+                                                            <TriangleAlert className="h-3 w-3 shrink-0" />
+                                                            Error Trigger
+                                                        </span>
+                                                        <div className="text-[10px] text-zinc-400 truncate max-w-[200px]">
+                                                            {replay.captureReason || (replay.errorAt ? `Exception at ${formatDeterministicTime(new Date(replay.errorAt))}` : "Runtime Error")}
+                                                        </div>
+                                                    </div>
+                                                ) : replay.triggerType === "UNHANDLED_REJECTION" ? (
+                                                    <div className="space-y-0.5">
+                                                        <span className="inline-flex items-center gap-1 text-red-400 text-[11px] font-medium">
+                                                            <TriangleAlert className="h-3 w-3 shrink-0" />
+                                                            Unhandled Rejection
+                                                        </span>
+                                                        <div className="text-[10px] text-zinc-400 truncate max-w-[200px]">
+                                                            {replay.captureReason || "Promise Rejection"}
+                                                        </div>
+                                                    </div>
+                                                ) : replay.triggerType === "RAGE_CLICK" ? (
+                                                    <div className="space-y-0.5">
+                                                        <span className="inline-flex items-center gap-1 text-amber-400 text-[11px] font-medium">
+                                                            <Sparkles className="h-3 w-3 shrink-0" />
+                                                            Rage Interaction
+                                                        </span>
+                                                        <div className="text-[10px] text-zinc-400 truncate max-w-[200px]">
+                                                            {replay.captureReason || "Rapid click burst"}
+                                                        </div>
+                                                    </div>
+                                                ) : replay.triggerType === "DEAD_CLICK" ? (
+                                                    <div className="space-y-0.5">
+                                                        <span className="inline-flex items-center gap-1 text-amber-400 text-[11px] font-medium">
+                                                            <Sparkles className="h-3 w-3 shrink-0" />
+                                                            Dead Click
+                                                        </span>
+                                                        <div className="text-[10px] text-zinc-400 truncate max-w-[200px]">
+                                                            {replay.captureReason || "Actionable click with no response"}
+                                                        </div>
+                                                    </div>
+                                                ) : replay.triggerType === "NETWORK_5XX" ? (
+                                                    <div className="space-y-0.5">
+                                                        <span className="inline-flex items-center gap-1 text-teal-400 text-[11px] font-medium">
+                                                            <ExternalLink className="h-3 w-3 shrink-0" />
+                                                            Network 5xx Failure
+                                                        </span>
+                                                        <div className="text-[10px] text-zinc-400 truncate max-w-[200px]">
+                                                            {replay.captureReason || "HTTP server failure"}
+                                                        </div>
+                                                    </div>
+                                                ) : replay.triggerType === "MANUAL" ? (
+                                                    <div className="space-y-0.5">
+                                                        <span className="inline-flex items-center gap-1 text-blue-400 text-[11px] font-medium">
+                                                            <MonitorPlay className="h-3 w-3 shrink-0" />
+                                                            Manual Capture
+                                                        </span>
+                                                        <div className="text-[10px] text-zinc-400 truncate max-w-[200px]">
+                                                            {replay.captureReason || "Developer triggered"}
+                                                        </div>
+                                                    </div>
+                                                ) : replay.triggerType === "SAMPLE" ? (
+                                                    <div className="space-y-0.5">
+                                                        <span className="inline-flex items-center gap-1 text-zinc-400 text-[11px]">
+                                                            Sampled Normal Session
+                                                        </span>
+                                                        {replay.captureReason && (
+                                                            <div className="text-[10px] text-zinc-500 truncate max-w-[200px]">
+                                                                {replay.captureReason}
+                                                            </div>
+                                                        )}
+                                                    </div>
                                                 ) : (
-                                                    <span className="text-zinc-500 text-[11px]">Normal Session</span>
+                                                    <span className="text-zinc-500 text-[11px]">{replay.captureReason || "Normal Session"}</span>
                                                 )}
                                             </td>
 

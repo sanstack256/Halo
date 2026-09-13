@@ -153,6 +153,9 @@ export interface HaloReplayConfig {
     enabled?: boolean;
     errorTriggered?: boolean;
     samplingRate?: number;
+    sampleRate?: number;
+    triggerOnFrustration?: boolean;
+    triggerOnNetworkError?: boolean;
     preErrorBufferSeconds?: number;
     postErrorDurationSeconds?: number;
     maxBufferEvents?: number;

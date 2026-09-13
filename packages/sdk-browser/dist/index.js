@@ -513,12 +513,17 @@ var ReplayBridge = class {
       }
       if (!ReplayModule?.HaloReplay) return;
       const sessionId = this.client.getSessionId();
+      const errorTriggered = this.config?.errorTriggered ?? true;
+      const samplingRate = this.config?.samplingRate ?? this.config?.sampleRate ?? (errorTriggered ? 0 : 1);
       const replay = new ReplayModule.HaloReplay({
         apiKey,
         endpoint,
         sessionId,
-        samplingRate: this.config?.samplingRate ?? 1,
-        errorTriggered: this.config?.errorTriggered ?? true,
+        samplingRate,
+        sampleRate: samplingRate,
+        errorTriggered,
+        triggerOnFrustration: this.config?.triggerOnFrustration ?? true,
+        triggerOnNetworkError: this.config?.triggerOnNetworkError ?? true,
         preErrorBufferSeconds: this.config?.preErrorBufferSeconds,
         postErrorDurationSeconds: this.config?.postErrorDurationSeconds,
         maxBufferEvents: this.config?.maxBufferEvents,
@@ -534,6 +539,20 @@ var ReplayBridge = class {
     } catch (err) {
       console.warn("[Halo SDK] Failed to initialize session replay bridge:", err);
     }
+  }
+  capture(options) {
+    if (this.replayInstance && typeof this.replayInstance.capture === "function") {
+      try {
+        this.replayInstance.capture(options);
+      } catch {
+      }
+    }
+  }
+  getCaptureState() {
+    if (this.replayInstance && typeof this.replayInstance.getCaptureState === "function") {
+      return this.replayInstance.getCaptureState();
+    }
+    return "DISABLED";
   }
   triggerError(error, traceId, requestId) {
     if (this.replayInstance && typeof this.replayInstance.triggerErrorReplay === "function") {

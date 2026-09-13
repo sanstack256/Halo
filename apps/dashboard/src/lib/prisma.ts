@@ -24,7 +24,8 @@ const adapter = new PrismaPg(pool);
 const cachedClient = global.prisma as any;
 if (
     cachedClient?._runtimeDataModel &&
-    !cachedClient._runtimeDataModel.models?.Project?.fields?.some((f: any) => f.name === "aiProvider")
+    (!cachedClient._runtimeDataModel.models?.Project?.fields?.some((f: any) => f.name === "aiProvider") ||
+     !cachedClient._runtimeDataModel.models?.ReplaySession?.fields?.some((f: any) => f.name === "triggerType"))
 ) {
     try {
         void global.prisma?.$disconnect();

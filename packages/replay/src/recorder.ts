@@ -13,6 +13,8 @@ import type {
     ReplayRageClickPayload,
     ReplayDeadClickPayload,
     ReplayLifecyclePayload,
+    ReplayCaptureState,
+    ReplayTriggerType,
 } from "./types";
 
 export class HaloReplay {
@@ -20,6 +22,11 @@ export class HaloReplay {
     private stopFn: (() => void) | null = null;
     private ringBuffer: ReplayRingBuffer;
     private uploader: ReplayUploader;
+    private captureState: ReplayCaptureState = "DISABLED";
+    private triggerType: ReplayTriggerType | null = null;
+    private captureReason: string | null = null;
+    private triggerTimestamp: string | null = null;
+    private sampleRate: number = 0;
     private isSampled = false;
     private isStreaming = false;
     private isErrorTriggered = false;
@@ -53,10 +60,25 @@ export class HaloReplay {
     private beforeunloadListener: (() => void) | null = null;
 
     constructor(options: HaloReplayOptions = {}) {
+        const errorTriggered = options.errorTriggered ?? true;
+        // Evidence-triggered architecture:
+        // When errorTriggered is true, normal sessions default to sampleRate 0.0 (only investigation triggers persist).
+        // If errorTriggered is explicitly false, sampling rate defaults to 1.0 (continuous recording).
+        const rawRate = options.sampleRate ?? options.samplingRate ?? (errorTriggered ? 0.0 : 1.0);
+        let validatedRate = 0.0;
+        if (typeof rawRate === "number" && !isNaN(rawRate) && isFinite(rawRate)) {
+            validatedRate = Math.max(0, Math.min(1, rawRate));
+        }
+        this.sampleRate = validatedRate;
+        this.isSampled = this.sampleRate > 0 && Math.random() < this.sampleRate;
+
         this.options = {
             endpoint: options.endpoint || "/api",
-            samplingRate: options.samplingRate ?? 1.0,
-            errorTriggered: options.errorTriggered ?? true,
+            samplingRate: this.sampleRate,
+            sampleRate: this.sampleRate,
+            errorTriggered,
+            triggerOnFrustration: options.triggerOnFrustration ?? true,
+            triggerOnNetworkError: options.triggerOnNetworkError ?? true,
             preErrorBufferSeconds: options.preErrorBufferSeconds ?? 60,
             maxBufferEvents: options.maxBufferEvents ?? 5000,
             postErrorDurationSeconds: options.postErrorDurationSeconds ?? 30,
@@ -115,8 +137,6 @@ export class HaloReplay {
             environment: this.options.environment,
         });
 
-        // Determine if this session is randomly sampled
-        this.isSampled = Math.random() < (this.options.samplingRate ?? 1.0);
         this.currentUser = this.options.user || null;
     }
 
@@ -216,6 +236,26 @@ export class HaloReplay {
         return widget;
     }
 
+    public getCaptureState(): ReplayCaptureState {
+        return this.captureState;
+    }
+
+    public getTriggerType(): ReplayTriggerType | null {
+        return this.triggerType;
+    }
+
+    public getCaptureReason(): string | null {
+        return this.captureReason;
+    }
+
+    public getTriggerTimestamp(): string | null {
+        return this.triggerTimestamp;
+    }
+
+    public getSampleRate(): number {
+        return this.sampleRate;
+    }
+
     public start(): void {
         if (typeof window === "undefined" || typeof document === "undefined") {
             return;
@@ -228,10 +268,12 @@ export class HaloReplay {
             /(\/projects\/[^/]+\/replays\/[^/]+)/.test(window.location.pathname)
         ) {
             console.warn("[Halo Replay] Recording disabled inside Halo Replay viewer to prevent recursive capture.");
+            this.captureState = "DISABLED";
             return;
         }
 
         if (isUrlIgnored(window.location.href, this.options.privacy?.ignoreUrls)) {
+            this.captureState = "DISABLED";
             return;
         }
 
@@ -242,6 +284,7 @@ export class HaloReplay {
                     user: this.currentUser,
                 });
                 if (!allowed) {
+                    this.captureState = "DISABLED";
                     return;
                 }
             } catch (err) {
@@ -301,8 +344,30 @@ export class HaloReplay {
             if (this.options.errorTriggered) {
                 this.setupErrorListeners();
             }
+
+            // Establish capture state:
+            if (this.isSampled && !this.options.errorTriggered) {
+                // Continuous session sampling explicitly chosen (errorTriggered false)
+                this.captureState = "CAPTURING";
+                this.isStreaming = true;
+                this.triggerType = "SAMPLE";
+                this.captureReason = `Normal session sampled (${Math.round(this.sampleRate * 100)}%)`;
+                this.triggerTimestamp = new Date().toISOString();
+                this.uploader.setSessionMeta({
+                    triggerType: this.triggerType,
+                    captureReason: this.captureReason,
+                    triggerTimestamp: this.triggerTimestamp,
+                });
+            } else {
+                // Evidence-triggered architecture:
+                // Start in OBSERVING state. Keep all events in local bounded ring buffer.
+                // 0 HTTP requests to /api/ingest/replay until a trigger occurs.
+                this.captureState = "OBSERVING";
+                this.isStreaming = false;
+            }
         } catch (err) {
             console.error("[Halo Replay] Failed to start recording:", err);
+            this.captureState = "DISABLED";
         }
     }
 
@@ -341,11 +406,11 @@ export class HaloReplay {
             this.notifyMutationOrEffect();
         }
 
-        if (this.isStreaming || (this.isSampled && !this.options.errorTriggered)) {
-            // Actively streaming session chunks
+        if (this.captureState === "CAPTURING") {
+            // Actively streaming triggered/sampled session chunks
             this.uploader.addEvents([event]);
-        } else {
-            // In error-triggered mode: keep in ring buffer until an error occurs
+        } else if (this.captureState === "OBSERVING") {
+            // In evidence observation mode: keep in local ring buffer until an error/trigger occurs
             this.ringBuffer.add(event);
         }
     }
@@ -443,6 +508,14 @@ export class HaloReplay {
                     failed: !response.ok,
                 });
 
+                // Network 5xx trigger: server error condition
+                if (response.status >= 500 && this.options.triggerOnNetworkError !== false) {
+                    this.triggerCapture("NETWORK_5XX", {
+                        reason: `HTTP ${response.status} on ${sanitizeUrl(urlStr)}`,
+                        meta: { requestId, traceId },
+                    });
+                }
+
                 return response;
             } catch (err: any) {
                 const durationMs = Date.now() - start;
@@ -458,6 +531,13 @@ export class HaloReplay {
                     aborted: isAborted,
                     error: err?.message || String(err),
                 });
+
+                if (this.options.triggerOnNetworkError !== false) {
+                    this.triggerCapture("NETWORK_5XX", {
+                        reason: `Network request failure on ${sanitizeUrl(urlStr)}: ${err?.message || err}`,
+                        meta: { requestId, traceId },
+                    });
+                }
                 throw err;
             }
         };
@@ -495,19 +575,120 @@ export class HaloReplay {
         if (typeof window === "undefined") return;
 
         window.addEventListener("error", (e) => {
-            this.triggerErrorReplay({
-                title: e.message || "Unhandled Error",
-                stack: e.error?.stack,
+            this.triggerCapture("ERROR", {
+                reason: e.message || "Unhandled Error",
+                error: e.error,
+                meta: { stack: e.error?.stack },
             });
         });
 
         window.addEventListener("unhandledrejection", (e) => {
             const reason = e.reason;
-            this.triggerErrorReplay({
-                title: typeof reason === "string" ? reason : reason?.message || "Unhandled Promise Rejection",
-                stack: reason?.stack,
+            const message = typeof reason === "string" ? reason : reason?.message || "Unhandled Promise Rejection";
+            this.triggerCapture("UNHANDLED_REJECTION", {
+                reason: message,
+                error: reason,
+                meta: { stack: reason?.stack },
             });
         });
+    }
+
+    /**
+     * Unified trigger handler for evidence-based session persistence.
+     * Transitions state from OBSERVING -> CAPTURING on first trigger,
+     * flushes pre-trigger ring buffer, and schedules post-trigger aftermath capture.
+     * Subsequent triggers in the same session append timeline markers without duplicate sessions.
+     */
+    public triggerCapture(
+        triggerTypeOrOptions: ReplayTriggerType | { type?: ReplayTriggerType; reason?: string; error?: any; meta?: Record<string, any> },
+        details?: { reason?: string; error?: any; meta?: Record<string, any> }
+    ): void {
+        if (this.captureState === "DISABLED" || this.captureState === "DISCARDED") {
+            return;
+        }
+
+        let triggerType: ReplayTriggerType;
+        let effectiveDetails = details;
+
+        if (typeof triggerTypeOrOptions === "object" && triggerTypeOrOptions !== null) {
+            triggerType = (triggerTypeOrOptions.type || "MANUAL") as ReplayTriggerType;
+            effectiveDetails = {
+                reason: triggerTypeOrOptions.reason,
+                error: triggerTypeOrOptions.error,
+                meta: triggerTypeOrOptions.meta,
+                ...details,
+            };
+        } else {
+            triggerType = triggerTypeOrOptions;
+        }
+
+        const now = new Date().toISOString();
+        const reason = effectiveDetails?.reason || triggerType;
+
+        // Invariant: Multiple triggers in the same session are safe.
+        // If already capturing, append a timeline marker and extend the post-trigger countdown.
+        if (this.captureState === "CAPTURING") {
+            this.recordCustomEvent("halo:trigger", {
+                triggerType,
+                reason,
+                timestamp: now,
+                ...details?.meta,
+            });
+
+            if (this.postErrorTimeout) {
+                clearTimeout(this.postErrorTimeout);
+            }
+            const postDurationMs = (this.options.postErrorDurationSeconds ?? 30) * 1000;
+            this.postErrorTimeout = setTimeout(() => {
+                this.flushAndConclude();
+            }, postDurationMs);
+            return;
+        }
+
+        // Transition from OBSERVING -> CAPTURING
+        this.captureState = "CAPTURING";
+        this.isStreaming = true;
+        this.isErrorTriggered = true;
+        this.triggerType = triggerType;
+        this.captureReason = reason;
+        this.triggerTimestamp = now;
+
+        // Record initial trigger marker
+        this.recordCustomEvent("halo:trigger", {
+            triggerType,
+            reason,
+            timestamp: now,
+            ...details?.meta,
+        });
+
+        // 1. Freeze/flush all pre-trigger events from the ring buffer into the uploader
+        const preTriggerEvents = this.ringBuffer.flush();
+        this.uploader.addEvents(preTriggerEvents);
+
+        // 2. Configure uploader session metadata
+        this.uploader.setSessionMeta({
+            triggerType: this.triggerType,
+            captureReason: this.captureReason,
+            triggerTimestamp: this.triggerTimestamp,
+            errorAt: triggerType === "ERROR" || triggerType === "UNHANDLED_REJECTION" ? this.triggerTimestamp : undefined,
+            hasRageClicks: this.hasRageClicks,
+            hasDeadClicks: this.hasDeadClicks,
+            rageClickCount: this.rageClickCount,
+            deadClickCount: this.deadClickCount,
+            ...details?.meta,
+        });
+
+        // 3. Immediate flush of the pre-trigger buffer so session row & chunks persist in backend
+        this.uploader.flush(false);
+
+        // 4. Schedule post-trigger aftermath capture window
+        if (this.postErrorTimeout) {
+            clearTimeout(this.postErrorTimeout);
+        }
+        const postDurationMs = (this.options.postErrorDurationSeconds ?? 30) * 1000;
+        this.postErrorTimeout = setTimeout(() => {
+            this.flushAndConclude();
+        }, postDurationMs);
     }
 
     /**
@@ -526,43 +707,41 @@ export class HaloReplay {
             timestamp: errorTimestamp,
         });
 
-        if (!this.isErrorTriggered) {
-            this.isErrorTriggered = true;
-
-            // Flush all pre-error events from ring buffer into uploader
-            const preErrorEvents = this.ringBuffer.flush();
-            this.uploader.addEvents(preErrorEvents);
-            this.isStreaming = true;
-        }
-
-        // Immediate flush with error and frustration metadata
-        this.uploader.flush(false, {
-            errorAt: errorTimestamp,
-            hasRageClicks: this.hasRageClicks,
-            hasDeadClicks: this.hasDeadClicks,
-            rageClickCount: this.rageClickCount,
-            deadClickCount: this.deadClickCount,
-            ...errorMeta,
+        this.triggerCapture("ERROR", {
+            reason: errorMeta?.title || "Unhandled Exception",
+            meta: {
+                errorAt: errorTimestamp,
+                ...errorMeta,
+            },
         });
+    }
 
-        // Reset or extend post-error capture window
-        if (this.postErrorTimeout) {
-            clearTimeout(this.postErrorTimeout);
-        }
-
-        const postDurationMs = (this.options.postErrorDurationSeconds ?? 30) * 1000;
-        this.postErrorTimeout = setTimeout(() => {
-            this.flushAndConclude();
-        }, postDurationMs);
+    /**
+     * Explicit developer capture API (e.g. halo.replay.capture()).
+     * Captures pre-trigger evidence and begins persistence.
+     */
+    public capture(options?: { reason?: string }): void {
+        this.triggerCapture("MANUAL", {
+            reason: options?.reason || "Developer-triggered capture",
+        });
     }
 
     public flushAndConclude(): void {
-        this.uploader.flush(true, {
-            hasRageClicks: this.hasRageClicks,
-            hasDeadClicks: this.hasDeadClicks,
-            rageClickCount: this.rageClickCount,
-            deadClickCount: this.deadClickCount,
-        });
+        if (this.captureState === "CAPTURING") {
+            this.captureState = "FLUSHING";
+            this.uploader.flush(true, {
+                hasRageClicks: this.hasRageClicks,
+                hasDeadClicks: this.hasDeadClicks,
+                rageClickCount: this.rageClickCount,
+                deadClickCount: this.deadClickCount,
+            });
+            this.captureState = "PERSISTED";
+        } else if (this.captureState === "OBSERVING") {
+            // Invariant: Un-triggered normal sessions discard the buffer.
+            // 0 HTTP requests, 0 DB records.
+            this.captureState = "DISCARDED";
+            this.ringBuffer.flush();
+        }
     }
 
     private setupFrustrationInstrumentation(): void {
@@ -601,6 +780,12 @@ export class HaloReplay {
                         windowStartMs: cluster[0].time,
                         windowEndMs: now,
                     });
+
+                    if (this.options.triggerOnFrustration !== false) {
+                        this.triggerCapture("RAGE_CLICK", {
+                            reason: `Rage click burst (${cluster.length} rapid clicks on ${targetSelector})`,
+                        });
+                    }
                 }
             }
 
@@ -629,6 +814,12 @@ export class HaloReplay {
                                 y,
                                 inactiveDurationMs: timeoutMs,
                             });
+
+                            if (this.options.triggerOnFrustration !== false) {
+                                this.triggerCapture("DEAD_CLICK", {
+                                    reason: `Dead click on actionable element (${targetSelector})`,
+                                });
+                            }
                         }
                     }, timeoutMs);
 
@@ -649,7 +840,7 @@ export class HaloReplay {
                 event: "visibilitychange",
                 state,
             });
-            if (state === "hidden") {
+            if (state === "hidden" && this.captureState === "CAPTURING") {
                 this.uploader.flush(false, {
                     hasRageClicks: this.hasRageClicks,
                     hasDeadClicks: this.hasDeadClicks,

@@ -8,6 +8,10 @@ declare class ReplayBridge {
     private config?;
     constructor(client: CoreClient, config?: HaloReplayConfig);
     initialize(endpoint: string, apiKey: string): Promise<void>;
+    capture(options?: {
+        reason?: string;
+    }): void;
+    getCaptureState(): string;
     triggerError(error: Error, traceId?: string, requestId?: string): void;
     setIssueId(issueId: string): void;
     openFeedbackModal(options?: any): any;

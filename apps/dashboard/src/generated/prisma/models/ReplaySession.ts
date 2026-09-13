@@ -58,6 +58,9 @@ export type ReplaySessionMinAggregateOutputType = {
   startedAt: Date | null
   endedAt: Date | null
   errorAt: Date | null
+  triggerType: string | null
+  captureReason: string | null
+  triggerTimestamp: Date | null
   status: $Enums.ReplayStatus | null
   totalDurationMs: number | null
   chunkCount: number | null
@@ -84,6 +87,9 @@ export type ReplaySessionMaxAggregateOutputType = {
   startedAt: Date | null
   endedAt: Date | null
   errorAt: Date | null
+  triggerType: string | null
+  captureReason: string | null
+  triggerTimestamp: Date | null
   status: $Enums.ReplayStatus | null
   totalDurationMs: number | null
   chunkCount: number | null
@@ -110,6 +116,9 @@ export type ReplaySessionCountAggregateOutputType = {
   startedAt: number
   endedAt: number
   errorAt: number
+  triggerType: number
+  captureReason: number
+  triggerTimestamp: number
   status: number
   totalDurationMs: number
   chunkCount: number
@@ -152,6 +161,9 @@ export type ReplaySessionMinAggregateInputType = {
   startedAt?: true
   endedAt?: true
   errorAt?: true
+  triggerType?: true
+  captureReason?: true
+  triggerTimestamp?: true
   status?: true
   totalDurationMs?: true
   chunkCount?: true
@@ -178,6 +190,9 @@ export type ReplaySessionMaxAggregateInputType = {
   startedAt?: true
   endedAt?: true
   errorAt?: true
+  triggerType?: true
+  captureReason?: true
+  triggerTimestamp?: true
   status?: true
   totalDurationMs?: true
   chunkCount?: true
@@ -204,6 +219,9 @@ export type ReplaySessionCountAggregateInputType = {
   startedAt?: true
   endedAt?: true
   errorAt?: true
+  triggerType?: true
+  captureReason?: true
+  triggerTimestamp?: true
   status?: true
   totalDurationMs?: true
   chunkCount?: true
@@ -317,6 +335,9 @@ export type ReplaySessionGroupByOutputType = {
   startedAt: Date
   endedAt: Date | null
   errorAt: Date | null
+  triggerType: string | null
+  captureReason: string | null
+  triggerTimestamp: Date | null
   status: $Enums.ReplayStatus
   totalDurationMs: number | null
   chunkCount: number
@@ -366,6 +387,9 @@ export type ReplaySessionWhereInput = {
   startedAt?: Prisma.DateTimeFilter<"ReplaySession"> | Date | string
   endedAt?: Prisma.DateTimeNullableFilter<"ReplaySession"> | Date | string | null
   errorAt?: Prisma.DateTimeNullableFilter<"ReplaySession"> | Date | string | null
+  triggerType?: Prisma.StringNullableFilter<"ReplaySession"> | string | null
+  captureReason?: Prisma.StringNullableFilter<"ReplaySession"> | string | null
+  triggerTimestamp?: Prisma.DateTimeNullableFilter<"ReplaySession"> | Date | string | null
   status?: Prisma.EnumReplayStatusFilter<"ReplaySession"> | $Enums.ReplayStatus
   totalDurationMs?: Prisma.IntNullableFilter<"ReplaySession"> | number | null
   chunkCount?: Prisma.IntFilter<"ReplaySession"> | number
@@ -396,6 +420,9 @@ export type ReplaySessionOrderByWithRelationInput = {
   startedAt?: Prisma.SortOrder
   endedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   errorAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  triggerType?: Prisma.SortOrderInput | Prisma.SortOrder
+  captureReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  triggerTimestamp?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   totalDurationMs?: Prisma.SortOrderInput | Prisma.SortOrder
   chunkCount?: Prisma.SortOrder
@@ -429,6 +456,9 @@ export type ReplaySessionWhereUniqueInput = Prisma.AtLeast<{
   startedAt?: Prisma.DateTimeFilter<"ReplaySession"> | Date | string
   endedAt?: Prisma.DateTimeNullableFilter<"ReplaySession"> | Date | string | null
   errorAt?: Prisma.DateTimeNullableFilter<"ReplaySession"> | Date | string | null
+  triggerType?: Prisma.StringNullableFilter<"ReplaySession"> | string | null
+  captureReason?: Prisma.StringNullableFilter<"ReplaySession"> | string | null
+  triggerTimestamp?: Prisma.DateTimeNullableFilter<"ReplaySession"> | Date | string | null
   status?: Prisma.EnumReplayStatusFilter<"ReplaySession"> | $Enums.ReplayStatus
   totalDurationMs?: Prisma.IntNullableFilter<"ReplaySession"> | number | null
   chunkCount?: Prisma.IntFilter<"ReplaySession"> | number
@@ -459,6 +489,9 @@ export type ReplaySessionOrderByWithAggregationInput = {
   startedAt?: Prisma.SortOrder
   endedAt?: Prisma.SortOrderInput | Prisma.SortOrder
   errorAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  triggerType?: Prisma.SortOrderInput | Prisma.SortOrder
+  captureReason?: Prisma.SortOrderInput | Prisma.SortOrder
+  triggerTimestamp?: Prisma.SortOrderInput | Prisma.SortOrder
   status?: Prisma.SortOrder
   totalDurationMs?: Prisma.SortOrderInput | Prisma.SortOrder
   chunkCount?: Prisma.SortOrder
@@ -493,6 +526,9 @@ export type ReplaySessionScalarWhereWithAggregatesInput = {
   startedAt?: Prisma.DateTimeWithAggregatesFilter<"ReplaySession"> | Date | string
   endedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ReplaySession"> | Date | string | null
   errorAt?: Prisma.DateTimeNullableWithAggregatesFilter<"ReplaySession"> | Date | string | null
+  triggerType?: Prisma.StringNullableWithAggregatesFilter<"ReplaySession"> | string | null
+  captureReason?: Prisma.StringNullableWithAggregatesFilter<"ReplaySession"> | string | null
+  triggerTimestamp?: Prisma.DateTimeNullableWithAggregatesFilter<"ReplaySession"> | Date | string | null
   status?: Prisma.EnumReplayStatusWithAggregatesFilter<"ReplaySession"> | $Enums.ReplayStatus
   totalDurationMs?: Prisma.IntNullableWithAggregatesFilter<"ReplaySession"> | number | null
   chunkCount?: Prisma.IntWithAggregatesFilter<"ReplaySession"> | number
@@ -517,6 +553,9 @@ export type ReplaySessionCreateInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -547,6 +586,9 @@ export type ReplaySessionUncheckedCreateInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -573,6 +615,9 @@ export type ReplaySessionUpdateInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -603,6 +648,9 @@ export type ReplaySessionUncheckedUpdateInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -631,6 +679,9 @@ export type ReplaySessionCreateManyInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -655,6 +706,9 @@ export type ReplaySessionUpdateManyMutationInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -681,6 +735,9 @@ export type ReplaySessionUncheckedUpdateManyInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -717,6 +774,9 @@ export type ReplaySessionCountOrderByAggregateInput = {
   startedAt?: Prisma.SortOrder
   endedAt?: Prisma.SortOrder
   errorAt?: Prisma.SortOrder
+  triggerType?: Prisma.SortOrder
+  captureReason?: Prisma.SortOrder
+  triggerTimestamp?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalDurationMs?: Prisma.SortOrder
   chunkCount?: Prisma.SortOrder
@@ -750,6 +810,9 @@ export type ReplaySessionMaxOrderByAggregateInput = {
   startedAt?: Prisma.SortOrder
   endedAt?: Prisma.SortOrder
   errorAt?: Prisma.SortOrder
+  triggerType?: Prisma.SortOrder
+  captureReason?: Prisma.SortOrder
+  triggerTimestamp?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalDurationMs?: Prisma.SortOrder
   chunkCount?: Prisma.SortOrder
@@ -776,6 +839,9 @@ export type ReplaySessionMinOrderByAggregateInput = {
   startedAt?: Prisma.SortOrder
   endedAt?: Prisma.SortOrder
   errorAt?: Prisma.SortOrder
+  triggerType?: Prisma.SortOrder
+  captureReason?: Prisma.SortOrder
+  triggerTimestamp?: Prisma.SortOrder
   status?: Prisma.SortOrder
   totalDurationMs?: Prisma.SortOrder
   chunkCount?: Prisma.SortOrder
@@ -935,6 +1001,9 @@ export type ReplaySessionCreateWithoutProjectInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -963,6 +1032,9 @@ export type ReplaySessionUncheckedCreateWithoutProjectInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -1020,6 +1092,9 @@ export type ReplaySessionScalarWhereInput = {
   startedAt?: Prisma.DateTimeFilter<"ReplaySession"> | Date | string
   endedAt?: Prisma.DateTimeNullableFilter<"ReplaySession"> | Date | string | null
   errorAt?: Prisma.DateTimeNullableFilter<"ReplaySession"> | Date | string | null
+  triggerType?: Prisma.StringNullableFilter<"ReplaySession"> | string | null
+  captureReason?: Prisma.StringNullableFilter<"ReplaySession"> | string | null
+  triggerTimestamp?: Prisma.DateTimeNullableFilter<"ReplaySession"> | Date | string | null
   status?: Prisma.EnumReplayStatusFilter<"ReplaySession"> | $Enums.ReplayStatus
   totalDurationMs?: Prisma.IntNullableFilter<"ReplaySession"> | number | null
   chunkCount?: Prisma.IntFilter<"ReplaySession"> | number
@@ -1044,6 +1119,9 @@ export type ReplaySessionCreateWithoutIssueInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -1072,6 +1150,9 @@ export type ReplaySessionUncheckedCreateWithoutIssueInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -1124,6 +1205,9 @@ export type ReplaySessionCreateWithoutFeedbacksInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -1153,6 +1237,9 @@ export type ReplaySessionUncheckedCreateWithoutFeedbacksInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -1194,6 +1281,9 @@ export type ReplaySessionUpdateWithoutFeedbacksInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1223,6 +1313,9 @@ export type ReplaySessionUncheckedUpdateWithoutFeedbacksInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1248,6 +1341,9 @@ export type ReplaySessionCreateWithoutChunksInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -1277,6 +1373,9 @@ export type ReplaySessionUncheckedCreateWithoutChunksInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -1318,6 +1417,9 @@ export type ReplaySessionUpdateWithoutChunksInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1347,6 +1449,9 @@ export type ReplaySessionUncheckedUpdateWithoutChunksInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1373,6 +1478,9 @@ export type ReplaySessionCreateManyProjectInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -1397,6 +1505,9 @@ export type ReplaySessionUpdateWithoutProjectInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1425,6 +1536,9 @@ export type ReplaySessionUncheckedUpdateWithoutProjectInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1452,6 +1566,9 @@ export type ReplaySessionUncheckedUpdateManyWithoutProjectInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1477,6 +1594,9 @@ export type ReplaySessionCreateManyIssueInput = {
   startedAt: Date | string
   endedAt?: Date | string | null
   errorAt?: Date | string | null
+  triggerType?: string | null
+  captureReason?: string | null
+  triggerTimestamp?: Date | string | null
   status?: $Enums.ReplayStatus
   totalDurationMs?: number | null
   chunkCount?: number
@@ -1501,6 +1621,9 @@ export type ReplaySessionUpdateWithoutIssueInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1529,6 +1652,9 @@ export type ReplaySessionUncheckedUpdateWithoutIssueInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1556,6 +1682,9 @@ export type ReplaySessionUncheckedUpdateManyWithoutIssueInput = {
   startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   endedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   errorAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  triggerType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  captureReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  triggerTimestamp?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
   status?: Prisma.EnumReplayStatusFieldUpdateOperationsInput | $Enums.ReplayStatus
   totalDurationMs?: Prisma.NullableIntFieldUpdateOperationsInput | number | null
   chunkCount?: Prisma.IntFieldUpdateOperationsInput | number
@@ -1622,6 +1751,9 @@ export type ReplaySessionSelect<ExtArgs extends runtime.Types.Extensions.Interna
   startedAt?: boolean
   endedAt?: boolean
   errorAt?: boolean
+  triggerType?: boolean
+  captureReason?: boolean
+  triggerTimestamp?: boolean
   status?: boolean
   totalDurationMs?: boolean
   chunkCount?: boolean
@@ -1653,6 +1785,9 @@ export type ReplaySessionSelectCreateManyAndReturn<ExtArgs extends runtime.Types
   startedAt?: boolean
   endedAt?: boolean
   errorAt?: boolean
+  triggerType?: boolean
+  captureReason?: boolean
+  triggerTimestamp?: boolean
   status?: boolean
   totalDurationMs?: boolean
   chunkCount?: boolean
@@ -1681,6 +1816,9 @@ export type ReplaySessionSelectUpdateManyAndReturn<ExtArgs extends runtime.Types
   startedAt?: boolean
   endedAt?: boolean
   errorAt?: boolean
+  triggerType?: boolean
+  captureReason?: boolean
+  triggerTimestamp?: boolean
   status?: boolean
   totalDurationMs?: boolean
   chunkCount?: boolean
@@ -1709,6 +1847,9 @@ export type ReplaySessionSelectScalar = {
   startedAt?: boolean
   endedAt?: boolean
   errorAt?: boolean
+  triggerType?: boolean
+  captureReason?: boolean
+  triggerTimestamp?: boolean
   status?: boolean
   totalDurationMs?: boolean
   chunkCount?: boolean
@@ -1717,7 +1858,7 @@ export type ReplaySessionSelectScalar = {
   updatedAt?: boolean
 }
 
-export type ReplaySessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "projectId" | "environmentId" | "issueId" | "traceId" | "requestId" | "browser" | "os" | "device" | "url" | "userAgent" | "viewportWidth" | "viewportHeight" | "startedAt" | "endedAt" | "errorAt" | "status" | "totalDurationMs" | "chunkCount" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["replaySession"]>
+export type ReplaySessionOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "sessionId" | "projectId" | "environmentId" | "issueId" | "traceId" | "requestId" | "browser" | "os" | "device" | "url" | "userAgent" | "viewportWidth" | "viewportHeight" | "startedAt" | "endedAt" | "errorAt" | "triggerType" | "captureReason" | "triggerTimestamp" | "status" | "totalDurationMs" | "chunkCount" | "expiresAt" | "createdAt" | "updatedAt", ExtArgs["result"]["replaySession"]>
 export type ReplaySessionInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   chunks?: boolean | Prisma.ReplaySession$chunksArgs<ExtArgs>
   issue?: boolean | Prisma.ReplaySession$issueArgs<ExtArgs>
@@ -1760,6 +1901,9 @@ export type $ReplaySessionPayload<ExtArgs extends runtime.Types.Extensions.Inter
     startedAt: Date
     endedAt: Date | null
     errorAt: Date | null
+    triggerType: string | null
+    captureReason: string | null
+    triggerTimestamp: Date | null
     status: $Enums.ReplayStatus
     totalDurationMs: number | null
     chunkCount: number
@@ -2210,6 +2354,9 @@ export interface ReplaySessionFieldRefs {
   readonly startedAt: Prisma.FieldRef<"ReplaySession", 'DateTime'>
   readonly endedAt: Prisma.FieldRef<"ReplaySession", 'DateTime'>
   readonly errorAt: Prisma.FieldRef<"ReplaySession", 'DateTime'>
+  readonly triggerType: Prisma.FieldRef<"ReplaySession", 'String'>
+  readonly captureReason: Prisma.FieldRef<"ReplaySession", 'String'>
+  readonly triggerTimestamp: Prisma.FieldRef<"ReplaySession", 'DateTime'>
   readonly status: Prisma.FieldRef<"ReplaySession", 'ReplayStatus'>
   readonly totalDurationMs: Prisma.FieldRef<"ReplaySession", 'Int'>
   readonly chunkCount: Prisma.FieldRef<"ReplaySession", 'Int'>

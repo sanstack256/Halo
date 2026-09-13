@@ -44,6 +44,8 @@ declare class Halo {
         start: () => void;
         stop: () => void;
         flush: () => void;
+        capture: (reason?: string) => void;
+        getCaptureState: () => string;
         openFeedbackModal: (options?: any) => any;
         getSessionId: () => string;
     };

@@ -88,6 +88,12 @@ var Halo = class _Halo {
       flush: () => {
         browserClient?.replay.flush();
       },
+      capture: (reason) => {
+        browserClient?.replay.capture({ reason });
+      },
+      getCaptureState: () => {
+        return browserClient?.replay.getCaptureState() || "DISABLED";
+      },
       openFeedbackModal: (options) => {
         return browserClient?.openFeedbackModal(options);
       },

@@ -15,6 +15,7 @@ export class ReplayUploader {
     private environment?: string;
     private issueId?: string;
     private maxQueueEvents = 10000;
+    private sessionMeta: Record<string, any> = {};
 
     constructor(options: {
         endpoint: string;
@@ -38,7 +39,16 @@ export class ReplayUploader {
         this.issueId = issueId;
     }
 
+    public setSessionMeta(meta: Record<string, any>): void {
+        this.sessionMeta = { ...this.sessionMeta, ...meta };
+    }
+
+    public getSequence(): number {
+        return this.sequence;
+    }
+
     addEvents(events: eventWithTime[]): void {
+        if (!events || events.length === 0) return;
         this.queue.push(...events);
 
         // Backpressure safeguard: if offline or server is unreachable, prevent unbounded memory leak
@@ -66,7 +76,12 @@ export class ReplayUploader {
             this.flushTimer = null;
         }
 
-        if (this.queue.length === 0 && !isFinal) return;
+        // Evidence-triggered invariant: Never upload or create a session if no events were ever queued
+        if (this.queue.length === 0 && (!isFinal || this.sequence === 0)) return;
+
+        if (extraMeta) {
+            this.sessionMeta = { ...this.sessionMeta, ...extraMeta };
+        }
 
         const eventsToUpload = [...this.queue];
         this.queue = [];
@@ -94,7 +109,7 @@ export class ReplayUploader {
                 viewportWidth: typeof window !== "undefined" ? window.innerWidth : undefined,
                 viewportHeight: typeof window !== "undefined" ? window.innerHeight : undefined,
                 issueId: this.issueId,
-                ...extraMeta,
+                ...this.sessionMeta,
             },
             final: isFinal,
         };

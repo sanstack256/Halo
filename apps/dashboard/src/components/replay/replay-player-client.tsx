@@ -75,6 +75,9 @@ type ReplayPlayerClientProps = {
         startedAt: Date | string;
         endedAt?: Date | string | null;
         errorAt?: Date | string | null;
+        triggerType?: string | null;
+        captureReason?: string | null;
+        triggerTimestamp?: Date | string | null;
         totalDurationMs?: number | null;
         status: string;
         issueId?: string | null;
@@ -968,18 +971,10 @@ export function ReplayPlayerClient({
     }
 
     if (events.length < 2) {
-        if (replaySession.status === "RECORDING") {
-            return (
-                <ReplayStatus
-                    status="RECORDING"
-                    projectId={replaySession.projectId}
-                />
-            );
-        }
         return (
             <ReplayStatus
-                status="NO_REPLAY"
-                message="This session contains insufficient DOM snapshots to reconstruct playback."
+                status={replaySession.status === "RECORDING" && events.length === 0 ? "RECORDING" : "NO_REPLAY"}
+                message={events.length > 0 ? "This session contains insufficient DOM snapshots to reconstruct playback." : undefined}
                 projectId={replaySession.projectId}
             />
         );
@@ -1317,7 +1312,7 @@ export function ReplayPlayerClient({
                     )}
                 </div>
 
-                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3 pt-1">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-5 gap-3 pt-1">
                     {/* Session ID */}
                     <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/10 space-y-1">
                         <span className="text-[10px] uppercase font-mono text-zinc-500 block">Session ID</span>
@@ -1330,6 +1325,31 @@ export function ReplayPlayerClient({
                             >
                                 {copiedField === "session" ? <Check size={12} className="text-teal-400" /> : <Copy size={12} />}
                             </button>
+                        </div>
+                    </div>
+
+                    {/* Capture Trigger */}
+                    <div className="p-2.5 rounded-lg bg-white/[0.02] border border-white/10 space-y-1">
+                        <span className="text-[10px] uppercase font-mono text-zinc-500 block">Capture Trigger</span>
+                        <div className="space-y-0.5">
+                            <span className={`inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-mono ${
+                                replaySession.triggerType === "ERROR" || replaySession.errorAt
+                                    ? "bg-red-500/15 text-red-300 border border-red-500/30"
+                                    : replaySession.triggerType === "UNHANDLED_REJECTION"
+                                    ? "bg-red-500/15 text-red-300 border border-red-500/30"
+                                    : replaySession.triggerType === "RAGE_CLICK" || replaySession.triggerType === "DEAD_CLICK"
+                                    ? "bg-amber-500/15 text-amber-300 border border-amber-500/30"
+                                    : replaySession.triggerType === "NETWORK_5XX"
+                                    ? "bg-teal-500/15 text-teal-300 border border-teal-500/30"
+                                    : replaySession.triggerType === "MANUAL"
+                                    ? "bg-blue-500/15 text-blue-300 border border-blue-500/30"
+                                    : "bg-zinc-800 text-zinc-300 border border-zinc-700"
+                            }`}>
+                                {replaySession.triggerType || (replaySession.errorAt ? "ERROR" : "Evidence Capture")}
+                            </span>
+                            <div className="text-[11px] text-zinc-300 truncate font-mono">
+                                {replaySession.captureReason || "Runtime evidence trigger"}
+                            </div>
                         </div>
                     </div>
 

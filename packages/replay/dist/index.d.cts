@@ -62,14 +62,28 @@ interface HaloReplayOptions {
     /**
      * Sampling rate between 0.0 (0%) and 1.0 (100%).
      * Sessions that are not sampled normally will still be preserved if an unhandled error occurs when errorTriggered is true.
-     * Default: 1.0 (or 0.1 in high-traffic production)
+     * Default: 0.0 (evidence-triggered: only persist on trigger unless sampled)
      */
     samplingRate?: number;
+    /**
+     * Alias for samplingRate.
+     */
+    sampleRate?: number;
     /**
      * When true, preserves the pre-error session buffer and continues recording after an error occurs.
      * Default: true
      */
     errorTriggered?: boolean;
+    /**
+     * When true, triggers replay persistence on detected user frustration (rage clicks or dead clicks).
+     * Default: true
+     */
+    triggerOnFrustration?: boolean;
+    /**
+     * When true, triggers replay persistence on HTTP 5xx or aborted network requests.
+     * Default: true
+     */
+    triggerOnNetworkError?: boolean;
     /**
      * Maximum duration of pre-error recording to keep in memory in seconds.
      * Default: 60 (1 minute)
@@ -255,6 +269,8 @@ interface ReplayErrorPayload {
     issueId?: string;
     traceId?: string;
 }
+type ReplayCaptureState = "DISABLED" | "OBSERVING" | "CAPTURING" | "FLUSHING" | "PERSISTED" | "DISCARDED";
+type ReplayTriggerType = "ERROR" | "UNHANDLED_REJECTION" | "RAGE_CLICK" | "DEAD_CLICK" | "NETWORK_5XX" | "MANUAL" | "SAMPLE";
 interface ReplayChunkPayload {
     sessionId: string;
     sequence: number;
@@ -274,6 +290,9 @@ interface ReplayChunkPayload {
         traceId?: string;
         requestId?: string;
         errorAt?: string;
+        triggerType?: ReplayTriggerType | string;
+        captureReason?: string;
+        triggerTimestamp?: string;
         hasRageClicks?: boolean;
         hasDeadClicks?: boolean;
         rageClickCount?: number;
@@ -300,6 +319,11 @@ declare class HaloReplay {
     private stopFn;
     private ringBuffer;
     private uploader;
+    private captureState;
+    private triggerType;
+    private captureReason;
+    private triggerTimestamp;
+    private sampleRate;
     private isSampled;
     private isStreaming;
     private isErrorTriggered;
@@ -353,6 +377,11 @@ declare class HaloReplay {
         comments: string;
     }): Promise<any>;
     openFeedbackModal(options?: FeedbackModalOptions): HaloFeedbackWidget;
+    getCaptureState(): ReplayCaptureState;
+    getTriggerType(): ReplayTriggerType | null;
+    getCaptureReason(): string | null;
+    getTriggerTimestamp(): string | null;
+    getSampleRate(): number;
     start(): void;
     private notifyMutationOrEffect;
     private handleEvent;
@@ -365,6 +394,22 @@ declare class HaloReplay {
     private setupConsoleInstrumentation;
     private setupErrorListeners;
     /**
+     * Unified trigger handler for evidence-based session persistence.
+     * Transitions state from OBSERVING -> CAPTURING on first trigger,
+     * flushes pre-trigger ring buffer, and schedules post-trigger aftermath capture.
+     * Subsequent triggers in the same session append timeline markers without duplicate sessions.
+     */
+    triggerCapture(triggerTypeOrOptions: ReplayTriggerType | {
+        type?: ReplayTriggerType;
+        reason?: string;
+        error?: any;
+        meta?: Record<string, any>;
+    }, details?: {
+        reason?: string;
+        error?: any;
+        meta?: Record<string, any>;
+    }): void;
+    /**
      * Call when an error is captured (e.g. from Halo.captureException).
      * Supports multiple errors in the same session without timeline destruction.
      */
@@ -373,6 +418,13 @@ declare class HaloReplay {
         stack?: string;
         issueId?: string;
         traceId?: string;
+    }): void;
+    /**
+     * Explicit developer capture API (e.g. halo.replay.capture()).
+     * Captures pre-trigger evidence and begins persistence.
+     */
+    capture(options?: {
+        reason?: string;
     }): void;
     flushAndConclude(): void;
     private setupFrustrationInstrumentation;

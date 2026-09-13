@@ -45,14 +45,28 @@ export interface HaloReplayOptions {
     /**
      * Sampling rate between 0.0 (0%) and 1.0 (100%).
      * Sessions that are not sampled normally will still be preserved if an unhandled error occurs when errorTriggered is true.
-     * Default: 1.0 (or 0.1 in high-traffic production)
+     * Default: 0.0 (evidence-triggered: only persist on trigger unless sampled)
      */
     samplingRate?: number;
+    /**
+     * Alias for samplingRate.
+     */
+    sampleRate?: number;
     /**
      * When true, preserves the pre-error session buffer and continues recording after an error occurs.
      * Default: true
      */
     errorTriggered?: boolean;
+    /**
+     * When true, triggers replay persistence on detected user frustration (rage clicks or dead clicks).
+     * Default: true
+     */
+    triggerOnFrustration?: boolean;
+    /**
+     * When true, triggers replay persistence on HTTP 5xx or aborted network requests.
+     * Default: true
+     */
+    triggerOnNetworkError?: boolean;
     /**
      * Maximum duration of pre-error recording to keep in memory in seconds.
      * Default: 60 (1 minute)
@@ -242,6 +256,23 @@ export interface ReplayErrorPayload {
     traceId?: string;
 }
 
+export type ReplayCaptureState =
+    | "DISABLED"
+    | "OBSERVING"
+    | "CAPTURING"
+    | "FLUSHING"
+    | "PERSISTED"
+    | "DISCARDED";
+
+export type ReplayTriggerType =
+    | "ERROR"
+    | "UNHANDLED_REJECTION"
+    | "RAGE_CLICK"
+    | "DEAD_CLICK"
+    | "NETWORK_5XX"
+    | "MANUAL"
+    | "SAMPLE";
+
 export interface ReplayChunkPayload {
     sessionId: string;
     sequence: number;
@@ -261,6 +292,9 @@ export interface ReplayChunkPayload {
         traceId?: string;
         requestId?: string;
         errorAt?: string;
+        triggerType?: ReplayTriggerType | string;
+        captureReason?: string;
+        triggerTimestamp?: string;
         hasRageClicks?: boolean;
         hasDeadClicks?: boolean;
         rageClickCount?: number;

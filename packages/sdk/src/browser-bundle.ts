@@ -106,6 +106,8 @@ export class Halo {
             },
             stop: () => this.client.replay.stop(),
             flush: () => this.client.replay.flush(),
+            capture: (reason?: string) => this.client.replay.capture({ reason }),
+            getCaptureState: () => this.client.replay.getCaptureState(),
             openFeedbackModal: (opts?: any) => this.client.openFeedbackModal(opts),
             getSessionId: () => this.client.getSessionId(),
         };

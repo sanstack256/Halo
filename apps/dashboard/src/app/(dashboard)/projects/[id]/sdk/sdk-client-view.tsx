@@ -146,8 +146,8 @@ Halo.init({
   release: "v1.0.0",
   replay: {
     enabled: true,
-    errorTriggered: true, // Only persists full replay on errors or user feedback
-    sampleRate: 1.0,
+    errorTriggered: true, // Only persists full replay on errors or investigation triggers
+    sampleRate: 0.0,      // 0% normal-session persistence (evidence-triggered only)
   },
 });`;
 
@@ -162,7 +162,7 @@ export function App() {
       endpoint={process.env.NEXT_PUBLIC_HALO_ENDPOINT}
       environment="production"
       release="v1.0.0"
-      replay={{ enabled: true, errorTriggered: true }}
+      replay={{ enabled: true, errorTriggered: true, sampleRate: 0.0 }}
     >
       <HaloErrorBoundary fallback={<div className="error-view">Something went wrong</div>}>
         <MainApplication />
@@ -190,7 +190,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
     <HaloProvider
       apiKey={process.env.NEXT_PUBLIC_HALO_API_KEY}
       endpoint={process.env.NEXT_PUBLIC_HALO_ENDPOINT}
-      replay={{ enabled: true }}
+      replay={{ enabled: true, errorTriggered: true, sampleRate: 0.0 }}
     >
       {children}
     </HaloProvider>
@@ -571,7 +571,7 @@ await runWithContext({ traceId: "req_checkout_01" }, async () => {
                         <Video className="h-4 w-4 text-accent" />
                         <h3 className="text-base font-semibold text-primary">Session Replay</h3>
                         <span className="rounded-full bg-accent/15 px-2 py-0.5 text-[10px] font-mono text-accent">
-                            First-Class Evidence
+                            Evidence-Triggered
                         </span>
                     </div>
                     {status.hasReplay && (
@@ -583,16 +583,18 @@ await runWithContext({ traceId: "req_checkout_01" }, async () => {
                 </div>
 
                 <p className="text-sm text-secondary leading-relaxed">
-                    Replay captures browser execution as reconstructable evidence, including DOM changes, navigation, errors, requests, and autonomous runtime activity without synthetic simulations.
+                    Replay captures the browser context around events worth investigating. Halo observes lightweight runtime signals locally in a bounded buffer and persists replay evidence only when an error, interaction trigger, or configured sampling rule captures it.
                 </p>
 
                 <CodeSnippet
-                    code={`// Enable Session Replay in Halo options
+                    code={`// Enable evidence-triggered Session Replay in Halo options
 replay: {
   enabled: true,
-  errorTriggered: true,    // Retains replay only if an unhandled error or feedback occurs
-  sampleRate: 1.0,         // Sampling percentage (0.0 to 1.0)
-  recordCanvas: true,      // GPU-accelerated Canvas 2D & WebGL frame capture
+  errorTriggered: true,         // Retains events in local buffer, persists only on errors/triggers (default: true)
+  sampleRate: 0.0,              // Normal-session sampling rate (default: 0.0 = zero normal persistence)
+  preErrorBufferSeconds: 60,    // Local circular buffer retained in browser memory (default: 60s)
+  postErrorDurationSeconds: 30, // Duration to continue capturing aftermath after trigger (default: 30s)
+  recordCanvas: true,           // GPU-accelerated Canvas 2D & WebGL frame capture (optional)
 }`}
                     language="typescript"
                     filename="Replay Configuration"
@@ -611,8 +613,16 @@ replay: {
                     <div className="pt-3 border-t border-border/70 space-y-3 text-xs text-secondary">
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 font-mono">
                             <div className="rounded border border-border/60 bg-surface/60 p-3 space-y-1">
-                                <span className="text-primary font-semibold">errorTriggered: boolean</span>
-                                <p className="font-sans text-muted">Buffers events in a bounded circular buffer and commits the replay to Halo only when an error occurs.</p>
+                                <span className="text-primary font-semibold">errorTriggered: true</span>
+                                <p className="font-sans text-muted">Buffers events in memory and commits the replay to Halo only when an error or trigger occurs.</p>
+                            </div>
+                            <div className="rounded border border-border/60 bg-surface/60 p-3 space-y-1">
+                                <span className="text-primary font-semibold">sampleRate: 0.0</span>
+                                <p className="font-sans text-muted">Sampling rate for normal sessions without errors. Set to 0 to eliminate normal session storage completely.</p>
+                            </div>
+                            <div className="rounded border border-border/60 bg-surface/60 p-3 space-y-1">
+                                <span className="text-primary font-semibold">halo.replay.capture()</span>
+                                <p className="font-sans text-muted">Explicit manual trigger to snapshot current ring buffer and persist browser evidence on demand.</p>
                             </div>
                             <div className="rounded border border-border/60 bg-surface/60 p-3 space-y-1">
                                 <span className="text-primary font-semibold">recordCanvas: boolean</span>

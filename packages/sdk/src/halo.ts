@@ -123,6 +123,8 @@ export class Halo {
         start: () => void;
         stop: () => void;
         flush: () => void;
+        capture: (reason?: string) => void;
+        getCaptureState: () => string;
         openFeedbackModal: (options?: any) => any;
         getSessionId: () => string;
     } {
@@ -136,6 +138,12 @@ export class Halo {
             },
             flush: () => {
                 browserClient?.replay.flush();
+            },
+            capture: (reason?: string) => {
+                browserClient?.replay.capture({ reason });
+            },
+            getCaptureState: () => {
+                return browserClient?.replay.getCaptureState() || "DISABLED";
             },
             openFeedbackModal: (options?: any) => {
                 return browserClient?.openFeedbackModal(options);

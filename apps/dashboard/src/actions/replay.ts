@@ -320,8 +320,13 @@ export async function getReplaySession(replaySessionId: string) {
     const org = await getOrganization(session.user.id);
     if (!org) return null;
 
-    const replay = await prisma.replaySession.findUnique({
-        where: { id: replaySessionId },
+    const replay = await prisma.replaySession.findFirst({
+        where: {
+            OR: [
+                { id: replaySessionId },
+                { sessionId: replaySessionId },
+            ],
+        },
         include: {
             project: {
                 select: {
@@ -366,9 +371,15 @@ export async function getReplayEvents(replaySessionId: string) {
     const org = await getOrganization(session.user.id);
     if (!org) return [];
 
-    const replay = await prisma.replaySession.findUnique({
-        where: { id: replaySessionId },
+    const replay = await prisma.replaySession.findFirst({
+        where: {
+            OR: [
+                { id: replaySessionId },
+                { sessionId: replaySessionId },
+            ],
+        },
         select: {
+            id: true,
             project: {
                 select: {
                     organizationId: true,
@@ -382,7 +393,7 @@ export async function getReplayEvents(replaySessionId: string) {
     }
 
     const chunks = await prisma.replayChunk.findMany({
-        where: { replaySessionId },
+        where: { replaySessionId: replay.id },
         orderBy: { sequence: "asc" },
         select: {
             events: true,
@@ -463,6 +474,8 @@ export async function getProjectReplaysPaginated(
             { sessionId: { contains: q, mode: "insensitive" } },
             { id: { contains: q, mode: "insensitive" } },
             { url: { contains: q, mode: "insensitive" } },
+            { captureReason: { contains: q, mode: "insensitive" } },
+            { triggerType: { contains: q, mode: "insensitive" } },
             { issue: { title: { contains: q, mode: "insensitive" } } },
         ];
     }
