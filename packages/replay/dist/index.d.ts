@@ -51,7 +51,7 @@ interface HaloReplayOptions {
      */
     projectId?: string;
     /**
-     * Halo backend endpoint base URL (e.g. "https://app.halo.run/api" or "http://localhost:3000/api").
+     * Halo backend endpoint base URL (e.g. "https://halo-trace-ten.vercel.app/api" or "http://localhost:3000/api").
      * Default: "/api"
      */
     endpoint?: string;

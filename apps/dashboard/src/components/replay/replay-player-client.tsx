@@ -968,6 +968,14 @@ export function ReplayPlayerClient({
     }
 
     if (events.length < 2) {
+        if (replaySession.status === "RECORDING") {
+            return (
+                <ReplayStatus
+                    status="RECORDING"
+                    projectId={replaySession.projectId}
+                />
+            );
+        }
         return (
             <ReplayStatus
                 status="NO_REPLAY"
@@ -1035,6 +1043,12 @@ export function ReplayPlayerClient({
                     <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-surface border border-border text-muted">
                         {totalFormatted}
                     </span>
+                    {replaySession.status === "RECORDING" && (
+                        <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-blue-500/10 border border-blue-500/30 text-blue-300 flex items-center gap-1.5">
+                            <span className="w-1.5 h-1.5 rounded-full bg-blue-400 animate-pulse" />
+                            Recording
+                        </span>
+                    )}
                     {replaySession.browser && (
                         <span className="text-[11px] font-mono px-2 py-0.5 rounded bg-surface border border-border text-zinc-400">
                             {replaySession.browser}

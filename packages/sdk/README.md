@@ -54,8 +54,8 @@ import { Halo } from "@halo-trace/sdk";
 
 // Automatically selects BrowserClient or NodeClient based on runtime environment
 Halo.init({
-    apiKey: process.env.HALO_API_KEY || "hl_live_...",
-    endpoint: "https://app.halo.run/api",
+    apiKey: process.env.HALO_API_KEY,
+    endpoint: "https://halo-trace-ten.vercel.app/api",
     environment: "production",
     release: "v3.2.0",
     replay: {
@@ -95,7 +95,7 @@ import { NodeClient, runWithContext, getTraceId } from "@halo-trace/sdk/node";
 
 const node = new NodeClient({
     apiKey: process.env.HALO_API_KEY!,
-    endpoint: "https://app.halo.run/api",
+    endpoint: "https://halo-trace-ten.vercel.app/api",
     service: "payment-worker",
 });
 
@@ -197,8 +197,8 @@ For applications without npm build pipelines, load the bundled script:
 <script src="https://cdn.halo.run/sdk/halo.global.js"></script>
 <script>
     Halo.init({
-        apiKey: "hl_live_...",
-        endpoint: "https://app.halo.run/api",
+        apiKey: "hl_live_your_key",
+        endpoint: "https://halo-trace-ten.vercel.app/api",
         replay: { enabled: true }
     });
 </script>

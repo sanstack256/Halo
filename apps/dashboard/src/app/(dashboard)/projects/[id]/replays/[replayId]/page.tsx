@@ -25,37 +25,57 @@ export default async function ReplayDetailPage({ params, searchParams }: Props) 
         notFound();
     }
 
-    if (replaySession.status === "RECORDING") {
-        return (
-            <div className="space-y-6">
-                <Link
-                    href={`/projects/${projectId}/replays`}
-                    className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white transition-colors"
-                >
-                    <ArrowLeft className="h-3.5 w-3.5" />
-                    Back to Replays
-                </Link>
-                <ReplayStatus status="RECORDING" projectId={projectId} />
-            </div>
-        );
-    }
+    const hasPlayableChunks =
+        (Array.isArray(replaySession.chunks) &&
+            replaySession.chunks.some((c) => (c.eventCount ?? 0) > 0 || c.id)) ||
+        (replaySession.chunkCount ?? 0) > 0;
 
-    if (replaySession.status === "PROCESSING") {
-        return (
-            <div className="space-y-6">
-                <Link
-                    href={`/projects/${projectId}/replays`}
-                    className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white transition-colors"
-                >
-                    <ArrowLeft className="h-3.5 w-3.5" />
-                    Back to Replays
-                </Link>
-                <ReplayStatus status="PROCESSING" projectId={projectId} />
-            </div>
-        );
-    }
+    if (!hasPlayableChunks) {
+        if (replaySession.status === "RECORDING") {
+            return (
+                <div className="space-y-6">
+                    <Link
+                        href={`/projects/${projectId}/replays`}
+                        className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white transition-colors"
+                    >
+                        <ArrowLeft className="h-3.5 w-3.5" />
+                        Back to Replays
+                    </Link>
+                    <ReplayStatus status="RECORDING" projectId={projectId} />
+                </div>
+            );
+        }
 
-    if (replaySession.status === "EXPIRED") {
+        if (replaySession.status === "PROCESSING") {
+            return (
+                <div className="space-y-6">
+                    <Link
+                        href={`/projects/${projectId}/replays`}
+                        className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white transition-colors"
+                    >
+                        <ArrowLeft className="h-3.5 w-3.5" />
+                        Back to Replays
+                    </Link>
+                    <ReplayStatus status="PROCESSING" projectId={projectId} />
+                </div>
+            );
+        }
+
+        if (replaySession.status === "EXPIRED") {
+            return (
+                <div className="space-y-6">
+                    <Link
+                        href={`/projects/${projectId}/replays`}
+                        className="inline-flex items-center gap-2 text-xs font-mono text-zinc-400 hover:text-white transition-colors"
+                    >
+                        <ArrowLeft className="h-3.5 w-3.5" />
+                        Back to Replays
+                    </Link>
+                    <ReplayStatus status="EXPIRED" projectId={projectId} />
+                </div>
+            );
+        }
+
         return (
             <div className="space-y-6">
                 <Link
@@ -65,7 +85,7 @@ export default async function ReplayDetailPage({ params, searchParams }: Props) 
                     <ArrowLeft className="h-3.5 w-3.5" />
                     Back to Replays
                 </Link>
-                <ReplayStatus status="EXPIRED" projectId={projectId} />
+                <ReplayStatus status="NO_REPLAY" projectId={projectId} />
             </div>
         );
     }

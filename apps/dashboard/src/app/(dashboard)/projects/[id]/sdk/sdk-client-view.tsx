@@ -26,6 +26,7 @@ import {
 } from "lucide-react";
 import { CodeSnippet } from "./code-snippet";
 import { triggerSdkVerificationEvent, getProjectSdkStatus, type ProjectSdkStatus } from "@/actions/project-sdk";
+import { SDK_PUBLIC_ENDPOINT } from "@/lib/sdk-config";
 
 export type Platform = "browser" | "react" | "nextjs" | "node";
 export type PackageManager = "pnpm" | "npm" | "yarn";
@@ -126,9 +127,9 @@ export function SdkClientView({ project, initialStatus }: Props) {
     // Environment variable instructions
     const getEnvSnippet = () => {
         if (platform === "browser" || platform === "react") {
-            return `NEXT_PUBLIC_HALO_API_KEY=${apiKey}\nNEXT_PUBLIC_HALO_ENDPOINT=https://app.halo.run/api`;
+            return `NEXT_PUBLIC_HALO_API_KEY=${apiKey}\nNEXT_PUBLIC_HALO_ENDPOINT=${SDK_PUBLIC_ENDPOINT}`;
         }
-        return `HALO_API_KEY=${apiKey}\nHALO_ENDPOINT=https://app.halo.run/api`;
+        return `HALO_API_KEY=${apiKey}\nHALO_ENDPOINT=${SDK_PUBLIC_ENDPOINT}`;
     };
 
     // Initialization code per platform
@@ -139,8 +140,8 @@ export function SdkClientView({ project, initialStatus }: Props) {
 
 // Initialize Halo client once at application startup
 Halo.init({
-  apiKey: process.env.NEXT_PUBLIC_HALO_API_KEY || "${apiKey}",
-  endpoint: "https://app.halo.run/api",
+  apiKey: process.env.NEXT_PUBLIC_HALO_API_KEY,
+  endpoint: process.env.NEXT_PUBLIC_HALO_ENDPOINT,
   environment: "production",
   release: "v1.0.0",
   replay: {
@@ -157,8 +158,8 @@ import { HaloProvider, HaloErrorBoundary } from "@halo-trace/sdk/react";
 export function App() {
   return (
     <HaloProvider
-      apiKey={process.env.NEXT_PUBLIC_HALO_API_KEY || "${apiKey}"}
-      endpoint="https://app.halo.run/api"
+      apiKey={process.env.NEXT_PUBLIC_HALO_API_KEY}
+      endpoint={process.env.NEXT_PUBLIC_HALO_ENDPOINT}
       environment="production"
       release="v1.0.0"
       replay={{ enabled: true, errorTriggered: true }}
@@ -187,8 +188,8 @@ import { HaloProvider } from "@halo-trace/sdk/react";
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <HaloProvider
-      apiKey={process.env.NEXT_PUBLIC_HALO_API_KEY!}
-      endpoint="/api"
+      apiKey={process.env.NEXT_PUBLIC_HALO_API_KEY}
+      endpoint={process.env.NEXT_PUBLIC_HALO_ENDPOINT}
       replay={{ enabled: true }}
     >
       {children}
@@ -200,8 +201,8 @@ export function Providers({ children }: { children: React.ReactNode }) {
                 return `import { NodeClient, runWithContext } from "@halo-trace/sdk/node";
 
 const halo = new NodeClient({
-  apiKey: process.env.HALO_API_KEY || "${apiKey}",
-  endpoint: "https://app.halo.run/api",
+  apiKey: process.env.HALO_API_KEY,
+  endpoint: process.env.HALO_ENDPOINT,
   service: "checkout-worker",
   environment: "production",
 });

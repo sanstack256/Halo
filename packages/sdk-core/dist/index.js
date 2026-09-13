@@ -967,6 +967,8 @@ var CoreClient = class {
       service: options.service,
       metadata: options.metadata,
       tags: options.tags,
+      requestId: options.requestId,
+      traceId: options.traceId,
       severity: "INFO"
     });
   }

@@ -198,6 +198,8 @@ export class CoreClient {
         service?: string;
         metadata?: Record<string, unknown>;
         tags?: Record<string, HaloTagValue>;
+        requestId?: string;
+        traceId?: string;
     }): HaloEnvelope | null {
         if (!this.sampling.shouldSampleTrace()) return null;
 
@@ -211,6 +213,8 @@ export class CoreClient {
             service: options.service,
             metadata: options.metadata,
             tags: options.tags,
+            requestId: options.requestId,
+            traceId: options.traceId,
             severity: "INFO",
         });
     }

@@ -160,5 +160,9 @@ interface HaloOptions {
     replay?: HaloReplayConfig;
 }
 type SessionState = "IDLE" | "INITIALIZING" | "RECORDING" | "ERROR_TRIGGERED" | "POST_ERROR_RECORDING" | "FLUSHING" | "STOPPED";
+/**
+ * Canonical production endpoint for the Halo Ingestion Service.
+ */
+declare const SDK_PUBLIC_ENDPOINT: string;
 
-export type { EvidenceStatus, HaloBreadcrumb, HaloCaptureOptions, HaloClientClock, HaloContext, HaloEnvelope, HaloEventType, HaloOptions, HaloPrivacyOptions, HaloReplayConfig, HaloRuntimeInfo, HaloSeverity, HaloTagValue, HaloTraceContext, HaloUser, SessionState };
+export { type EvidenceStatus, type HaloBreadcrumb, type HaloCaptureOptions, type HaloClientClock, type HaloContext, type HaloEnvelope, type HaloEventType, type HaloOptions, type HaloPrivacyOptions, type HaloReplayConfig, type HaloRuntimeInfo, type HaloSeverity, type HaloTagValue, type HaloTraceContext, type HaloUser, SDK_PUBLIC_ENDPOINT, type SessionState };

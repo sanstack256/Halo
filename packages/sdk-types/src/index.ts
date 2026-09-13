@@ -208,3 +208,11 @@ export type SessionState =
     | "POST_ERROR_RECORDING"
     | "FLUSHING"
     | "STOPPED";
+
+/**
+ * Canonical production endpoint for the Halo Ingestion Service.
+ */
+export const SDK_PUBLIC_ENDPOINT =
+    (typeof process !== "undefined" && (process.env?.NEXT_PUBLIC_HALO_ENDPOINT || process.env?.HALO_ENDPOINT)) ||
+    "https://halo-trace-ten.vercel.app/api";
+

@@ -13749,6 +13749,7 @@ var HaloBundle = (() => {
     EnvelopeBuilder: () => EnvelopeBuilder,
     Halo: () => Halo,
     HaloReplay: () => HaloReplay,
+    SDK_PUBLIC_ENDPOINT: () => SDK_PUBLIC_ENDPOINT,
     SamplingEngine: () => SamplingEngine,
     Scope: () => Scope,
     SessionManager: () => SessionManager,
@@ -13771,6 +13772,9 @@ var HaloBundle = (() => {
     sanitizeText: () => sanitizeText,
     sanitizeUrl: () => sanitizeUrl
   });
+
+  // ../sdk-types/dist/index.js
+  var SDK_PUBLIC_ENDPOINT = typeof process !== "undefined" && (process.env?.NEXT_PUBLIC_HALO_ENDPOINT || process.env?.HALO_ENDPOINT) || "https://halo-trace-ten.vercel.app/api";
 
   // ../sdk-core/dist/index.js
   var Scope = class _Scope {
@@ -14723,6 +14727,8 @@ var HaloBundle = (() => {
         service: options.service,
         metadata: options.metadata,
         tags: options.tags,
+        requestId: options.requestId,
+        traceId: options.traceId,
         severity: "INFO"
       });
     }

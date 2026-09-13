@@ -2,6 +2,9 @@ import { NextRequest } from "next/server";
 import { verifyApiKey } from "@/actions/api-key";
 import { createEvent } from "@/actions/event";
 import { handleOptions, jsonResponse } from "@/lib/cors";
+import { getSession } from "@/lib/session";
+import { getOrganization } from "@/lib/organization";
+import { prisma } from "@/lib/prisma";
 
 export async function OPTIONS(request: NextRequest) {
     return handleOptions(request);
@@ -11,25 +14,44 @@ export async function POST(request: NextRequest) {
     const authorization =
         request.headers.get("authorization");
 
-    if (!authorization?.startsWith("Bearer ")) {
-        return jsonResponse(
-            request,
-            { error: "Missing API key" },
-            { status: 401 }
+    let verified: { project: any; environment: any } | null = null;
+
+    if (authorization?.startsWith("Bearer ")) {
+        const apiKey = authorization.replace(
+            "Bearer ",
+            ""
         );
+        verified = await verifyApiKey(apiKey);
     }
 
-    const apiKey = authorization.replace(
-        "Bearer ",
-        ""
-    );
+    if (!verified) {
+        // Support verified dashboard session authentication for SDK verification test events
+        const session = await getSession();
+        const requestedProjectId =
+            request.headers.get("x-project-id") ||
+            request.nextUrl.searchParams.get("projectId");
 
-    const verified = await verifyApiKey(apiKey);
+        if (session?.user?.id && requestedProjectId) {
+            const org = await getOrganization(session.user.id);
+            if (org) {
+                const project = await prisma.project.findFirst({
+                    where: { id: requestedProjectId, organizationId: org.id },
+                    include: { environments: true },
+                });
+                if (project && project.environments.length > 0) {
+                    verified = {
+                        project,
+                        environment: project.environments[0],
+                    };
+                }
+            }
+        }
+    }
 
     if (!verified) {
         return jsonResponse(
             request,
-            { error: "Invalid API key" },
+            { error: "Invalid API key or unauthorized" },
             { status: 401 }
         );
     }

@@ -42,11 +42,11 @@ describe("Frustration Signals (Rage Clicks & Dead Clicks)", () => {
         });
 
         const events = replay.getRecordedEvents();
-        const rageEvent = events.find((e: any) => e.type === 5 && e.data?.tag === "halo:rage-click");
+        const rageEvent = events.find((e: any) => e.type === 5 && e.data?.tag === "halo:rage-click") as any;
         expect(rageEvent).toBeDefined();
-        expect(rageEvent.data.payload.count).toBe(4);
-        expect(rageEvent.data.payload.targetSelector).toBe("#submit-pay-btn");
-        expect(rageEvent.data.payload.durationMs).toBe(620);
+        expect(rageEvent?.data?.payload?.count).toBe(4);
+        expect(rageEvent?.data?.payload?.targetSelector).toBe("#submit-pay-btn");
+        expect(rageEvent?.data?.payload?.durationMs).toBe(620);
     });
 
     it("allows recording dead click events when actionable target produces no mutations", () => {
@@ -63,10 +63,10 @@ describe("Frustration Signals (Rage Clicks & Dead Clicks)", () => {
         });
 
         const events = replay.getRecordedEvents();
-        const deadEvent = events.find((e: any) => e.type === 5 && e.data?.tag === "halo:dead-click");
+        const deadEvent = events.find((e: any) => e.type === 5 && e.data?.tag === "halo:dead-click") as any;
         expect(deadEvent).toBeDefined();
-        expect(deadEvent.data.payload.targetSelector).toBe("button.unresponsive-cta");
-        expect(deadEvent.data.payload.inactiveDurationMs).toBe(2500);
+        expect(deadEvent?.data?.payload?.targetSelector).toBe("button.unresponsive-cta");
+        expect(deadEvent?.data?.payload?.inactiveDurationMs).toBe(2500);
     });
 
     it("records lifecycle events on page transitions", () => {
@@ -80,9 +80,9 @@ describe("Frustration Signals (Rage Clicks & Dead Clicks)", () => {
         });
 
         const events = replay.getRecordedEvents();
-        const lifecycleEvent = events.find((e: any) => e.type === 5 && e.data?.tag === "halo:lifecycle");
+        const lifecycleEvent = events.find((e: any) => e.type === 5 && e.data?.tag === "halo:lifecycle") as any;
         expect(lifecycleEvent).toBeDefined();
-        expect(lifecycleEvent.data.payload.event).toBe("visibilitychange");
-        expect(lifecycleEvent.data.payload.state).toBe("hidden");
+        expect(lifecycleEvent?.data?.payload?.event).toBe("visibilitychange");
+        expect(lifecycleEvent?.data?.payload?.state).toBe("hidden");
     });
 });

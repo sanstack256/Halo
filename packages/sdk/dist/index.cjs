@@ -62,6 +62,9 @@ var Halo = class _Halo {
   capturePerformance(options) {
     return this.client.capturePerformance(options);
   }
+  capture(event) {
+    return this.client.capture(event);
+  }
   addBreadcrumb(breadcrumb) {
     this.client.addBreadcrumb(breadcrumb);
   }

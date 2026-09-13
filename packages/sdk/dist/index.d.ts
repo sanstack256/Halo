@@ -20,7 +20,10 @@ declare class Halo {
         service?: string;
         metadata?: Record<string, unknown>;
         tags?: Record<string, HaloTagValue>;
+        requestId?: string;
+        traceId?: string;
     }): any;
+    capture(event: any): any;
     addBreadcrumb(breadcrumb: Omit<HaloBreadcrumb, "timestamp"> & {
         timestamp?: string;
     }): void;

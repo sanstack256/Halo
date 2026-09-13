@@ -23,16 +23,22 @@ export async function ReplayView({
         return <ReplayStatus status="NO_REPLAY" projectId={projectId} />;
     }
 
-    if (replaySession.status === "RECORDING") {
-        return <ReplayStatus status="RECORDING" projectId={projectId} />;
-    }
+    const hasPlayableChunks =
+        (Array.isArray(replaySession.chunks) &&
+            replaySession.chunks.some((c: any) => (c.eventCount ?? 0) > 0 || c.id)) ||
+        (replaySession.chunkCount ?? 0) > 0;
 
-    if (replaySession.status === "PROCESSING") {
-        return <ReplayStatus status="PROCESSING" projectId={projectId} />;
-    }
-
-    if (replaySession.status === "EXPIRED") {
-        return <ReplayStatus status="EXPIRED" projectId={projectId} />;
+    if (!hasPlayableChunks) {
+        if (replaySession.status === "RECORDING") {
+            return <ReplayStatus status="RECORDING" projectId={projectId} />;
+        }
+        if (replaySession.status === "PROCESSING") {
+            return <ReplayStatus status="PROCESSING" projectId={projectId} />;
+        }
+        if (replaySession.status === "EXPIRED") {
+            return <ReplayStatus status="EXPIRED" projectId={projectId} />;
+        }
+        return <ReplayStatus status="NO_REPLAY" projectId={projectId} />;
     }
 
     return (

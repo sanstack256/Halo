@@ -131,20 +131,57 @@ export async function triggerSdkVerificationEvent(projectId: string): Promise<{ 
         throw new Error("No environment found for project");
     }
 
-    const event = await createEvent({
-        type: "MESSAGE",
-        severity: "INFO",
+    const baseUrl =
+        process.env.NEXT_PUBLIC_APP_URL ||
+        process.env.HALO_BASE_URL ||
+        "http://localhost:3000";
+    const endpointUrl = `${baseUrl.replace(/\/$/, "")}/api/ingest/events?projectId=${encodeURIComponent(project.id)}`;
+
+    const payload = {
+        type: "MESSAGE" as const,
+        severity: "INFO" as const,
         title: "Halo SDK Connection Verification",
         message: "Real-time connection verification event dispatched from Halo dashboard.",
         service: "dashboard-verifier",
         timestamp: new Date().toISOString(),
-        projectId: project.id,
-        environmentId: environment.id,
         metadata: {
             source: "dashboard_sdk_verification_flow",
             verifiedBy: session.user.id,
             clientTimestamp: Date.now(),
         },
+    };
+
+    try {
+        const { headers: getHeaders } = await import("next/headers");
+        const nextHeaders = await getHeaders();
+        const cookie = nextHeaders.get("cookie");
+
+        const res = await fetch(endpointUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "x-project-id": project.id,
+                ...(cookie ? { cookie } : {}),
+            },
+            body: JSON.stringify(payload),
+        });
+
+        if (res.ok) {
+            const data = await res.json();
+            const eventId = data.events?.[0]?.id || data.id;
+            return {
+                success: true,
+                eventId,
+            };
+        }
+    } catch {
+        // Fallback gracefully to direct createEvent if fetch fails in isolated runtime
+    }
+
+    const event = await createEvent({
+        ...payload,
+        projectId: project.id,
+        environmentId: environment.id,
     });
 
     return {

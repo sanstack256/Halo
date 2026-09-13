@@ -225,6 +225,8 @@ declare class CoreClient {
         service?: string;
         metadata?: Record<string, unknown>;
         tags?: Record<string, HaloTagValue>;
+        requestId?: string;
+        traceId?: string;
     }): HaloEnvelope | null;
     flush(): Promise<void>;
     close(): void;
