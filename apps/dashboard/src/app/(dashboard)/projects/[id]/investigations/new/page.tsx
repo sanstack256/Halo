@@ -35,7 +35,6 @@ import {
     Terminal,
     XCircle,
     Zap,
-    Wrench,
 } from "lucide-react";
 import Link from "next/link";
 
@@ -596,15 +595,6 @@ function InvestigationView({
                         fallbackHref={backHref}
                         label={backLabel}
                     />
-                    {issueId && (
-                        <Link
-                            href={`/projects/${projectId}/issues/${issueId}/repair${incidentAnchorId ? `?eventId=${incidentAnchorId}` : ""}`}
-                            className="halo-btn halo-btn-sm halo-btn-primary flex items-center gap-1.5 font-mono text-xs"
-                        >
-                            <Wrench size={13} />
-                            <span>Open Repair Case</span>
-                        </Link>
-                    )}
                 </div>
                 <div className="text-xs font-mono text-zinc-500">
                     {intervalContext ? (
