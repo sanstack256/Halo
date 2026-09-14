@@ -306,18 +306,3 @@ export interface ValidatedRecommendationResult {
     fixRecommendation?: FixRecommendation;
 }
 
-/* -------------------------------------------------------------------------- */
-/* Follow-Up Q&A Message                                                      */
-/* -------------------------------------------------------------------------- */
-
-export interface FollowUpQuestionMessage {
-    role: "user" | "assistant";
-    content: string;
-    timestamp: string;
-    citations?: string[];
-    referencedCallers?: Array<{
-        filePath: string;
-        lineNumber?: number;
-        snippet?: string;
-    }>;
-}

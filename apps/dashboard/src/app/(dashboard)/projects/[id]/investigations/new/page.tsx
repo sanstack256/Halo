@@ -1468,7 +1468,7 @@ function InvestigationView({
                 initialRecommendation={persistedRecommendation?.recommendation || null}
                 initialStale={persistedRecommendation?.isStale ?? false}
                 initialVersion={persistedRecommendation?.version ?? 1}
-                initialHistory={persistedRecommendation?.followUpHistory || []}
+
                 initialRecommendationId={persistedRecommendation?.id}
                 modelName={persistedRecommendation?.modelName || customModelName || "Halo Engine"}
             />

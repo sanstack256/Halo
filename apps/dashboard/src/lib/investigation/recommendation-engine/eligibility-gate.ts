@@ -5,13 +5,16 @@
  * Deterministically evaluates the Canonical Evidence Snapshot BEFORE model invocation.
  * Enforces Halo's core truth boundary:
  *   - Prohibits generating code patches without verified source and exact line bounds.
- *   - Detects underdetermined failure mechanisms (e.g. await scenario.fn(...) without runtime arguments or return outcomes)
+ *   - Detects underdetermined failure mechanisms (async delegate calls without runtime values)
  *     and gates off code patch generation to save LLM credits and prevent speculative fixes.
+ *   - Checks source AST, call graph, and contract analysis before declaring telemetry insufficient (Phase 0.5).
  *   - Returns clear missing evidence requirements and targeted next actions before repair.
  */
 
 import type { EvidenceSnapshot } from "../evidence-snapshot";
 import type { DecisionState, RecommendationEligibilityVerdict } from "./types";
+import { analyzeContractMismatch } from "../repair-intelligence/contract-mismatch-engine";
+import { analyzeProtections } from "../repair-intelligence/protection-analyzer";
 
 const PATCHABLE_EXTENSIONS = new Set([
     ".ts",
@@ -38,7 +41,10 @@ export interface DecisionSufficiencyResult {
 
 /**
  * Checks whether the failure mechanism is underdetermined.
- * E.g. execution reached `await scenario.fn(...)` or an async delegate without runtime values or internal exceptions.
+ *
+ * Phase 0.5 compliance: Before declaring telemetry insufficient, checks whether
+ * source AST protections, contract mismatch analysis, or call graph evidence
+ * can already explain the failure mechanism without runtime capture.
  */
 export function isFailureMechanismUnderdetermined(snapshot: EvidenceSnapshot): boolean {
     const expr = snapshot.runtime?.failingExpression || snapshot.source?.failingExpression || "";
@@ -50,12 +56,60 @@ export function isFailureMechanismUnderdetermined(snapshot: EvidenceSnapshot): b
         expr.startsWith("await ") &&
         (expr.includes(".fn(") || expr.includes(".run(") || expr.includes(".handler(") || expr.includes(".execute("));
 
-    // If it's a delegate call and runtime arguments or return value was not captured, it's underdetermined
-    if (isAsyncDelegateCall && runtimeValue === undefined) {
-        return true;
+    // If it's not a delegate call pattern, the mechanism is not underdetermined by this check
+    if (!isAsyncDelegateCall || runtimeValue !== undefined) {
+        return false;
     }
 
-    return false;
+    // Phase 0.5: Before declaring underdetermined, check if source AST or contract
+    // analysis already explains the failure mechanism without runtime capture.
+    const source = snapshot.source;
+    if (source && source.resolutionStatus === "exact_file" && source.lines && source.lines.length > 0) {
+        // Check if source AST protections reveal the mechanism
+        const protections = analyzeProtections({
+            source,
+            failingLineNumber: source.failingLineNumber,
+            failingExpression: source.failingExpression || expr,
+            containingFunction: source.containingFunction || snapshot.runtime?.containingFunction,
+        });
+
+        // If we found guards or the protection analyzer identified the pattern, mechanism is explained
+        if (protections.guards.length > 0 || protections.isSymptomSuppressionOnly) {
+            return false;
+        }
+
+        // Check if contract mismatch analysis can resolve the failure mechanism
+        const fullSource = source.lines.map((l) => l.content).join("\n");
+        const contractAnalysis = analyzeContractMismatch({
+            calleeSource: { filePath: source.filePath, content: fullSource },
+            failingSymbol: source.containingFunction,
+            failingLine: source.failingLineNumber,
+            failingExpression: source.failingExpression || expr,
+            runtimeValue: runtimeValue as string | undefined,
+            runtimeValueStatus: runtimeValue !== undefined ? "CAPTURED" : "NOT_CAPTURED",
+            errorTitle: anchor?.title,
+            errorMessage: anchor?.metadata?.message as string | undefined,
+        });
+
+        // If contract mismatch was detected, the failure mechanism IS determined
+        if (contractAnalysis.hasMismatch) {
+            return false;
+        }
+    }
+
+    // Investigation findings may also resolve the mechanism
+    if (snapshot.investigation?.findings) {
+        const hasCausalFinding = snapshot.investigation.findings.some(
+            (f) => f.causalRole === "CAUSE" || f.causalRole === "TRIGGER"
+        );
+        if (hasCausalFinding) {
+            return false;
+        }
+    }
+
+    // Truly underdetermined: async delegate call with no runtime value, no AST explanation,
+    // no contract mismatch, and no causal investigation finding
+    return true;
 }
 
 /**
@@ -127,17 +181,18 @@ export function evaluateDecisionSufficiency(snapshot: EvidenceSnapshot): Decisio
 
     // 4. Underdetermined failure mechanism
     if (isFailureMechanismUnderdetermined(snapshot)) {
-        const expr = snapshot.runtime?.failingExpression || snapshot.source?.failingExpression || "scenario.fn()";
+        const expr = snapshot.runtime?.failingExpression || snapshot.source?.failingExpression || "";
+        const exprLabel = expr || "failing execution path";
         return {
             isSufficientForPatch: false,
             decisionState: "OBSERVABILITY_REQUIRED_BEFORE_REPAIR",
-            reason: `Halo cannot prove whether '${expr}' evaluated to undefined, threw an internal error, or rejected with an unhandled promise because runtime values were not captured.`,
+            reason: `Halo cannot prove whether '${exprLabel}' evaluated to undefined, threw an internal error, or rejected with an unhandled promise because runtime values were not captured.`,
             missingEvidence: [
-                `Invocation arguments passed to '${expr}'`,
-                `Invocation return value or internal rejection payload from '${expr}'`,
+                `Invocation arguments passed to '${exprLabel}'`,
+                `Invocation return value or internal rejection payload from '${exprLabel}'`,
                 "Caller-side state prior to invocation",
             ],
-            nextActionBeforeRepair: `Reproduce the failure with targeted instrumentation around '${expr}' and capture the invocation outcome before modifying production code.`,
+            nextActionBeforeRepair: `Reproduce the failure with targeted instrumentation around '${exprLabel}' and capture the invocation outcome before modifying production code.`,
         };
     }
 

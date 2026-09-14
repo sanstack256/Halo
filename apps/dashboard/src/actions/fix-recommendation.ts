@@ -9,8 +9,7 @@ import { buildCanonicalEvidenceSnapshot } from "@/lib/investigation/evidence-sna
 import { resolveGitHubSourceContext } from "@/lib/investigation/runtime/github-source-provider";
 import { parseStackTrace } from "@/lib/investigation/runtime/stack-parser";
 import { generateEvidenceBoundRecommendation } from "@/lib/investigation/recommendation-engine/engine";
-import { answerRecommendationFollowUp } from "@/lib/investigation/recommendation-engine/follow-up-engine";
-import { FixRecommendationSchema, type FixRecommendation, type FollowUpQuestionMessage } from "@/lib/investigation/recommendation-engine/types";
+import { FixRecommendationSchema, type FixRecommendation } from "@/lib/investigation/recommendation-engine/types";
 
 export interface GenerateFixRecommendationParams {
     projectId: string;
@@ -62,7 +61,6 @@ export async function getPersistedRecommendation(params: {
         isStale: latest.isStale,
         snapshotHash: latest.snapshotHash,
         recommendation: latest.recommendation as unknown as FixRecommendation,
-        followUpHistory: (latest.followUpHistory as unknown as FollowUpQuestionMessage[]) || [],
         modelProvider: latest.modelProvider,
         modelName: latest.modelName,
         createdAt: latest.createdAt,
@@ -149,7 +147,6 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
                 version: existing.version,
                 isStale,
                 recommendation: existing.recommendation as unknown as FixRecommendation,
-                followUpHistory: (existing.followUpHistory as unknown as FollowUpQuestionMessage[]) || [],
                 modelProvider: existing.modelProvider,
                 modelName: existing.modelName,
                 createdAt: existing.createdAt,
@@ -189,13 +186,7 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
             relatedConsistencyChecks: [],
             validationSteps: ["Reproduce with verified incident payload", "Execute test suite"],
             uncertainty: result.unknowns,
-            followUpSuggestions: [
-                "Why do you recommend changing the caller instead of the service?",
-                "Which evidence led to this recommendation?",
-                "What happens if we only add optional chaining?",
-                "Are there other callers that need the same change?",
-                "What tests should I add?",
-            ],
+            followUpSuggestions: [],
             hasInsufficientEvidence: result.source === "REFUSAL_INSUFFICIENT_EVIDENCE",
         }
     );
@@ -229,70 +220,8 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
         version: persisted.version,
         isStale: false,
         recommendation: fixRecommendation,
-        followUpHistory: [],
         modelProvider: persisted.modelProvider,
         modelName: persisted.modelName,
         createdAt: persisted.createdAt,
-    };
-}
-
-/**
- * Handles engineer follow-up questions about the recommendation.
- * Backed by the same investigation context and deterministic repository lookups.
- */
-export async function askRecommendationFollowUpAction(params: {
-    projectId: string;
-    issueId: string;
-    recommendationId: string;
-    question: string;
-}) {
-    const { projectId, issueId, recommendationId, question } = params;
-
-    const project = await getProject(projectId);
-    if (!project) {
-        throw new Error(`Project ${projectId} not found or unauthorized.`);
-    }
-
-    const recRecord = await prisma.issueRecommendation.findUnique({
-        where: { id: recommendationId },
-    });
-    if (!recRecord) {
-        throw new Error(`Recommendation ${recommendationId} not found.`);
-    }
-
-    const recommendation = recRecord.recommendation as unknown as FixRecommendation;
-    const history = (recRecord.followUpHistory as unknown as FollowUpQuestionMessage[]) || [];
-
-    const followUpResult = answerRecommendationFollowUp({
-        question,
-        recommendation,
-    });
-
-    const userMessage: FollowUpQuestionMessage = {
-        role: "user",
-        content: question,
-        timestamp: new Date().toISOString(),
-    };
-
-    const assistantMessage: FollowUpQuestionMessage = {
-        role: "assistant",
-        content: followUpResult.answer,
-        timestamp: new Date().toISOString(),
-        citations: followUpResult.citations,
-        referencedCallers: followUpResult.referencedCallers,
-    };
-
-    const updatedHistory = [...history, userMessage, assistantMessage];
-
-    await prisma.issueRecommendation.update({
-        where: { id: recommendationId },
-        data: {
-            followUpHistory: updatedHistory as any,
-        },
-    });
-
-    return {
-        success: true,
-        history: updatedHistory,
     };
 }

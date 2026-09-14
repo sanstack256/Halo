@@ -18,7 +18,7 @@ import {
     Info,
     ChevronRight,
 } from "lucide-react";
-import type { FixRecommendation, FollowUpQuestionMessage } from "@/lib/investigation/recommendation-engine/types";
+import type { FixRecommendation } from "@/lib/investigation/recommendation-engine/types";
 import { generateFixRecommendationAction } from "@/actions/fix-recommendation";
 
 interface Props {
@@ -29,7 +29,6 @@ interface Props {
     initialRecommendation?: FixRecommendation | null;
     initialStale?: boolean;
     initialVersion?: number;
-    initialHistory?: FollowUpQuestionMessage[];
     initialRecommendationId?: string;
     modelName?: string;
     onJumpToEvidence?: (evidenceId: string) => void;
@@ -43,7 +42,6 @@ export function FixRecommendationView({
     initialRecommendation = null,
     initialStale = false,
     initialVersion = 1,
-    initialHistory = [],
     initialRecommendationId = "",
     modelName = "Halo Engine",
     onJumpToEvidence,

@@ -205,11 +205,11 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
     const anchorId = anchor?.id;
     const file = failureModel.failingFile || "unknown";
     const line = failureModel.failingLineNumber || 1;
-    const fnName = failureModel.containingFunction || "handler";
+    const fnName = failureModel.containingFunction || "";
     const expr = failureModel.failingExpression || "";
 
     // Build What Happened
-    let whatHappened = `${failureModel.errorTitle} occurred in service '${failureModel.service}' at ${file}:${line} inside function '${fnName}'.`;
+    let whatHappened = `${failureModel.errorTitle} occurred in service '${failureModel.service}' at ${file}:${line}${fnName ? ` inside function '${fnName}'` : ""}.`;
     if (expr) {
         whatHappened += ` Execution reached expression '${expr}'.`;
     }
@@ -322,7 +322,7 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
             `Invocation return value or internal rejection payload from ${fnName}()`,
             "Caller-side state prior to invocation",
         ];
-        nextActionBeforeRepair = `Reproduce the failure with targeted instrumentation around ${fnName}() and capture the invocation outcome. Once that evidence is available, regenerate the recommendation.`;
+        nextActionBeforeRepair = `Reproduce the failure with targeted instrumentation around ${fnName ? `${fnName}()` : "the failing execution path"} and capture the invocation outcome. Once that evidence is available, regenerate the recommendation.`;
     } else if (repairEligibility.state === "REPAIR_PLAUSIBLE" && repairOptions.length > 0) {
         outcomeType = "AMBIGUOUS_ROOT_CAUSE";
         action = `Evaluate repair options: ${repairOptions.map((o) => o.title).join(" OR ")}. Do not apply a speculative fix until caller value flow is confirmed.`;
@@ -475,13 +475,7 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
                 "Verify no regression on adjacent invocation paths.",
             ],
             uncertainty: failureModel.unknowns.map((u) => u.claim),
-            followUpSuggestions: [
-                "Why do you recommend changing the caller instead of the service?",
-                "Which evidence led to this recommendation?",
-                "What happens if we only add optional chaining?",
-                "Are there other callers that need the same change?",
-                "What tests should I add?",
-            ],
+
             hasInsufficientEvidence:
                 outcomeType === "INSUFFICIENT_EVIDENCE" ||
                 outcomeType === "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR",

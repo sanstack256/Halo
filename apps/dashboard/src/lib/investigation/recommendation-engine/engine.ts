@@ -185,13 +185,7 @@ export async function generateEvidenceBoundRecommendation(
         relatedConsistencyChecks: [],
         validationSteps: ["Reproduce with verified incident payload", "Execute test suite"],
         uncertainty: data.unknowns,
-        followUpSuggestions: [
-            "Why do you recommend changing the caller instead of the service?",
-            "Which evidence led to this recommendation?",
-            "What happens if we only add optional chaining?",
-            "Are there other callers that need the same change?",
-            "What tests should I add?",
-        ],
+        followUpSuggestions: [],
         hasInsufficientEvidence: sufficiency.decisionState === "INSUFFICIENT_EVIDENCE" || sufficiency.decisionState === "OBSERVABILITY_REQUIRED_BEFORE_REPAIR",
         isStale: false,
     };
