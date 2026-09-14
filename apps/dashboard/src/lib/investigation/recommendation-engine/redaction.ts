@@ -22,3 +22,7 @@ export function redactSensitiveData(str: string): string {
 
     return clean;
 }
+
+export function sanitizeForPrompt(str: string): string {
+    return redactSensitiveData(str);
+}

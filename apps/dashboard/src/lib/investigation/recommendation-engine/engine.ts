@@ -1,26 +1,27 @@
 /**
  * Halo Recommendation & Patch Engine Orchestrator
  *
+ * Implements Phases 4, 8, 25, 27, 32, and 33:
  * Coordinates the full evidence-bound recommendation workflow:
- *   1. Evaluates Eligibility Gate
- *   2. Builds Minimal Redacted Context & Injection-Proof Prompt
+ *   1. Evaluates Decision Sufficiency Gate
+ *   2. Builds Minimal Provenance Context (Epistemic separation) & Injection-Proof Prompt
  *   3. Dispatches to Configured Model Provider (Temp = 0)
- *   4. Runs Deterministic Output Validation (Claims, Source, Patch)
- *   5. Fallbacks gracefully if LLM fails or is rejected
+ *   4. Runs Deterministic Output Validation (Claims, Source, AST match, Anti-masking)
+ *   5. Real failure state if model fails — zero canned responses
  */
 
 import type { EvidenceSnapshot } from "../evidence-snapshot";
-import type {
-    RecommendationModel,
-} from "./provider";
+import type { RecommendationModel } from "./provider";
 import { getRecommendationModel } from "./provider";
-import { evaluateRecommendationEligibility } from "./eligibility-gate";
-import { buildSystemPrompt, buildUserPrompt } from "./prompt-builder";
+import { evaluateRecommendationEligibility, evaluateDecisionSufficiency } from "./eligibility-gate";
+import { buildRecommendationContext } from "./context-builder";
+import { buildRecommendationPrompts } from "./prompt-builder";
 import { validateModelOutput } from "./output-validator";
 import { buildRepairCase } from "../repair-intelligence/repair-case-builder";
 import type {
     ValidatedRecommendationResult,
     RecommendationEligibilityVerdict,
+    FixRecommendation,
 } from "./types";
 
 export interface GenerateRecommendationOptions {
@@ -33,8 +34,9 @@ export async function generateEvidenceBoundRecommendation(
 ): Promise<ValidatedRecommendationResult> {
     const { snapshot, customModel } = options;
 
-    // 1. Evaluate Eligibility Gate & Deterministic Repair Case
+    // 1. Evaluate Decision Sufficiency Gate & Deterministic Repair Case
     const gateVerdict = evaluateRecommendationEligibility(snapshot);
+    const sufficiency = evaluateDecisionSufficiency(snapshot);
     const repairCase = buildRepairCase({ snapshot });
 
     if (!gateVerdict.canGenerateRecommendation) {
@@ -59,8 +61,33 @@ export async function generateEvidenceBoundRecommendation(
             ],
             limitations: ["Refused by Halo deterministic eligibility gate."],
             repairCase,
+            fixRecommendation: {
+                directAnswer: `Do not modify production code yet. ${gateVerdict.recommendationReason}`,
+                actionAnswer: `Do not modify production code yet. ${gateVerdict.recommendationReason}`,
+                status: sufficiency.decisionState,
+                outcomeType: sufficiency.decisionState,
+                summary: `Do not modify production code yet. ${gateVerdict.recommendationReason}`,
+                diagnosis: gateVerdict.recommendationReason,
+                whyThisAction: "Insufficient telemetry to safely identify a repair target.",
+                whyThisFixesIt: "Refusing speculative modifications preserves system stability until concrete observability is available.",
+                whyNotSymptomFix: "Do not apply defensive symptom masking without understanding the root failure cause.",
+                alternatives: [],
+                doNotChange: [],
+                verification: ["Capture correlated telemetry or reproduce in development before modifying code."],
+                missingEvidence: sufficiency.missingEvidence,
+                nextActionBeforeRepair: sufficiency.nextActionBeforeRepair,
+                confidence: "LOW",
+                evidenceReferences: [],
+                changes: [],
+                validationSteps: ["Capture correlated telemetry or reproduce in development before modifying code."],
+                uncertainty: ["Incident failure mechanism"],
+                relatedConsistencyChecks: [],
+                followUpSuggestions: [],
+                hasInsufficientEvidence: true,
+                refusalReason: gateVerdict.recommendationReason,
+                isStale: false,
+            },
             audit: {
-
                 snapshotId: snapshot.snapshotId,
                 gateVerdict,
                 validation: {
@@ -83,8 +110,8 @@ export async function generateEvidenceBoundRecommendation(
     }
 
     // 2. Build Context & Prompts
-    const system = buildSystemPrompt(gateVerdict);
-    const user = buildUserPrompt(snapshot, gateVerdict);
+    const context = buildRecommendationContext(snapshot);
+    const { systemPrompt, userPrompt } = buildRecommendationPrompts(snapshot);
 
     // 3. Resolve Model
     const model = getRecommendationModel(customModel);
@@ -92,14 +119,18 @@ export async function generateEvidenceBoundRecommendation(
     // 4. Query Model
     let rawResponse: { rawText: string; durationMs: number };
     try {
-        rawResponse = await model.generate({ system, user, snapshot, gateVerdict });
+        rawResponse = await model.generate({
+            system: systemPrompt,
+            user: userPrompt,
+            snapshot,
+            gateVerdict,
+        });
     } catch (err: any) {
-        // Graceful error fallback
-        return buildFallbackResult(
+        return buildModelFailureResult(
             snapshot,
             gateVerdict,
             model.name,
-            `Model execution failed: ${err?.message || "unknown error"}`
+            `AI recommendation is unavailable: ${err?.message || "LLM provider execution failed"}`
         );
     }
 
@@ -111,11 +142,11 @@ export async function generateEvidenceBoundRecommendation(
     );
 
     if (!validationResult.isValid || !validationResult.data) {
-        return buildFallbackResult(
+        return buildModelFailureResult(
             snapshot,
             gateVerdict,
             model.name,
-            `Model output rejected by deterministic validation: ${validationResult.audit.rejectionReasons.join(
+            `Model output rejected by deterministic fact-checker: ${validationResult.audit.rejectionReasons.join(
                 "; "
             )}`,
             validationResult.audit
@@ -124,25 +155,33 @@ export async function generateEvidenceBoundRecommendation(
 
     const data = validationResult.data;
 
-    const fixRecommendation: import("./types").FixRecommendation = (data as any).fixRecommendation || {
+    const fixRecommendation: FixRecommendation = (data as any).fixRecommendation || {
+        directAnswer: data.recommendation?.action || data.whatHappened,
         actionAnswer: data.recommendation?.action || data.whatHappened,
-        outcomeType: "CODE_CHANGE_RECOMMENDED",
+        status: sufficiency.decisionState,
+        outcomeType: sufficiency.decisionState,
         summary: data.recommendation?.action || data.whatHappened,
         diagnosis: data.whatHappened,
         whyThisAction: data.recommendation?.reasoning,
+        whyThisFixesIt: data.recommendation?.reasoning,
         whyNotSymptomFix: "Do not apply defensive nullish checks or symptom suppression at the callee when caller contracts are violated.",
-        missingEvidence: [],
-        nextActionBeforeRepair: undefined,
+        missingEvidence: data.unknowns,
+        nextActionBeforeRepair: sufficiency.nextActionBeforeRepair,
         confidence: (data.confidenceLevel?.toUpperCase() as any) || "MEDIUM",
         evidenceReferences: Array.from(new Set(data.claims.flatMap((c) => c.evidenceIds))),
         changes: data.proposedPatch?.files?.map((f) => ({
+            file: f.path,
             filePath: f.path,
             codeType: "PROPOSED_ONLY" as const,
             explanation: f.explanation,
             whyHere: "Target identified from failing stack trace and application call chain.",
+            whyThisLocation: "Target identified from failing stack trace and application call chain.",
             proposedCode: f.diff,
             isExactSourceVerified: false,
         })) || [],
+        alternatives: [],
+        doNotChange: [],
+        verification: ["Reproduce with verified incident payload", "Execute test suite"],
         relatedConsistencyChecks: [],
         validationSteps: ["Reproduce with verified incident payload", "Execute test suite"],
         uncertainty: data.unknowns,
@@ -153,7 +192,8 @@ export async function generateEvidenceBoundRecommendation(
             "Are there other callers that need the same change?",
             "What tests should I add?",
         ],
-        hasInsufficientEvidence: false,
+        hasInsufficientEvidence: sufficiency.decisionState === "INSUFFICIENT_EVIDENCE" || sufficiency.decisionState === "OBSERVABILITY_REQUIRED_BEFORE_REPAIR",
+        isStale: false,
     };
 
     // 6. Return Validated Production Result
@@ -203,14 +243,18 @@ export async function generateEvidenceBoundRecommendation(
     };
 }
 
-function buildFallbackResult(
+/**
+ * Builds a clean failure result for provider errors or fact-checker rejection.
+ * NEVER returns a canned or generic fake recommendation (Phase 33 & Phase 67).
+ */
+function buildModelFailureResult(
     snapshot: EvidenceSnapshot,
     gateVerdict: RecommendationEligibilityVerdict,
     modelName: string,
-    fallbackReason: string,
+    failureReason: string,
     validationAudit?: any
 ): ValidatedRecommendationResult {
-    const anchor = snapshot.runtime.anchorError;
+    const anchor = snapshot.runtime?.anchorError || snapshot.evidence[0];
     const headline = anchor
         ? `Observed ${anchor.title} in service "${anchor.service ?? "unknown"}".`
         : "Incident observed in telemetry.";
@@ -218,29 +262,48 @@ function buildFallbackResult(
     return {
         success: false,
         source: "DETERMINISTIC_FALLBACK",
-        confidence: "Medium",
-        whatHappened: `${headline} AI recommendation is unavailable: ${fallbackReason}`,
+        confidence: "Low",
+        whatHappened: `${headline} Recommendation could not be safely generated: ${failureReason}`,
         claims: (snapshot.investigation.findings || []).slice(0, 3).map((f) => ({
             statement: f.title,
             category: "OBSERVED" as const,
             evidenceIds: f.evidenceIds || [],
             isDirectlyObserved: true,
         })),
-        action: snapshot.investigation.rootCause
-            ? {
-                  instruction: `Investigate root cause hypothesis: ${snapshot.investigation.rootCause.title}`,
-                  reasoning: snapshot.investigation.rootCause.description,
-              }
-            : undefined,
         patch: {
             status: "NOT_SAFE_TO_GENERATE",
             files: [],
-            validationNote: "Patch generation withheld in fallback mode.",
-            refusalReason: fallbackReason,
+            validationNote: "Patch withheld due to recommendation generation failure.",
+            refusalReason: failureReason,
         },
-        unknowns: ["LLM-synthesized resolution steps"],
-        limitations: [fallbackReason],
+        unknowns: [failureReason],
+        limitations: [failureReason],
         repairCase: buildRepairCase({ snapshot }),
+        fixRecommendation: {
+            directAnswer: `Recommendation could not be generated: ${failureReason}. Please retry or inspect investigation evidence.`,
+            actionAnswer: `Recommendation could not be generated: ${failureReason}. Please retry or inspect investigation evidence.`,
+            status: "INSUFFICIENT_EVIDENCE",
+            outcomeType: "INSUFFICIENT_EVIDENCE",
+            summary: failureReason,
+            diagnosis: headline,
+            whyThisAction: failureReason,
+            whyThisFixesIt: "AI recommendation unavailable. Inspect raw telemetry or retry.",
+            whyNotSymptomFix: "Do not blindly apply defensive symptom masking.",
+            alternatives: [],
+            doNotChange: [],
+            verification: [],
+            missingEvidence: [failureReason],
+            confidence: "LOW",
+            evidenceReferences: [],
+            changes: [],
+            validationSteps: [],
+            uncertainty: [failureReason],
+            relatedConsistencyChecks: [],
+            followUpSuggestions: [],
+            hasInsufficientEvidence: true,
+            refusalReason: failureReason,
+            isStale: false,
+        },
         audit: {
             snapshotId: snapshot.snapshotId,
             gateVerdict,
@@ -251,11 +314,11 @@ function buildFallbackResult(
                 sourceLocationsValid: false,
                 patchValid: false,
                 factualConsistencyValid: false,
-                rejectionReasons: [fallbackReason],
+                rejectionReasons: [failureReason],
                 warnings: [],
             },
             modelInfo: {
-                provider: "fallback",
+                provider: "error",
                 model: modelName,
                 durationMs: 0,
             },

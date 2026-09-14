@@ -9,7 +9,8 @@ import { buildCanonicalEvidenceSnapshot } from "@/lib/investigation/evidence-sna
 import { resolveGitHubSourceContext } from "@/lib/investigation/runtime/github-source-provider";
 import { parseStackTrace } from "@/lib/investigation/runtime/stack-parser";
 import { generateEvidenceBoundRecommendation } from "@/lib/investigation/recommendation-engine/engine";
-import type { FixRecommendation, FollowUpQuestionMessage } from "@/lib/investigation/recommendation-engine/types";
+import { answerRecommendationFollowUp } from "@/lib/investigation/recommendation-engine/follow-up-engine";
+import { FixRecommendationSchema, type FixRecommendation, type FollowUpQuestionMessage } from "@/lib/investigation/recommendation-engine/types";
 
 export interface GenerateFixRecommendationParams {
     projectId: string;
@@ -165,37 +166,39 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
         customModel,
     });
 
-    const fixRecommendation: FixRecommendation = result.fixRecommendation || {
-        actionAnswer: result.action?.instruction || result.whatHappened,
-        outcomeType: result.source === "REFUSAL_INSUFFICIENT_EVIDENCE" ? "INSUFFICIENT_EVIDENCE" : "CODE_CHANGE_RECOMMENDED",
-        summary: result.action?.instruction || result.whatHappened,
-        diagnosis: result.whatHappened,
-        whyThisAction: result.action?.reasoning,
-        whyNotSymptomFix: "Do not apply defensive nullish checks or symptom suppression at the callee when caller contracts are violated.",
-        missingEvidence: result.unknowns,
-        nextActionBeforeRepair: result.source === "REFUSAL_INSUFFICIENT_EVIDENCE" ? "Capture correlated telemetry or reproduce in development before modifying code." : undefined,
-        confidence: (result.confidence?.toUpperCase() as any) || "MEDIUM",
-        evidenceReferences: Array.from(new Set(result.claims.flatMap((c) => c.evidenceIds))),
-        changes: (result.patch?.files || []).map((f) => ({
-            filePath: f.path,
-            codeType: "PROPOSED_ONLY" as const,
-            explanation: f.explanation,
-            whyHere: "Target identified from failing stack trace and application call chain.",
-            proposedCode: f.diff,
-            isExactSourceVerified: false,
-        })),
-        relatedConsistencyChecks: [],
-        validationSteps: ["Reproduce with verified incident payload", "Execute test suite"],
-        uncertainty: result.unknowns,
-        followUpSuggestions: [
-            "Why do you recommend changing the caller instead of the service?",
-            "Which evidence led to this recommendation?",
-            "What happens if we only add optional chaining?",
-            "Are there other callers that need the same change?",
-            "What tests should I add?",
-        ],
-        hasInsufficientEvidence: result.source === "REFUSAL_INSUFFICIENT_EVIDENCE",
-    };
+    const fixRecommendation: FixRecommendation = FixRecommendationSchema.parse(
+        result.fixRecommendation || {
+            actionAnswer: result.action?.instruction || result.whatHappened,
+            outcomeType: result.source === "REFUSAL_INSUFFICIENT_EVIDENCE" ? "INSUFFICIENT_EVIDENCE" : "CODE_CHANGE_RECOMMENDED",
+            summary: result.action?.instruction || result.whatHappened,
+            diagnosis: result.whatHappened,
+            whyThisAction: result.action?.reasoning,
+            whyNotSymptomFix: "Do not apply defensive nullish checks or symptom suppression at the callee when caller contracts are violated.",
+            missingEvidence: result.unknowns,
+            nextActionBeforeRepair: result.source === "REFUSAL_INSUFFICIENT_EVIDENCE" ? "Capture correlated telemetry or reproduce in development before modifying code." : undefined,
+            confidence: (result.confidence?.toUpperCase() as any) || "MEDIUM",
+            evidenceReferences: Array.from(new Set(result.claims.flatMap((c) => c.evidenceIds))),
+            changes: (result.patch?.files || []).map((f) => ({
+                filePath: f.path,
+                codeType: "PROPOSED_ONLY" as const,
+                explanation: f.explanation,
+                whyHere: "Target identified from failing stack trace and application call chain.",
+                proposedCode: f.diff,
+                isExactSourceVerified: false,
+            })),
+            relatedConsistencyChecks: [],
+            validationSteps: ["Reproduce with verified incident payload", "Execute test suite"],
+            uncertainty: result.unknowns,
+            followUpSuggestions: [
+                "Why do you recommend changing the caller instead of the service?",
+                "Which evidence led to this recommendation?",
+                "What happens if we only add optional chaining?",
+                "Are there other callers that need the same change?",
+                "What tests should I add?",
+            ],
+            hasInsufficientEvidence: result.source === "REFUSAL_INSUFFICIENT_EVIDENCE",
+        }
+    );
 
     // 5. Determine version number
     const previous = await prisma.issueRecommendation.findFirst({
@@ -260,29 +263,10 @@ export async function askRecommendationFollowUpAction(params: {
     const recommendation = recRecord.recommendation as unknown as FixRecommendation;
     const history = (recRecord.followUpHistory as unknown as FollowUpQuestionMessage[]) || [];
 
-    const lowerQ = question.toLowerCase();
-    let answerText = "";
-    const referencedCallers: Array<{ filePath: string; lineNumber?: number; snippet?: string }> = [];
-
-    // Deterministic lookup if engineer asks about other callers
-    if (lowerQ.includes("caller") || lowerQ.includes("other files") || lowerQ.includes("who else calls")) {
-        answerText = `The investigation established the contract requirement from the failing site. For this specific failure mechanism, the primary target file is \`${recommendation.changes[0]?.filePath ?? "caller"}\`. Related consistency checks: ${recommendation.relatedConsistencyChecks?.join("; ") || "Verify caller argument counts."}`;
-        if (recommendation.changes[0]?.filePath) {
-            referencedCallers.push({
-                filePath: recommendation.changes[0].filePath,
-                lineNumber: recommendation.changes[0].startLine,
-                snippet: recommendation.changes[0].currentCode,
-            });
-        }
-    } else if (lowerQ.includes("why") && (lowerQ.includes("caller") || lowerQ.includes("callee") || lowerQ.includes("service"))) {
-        answerText = `We recommend changing the caller because the investigation demonstrates the required data already exists or is expected at the caller boundary. Modifying the callee to add fallback handling (such as optional chaining or default values) would suppress the symptom while masking broken caller contracts.`;
-    } else if (lowerQ.includes("optional chaining") || lowerQ.includes("null check") || lowerQ.includes("?. ")) {
-        answerText = `Adding optional chaining (\`?.\`) would suppress the unhandled exception at runtime, but it does not restore the broken contract. If downstream consumers expect a populated value, suppressing it with \`?.\` typically produces silent failures or cascading downstream null pointer errors.`;
-    } else if (lowerQ.includes("test") || lowerQ.includes("verify") || lowerQ.includes("validation")) {
-        answerText = `Recommended validation steps:\n${(recommendation.validationSteps || ["Run unit tests covering this component."]).map((s) => `• ${s}`).join("\n")}`;
-    } else {
-        answerText = `Based on the investigation evidence: ${recommendation.diagnosis}. Specifically, ${recommendation.summary}. What remains unconfirmed: ${recommendation.uncertainty?.join(", ") || "No additional unknowns."}`;
-    }
+    const followUpResult = answerRecommendationFollowUp({
+        question,
+        recommendation,
+    });
 
     const userMessage: FollowUpQuestionMessage = {
         role: "user",
@@ -292,10 +276,10 @@ export async function askRecommendationFollowUpAction(params: {
 
     const assistantMessage: FollowUpQuestionMessage = {
         role: "assistant",
-        content: answerText,
+        content: followUpResult.answer,
         timestamp: new Date().toISOString(),
-        citations: recommendation.evidenceReferences,
-        referencedCallers: referencedCallers.length > 0 ? referencedCallers : undefined,
+        citations: followUpResult.citations,
+        referencedCallers: followUpResult.referencedCallers,
     };
 
     const updatedHistory = [...history, userMessage, assistantMessage];

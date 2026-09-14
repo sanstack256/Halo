@@ -392,6 +392,7 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
         outcomeType === "CODE_CHANGE_RECOMMENDED"
             ? [
                   {
+                      file: proposedPatch?.targetFile || snapshot.source?.filePath || file,
                       filePath: proposedPatch?.targetFile || snapshot.source?.filePath || file,
                       symbol: fnName,
                       startLine: line,
@@ -404,12 +405,14 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
                               : ("CONCEPTUAL" as const),
                       explanation: reasoning,
                       whyHere: `Target is at ${file}:${line} where contract violation was verified in repository AST.`,
+                      whyThisLocation: `Target is at ${file}:${line} where contract violation was verified in repository AST.`,
                       currentCode:
                           proposedPatch?.originalSourceSnippet ||
                           snapshot.source?.lines?.find((l) => l.isFailingLine)?.content ||
                           "",
                       proposedCode: proposedPatch?.proposedSourceSnippet || "",
                       unifiedDiff: proposedPatch?.unifiedDiff || "",
+                      evidenceIds: anchorId ? [anchorId] : [],
                       isExactSourceVerified: Boolean(
                           snapshot.source && snapshot.source.resolutionStatus === "exact_file"
                       ),
@@ -432,12 +435,27 @@ export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
                 ? "Medium"
                 : "Low",
         fixRecommendation: {
+            directAnswer: action,
             actionAnswer: action,
+            status: outcomeType,
             outcomeType,
             summary: action,
             diagnosis: whatHappened,
+            whyThisFixesIt: whyThisAction,
             whyThisAction,
             whyNotSymptomFix,
+            alternatives: repairOptions.slice(1).map((opt) => ({
+                description: opt.title,
+                whyNotPreferred: opt.tradeoffs?.[0] || opt.selectionRationale || "Alternative fix has broader blast radius or potential side effects.",
+            })),
+            doNotChange: [
+                `Do not weaken validation at ${file}:${line}; enforce contract requirements at the caller boundary.`,
+            ],
+            verification: [
+                "Reproduce with verified incident payload to confirm failure condition.",
+                "Execute unit/integration test suite covering the affected component.",
+                "Verify no regression on adjacent invocation paths.",
+            ],
             missingEvidence,
             nextActionBeforeRepair,
             confidence:

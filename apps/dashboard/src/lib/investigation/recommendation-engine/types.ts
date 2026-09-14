@@ -1,11 +1,23 @@
 /**
- * Halo Recommendation & Patch Engine Types
+ * Halo Trace — Senior Engineering Recommendation Engine Types
  *
- * Defines machine-validatable schemas and strict types for LLM generation,
- * claim verification, patch proposal, and audit logging.
+ * Implements the Epistemic model, 12 Decision States, Structured Output Contract,
+ * and deterministic validation schemas for Phase 0 - 102.
  */
 
 import { z } from "zod";
+
+/* -------------------------------------------------------------------------- */
+/* Epistemic Model                                                            */
+/* -------------------------------------------------------------------------- */
+
+export const EpistemicCategorySchema = z.enum([
+    "FACT",
+    "SUPPORTED_INFERENCE",
+    "RECOMMENDATION",
+    "UNKNOWN",
+]);
+export type EpistemicCategory = z.infer<typeof EpistemicCategorySchema>;
 
 export const ClaimCategorySchema = z.enum([
     "OBSERVED",
@@ -14,6 +26,37 @@ export const ClaimCategorySchema = z.enum([
     "UNKNOWN",
 ]);
 export type ClaimCategory = z.infer<typeof ClaimCategorySchema>;
+
+/* -------------------------------------------------------------------------- */
+/* 12 Conceptual Decision States                                              */
+/* -------------------------------------------------------------------------- */
+
+export const DecisionStateSchema = z.enum([
+    "CODE_CHANGE",
+    "MULTI_FILE_CODE_CHANGE",
+    "CONFIGURATION_CHANGE",
+    "TEST_CHANGE",
+    "DEPLOYMENT_ACTION",
+    "DEPENDENCY_ACTION",
+    "EXTERNAL_INTEGRATION_ACTION",
+    "EXTERNAL_DEPENDENCY_ACTION",
+    "NO_CODE_CHANGE_REQUIRED",
+    "ALREADY_FIXED",
+    "INSUFFICIENT_EVIDENCE",
+    "AMBIGUOUS",
+    "OBSERVABILITY_REQUIRED_BEFORE_REPAIR",
+    // Compatible aliases
+    "CODE_CHANGE_RECOMMENDED",
+    "MULTI_FILE_CHANGE_RECOMMENDED",
+    "CONFIGURATION_CHANGE_RECOMMENDED",
+    "TEST_CHANGE_RECOMMENDED",
+    "AMBIGUOUS_ROOT_CAUSE",
+    "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR",
+]);
+export type DecisionState = z.infer<typeof DecisionStateSchema>;
+
+export const FixOutcomeTypeSchema = DecisionStateSchema;
+export type FixOutcomeType = DecisionState;
 
 export const RecommendationStatusSchema = z.enum([
     "RECOMMENDATION",
@@ -29,6 +72,10 @@ export const PatchStatusSchema = z.enum([
     "NOT_APPLICABLE",
 ]);
 export type PatchStatus = z.infer<typeof PatchStatusSchema>;
+
+/* -------------------------------------------------------------------------- */
+/* AI Provider Infrastructure                                                 */
+/* -------------------------------------------------------------------------- */
 
 export const AiProvider = {
     HALO_MANAGED: "HALO_MANAGED",
@@ -59,6 +106,41 @@ export interface AiConnectionTestResult {
     model?: string;
     errorMessage?: string;
 }
+
+/* -------------------------------------------------------------------------- */
+/* Recommendation Code Changes & Alternatives                                 */
+/* -------------------------------------------------------------------------- */
+
+export const CodeSnippetTypeSchema = z.enum([
+    "EXISTING_AND_PROPOSED",
+    "PROPOSED_ONLY",
+    "CONCEPTUAL",
+]);
+export type CodeSnippetType = z.infer<typeof CodeSnippetTypeSchema>;
+
+export const RecommendedChangeSchema = z.object({
+    file: z.string().optional(),
+    filePath: z.string().optional(),
+    symbol: z.string().optional(),
+    startLine: z.number().int().positive().optional(),
+    endLine: z.number().int().positive().optional(),
+    codeType: CodeSnippetTypeSchema.default("CONCEPTUAL"),
+    explanation: z.string().min(1),
+    whyHere: z.string().min(1),
+    whyThisLocation: z.string().optional(),
+    currentCode: z.string().optional(),
+    proposedCode: z.string().optional(),
+    unifiedDiff: z.string().optional(),
+    evidenceIds: z.array(z.string()).default([]),
+    isExactSourceVerified: z.boolean().default(false),
+});
+export type RecommendedChange = z.infer<typeof RecommendedChangeSchema>;
+
+export const CompetingAlternativeSchema = z.object({
+    description: z.string().min(1),
+    whyNotPreferred: z.string().min(1),
+});
+export type CompetingAlternative = z.infer<typeof CompetingAlternativeSchema>;
 
 export const ModelClaimSchema = z.object({
     statement: z.string().min(1),
@@ -95,62 +177,45 @@ export const ModelProposedPatchSchema = z.object({
 });
 export type ModelProposedPatch = z.infer<typeof ModelProposedPatchSchema>;
 
-export const CodeSnippetTypeSchema = z.enum([
-    "EXISTING_AND_PROPOSED",
-    "PROPOSED_ONLY",
-    "CONCEPTUAL",
-]);
-export type CodeSnippetType = z.infer<typeof CodeSnippetTypeSchema>;
+/* -------------------------------------------------------------------------- */
+/* Canonical Structured Recommendation Contract                               */
+/* -------------------------------------------------------------------------- */
 
-export const RecommendedChangeSchema = z.object({
-    filePath: z.string().optional(),
-    symbol: z.string().optional(),
-    startLine: z.number().int().positive().optional(),
-    endLine: z.number().int().positive().optional(),
-    codeType: CodeSnippetTypeSchema.default("CONCEPTUAL"),
-    explanation: z.string().min(1),
-    whyHere: z.string().min(1),
-    currentCode: z.string().optional(),
-    proposedCode: z.string().optional(),
-    unifiedDiff: z.string().optional(),
-    isExactSourceVerified: z.boolean().default(false),
-});
-export type RecommendedChange = z.infer<typeof RecommendedChangeSchema>;
-
-export const FixOutcomeTypeSchema = z.enum([
-    "CODE_CHANGE_RECOMMENDED",
-    "MULTI_FILE_CHANGE_RECOMMENDED",
-    "CONFIGURATION_CHANGE_RECOMMENDED",
-    "TEST_CHANGE_RECOMMENDED",
-    "NO_CODE_CHANGE_REQUIRED",
-    "ALREADY_FIXED",
-    "INSUFFICIENT_EVIDENCE",
-    "AMBIGUOUS_ROOT_CAUSE",
-    "EXTERNAL_DEPENDENCY_ACTION",
-    "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR",
-]);
-export type FixOutcomeType = z.infer<typeof FixOutcomeTypeSchema>;
+export const QualitativeConfidenceSchema = z.enum(["LOW", "MEDIUM", "HIGH", "VERY_HIGH"]);
+export type QualitativeConfidence = z.infer<typeof QualitativeConfidenceSchema>;
 
 export const FixRecommendationSchema = z.object({
+    directAnswer: z.string().optional(),
     actionAnswer: z.string().min(1).default("Review investigation evidence to formulate a targeted repair."),
-    outcomeType: FixOutcomeTypeSchema.default("CODE_CHANGE_RECOMMENDED"),
+    status: DecisionStateSchema.optional(),
+    outcomeType: FixOutcomeTypeSchema.default("CODE_CHANGE"),
     summary: z.string().min(1),
     diagnosis: z.string().min(1),
+    whyThisFixesIt: z.string().optional(),
     whyThisAction: z.string().optional(),
     whyNotSymptomFix: z.string().optional(),
+    alternatives: z.array(CompetingAlternativeSchema).default([]),
+    doNotChange: z.array(z.string()).default([]),
+    verification: z.array(z.string()).default([]),
+    validationSteps: z.array(z.string()).default([]),
     missingEvidence: z.array(z.string()).default([]),
     nextActionBeforeRepair: z.string().optional(),
-    confidence: z.enum(["LOW", "MEDIUM", "HIGH", "VERY_HIGH"]).default("MEDIUM"),
+    uncertainty: z.array(z.string()).default([]),
+    confidence: QualitativeConfidenceSchema.default("MEDIUM"),
     evidenceReferences: z.array(z.string()).default([]),
     changes: z.array(RecommendedChangeSchema).default([]),
     relatedConsistencyChecks: z.array(z.string()).default([]),
-    validationSteps: z.array(z.string()).default([]),
-    uncertainty: z.array(z.string()).default([]),
     followUpSuggestions: z.array(z.string()).default([]),
     hasInsufficientEvidence: z.boolean().default(false),
     refusalReason: z.string().optional(),
+    isStale: z.boolean().default(false),
 });
 export type FixRecommendation = z.infer<typeof FixRecommendationSchema>;
+
+export interface EngineeringRecommendation extends FixRecommendation {
+    status: DecisionState;
+    directAnswer: string;
+}
 
 export const StructuredModelRecommendationSchema = z.object({
     status: RecommendationStatusSchema,
@@ -167,10 +232,10 @@ export type StructuredModelRecommendation = z.infer<
     typeof StructuredModelRecommendationSchema
 >;
 
-/**
- * Gate classification verdict determining whether LLM invocation and patch generation
- * are permitted under Halo's truth constraints.
- */
+/* -------------------------------------------------------------------------- */
+/* Audit & Fact-Check Metadata                                                */
+/* -------------------------------------------------------------------------- */
+
 export interface RecommendationEligibilityVerdict {
     canGenerateRecommendation: boolean;
     recommendationReason: string;
@@ -183,9 +248,6 @@ export interface RecommendationEligibilityVerdict {
     patchReason: string;
 }
 
-/**
- * Output of the deterministic claim and patch validation pipeline.
- */
 export interface OutputValidationAudit {
     passed: boolean;
     schemaValid: boolean;
@@ -197,31 +259,17 @@ export interface OutputValidationAudit {
     warnings: string[];
 }
 
-/**
- * Final production recommendation result delivered to the UI.
- */
 export interface ValidatedRecommendationResult {
-    /** Whether an LLM recommendation was successfully generated and passed deterministic validation */
     success: boolean;
-
-    /** Source of recommendation */
     source: "LLM_VERIFIED" | "DETERMINISTIC_FALLBACK" | "REFUSAL_INSUFFICIENT_EVIDENCE";
-
-    /** Qualitative user-facing confidence */
     confidence: "Low" | "Medium" | "High" | "Very High";
-
-    /** Core headline explanation */
     whatHappened: string;
-
-    /** Claims with verified provenance and jump-to-evidence IDs */
     claims: Array<{
         statement: string;
         category: ClaimCategory;
         evidenceIds: string[];
         isDirectlyObserved: boolean;
     }>;
-
-    /** Immediate developer action */
     action?: {
         instruction: string;
         reasoning: string;
@@ -232,8 +280,6 @@ export interface ValidatedRecommendationResult {
             function?: string;
         };
     };
-
-    /** Proposed patch — labeled "Proposed patch — not applied" */
     patch?: {
         status: PatchStatus;
         files: Array<{
@@ -244,17 +290,9 @@ export interface ValidatedRecommendationResult {
         validationNote: string;
         refusalReason?: string;
     };
-
-    /** Explicitly stated unknowns */
     unknowns: string[];
-
-    /** Limitations and caveats */
     limitations: string[];
-
-    /** Full evidence-driven Repair Case */
     repairCase?: import("../repair-intelligence/types").RepairCase | import("../repair-intelligence/types").LegacyRepairCase;
-
-    /** Audit and inspectability metadata */
     audit: {
         snapshotId: string;
         gateVerdict: RecommendationEligibilityVerdict;
@@ -268,6 +306,9 @@ export interface ValidatedRecommendationResult {
     fixRecommendation?: FixRecommendation;
 }
 
+/* -------------------------------------------------------------------------- */
+/* Follow-Up Q&A Message                                                      */
+/* -------------------------------------------------------------------------- */
 
 export interface FollowUpQuestionMessage {
     role: "user" | "assistant";
@@ -280,4 +321,3 @@ export interface FollowUpQuestionMessage {
         snippet?: string;
     }>;
 }
-

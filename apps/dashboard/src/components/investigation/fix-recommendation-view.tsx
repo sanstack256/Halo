@@ -494,7 +494,7 @@ export function FixRecommendationView({
                             Why this fixes it
                         </h3>
                         <div className="p-4 rounded-xl bg-surface-elevated/60 border border-border text-xs text-zinc-200 leading-relaxed space-y-3">
-                            <p>{recommendation.whyThisAction || recommendation.diagnosis}</p>
+                            <p>{recommendation.whyThisFixesIt || recommendation.whyThisAction || recommendation.diagnosis}</p>
 
                             {/* Evidence Citations */}
                             {recommendation.evidenceReferences.length > 0 && (
@@ -516,6 +516,37 @@ export function FixRecommendationView({
                             )}
                         </div>
                     </div>
+
+                    {/* Do Not Change */}
+                    {recommendation.doNotChange && recommendation.doNotChange.length > 0 && (
+                        <div className="space-y-2">
+                            <h3 className="text-xs font-mono uppercase font-bold text-amber-400/90 tracking-wider">
+                                Do Not Change
+                            </h3>
+                            <div className="p-3.5 rounded-xl bg-amber-500/[0.04] border border-amber-500/20 text-xs text-amber-200/90 space-y-1">
+                                {recommendation.doNotChange.map((item, idx) => (
+                                    <p key={idx}>• {item}</p>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Competing Alternatives */}
+                    {recommendation.alternatives && recommendation.alternatives.length > 0 && (
+                        <div className="space-y-2">
+                            <h3 className="text-xs font-mono uppercase font-bold text-zinc-400 tracking-wider">
+                                Competing Fixes Considered
+                            </h3>
+                            <div className="space-y-2">
+                                {recommendation.alternatives.map((alt, idx) => (
+                                    <div key={idx} className="p-3 rounded-xl bg-surface-elevated/40 border border-border text-xs space-y-1">
+                                        <span className="font-semibold text-zinc-200 block">• {alt.description}</span>
+                                        <span className="text-secondary text-[11px] block">{alt.whyNotPreferred}</span>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
 
                     {/* F. Also Check (Consistency Checks) */}
                     {recommendation.relatedConsistencyChecks &&

@@ -1,6 +1,7 @@
 /**
- * Halo Deterministic Output Validator
+ * Halo Deterministic Output Validator & Fact-Checker
  *
+ * Implements Phases 32, 56, 65, 85, and 86:
  * Verifies LLM output against the Canonical Evidence Snapshot before any content is shown.
  * Enforces:
  *   1. Strict JSON schema validation via Zod.
@@ -8,6 +9,9 @@
  *   3. Source Location Validation: Mentioned file paths and line numbers must match verified source.
  *   4. Factual Consistency: No fabricated tests, builds, or conflicting HTTP statuses.
  *   5. Patch Validation: Diffs must apply cleanly and pass AST syntax checks.
+ *   6. Anti-Placeholder Check: Strictly rejects "caller", "callee", "target file", "service".
+ *   7. Anti-Symptom-Masking Check: Strictly rejects blind `?.`, `|| {}`, or empty catches when caller contract is violated.
+ *   8. Unsupported Root Cause Check: Rejects database or external claims unsupported by telemetry.
  */
 
 import type { EvidenceSnapshot } from "../evidence-snapshot";
@@ -19,6 +23,7 @@ import {
 } from "./types";
 import { validateProposedPatch } from "./patch-validator";
 import { buildFailureModel } from "../repair-intelligence/failure-model";
+import { analyzeContractMismatch, evaluateAntiMasking } from "../repair-intelligence/contract-mismatch-engine";
 
 export function validateModelOutput(
     rawText: string,
@@ -35,7 +40,6 @@ export function validateModelOutput(
     // 1. JSON Parse
     let parsedJson: any;
     try {
-        // Strip any markdown code block wrapper if present
         let cleaned = rawText.trim();
         if (cleaned.startsWith("```json")) {
             cleaned = cleaned.replace(/^```json\s*/, "").replace(/\s*```$/, "");
@@ -134,9 +138,9 @@ export function validateModelOutput(
     // 5. Factual Consistency Checks
     let factualConsistencyValid = true;
     const combinedClaimsText = data.claims.map((c) => c.statement).join(" ");
+    const claimsLower = combinedClaimsText.toLowerCase();
 
     // Check for fabricated test/build claims
-    const claimsLower = combinedClaimsText.toLowerCase();
     if (
         claimsLower.includes("tests passed") ||
         claimsLower.includes("build succeeded") ||
@@ -146,6 +150,19 @@ export function validateModelOutput(
         rejectionReasons.push(
             "Model claimed automated tests/builds passed, but Halo did not execute test runners for this incident."
         );
+    }
+
+    // Check for unsupported database failure claims
+    if (claimsLower.includes("database connection pool exhausted") || claimsLower.includes("database timeout")) {
+        const hasDbEvidence = snapshot.evidence.some(
+            (e) => (e.title && e.title.toLowerCase().includes("database")) || (e.service && e.service.toLowerCase().includes("db"))
+        );
+        if (!hasDbEvidence) {
+            factualConsistencyValid = false;
+            rejectionReasons.push(
+                "Model claimed a database failure occurred, but zero database evidence was observed in the incident snapshot."
+            );
+        }
     }
 
     // Check for uncaptured runtime value inferences (Section 9)
@@ -169,8 +186,7 @@ export function validateModelOutput(
         }
     }
 
-
-    // 6. Proposed Patch & FixRecommendation Fact-Checking
+    // 6. Proposed Patch Fact-Checking
     let patchValid = true;
     if (data.proposedPatch?.status === "AVAILABLE") {
         const patchResult = validateProposedPatch(data.proposedPatch, snapshot, gateVerdict);
@@ -183,7 +199,6 @@ export function validateModelOutput(
     // 7. Structured FixRecommendation Fact-Checking
     const fixRec = (data as any).fixRecommendation;
     if (fixRec) {
-        // Verify evidence references
         if (Array.isArray(fixRec.evidenceReferences)) {
             for (const evId of fixRec.evidenceReferences) {
                 if (!snapshot.evidenceMap[evId]) {
@@ -193,7 +208,6 @@ export function validateModelOutput(
             }
         }
 
-        // Anti-placeholder list (Section 6)
         const FORBIDDEN_PLACEHOLDERS = [
             "caller",
             "callee",
@@ -203,23 +217,30 @@ export function validateModelOutput(
             "target_file",
             "relevant file",
             "the service",
+            "service",
+            "somefunction",
         ];
 
-        // Ensure actionAnswer is populated
-        if (!fixRec.actionAnswer && fixRec.summary) {
+        // Ensure actionAnswer and directAnswer are synchronized
+        if (!fixRec.actionAnswer && fixRec.directAnswer) {
+            fixRec.actionAnswer = fixRec.directAnswer;
+        } else if (!fixRec.directAnswer && fixRec.actionAnswer) {
+            fixRec.directAnswer = fixRec.actionAnswer;
+        } else if (!fixRec.actionAnswer && fixRec.summary) {
             fixRec.actionAnswer = fixRec.summary;
+            fixRec.directAnswer = fixRec.summary;
         }
 
         // Verify changes against actual files and source lines
         if (Array.isArray(fixRec.changes)) {
             for (const change of fixRec.changes) {
-                if (change.filePath) {
-                    const normalized = change.filePath.toLowerCase().trim();
+                const filePath = change.filePath || change.file;
+                if (filePath) {
+                    const normalized = filePath.toLowerCase().trim();
 
-                    // Check for forbidden placeholder names
                     if (FORBIDDEN_PLACEHOLDERS.includes(normalized)) {
                         rejectionReasons.push(
-                            `Recommended change uses forbidden placeholder "${change.filePath}" as a repository path. Placeholders are strictly forbidden.`
+                            `Recommended change uses forbidden placeholder "${filePath}" as a repository path. Placeholders are strictly forbidden.`
                         );
                         sourceLocationsValid = false;
                     }
@@ -235,7 +256,7 @@ export function validateModelOutput(
 
                     if (!fileFound && knownFiles.length > 0) {
                         rejectionReasons.push(
-                            `Recommended change references file "${change.filePath}" which was not discovered in the repository or runtime call chain.`
+                            `Recommended change references file "${filePath}" which was not discovered in the repository or runtime call chain.`
                         );
                         sourceLocationsValid = false;
                     }
@@ -266,7 +287,7 @@ export function validateModelOutput(
                     const snippet = change.currentCode.trim();
                     if (snippet && !fullSourceText.includes(snippet)) {
                         warnings.push(
-                            `Proposed currentCode in ${change.filePath ?? "file"} does not match exact source text. Downgrading to conceptual snippet.`
+                            `Proposed currentCode in ${filePath ?? "file"} does not match exact source text. Downgrading to conceptual snippet.`
                         );
                         change.codeType = "CONCEPTUAL";
                         change.isExactSourceVerified = false;
@@ -275,16 +296,26 @@ export function validateModelOutput(
                     }
                 }
 
-                // Anti-symptom-masking check
+                // Anti-symptom-masking check: Reject blind optional chaining or empty try/catch when caller contract is violated
                 if (change.proposedCode) {
                     const code = change.proposedCode;
-                    if (
-                        (code.includes("?.") || code.includes("|| {}") || code.includes("try {")) &&
-                        snapshot.runtime.failingExpression
-                    ) {
-                        warnings.push(
-                            "Caution: Proposed change contains defensive fallback or optional chaining. Verify caller contract before applying."
+                    const calleeContent = snapshot.source?.lines ? snapshot.source.lines.map((l) => l.content).join("\n") : "";
+                    const contractMismatch = analyzeContractMismatch({
+                        calleeSource: snapshot.source ? { filePath: snapshot.source.filePath, content: calleeContent } : undefined,
+                        failingSymbol: snapshot.runtime.containingFunction,
+                        failingLine: snapshot.runtime.primaryFailingFrame?.lineNumber,
+                        failingExpression: snapshot.runtime.failingExpression,
+                        runtimeValueStatus: failureModel.runtimeValueStatus,
+                        runtimeValue: failureModel.runtimeValue,
+                        errorTitle: snapshot.runtime.anchorError?.title,
+                        errorMessage: snapshot.runtime.anchorError?.description,
+                    });
+                    const antiMask = evaluateAntiMasking(code, contractMismatch);
+                    if (antiMask.isSymptomSuppression) {
+                        rejectionReasons.push(
+                            `Proposed change applies defensive symptom-masking (${code.trim()}) at the callee when caller contract violation is established. Caller must be repaired.`
                         );
+                        factualConsistencyValid = false;
                     }
                 }
             }

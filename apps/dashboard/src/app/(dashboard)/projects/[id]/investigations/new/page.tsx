@@ -76,7 +76,6 @@ import { EvidenceGraphView } from "@/components/investigation/evidence-graph-vie
 import { RegressionDetectionView } from "@/components/investigation/regression-detection-view";
 import { detectAutomaticRegression } from "@/lib/investigation/regression/regression-detector";
 import { InvestigationStickyNav } from "@/components/investigation/sticky-nav";
-import { RecommendationPlanView } from "@/components/investigation/recommendation-plan-view";
 import { RelatedTelemetryView } from "@/components/investigation/related-telemetry-view";
 import { resolveGitHubSourceContext } from "@/lib/investigation/runtime/github-source-provider";
 import { parseStackTrace } from "@/lib/investigation/runtime/stack-parser";
