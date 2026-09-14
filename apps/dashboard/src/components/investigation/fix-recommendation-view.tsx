@@ -10,8 +10,6 @@ import {
     ArrowRight,
     AlertTriangle,
     RotateCw,
-    HelpCircle,
-    Send,
     Terminal,
     ShieldAlert,
     ExternalLink,
@@ -21,7 +19,7 @@ import {
     ChevronRight,
 } from "lucide-react";
 import type { FixRecommendation, FollowUpQuestionMessage } from "@/lib/investigation/recommendation-engine/types";
-import { generateFixRecommendationAction, askRecommendationFollowUpAction } from "@/actions/fix-recommendation";
+import { generateFixRecommendationAction } from "@/actions/fix-recommendation";
 
 interface Props {
     projectId: string;
@@ -56,9 +54,6 @@ export function FixRecommendationView({
     const [version, setVersion] = useState<number>(initialVersion);
     const [isGenerating, setIsGenerating] = useState<boolean>(false);
     const [copiedIndex, setCopiedIndex] = useState<number | null>(null);
-    const [history, setHistory] = useState<FollowUpQuestionMessage[]>(initialHistory);
-    const [questionText, setQuestionText] = useState<string>("");
-    const [isAsking, setIsAsking] = useState<boolean>(false);
     const [errorMessage, setErrorMessage] = useState<string | null>(null);
 
     const handleGenerate = async (forceRegenerate = false) => {
@@ -78,7 +73,6 @@ export function FixRecommendationView({
                 setRecommendationId(res.id);
                 setIsStale(res.isStale);
                 setVersion(res.version);
-                setHistory(res.followUpHistory || []);
             } else {
                 setErrorMessage("Unable to generate recommendation from current evidence.");
             }
@@ -93,27 +87,6 @@ export function FixRecommendationView({
         navigator.clipboard.writeText(code);
         setCopiedIndex(idx);
         setTimeout(() => setCopiedIndex(null), 2000);
-    };
-
-    const handleAskFollowUp = async (text: string) => {
-        if (!text.trim() || !recommendationId) return;
-        setIsAsking(true);
-        try {
-            const res = await askRecommendationFollowUpAction({
-                projectId,
-                issueId,
-                recommendationId,
-                question: text.trim(),
-            });
-            if (res.success) {
-                setHistory(res.history);
-                setQuestionText("");
-            }
-        } catch (err: any) {
-            console.error("Follow-up question error:", err);
-        } finally {
-            setIsAsking(false);
-        }
     };
 
     const scrollToEvidence = (evidenceId: string) => {
@@ -596,110 +569,6 @@ export function FixRecommendationView({
                             </div>
                         </div>
                     )}
-
-                    {/* I. Interactive Follow-up Q&A */}
-                    <div className="pt-4 border-t border-border space-y-4">
-                        <div className="flex items-center justify-between">
-                            <div className="flex items-center gap-2">
-                                <HelpCircle className="w-4 h-4 text-accent" />
-                                <h3 className="text-xs font-mono uppercase font-bold text-white tracking-wider">
-                                    Ask Follow-up Questions
-                                </h3>
-                            </div>
-                            <span className="text-[11px] text-muted">
-                                Grounded in the same investigation evidence
-                            </span>
-                        </div>
-
-                        {/* Quick Prompts */}
-                        <div className="flex items-center gap-2 flex-wrap">
-                            {(
-                                recommendation.followUpSuggestions || [
-                                    "Why change the caller instead of the service?",
-                                    "Which evidence led to this recommendation?",
-                                    "What happens if we only add optional chaining?",
-                                    "Are there other callers that need the same change?",
-                                    "What tests should I add?",
-                                ]
-                            ).map((promptText, idx) => (
-                                <button
-                                    key={idx}
-                                    type="button"
-                                    onClick={() => handleAskFollowUp(promptText)}
-                                    disabled={isAsking}
-                                    className="halo-fix-chip"
-                                >
-                                    <span>{promptText}</span>
-                                    <ChevronRight size={11} />
-                                </button>
-                            ))}
-                        </div>
-
-                        {/* Conversation Thread */}
-                        {history.length > 0 && (
-                            <div className="space-y-3 pt-2">
-                                {history.map((msg, idx) => (
-                                    <div
-                                        key={idx}
-                                        className={`p-3.5 rounded-xl text-xs leading-relaxed space-y-1 ${
-                                            msg.role === "user"
-                                                ? "bg-white/[0.03] border border-white/10 text-white font-medium"
-                                                : "bg-[#080b11] border border-accent/20 text-zinc-300"
-                                        }`}
-                                    >
-                                        <div className="flex items-center justify-between text-[10px] font-mono text-muted mb-1">
-                                            <span>{msg.role === "user" ? "Engineer" : "Halo Staff AI"}</span>
-                                        </div>
-                                        <p className="whitespace-pre-wrap">{msg.content}</p>
-
-                                        {/* Caller References */}
-                                        {msg.referencedCallers && msg.referencedCallers.length > 0 && (
-                                            <div className="mt-2 pt-2 border-t border-white/5 space-y-1">
-                                                <span className="text-[10px] font-mono uppercase font-bold text-accent block">
-                                                    Referenced Callers:
-                                                </span>
-                                                {msg.referencedCallers.map((ref, rIdx) => (
-                                                    <div
-                                                        key={rIdx}
-                                                        className="font-mono text-[11px] text-zinc-400 bg-black/40 px-2 py-1 rounded"
-                                                    >
-                                                        {ref.filePath}
-                                                        {ref.lineNumber ? `:${ref.lineNumber}` : ""}
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        )}
-                                    </div>
-                                ))}
-                            </div>
-                        )}
-
-                        {/* Input form */}
-                        <form
-                            onSubmit={(e) => {
-                                e.preventDefault();
-                                handleAskFollowUp(questionText);
-                            }}
-                            className="flex items-center gap-2 pt-1"
-                        >
-                            <input
-                                type="text"
-                                placeholder="Ask a question about this recommendation or the evidence..."
-                                value={questionText}
-                                onChange={(e) => setQuestionText(e.target.value)}
-                                disabled={isAsking}
-                                className="flex-1 px-3.5 py-2.5 rounded-xl bg-[#080b11] border border-white/10 text-xs text-white placeholder:text-zinc-500 focus:outline-none focus:border-accent"
-                            />
-                            <button
-                                type="submit"
-                                disabled={isAsking || !questionText.trim()}
-                                className="halo-btn halo-btn-primary px-4 py-2.5 text-xs font-semibold shrink-0"
-                            >
-                                <Send size={12} />
-                                <span>{isAsking ? "Thinking..." : "Ask"}</span>
-                            </button>
-                        </form>
-                    </div>
                 </div>
             )}
         </section>
