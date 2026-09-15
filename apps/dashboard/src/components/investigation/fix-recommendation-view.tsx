@@ -114,7 +114,13 @@ export function FixRecommendationView({
         }
     };
 
-    const getOutcomePill = (type?: string) => {
+    const getOutcomePill = (type?: string, status?: string) => {
+        if (status === "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR" || type === "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR") {
+            return { label: "Diagnosis Established (Repair Withheld)", className: "halo-fix-outcome-observability" };
+        }
+        if (status === "BLOCKED_BY_AMBIGUITY" || type === "BLOCKED_BY_AMBIGUITY") {
+            return { label: "Contract Ambiguity (Repair Withheld)", className: "halo-fix-outcome-observability" };
+        }
         switch (type) {
             case "CODE_CHANGE_RECOMMENDED":
                 return { label: "Code Change Recommended", className: "halo-fix-outcome-code" };
@@ -140,7 +146,7 @@ export function FixRecommendationView({
         }
     };
 
-    const pill = recommendation ? getOutcomePill(recommendation.outcomeType) : null;
+    const pill = recommendation ? getOutcomePill(recommendation.outcomeType, recommendation.status) : null;
 
     return (
         <section id="section-fix-recommendation" className="halo-fix-container space-y-6 scroll-mt-24">
@@ -260,12 +266,12 @@ export function FixRecommendationView({
             {/* State 3: Rendered Recommendation */}
             {recommendation && !isGenerating && (
                 <div className="space-y-6">
-                    {/* A. Hero Recommended Action */}
+                    {/* A. Primary Product Hierarchy: WHAT SHOULD I DO TO FIX THIS ISSUE? */}
                     <div className="halo-fix-hero-action space-y-2.5">
                         <div className="flex items-center justify-between flex-wrap gap-2">
                             <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-accent flex items-center gap-1.5">
                                 <ArrowRight className="w-3.5 h-3.5" />
-                                RECOMMENDED ACTION
+                                WHAT SHOULD I DO TO FIX THIS ISSUE?
                             </span>
                             {pill && (
                                 <span className={`halo-fix-outcome-pill ${pill.className}`}>
@@ -276,49 +282,117 @@ export function FixRecommendationView({
                         <p className="text-sm md:text-base font-semibold text-white leading-relaxed">
                             {recommendation.actionAnswer || recommendation.summary}
                         </p>
+                        {recommendation.status === "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR" && (
+                            <div className="p-3 rounded-lg bg-amber-500/[0.06] border border-amber-500/20 text-xs text-amber-200 space-y-1">
+                                <span className="text-[10px] uppercase font-bold font-mono text-amber-400 block">
+                                    Failure Mechanism Confirmed • Repair Ownership Unproven
+                                </span>
+                                <p>
+                                    Halo has verified the exact failure mechanism, but repository evidence does not establish contract ownership between caller and callee. Code modifications are withheld to prevent symptom suppression.
+                                </p>
+                            </div>
+                        )}
                     </div>
 
-                    {/* B. Missing Evidence & Next Action (If Underdetermined or Insufficient Evidence) */}
-                    {recommendation.missingEvidence && recommendation.missingEvidence.length > 0 && (
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                                <AlertTriangle className="w-3.5 h-3.5 text-amber-400" />
-                                <h3 className="text-xs font-mono uppercase font-bold text-amber-400 tracking-wider">
-                                    Missing Critical Evidence
-                                </h3>
+                    {/* B. Active Investigation Progress (Phase 20 - Real Completed Steps) */}
+                    {recommendation.completedSteps && recommendation.completedSteps.length > 0 && (
+                        <div className="p-4 rounded-xl bg-surface-elevated/40 border border-border space-y-2.5">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase font-mono text-zinc-400 font-bold tracking-wider flex items-center gap-1.5">
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                    Active Investigation Progress ({recommendation.completedSteps.length} Steps Completed)
+                                </span>
+                                <span className="text-[10px] font-mono text-zinc-500">Autonomous Evidence Acquisition</span>
                             </div>
-                            <div className="halo-fix-missing-card space-y-1.5">
-                                {recommendation.missingEvidence.map((item, idx) => (
-                                    <p key={idx}>• {item}</p>
+                            <div className="space-y-2 pt-1 border-t border-white/5">
+                                {recommendation.completedSteps.map((step, idx) => (
+                                    <div key={idx} className="flex items-start gap-2.5 text-xs text-zinc-300">
+                                        <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
+                                        <div>
+                                            <span className="font-semibold text-zinc-200">{step.label}</span>
+                                            <span className="text-zinc-400 text-[11px] block">{step.detail}</span>
+                                        </div>
+                                    </div>
                                 ))}
                             </div>
                         </div>
                     )}
 
-                    {recommendation.nextActionBeforeRepair && (
-                        <div className="space-y-2">
-                            <div className="flex items-center gap-2">
-                                <Terminal className="w-3.5 h-3.5 text-blue-400" />
-                                <h3 className="text-xs font-mono uppercase font-bold text-blue-400 tracking-wider">
-                                    Next Action Before Repair
-                                </h3>
-                            </div>
-                            <div className="halo-fix-next-action-card flex items-start gap-2.5">
-                                <ChevronRight className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-                                <span>{recommendation.nextActionBeforeRepair}</span>
-                            </div>
+                    {/* C. Non-Code Remediation (Phase 14 & 15: External Outage, Dependency Pin, Infrastructure) */}
+                    {recommendation.nonCodeRemediationDetails && (
+                        <div className="p-4 rounded-xl bg-blue-500/[0.06] border border-blue-500/20 space-y-2 text-xs text-blue-200 leading-relaxed">
+                            <span className="text-[10px] uppercase font-mono font-bold text-blue-400 block tracking-wider">
+                                Non-Code Remediation ({recommendation.nonCodeRemediationDetails.type})
+                            </span>
+                            <p className="font-semibold text-white">
+                                {recommendation.nonCodeRemediationDetails.remediationInstruction}
+                            </p>
+                            <p className="text-blue-300/90 text-[11px]">
+                                Operational Action: {recommendation.nonCodeRemediationDetails.operationalAction}
+                            </p>
                         </div>
                     )}
 
-                    {/* C. Already Fixed Notice (If applicable) */}
-                    {recommendation.outcomeType === "ALREADY_FIXED" && (
-                        <div className="p-4 rounded-xl bg-blue-500/[0.06] border border-blue-500/20 text-xs text-blue-200 leading-relaxed space-y-2">
-                            <span className="text-[10px] uppercase font-bold font-mono text-blue-400 block">
-                                Verified Repository State
+                    {/* D. Case B: Investigation Exhausted Without Safe Repair (Phase 21) */}
+                    {(recommendation.hasInsufficientEvidence || recommendation.status === "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE") && (
+                        <div className="p-4 rounded-xl bg-amber-500/[0.04] border border-amber-500/20 text-xs space-y-3">
+                            <div className="flex items-center gap-2 text-amber-400">
+                                <AlertTriangle className="w-4 h-4 shrink-0" />
+                                <span className="text-[11px] font-mono uppercase font-bold tracking-wider">
+                                    Evidence Boundary — Investigation Findings
+                                </span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-zinc-300 pt-1 border-t border-amber-500/10">
+                                <div className="space-y-1">
+                                    <span className="text-[10px] uppercase font-mono text-emerald-400 font-semibold block">Halo Established</span>
+                                    <p className="leading-relaxed">{recommendation.actionExplanation?.whatWeKnow || recommendation.diagnosis}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <span className="text-[10px] uppercase font-mono text-amber-400 font-semibold block">Halo Could Not Establish</span>
+                                    <p className="leading-relaxed">{recommendation.actionExplanation?.whatWeDontKnow || recommendation.missingEvidence?.[0] || "Exact runtime state"}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <span className="text-[10px] uppercase font-mono text-blue-400 font-semibold block">Halo Attempted Automatically</span>
+                                    <p className="leading-relaxed">{recommendation.actionExplanation?.whatWasAlreadyInvestigated || "Repository AST tracing, caller-callee contracts, and release diffs"}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <span className="text-[10px] uppercase font-mono text-purple-400 font-semibold block">Remaining Blocker</span>
+                                    <p className="leading-relaxed">{recommendation.blockedBy || recommendation.actionExplanation?.whyThatMatters || "Dynamic callback dispatch requires runtime argument values to distinguish implementations."}</p>
+                                </div>
+                            </div>
+                            {recommendation.nextActionBeforeRepair && (
+                                <div className="pt-2 border-t border-amber-500/10 flex items-start gap-2 text-blue-300">
+                                    <Terminal className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
+                                    <span><strong>Required Next Action:</strong> {recommendation.nextActionBeforeRepair}</span>
+                                </div>
+                            )}
+                        </div>
+                    )}
+
+                    {/* E. Information Frontier & Explanation Structure */}
+                    {recommendation.actionExplanation && !recommendation.hasInsufficientEvidence && (
+                        <div className="p-4 rounded-xl bg-zinc-900/60 border border-white/10 text-xs space-y-3">
+                            <span className="text-[10px] uppercase font-bold font-mono text-zinc-400 block tracking-wider">
+                                Engineering Decision Context
                             </span>
-                            <p>
-                                The current repository commit already contains the defensive fix. Historical telemetry was emitted by sessions executing an earlier deployment.
-                            </p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                                <div className="space-y-1">
+                                    <span className="text-[10px] uppercase font-mono text-emerald-400 font-semibold block">What Halo Established</span>
+                                    <p className="text-zinc-300 leading-relaxed">{recommendation.actionExplanation.whatWeKnow}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <span className="text-[10px] uppercase font-mono text-amber-400 font-semibold block">What Remains Unknown Statically</span>
+                                    <p className="text-zinc-300 leading-relaxed">{recommendation.actionExplanation.whatWeDontKnow}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <span className="text-[10px] uppercase font-mono text-blue-400 font-semibold block">Repository Analysis Performed</span>
+                                    <p className="text-zinc-300 leading-relaxed">{recommendation.actionExplanation.whatWasAlreadyInvestigated}</p>
+                                </div>
+                                <div className="space-y-1">
+                                    <span className="text-[10px] uppercase font-mono text-purple-400 font-semibold block">Why This Action Has Highest Value</span>
+                                    <p className="text-zinc-300 leading-relaxed">{recommendation.actionExplanation.whyThatActionHasHighestValue}</p>
+                                </div>
+                            </div>
                         </div>
                     )}
 

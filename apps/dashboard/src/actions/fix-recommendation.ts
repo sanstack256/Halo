@@ -5,11 +5,16 @@ import { prisma } from "@/lib/prisma";
 import { getProject } from "@/actions/project";
 import { getProjectRecommendationModel } from "@/actions/project-ai";
 import { investigateIssueOccurrence } from "@/lib/investigation/run";
-import { buildCanonicalEvidenceSnapshot } from "@/lib/investigation/evidence-snapshot";
 import { resolveGitHubSourceContext } from "@/lib/investigation/runtime/github-source-provider";
 import { parseStackTrace } from "@/lib/investigation/runtime/stack-parser";
-import { generateEvidenceBoundRecommendation } from "@/lib/investigation/recommendation-engine/engine";
-import { FixRecommendationSchema, type FixRecommendation } from "@/lib/investigation/recommendation-engine/types";
+import { detectAutomaticRegression } from "@/lib/investigation/regression/regression-detector";
+import { buildInvestigationSnapshot } from "@/lib/investigation/recommendation-engine/investigation-snapshot";
+import { generateEngineeringRecommendation } from "@/lib/investigation/recommendation-engine/engine";
+import {
+    FixRecommendationSchema,
+    type FixRecommendation,
+    type EvaluatedRegressionCandidate,
+} from "@/lib/investigation/recommendation-engine/types";
 
 export interface GenerateFixRecommendationParams {
     projectId: string;
@@ -99,28 +104,71 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
         });
     }
 
-    const snapshot = buildCanonicalEvidenceSnapshot({
-        tenant: {
-            organizationId: project.organizationId,
+    // 2. Perform release & regression detection from GitHub API and Prisma release records
+    const regressionCandidates: EvaluatedRegressionCandidate[] = [];
+    try {
+        const regressionResult = await detectAutomaticRegression({
             projectId,
-        },
-        scope: {
             issueId,
-            anchorEventId: incidentAnchorId || anchorError?.id,
+            incidentFirstSeen: investigation.evidence[0]?.timestamp ? new Date(investigation.evidence[0].timestamp) : new Date(),
+            failingLocation: primaryFrame
+                ? {
+                      filePath: primaryFrame.filePath,
+                      lineNumber: primaryFrame.lineNumber,
+                      functionName: primaryFrame.functionName,
+                  }
+                : undefined,
+            releaseVersion: anchorError?.release,
+        });
+
+        for (const c of regressionResult.candidates) {
+            regressionCandidates.push({
+                commitSha: c.commitSha,
+                shortSha: c.shortSha,
+                message: c.commitMessage,
+                author: c.authorName || "Unknown",
+                commitDate: c.commitDate ? new Date(c.commitDate) : new Date(),
+                deploymentDate: c.deploymentDate ? new Date(c.deploymentDate) : undefined,
+                classification:
+                    c.confidence === "STRONGLY_SUPPORTED" || c.confidence === "OBSERVED"
+                        ? "STRONGLY_SUPPORTED_REGRESSION"
+                        : c.codeRelationship === "MODIFIED" || c.codeRelationship === "INTRODUCED"
+                        ? "PATH_ASSOCIATED"
+                        : "TEMPORALLY_ASSOCIATED",
+                classificationReason: c.explanation,
+                modifiesFailingFile: c.changedFiles.some((f) => f.isFailingFile),
+                modifiesFailingSymbol: c.changedFunctions.some((f) => f.isFailingFunction),
+                diffSnippet: c.changedFiles.find((f) => f.isFailingFile)?.patch,
+                changedFiles: c.changedFiles.map((f) => f.filePath),
+            });
+        }
+    } catch {
+        // Safe degradation if Git API is unreachable
+    }
+
+    // 3. Build canonical, immutable InvestigationSnapshot
+    const snapshot = buildInvestigationSnapshot({
+        incident: {
+            issueId,
+            title: anchorError?.title || "Unhandled Incident",
+            firstSeen: investigation.evidence[0]?.timestamp ? new Date(investigation.evidence[0].timestamp) : new Date(),
+            lastSeen: anchorError?.timestamp ? new Date(anchorError.timestamp) : new Date(),
+            eventCount: investigation.evidence.length,
+            environment: anchorError?.environment || "production",
+            service: anchorError?.service || "service",
             release: anchorError?.release,
         },
         rawEvidence: investigation.evidence,
         investigation,
-        runtime: {
-            anchorError,
-            primaryFailingFrame: primaryFrame,
-            callChain: [],
-            failingExpression: resolvedSourceContext?.failingExpression,
-            failingStatement: resolvedSourceContext?.failingStatement,
-            containingFunction: resolvedSourceContext?.containingFunction,
-            runtimeOrigin: "node",
-        },
+        stackFrames: parsedStack,
         source: resolvedSourceContext,
+        release: {
+            deployedRelease: anchorError?.release,
+            candidates: regressionCandidates,
+            stronglySupportedCandidate: regressionCandidates.find(
+                (c) => c.classification === "STRONGLY_SUPPORTED_REGRESSION"
+            ),
+        },
     });
 
     const currentHash = computeSnapshotHash(
@@ -129,7 +177,7 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
         resolvedSourceContext?.filePath
     );
 
-    // 2. Check for existing recommendation if not force regenerating
+    // 4. Check for existing recommendation if not force regenerating
     if (!forceRegenerate) {
         const existing = await prisma.issueRecommendation.findFirst({
             where: {
@@ -154,44 +202,20 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
         }
     }
 
-    // 3. Resolve AI recommendation model (Halo Managed, Gemini BYOK, or OpenAI BYOK)
+    // 5. Resolve AI recommendation model (Halo Managed, Gemini BYOK, or OpenAI BYOK)
     const customModel = await getProjectRecommendationModel(projectId);
 
-    // 4. Generate recommendation with full fact-checking
-    const result = await generateEvidenceBoundRecommendation({
+    // 6. Execute single canonical recommendation pipeline
+    const pipelineResult = await generateEngineeringRecommendation({
         snapshot,
         customModel,
     });
 
     const fixRecommendation: FixRecommendation = FixRecommendationSchema.parse(
-        result.fixRecommendation || {
-            actionAnswer: result.action?.instruction || result.whatHappened,
-            outcomeType: result.source === "REFUSAL_INSUFFICIENT_EVIDENCE" ? "INSUFFICIENT_EVIDENCE" : "CODE_CHANGE_RECOMMENDED",
-            summary: result.action?.instruction || result.whatHappened,
-            diagnosis: result.whatHappened,
-            whyThisAction: result.action?.reasoning,
-            whyNotSymptomFix: "Do not apply defensive nullish checks or symptom suppression at the callee when caller contracts are violated.",
-            missingEvidence: result.unknowns,
-            nextActionBeforeRepair: result.source === "REFUSAL_INSUFFICIENT_EVIDENCE" ? "Capture correlated telemetry or reproduce in development before modifying code." : undefined,
-            confidence: (result.confidence?.toUpperCase() as any) || "MEDIUM",
-            evidenceReferences: Array.from(new Set(result.claims.flatMap((c) => c.evidenceIds))),
-            changes: (result.patch?.files || []).map((f) => ({
-                filePath: f.path,
-                codeType: "PROPOSED_ONLY" as const,
-                explanation: f.explanation,
-                whyHere: "Target identified from failing stack trace and application call chain.",
-                proposedCode: f.diff,
-                isExactSourceVerified: false,
-            })),
-            relatedConsistencyChecks: [],
-            validationSteps: ["Reproduce with verified incident payload", "Execute test suite"],
-            uncertainty: result.unknowns,
-            followUpSuggestions: [],
-            hasInsufficientEvidence: result.source === "REFUSAL_INSUFFICIENT_EVIDENCE",
-        }
+        pipelineResult.recommendation
     );
 
-    // 5. Determine version number
+    // 7. Determine version number
     const previous = await prisma.issueRecommendation.findFirst({
         where: { issueId },
         orderBy: { version: "desc" },
@@ -199,7 +223,7 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
     });
     const nextVersion = (previous?.version || 0) + 1;
 
-    // 6. Persist recommendation in PostgreSQL
+    // 8. Persist recommendation in PostgreSQL
     const persisted = await prisma.issueRecommendation.create({
         data: {
             issueId,
@@ -209,13 +233,13 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
             isStale: false,
             recommendation: fixRecommendation as any,
             followUpHistory: [],
-            modelProvider: result.audit?.modelInfo?.provider || customModel.id,
-            modelName: result.audit?.modelInfo?.model || customModel.name,
+            modelProvider: pipelineResult.modelInfo.provider,
+            modelName: pipelineResult.modelInfo.model,
         },
     });
 
     return {
-        success: true,
+        success: pipelineResult.success,
         id: persisted.id,
         version: persisted.version,
         isStale: false,

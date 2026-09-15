@@ -6,19 +6,27 @@
  *   1. Google Gemini (REST API with structured JSON output, temp=0)
  *   2. OpenAI / Compatible (REST API with response_format=json_object, temp=0)
  *   3. Mock Recommendation Model (deterministic fixture for testing)
- *   4. Fallback Model (when no API key is configured, provides graceful offline result)
+ *   4. Halo Managed AI (uses env keys or deterministic candidate synthesis)
  */
 
-import type { EvidenceSnapshot } from "../evidence-snapshot";
-import type { RecommendationEligibilityVerdict } from "./types";
-import { validateProposedPatch } from "./patch-validator";
-import { buildRepairCase } from "../repair-intelligence/repair-case-builder";
+import type { InvestigationSnapshot, StructuredLlmOutput } from "./types";
 
 export interface ModelPrompt {
     system: string;
     user: string;
-    snapshot?: EvidenceSnapshot;
-    gateVerdict?: RecommendationEligibilityVerdict;
+    snapshot?: InvestigationSnapshot;
+    structuredContext?: {
+        actionTitle: string;
+        actionDescription: string;
+        justification: string;
+        repairLocationRationale: string;
+        whyNotSymptomFix?: string;
+        facts: Array<{ id: string; value: string }>;
+        uncertainty: string[];
+        validationPlan: string[];
+        confidenceLevel: "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH";
+        blockedBy?: string;
+    };
 }
 
 export interface RecommendationModel {
@@ -173,336 +181,22 @@ export class MockRecommendationModel implements RecommendationModel {
 }
 
 /**
- * Halo Managed AI Synthesizer
+ * Halo Managed Recommendation Model
  *
- * Produces highly accurate, reliable, truthful recommendations and proposed
- * patches derived strictly from verified telemetry and resolved source code.
- */
-export function synthesizeHaloManagedRecommendation(prompt: ModelPrompt): any {
-    const { snapshot, gateVerdict } = prompt;
-    if (!snapshot) {
-        return {
-            status: "INSUFFICIENT_EVIDENCE",
-            whatHappened: "Telemetry evidence snapshot was not supplied.",
-            claims: [
-                {
-                    statement: "Verified investigation telemetry remains accessible.",
-                    category: "OBSERVED",
-                    evidenceIds: [],
-                },
-            ],
-            unknowns: ["Missing evidence snapshot context"],
-            limitations: ["Operating in offline deterministic mode."],
-            confidenceLevel: "Low",
-        };
-    }
-
-    // Build the deterministic, evidence-bound Repair Case
-    const repairCase = buildRepairCase({ snapshot });
-    const { failureModel, protectionAnalysis, repairEligibility, repairOptions, proposedPatch } = repairCase;
-
-    const anchor = snapshot.runtime.anchorError || snapshot.evidence.find((e) => e.type === "ERROR");
-    const anchorId = anchor?.id;
-    const file = failureModel.failingFile || "unknown";
-    const line = failureModel.failingLineNumber || 1;
-    const fnName = failureModel.containingFunction || "";
-    const expr = failureModel.failingExpression || "";
-
-    // Build What Happened
-    let whatHappened = `${failureModel.errorTitle} occurred in service '${failureModel.service}' at ${file}:${line}${fnName ? ` inside function '${fnName}'` : ""}.`;
-    if (expr) {
-        whatHappened += ` Execution reached expression '${expr}'.`;
-    }
-    if (failureModel.runtimeValueStatus === "NOT_CAPTURED" && expr) {
-        whatHappened += ` Runtime value of '${expr}' was not captured in telemetry; cannot prove whether the value was undefined or if invocation threw internally.`;
-    }
-
-    // Build Claims strictly citing real evidence IDs
-    const claims: Array<{
-        statement: string;
-        category: "OBSERVED" | "DERIVED" | "SUPPORTED" | "UNKNOWN";
-        evidenceIds: string[];
-    }> = [];
-
-    // Observed Facts
-    for (const f of failureModel.knownFacts) {
-        claims.push({
-            statement: f.claim,
-            category: "OBSERVED",
-            evidenceIds: f.evidenceIds.filter((id) => snapshot.evidenceMap[id]),
-        });
-    }
-
-    // Derived Facts
-    for (const f of failureModel.derivedFacts) {
-        claims.push({
-            statement: f.claim,
-            category: "DERIVED",
-            evidenceIds: f.evidenceIds.filter((id) => snapshot.evidenceMap[id]),
-        });
-    }
-
-    // Supported Facts
-    for (const f of failureModel.supportedFacts) {
-        claims.push({
-            statement: f.claim,
-            category: "SUPPORTED",
-            evidenceIds: f.evidenceIds.filter((id) => snapshot.evidenceMap[id]),
-        });
-    }
-
-    // Protection finding claim
-    if (protectionAnalysis.guards.length > 0) {
-        claims.push({
-            statement: protectionAnalysis.summary,
-            category: "DERIVED",
-            evidenceIds: anchorId && snapshot.evidenceMap[anchorId] ? [anchorId] : [],
-        });
-    }
-
-    // Unknowns
-    for (const u of failureModel.unknowns) {
-        claims.push({
-            statement: u.claim,
-            category: "UNKNOWN",
-            evidenceIds: [],
-        });
-    }
-
-    // Ensure at least 1 claim
-    if (claims.length === 0) {
-        claims.push({
-            statement: `Runtime exception observed in ${failureModel.service}`,
-            category: "OBSERVED",
-            evidenceIds: anchorId ? [anchorId] : [],
-        });
-    }
-
-    // Engineering Decision & Action Formulation ("WHAT SHOULD I DO TO FIX THIS ISSUE?")
-    let outcomeType: import("./types").FixOutcomeType = "CODE_CHANGE_RECOMMENDED";
-    let action = repairEligibility.reason;
-    let reasoning = protectionAnalysis.detailedReasoning;
-    let whyThisAction = "";
-    let whyNotSymptomFix = "Do not add optional chaining (?.) or defensive fallbacks at the callee. If the caller already possesses the required value or violates the function contract, suppressing the error at the callee masks the underlying bug and causes silent data corruption downstream.";
-    let missingEvidence: string[] = [];
-    let nextActionBeforeRepair: string | undefined = undefined;
-
-    const lowerFile = file.toLowerCase();
-    const isVendor =
-        lowerFile.endsWith(".min.js") ||
-        lowerFile.includes(".min.") ||
-        lowerFile.includes("node_modules") ||
-        lowerFile.startsWith("vendor") ||
-        lowerFile.includes("/vendor");
-
-    if (isVendor) {
-        outcomeType = "INSUFFICIENT_EVIDENCE";
-        action = `Do not modify vendor code. The failure originated in third-party or minified bundle '${file}'. Verify caller inputs passed to the vendor library or map production sourcemaps.`;
-        reasoning = "Third-party libraries must not be modified in production without author source context.";
-        whyThisAction = "Inspecting caller inputs or mapping sourcemaps identifies the actual application cause.";
-        missingEvidence = ["Original author source code", "Unminified application stack trace"];
-        nextActionBeforeRepair = "Verify arguments passed into the library at the application caller boundary or supply source maps.";
-    } else if (proposedPatch && proposedPatch.validationStatus === "VALID" && repairOptions.length > 0) {
-        outcomeType = "CODE_CHANGE_RECOMMENDED";
-        action = repairOptions[0]!.title;
-        reasoning = repairOptions[0]!.approach;
-        whyThisAction = `Repairs the contract violation at ${file}:${line} where inconsistency was verified in the repository AST.`;
-    } else if (repairEligibility.state === "REPAIR_READY" && repairOptions.length > 0) {
-        outcomeType = "CODE_CHANGE_RECOMMENDED";
-        action = repairOptions[0]!.title;
-        reasoning = repairOptions[0]!.approach;
-        whyThisAction = `Repairs the contract violation at ${file}:${line} where inconsistency was verified in the repository AST.`;
-    } else if (repairEligibility.state === "REPAIR_UNDERDETERMINED") {
-        outcomeType = "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR";
-        action = `Do not modify production code yet. Capture runtime telemetry for '${expr || "failing expression"}' before applying code modifications.`;
-        reasoning = repairEligibility.reason;
-        whyThisAction = "Speculative changes risk masking runtime behavior without addressing the genuine cause.";
-        missingEvidence = [
-            `Dynamic runtime value of '${expr || "failing expression"}'`,
-            `Invocation return value or internal rejection payload from ${fnName}()`,
-            "Caller-side state prior to invocation",
-        ];
-        nextActionBeforeRepair = `Reproduce the failure with targeted instrumentation around ${fnName ? `${fnName}()` : "the failing execution path"} and capture the invocation outcome. Once that evidence is available, regenerate the recommendation.`;
-    } else if (repairEligibility.state === "REPAIR_PLAUSIBLE" && repairOptions.length > 0) {
-        outcomeType = "AMBIGUOUS_ROOT_CAUSE";
-        action = `Evaluate repair options: ${repairOptions.map((o) => o.title).join(" OR ")}. Do not apply a speculative fix until caller value flow is confirmed.`;
-        reasoning = repairEligibility.reason;
-        whyThisAction = "Multiple competing call sites or hypotheses exist; verifying caller arguments is required.";
-        missingEvidence = ["Caller argument propagation path", "Confirmed caller identity among multiple candidates"];
-        nextActionBeforeRepair = "Trace caller arguments in test execution or staging environment.";
-    } else {
-        outcomeType = "INSUFFICIENT_EVIDENCE";
-        action = `Do not modify production code yet. ${repairEligibility.reason}`;
-        reasoning = repairEligibility.reason;
-        whyThisAction = "Insufficient evidence to determine a safe code modification.";
-        missingEvidence = [repairEligibility.reason];
-        nextActionBeforeRepair = "Capture correlated telemetry or reproduce in development before modifying code.";
-    }
-
-    const recommendation = {
-        action,
-        reasoning,
-        affectedLocation: snapshot.source
-            ? {
-                  file,
-                  line,
-                  symbol: expr || undefined,
-                  function: fnName,
-              }
-            : undefined,
-    };
-
-    // Proposed Patch
-    let outputPatch: {
-        status: "AVAILABLE" | "NOT_SAFE_TO_GENERATE" | "SOURCE_UNAVAILABLE" | "NOT_APPLICABLE";
-        files: Array<{ path: string; diff: string; explanation: string }>;
-        refusalReason?: string;
-    };
-
-    if (
-        outcomeType === "CODE_CHANGE_RECOMMENDED" &&
-        proposedPatch &&
-        proposedPatch.validationStatus === "VALID"
-    ) {
-        outputPatch = {
-            status: "AVAILABLE",
-            files: [
-                {
-                    path: proposedPatch.targetFile,
-                    diff: proposedPatch.unifiedDiff,
-                    explanation: repairOptions[0]?.title || "Minimal verified patch proposal",
-                },
-            ],
-        };
-    } else if (!snapshot.source || snapshot.source.resolutionStatus !== "exact_file") {
-        outputPatch = {
-            status: "SOURCE_UNAVAILABLE",
-            files: [],
-            refusalReason: "Source code is unavailable for the incident release.",
-        };
-    } else {
-        outputPatch = {
-            status: "NOT_SAFE_TO_GENERATE",
-            files: [],
-            refusalReason: repairEligibility.reason,
-        };
-    }
-
-    const changesList =
-        outcomeType === "CODE_CHANGE_RECOMMENDED"
-            ? [
-                  {
-                      file: proposedPatch?.targetFile || snapshot.source?.filePath || file,
-                      filePath: proposedPatch?.targetFile || snapshot.source?.filePath || file,
-                      symbol: fnName,
-                      startLine: line,
-                      endLine: line,
-                      codeType:
-                          proposedPatch?.validationStatus === "VALID"
-                              ? ("EXISTING_AND_PROPOSED" as const)
-                              : snapshot.source?.lines
-                              ? ("PROPOSED_ONLY" as const)
-                              : ("CONCEPTUAL" as const),
-                      explanation: reasoning,
-                      whyHere: `Target is at ${file}:${line} where contract violation was verified in repository AST.`,
-                      whyThisLocation: `Target is at ${file}:${line} where contract violation was verified in repository AST.`,
-                      currentCode:
-                          proposedPatch?.originalSourceSnippet ||
-                          snapshot.source?.lines?.find((l) => l.isFailingLine)?.content ||
-                          "",
-                      proposedCode: proposedPatch?.proposedSourceSnippet || "",
-                      unifiedDiff: proposedPatch?.unifiedDiff || "",
-                      evidenceIds: anchorId ? [anchorId] : [],
-                      isExactSourceVerified: Boolean(
-                          snapshot.source && snapshot.source.resolutionStatus === "exact_file"
-                      ),
-                  },
-              ]
-            : [];
-
-    return {
-        status: repairEligibility.state === "REPAIR_BLOCKED" ? "NO_SAFE_RECOMMENDATION" : "RECOMMENDATION",
-        whatHappened,
-        claims,
-        recommendation,
-        proposedPatch: outputPatch,
-        unknowns: failureModel.unknowns.map((u) => u.claim),
-        limitations: repairCase.sideEffects.contractBreaks,
-        confidenceLevel:
-            repairEligibility.state === "REPAIR_READY"
-                ? "High"
-                : repairEligibility.state === "REPAIR_PLAUSIBLE"
-                ? "Medium"
-                : "Low",
-        fixRecommendation: {
-            directAnswer: action,
-            actionAnswer: action,
-            status: outcomeType,
-            outcomeType,
-            summary: action,
-            diagnosis: whatHappened,
-            whyThisFixesIt: whyThisAction,
-            whyThisAction,
-            whyNotSymptomFix,
-            alternatives: repairOptions.slice(1).map((opt) => ({
-                description: opt.title,
-                whyNotPreferred: opt.tradeoffs?.[0] || opt.selectionRationale || "Alternative fix has broader blast radius or potential side effects.",
-            })),
-            doNotChange: [
-                `Do not weaken validation at ${file}:${line}; enforce contract requirements at the caller boundary.`,
-            ],
-            verification: [
-                "Reproduce with verified incident payload to confirm failure condition.",
-                "Execute unit/integration test suite covering the affected component.",
-                "Verify no regression on adjacent invocation paths.",
-            ],
-            missingEvidence,
-            nextActionBeforeRepair,
-            confidence:
-                repairEligibility.state === "REPAIR_READY"
-                    ? "HIGH"
-                    : repairEligibility.state === "REPAIR_PLAUSIBLE"
-                    ? "MEDIUM"
-                    : "LOW",
-            evidenceReferences: Array.from(new Set(claims.flatMap((c) => c.evidenceIds))),
-            changes: changesList,
-            relatedConsistencyChecks: [
-                "Verify all callers of the modified function to ensure arguments adhere to the updated signature.",
-            ],
-            validationSteps: [
-                "Reproduce with exact incident payload to confirm failure condition.",
-                "Execute unit/integration test suite covering the affected component.",
-                "Verify no regression on adjacent invocation paths.",
-            ],
-            uncertainty: failureModel.unknowns.map((u) => u.claim),
-
-            hasInsufficientEvidence:
-                outcomeType === "INSUFFICIENT_EVIDENCE" ||
-                outcomeType === "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR",
-            refusalReason:
-                outcomeType === "INSUFFICIENT_EVIDENCE" ||
-                outcomeType === "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR"
-                    ? action
-                    : undefined,
-        },
-    };
-}
-
-/**
- * Halo Managed AI Model
- *
- * The permanent default AI recommendation engine for Halo Trace.
- * Always present, highly accurate, and reliable.
+ * Production default provider:
+ * 1. If server environment has GEMINI_API_KEY or OPENAI_API_KEY configured, delegates to external LLM.
+ * 2. If running offline or in self-hosted mode without external keys, formats the deterministically
+ *    evaluated candidate action and facts into valid structured JSON.
  */
 export class HaloManagedRecommendationModel implements RecommendationModel {
     readonly id = "halo-managed";
-    readonly name = "Halo Managed AI";
+    readonly name = "Halo Managed AI Engine";
 
     async generate(prompt: ModelPrompt): Promise<{ rawText: string; durationMs: number }> {
         const start = Date.now();
 
-        // 1. Try server environment managed keys if configured
-        const geminiKey = process.env.HALO_MANAGED_AI_KEY || process.env.GEMINI_API_KEY;
+        // 1. Check Gemini environment key
+        const geminiKey = process.env.GEMINI_API_KEY;
         if (geminiKey) {
             try {
                 const gemini = new GeminiRecommendationModel(
@@ -511,13 +205,11 @@ export class HaloManagedRecommendationModel implements RecommendationModel {
                 );
                 return await gemini.generate(prompt);
             } catch (err) {
-                console.warn(
-                    "[HaloManagedAI] External provider call failed, using native evidence synthesizer:",
-                    err
-                );
+                console.warn("[HaloManagedAI] Gemini call failed, falling back to deterministic synthesis:", err);
             }
         }
 
+        // 2. Check OpenAI environment key
         const openAiKey = process.env.OPENAI_API_KEY;
         if (openAiKey) {
             try {
@@ -527,15 +219,69 @@ export class HaloManagedRecommendationModel implements RecommendationModel {
                 );
                 return await openAi.generate(prompt);
             } catch (err) {
-                console.warn(
-                    "[HaloManagedAI] External provider call failed, using native evidence synthesizer:",
-                    err
-                );
+                console.warn("[HaloManagedAI] OpenAI call failed, falling back to deterministic synthesis:", err);
             }
         }
 
-        // 2. Halo Native Evidence-Bound Synthesizer
-        const output = synthesizeHaloManagedRecommendation(prompt);
+        // 3. Deterministic Grounded Synthesis from Candidate Actions
+        const ctx = prompt.structuredContext;
+        const snapshot = prompt.snapshot;
+
+        const changes: StructuredLlmOutput["changes"] = [];
+        if (
+            snapshot?.source?.lines &&
+            snapshot.source.resolutionStatus === "exact_file" &&
+            !ctx?.blockedBy &&
+            ctx?.confidenceLevel === "HIGH"
+        ) {
+            const failingLineObj = snapshot.source.lines.find(
+                (l) => l.lineNumber === snapshot.source?.failingLineNumber || l.isFailingLine
+            );
+            if (failingLineObj) {
+                const expr = snapshot.source?.failingExpression;
+                let proposed = failingLineObj.content;
+                if (expr && expr.includes(".") && !expr.includes("?.")) {
+                    const guardedExpr = expr.replace(".", "?.");
+                    proposed = failingLineObj.content.replace(expr, guardedExpr);
+                }
+                changes.push({
+                    file: snapshot.source.filePath,
+                    symbol: snapshot.failure.executingFunction,
+                    lines: String(failingLineObj.lineNumber),
+                    existingCode: failingLineObj.content,
+                    proposedCode: proposed,
+                    rationale: `Safely guard '${expr || "target"}' dereference against nullish runtime values.`,
+                });
+            }
+        }
+
+        const output: StructuredLlmOutput = {
+            action: ctx?.actionTitle || "Investigate the failure mechanism before modifying production code.",
+            summary: ctx?.actionDescription || "Review verified evidence and execution path.",
+            why: ctx?.justification || "Evidence does not yet conclusively prove a safe repair target.",
+            repairLocationRationale: ctx?.repairLocationRationale || "Identified from stack trace and source inspection.",
+            whyNotSymptomFix: ctx?.whyNotSymptomFix || "Do not apply defensive symptom suppression or blind nullish defaults when caller contracts are violated.",
+            claims: (ctx?.facts || []).map((f) => ({
+                claim: f.value,
+                factId: f.id,
+                category: "CONFIRMED" as const,
+            })),
+            changes,
+            alternatives: [],
+            validationPlan: ctx?.validationPlan || ["Reproduce with incident payload in development"],
+            uncertainty: ctx?.uncertainty || [],
+            confidenceLevel: ctx?.confidenceLevel || "MEDIUM",
+            blockedBy: ctx?.blockedBy,
+        };
+
+        if (output.claims.length === 0 && snapshot) {
+            output.claims.push({
+                claim: `${snapshot.failure.exceptionType}: ${snapshot.failure.exceptionMessage}`,
+                factId: snapshot.runtimeContext.anchorErrorId,
+                category: "CONFIRMED",
+            });
+        }
+
         return {
             rawText: JSON.stringify(output),
             durationMs: Date.now() - start,
@@ -544,54 +290,50 @@ export class HaloManagedRecommendationModel implements RecommendationModel {
 }
 
 /**
- * Fallback Model when an offline refusal is explicitly needed.
- */
-export class FallbackRecommendationModel implements RecommendationModel {
-    readonly id = "offline-fallback";
-    readonly name = "Halo Offline Engine";
-
-    async generate(): Promise<{ rawText: string; durationMs: number }> {
-        const output = {
-            status: "INSUFFICIENT_EVIDENCE",
-            whatHappened:
-                "Operating in offline deterministic mode.",
-            claims: [
-                {
-                    statement:
-                        "Verified investigation telemetry and deterministic causal chains remain available.",
-                    category: "OBSERVED",
-                    evidenceIds: [],
-                },
-            ],
-            recommendation: {
-                action:
-                    "Review verified causal chains and telemetry logs.",
-                reasoning: "Operating in offline deterministic mode.",
-            },
-            proposedPatch: {
-                status: "NOT_SAFE_TO_GENERATE",
-                files: [],
-                refusalReason: "Offline mode.",
-            },
-            unknowns: ["External LLM analysis"],
-            limitations: ["Operating in offline deterministic mode."],
-            confidenceLevel: "Medium",
-        };
-
-        return {
-            rawText: JSON.stringify(output),
-            durationMs: 1,
-        };
-    }
-}
-
-/**
  * Resolves the active model provider.
- * Defaults permanently to HaloManagedRecommendationModel!
  */
 export function getRecommendationModel(overrideModel?: RecommendationModel): RecommendationModel {
     if (overrideModel) {
         return overrideModel;
     }
     return new HaloManagedRecommendationModel();
+}
+
+/**
+ * Offline Fallback Recommendation Model
+ */
+export class FallbackRecommendationModel implements RecommendationModel {
+    readonly id = "offline-fallback";
+    readonly name = "Offline Fallback Engine";
+
+    async generate(_prompt?: any): Promise<{ rawText: string; durationMs: number }> {
+        return {
+            rawText: JSON.stringify({
+                status: "INSUFFICIENT_EVIDENCE",
+                whatHappened: "Model provider is unconfigured or unavailable.",
+                claims: [
+                    {
+                        statement: "External AI recommendation provider is unconfigured.",
+                        category: "OBSERVED",
+                        evidenceIds: [],
+                    },
+                ],
+                action: "Configure an AI provider in Project Settings to generate intelligent fix recommendations.",
+                summary: "AI provider not configured.",
+                why: "No API key configured.",
+                repairLocationRationale: "N/A",
+                proposedPatch: {
+                    status: "NOT_SAFE_TO_GENERATE",
+                    files: [],
+                    refusalReason: "No AI provider configured.",
+                },
+                changes: [],
+                alternatives: [],
+                validationPlan: [],
+                uncertainty: ["AI provider unavailable"],
+                confidenceLevel: "LOW",
+            }),
+            durationMs: 0,
+        };
+    }
 }

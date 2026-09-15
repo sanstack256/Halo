@@ -24,5 +24,18 @@ export function redactSensitiveData(str: string): string {
 }
 
 export function sanitizeForPrompt(str: string): string {
-    return redactSensitiveData(str);
+    if (!str || typeof str !== "string") return str;
+    let clean = redactSensitiveData(str);
+
+    // Neutralize prompt boundary injection and XML delimiter tags
+    clean = clean.replace(
+        /<\/?(?:untrusted_production_telemetry|untrusted_repository_source|DATA_PAYLOAD|TELEMETRY_DATA|REPOSITORY_DATA|system|user|assistant)>/gi,
+        (match) => `[ESCAPED_DELIMITER: ${match.replace(/[<>]/g, "")}]`
+    );
+
+    // Neutralize chat template delimiter tokens
+    clean = clean.replace(/\[\/?INST\]/gi, "[ESCAPED_INST]");
+    clean = clean.replace(/<\|im_(?:start|end)\|>/gi, "[ESCAPED_IM]");
+
+    return clean;
 }
