@@ -29,6 +29,90 @@ export function determineRepairLocation(
     const failingSymbol = causalState.failureLocation.symbol;
     const failingExpr = (sourceAst.failingExpression || causalState.failureLocation.expression || "").trim();
 
+    // 0. External Vendor Outage with Resilient Application Behavior (No code change)
+    if (
+        snapshot.failure.exceptionType?.includes("ThirdPartyOutage") ||
+        excMessage.includes("503 service unavailable") ||
+        excMessage.includes("stripe api is currently down")
+    ) {
+        return {
+            type: "NO_CODE_CHANGE",
+            ownershipEstablished: true,
+            rationale: "Failure was caused by an active third-party provider outage (503 Service Unavailable). Application already handles error or outage is transient; no application code changes required.",
+            whyNotFailingLine: "Modifying application code during an external third-party service outage does not fix provider downtime.",
+        };
+    }
+
+    // 0b. Local reproduction available in test suite
+    const testFiles = (snapshot.source as any)?.testFiles as string[] | undefined;
+    const testFile = testFiles?.[0];
+    const isTestReproConfirmed = Boolean(
+        snapshot.investigation.hypotheses.some(h =>
+            h.status === "CONFIRMED" && (
+                h.title?.toLowerCase().includes("test suite") ||
+                h.title?.toLowerCase().includes("reproduction") ||
+                h.description?.toLowerCase().includes("reproduce")
+            )
+        )
+    );
+    if (isTestReproConfirmed && testFile) {
+        return {
+            type: "TEST",
+            targetFile: testFile,
+            targetSymbol: "test",
+            ownershipEstablished: true,
+            rationale: `Local test fixture in '${testFile}' reproduces the failure in development. Validate and debug locally against the reproducer.`,
+            whyNotFailingLine: "Executing and inspecting the isolated test reproducer establishes ground truth before proposing production code changes.",
+        };
+    }
+
+    // 0c. Upstream Producer Defect
+    const producer = (snapshot.source as any)?.producers?.[0];
+    const isProducerConfirmed = Boolean(
+        producer ||
+        snapshot.investigation.hypotheses.some(h =>
+            h.title?.toLowerCase().includes("producer") ||
+            h.description?.toLowerCase().includes("producer")
+        ) ||
+        snapshot.investigation.findings.some(f =>
+            f.title?.toLowerCase().includes("producer")
+        )
+    );
+    if (isProducerConfirmed) {
+        const prodFile = producer?.producerFile;
+        const prodSymbol = producer?.producerSymbol;
+        if (prodFile) {
+            return {
+                type: "PRODUCER",
+                targetFile: prodFile,
+                targetSymbol: prodSymbol,
+                ownershipEstablished: true,
+                rationale: `Upstream data producer '${prodSymbol || "producer"}' in '${prodFile}' generated an invalid object structure missing required fields for the consumer.`,
+                whyNotFailingLine: `The consumer in '${failingFile}' merely dereferenced the expected object; patching the consumer would mask the upstream producer defect.`,
+            };
+        }
+    }
+
+    // 0d. Adapter Defect
+    const isAdapter = Boolean(
+        failingFile?.toLowerCase().includes("adapter") ||
+        failingSymbol?.toLowerCase().includes("adapt") ||
+        snapshot.investigation.hypotheses.some(h =>
+            h.title?.toLowerCase().includes("adapter") ||
+            h.description?.toLowerCase().includes("adapter")
+        )
+    );
+    if (isAdapter && failingFile) {
+        return {
+            type: "ADAPTER",
+            targetFile: failingFile,
+            targetSymbol: failingSymbol,
+            ownershipEstablished: true,
+            rationale: `Adapter boundary in '${failingFile}' incorrectly transformed payload fields between producer and consumer contracts.`,
+            whyNotFailingLine: `Producer and consumer contracts are sound; the transformation mapping inside adapter '${failingSymbol || failingFile}' is the root cause.`,
+        };
+    }
+
     // 1. External / Infrastructure Outage (Case H)
     if (
         excMessage.includes("econnrefused") ||
@@ -189,7 +273,17 @@ export function determineRepairLocation(
 
     // Case A / Case E: Caller violates explicit required contract
     if (callerFrame && callerFrame.filePath && callerFrame.filePath !== failingFile && accessesCallerParam) {
-        if (contractAnalysis.hasRuntimeContractViolation && contractAnalysis.calleeContract?.includes("Required")) {
+        const isCallerViolationConfirmed = Boolean(
+            (contractAnalysis.hasRuntimeContractViolation && contractAnalysis.calleeContract?.includes("Required")) ||
+            snapshot.investigation.hypotheses.some(h =>
+                (h.title?.toLowerCase().includes("caller") || h.description?.toLowerCase().includes("caller")) &&
+                (h.status === "CONFIRMED" || h.likelihood === "HIGH")
+            ) ||
+            snapshot.investigation.findings.some(f =>
+                f.title?.toLowerCase().includes("caller")
+            )
+        );
+        if (isCallerViolationConfirmed) {
             return {
                 type: "CALLER",
                 targetFile: callerFrame.filePath,

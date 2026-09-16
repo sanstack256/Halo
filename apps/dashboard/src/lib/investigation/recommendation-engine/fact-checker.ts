@@ -19,6 +19,9 @@ import type {
     FixRecommendation,
     RecommendedChange,
     EvidenceSufficiencyEvaluation,
+    DeterminedRepairLocation,
+    SourceAstAnalysis,
+    ContractAnalysisResult,
 } from "./types";
 import { EvidenceSufficiencyStateSchema } from "./types";
 import { detectSymptomMasking } from "./symptom-masking";
@@ -58,6 +61,24 @@ export function buildVerifiedFileGraph(snapshot: InvestigationSnapshot): Set<str
     for (const t of snapshot.tests?.testFiles || []) {
         files.add(t.toLowerCase());
     }
+
+    // Add producers, callers, callees, and testFiles from source context
+    const src = snapshot.source as any;
+    if (src) {
+        for (const p of src.producers || []) {
+            if (p.producerFile) files.add(p.producerFile.toLowerCase());
+        }
+        for (const c of src.callers || []) {
+            if (c.callerFile) files.add(c.callerFile.toLowerCase());
+        }
+        for (const c of src.callees || []) {
+            if (c.calleeFile) files.add(c.calleeFile.toLowerCase());
+        }
+        for (const t of src.testFiles || []) {
+            files.add(t.toLowerCase());
+        }
+    }
+
     for (const h of snapshot.investigation.hypotheses || []) {
         if (h.description) {
             const matches = h.description.match(/[a-zA-Z0-9_\-./]+\.[a-z]{2,4}/g);
@@ -103,7 +124,10 @@ export function isFileSupportedInGraph(filePath: string, graph: Set<string>): bo
 export function runDeterministicFactCheck(
     rawOutput: StructuredLlmOutput,
     snapshot: InvestigationSnapshot,
-    sufficiency?: EvidenceSufficiencyEvaluation
+    sufficiency?: EvidenceSufficiencyEvaluation,
+    sourceAst?: any,
+    contractAnalysis?: any,
+    repairLocation?: any
 ): FactCheckResult {
     const verifiedFiles: string[] = [];
     const rejectedFiles: string[] = [];
@@ -306,15 +330,23 @@ export function runDeterministicFactCheck(
         whyThisFixesIt: rawOutput.why,
         whyNotSymptomFix: rawOutput.whyNotSymptomFix,
         changes: verifiedChanges,
-        alternatives: rawOutput.alternatives.map((a) => ({
+        alternatives: (rawOutput.alternatives || []).map((a) => ({
             description: a.description,
             whyNotPreferred: a.whyNotPreferred,
         })),
+        repairLocation: repairLocation
+            ? {
+                type: repairLocation.type,
+                targetFile: repairLocation.targetFile,
+                targetSymbol: repairLocation.targetSymbol,
+                rationale: repairLocation.rationale,
+            }
+            : undefined,
         doNotChange: [],
-        verification: rawOutput.validationPlan,
-        validationSteps: rawOutput.validationPlan,
-        missingEvidence: rawOutput.uncertainty,
-        uncertainty: rawOutput.uncertainty,
+        verification: rawOutput.validationPlan || [],
+        validationSteps: rawOutput.validationPlan || [],
+        missingEvidence: rawOutput.uncertainty || [],
+        uncertainty: rawOutput.uncertainty || [],
         confidence: (!passed || rejectedFiles.length > 0 || strippedCodeBlocksCount > 0) ? "LOW" : (rawOutput.confidenceLevel || "MEDIUM"),
         evidenceReferences: Array.from(validEvidenceIds),
         hasInsufficientEvidence: Boolean(

@@ -34,6 +34,7 @@ const FORBIDDEN_FIELD_PATTERNS = [
 const REDACTABLE_FIELD_PATTERNS = [
     /email/i,
     /user_?id/i,
+    /username/i,
     /phone/i,
     /ip_?address/i,
     /customer_?id/i,

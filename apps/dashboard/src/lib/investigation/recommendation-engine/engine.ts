@@ -255,7 +255,14 @@ export async function generateEngineeringRecommendation(
                 actionTitle: selectedAction.title,
                 actionDescription: selectedAction.description,
                 justification: selectedAction.justification,
-                repairLocationRationale: selectedAction.repairLocation.rationale,
+                repairLocation: {
+                    type: repairLocation.type,
+                    targetFile: repairLocation.targetFile,
+                    targetSymbol: repairLocation.targetSymbol,
+                    rationale: repairLocation.rationale,
+                    candidateLocations: repairLocation.candidateLocations,
+                },
+                repairLocationRationale: selectedAction.repairLocation.rationale || repairLocation.rationale,
                 whyNotSymptomFix: "Do not apply defensive nullish checks or symptom suppression at the callee when caller contracts are violated.",
                 facts: inventory.facts.map((f) => ({ id: f.id, value: f.value })),
                 uncertainty: selectedAction.uncertainty,
@@ -265,6 +272,9 @@ export async function generateEngineeringRecommendation(
                         ? "HIGH"
                         : "MEDIUM",
                 blockedBy: sufficiency.blockingReason,
+                preciseRepair,
+                causalState,
+                contractAnalysis,
             },
         });
         rawOutputText = response.rawText;
@@ -542,7 +552,14 @@ export async function generateEngineeringRecommendation(
     }
 
     // 15. Deterministic Fact-Checking
-    const factCheck = runDeterministicFactCheck(schemaParsed.data, snapshot, sufficiency);
+    const factCheck = runDeterministicFactCheck(
+        schemaParsed.data,
+        snapshot,
+        sufficiency,
+        sourceAst,
+        contractAnalysis,
+        repairLocation
+    );
 
     return {
         success: factCheck.passed,
@@ -550,6 +567,12 @@ export async function generateEngineeringRecommendation(
         confidence: factCheck.verifiedRecommendation.confidence,
         recommendation: {
             ...factCheck.verifiedRecommendation,
+            repairLocation: {
+                type: repairLocation.type,
+                targetFile: repairLocation.targetFile,
+                targetSymbol: repairLocation.targetSymbol,
+                rationale: repairLocation.rationale,
+            },
             completedSteps,
             isCodeModification: preciseRepair.isCodeModification,
             nonCodeRemediationDetails: preciseRepair.nonCodeRemediationDetails,

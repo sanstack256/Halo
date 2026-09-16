@@ -237,8 +237,9 @@ function synthesizeDatabaseTransactionRepair(
     verifiedCurrent: string
 ): { proposed: string; headline: string; whyFixes: string; test: string } {
     const hasTransaction = verifiedCurrent.includes(".transaction(") || failingExpr.includes("transaction");
-    const proposed = hasTransaction
-        ? `let trx: Knex.Transaction | undefined;
+    let proposed: string;
+    if (hasTransaction) {
+        proposed = `let trx: Knex.Transaction | undefined;
 try {
   trx = await db.transaction();
   ${verifiedCurrent}
@@ -250,8 +251,17 @@ try {
 } finally {
   // Ensure connection is released even on unexpected errors
   if (trx && !trx.isCompleted()) await trx.rollback();
-}`
-        : `// Wrap database operation in proper connection lifecycle management
+}`;
+    } else if (verifiedCurrent.includes("connect()") || failingExpr.includes("connect")) {
+        proposed = `// Ensure database connection is released back to pool in finally block
+const client = await pool.connect();
+try {
+  return await fn(client);
+} finally {
+  client.release(); // Always release connection back to pool
+}`;
+    } else {
+        proposed = `// Wrap database operation in proper connection lifecycle management
 const client = await pool.connect();
 try {
   ${verifiedCurrent}
@@ -260,11 +270,12 @@ try {
 } finally {
   client.release(); // Always release connection back to pool
 }`;
+    }
 
     return {
         proposed,
         headline: `Fix database transaction lifecycle in '${targetSymbol || targetFile}' — add rollback and connection release`,
-        whyFixes: "Ensures rollback is called on every failure path, preventing transaction locks and connection pool exhaustion that cause cascading failures.",
+        whyFixes: "Ensures rollback and connection release are called on every failure path, preventing transaction locks and connection pool exhaustion that cause cascading failures.",
         test: `Add test: simulate database error mid-transaction and verify connection is released and transaction is rolled back cleanly.`,
     };
 }

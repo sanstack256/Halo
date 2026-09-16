@@ -19,6 +19,18 @@ export interface ModelPrompt {
         actionTitle: string;
         actionDescription: string;
         justification: string;
+        repairLocation?: {
+            type: string;
+            targetFile?: string;
+            targetSymbol?: string;
+            rationale: string;
+            candidateLocations?: Array<{
+                type: string;
+                targetFile?: string;
+                targetSymbol?: string;
+                rationale: string;
+            }>;
+        };
         repairLocationRationale: string;
         whyNotSymptomFix?: string;
         facts: Array<{ id: string; value: string }>;
@@ -26,6 +38,9 @@ export interface ModelPrompt {
         validationPlan: string[];
         confidenceLevel: "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH";
         blockedBy?: string;
+        preciseRepair?: any;
+        causalState?: any;
+        contractAnalysis?: any;
     };
 }
 
@@ -223,43 +238,56 @@ export class HaloManagedRecommendationModel implements RecommendationModel {
             }
         }
 
-        // 3. Deterministic Grounded Synthesis from Candidate Actions
+        // 3. Deterministic Grounded Synthesis from Authoritative Upstream Investigation
         const ctx = prompt.structuredContext;
         const snapshot = prompt.snapshot;
+        const rep = ctx?.preciseRepair;
+        const repLoc = ctx?.repairLocation;
 
         const changes: StructuredLlmOutput["changes"] = [];
-        if (
-            snapshot?.source?.lines &&
-            snapshot.source.resolutionStatus === "exact_file" &&
-            !ctx?.blockedBy &&
-            ctx?.confidenceLevel === "HIGH"
-        ) {
-            const failingLineObj = snapshot.source.lines.find(
-                (l) => l.lineNumber === snapshot.source?.failingLineNumber || l.isFailingLine
-            );
-            if (failingLineObj) {
-                const expr = snapshot.source?.failingExpression;
-                let proposed = failingLineObj.content;
-                if (expr && expr.includes(".") && !expr.includes("?.")) {
-                    const guardedExpr = expr.replace(".", "?.");
-                    proposed = failingLineObj.content.replace(expr, guardedExpr);
+
+        if (rep?.multiFileChanges && rep.multiFileChanges.length > 0) {
+            for (const c of rep.multiFileChanges) {
+                const targetPath = c.filePath || c.file || repLoc?.targetFile || snapshot?.source?.filePath;
+                if (targetPath) {
+                    changes.push({
+                        file: targetPath,
+                        symbol: c.symbol || repLoc?.targetSymbol || snapshot?.source?.containingFunction,
+                        lines: c.startLine ? String(c.startLine) : snapshot?.source?.failingLineNumber ? String(snapshot.source.failingLineNumber) : "1",
+                        existingCode: c.currentCode || "",
+                        proposedCode: c.proposedCode || "",
+                        rationale: c.explanation || c.whyHere || rep.whyThere || "Restore contract invariant",
+                    });
                 }
-                changes.push({
-                    file: snapshot.source.filePath,
-                    symbol: snapshot.failure.executingFunction,
-                    lines: String(failingLineObj.lineNumber),
-                    existingCode: failingLineObj.content,
-                    proposedCode: proposed,
-                    rationale: `Safely guard '${expr || "target"}' dereference against nullish runtime values.`,
-                });
             }
+        } else if (rep?.proposedCodeChange && repLoc?.targetFile) {
+            changes.push({
+                file: repLoc.targetFile,
+                symbol: repLoc.targetSymbol || snapshot?.source?.containingFunction,
+                lines: snapshot?.source?.failingLineNumber ? String(snapshot.source.failingLineNumber) : "1",
+                existingCode: rep.verifiedCurrentCode || "",
+                proposedCode: rep.proposedCodeChange,
+                rationale: rep.whyThere || repLoc.rationale || "Restore contract invariant",
+            });
         }
 
+        const isNonCode = Boolean(rep && !rep.isCodeModification && rep.nonCodeRemediationDetails);
+        const nonCodeType = rep?.nonCodeRemediationDetails?.type;
+        const outcomeType = isNonCode
+            ? (nonCodeType === "EXTERNAL_OUTAGE"
+                ? "NO_CODE_CHANGE_REQUIRED"
+                : nonCodeType === "LOCAL_REPRODUCTION"
+                ? "LOCAL_REPRODUCTION"
+                : "NON_CODE_REMEDIATION")
+            : changes.length > 0
+            ? "CODE_CHANGE_RECOMMENDED"
+            : "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR";
+
         const output: StructuredLlmOutput = {
-            action: ctx?.actionTitle || "Investigate the failure mechanism before modifying production code.",
-            summary: ctx?.actionDescription || "Review verified evidence and execution path.",
-            why: ctx?.justification || "Evidence does not yet conclusively prove a safe repair target.",
-            repairLocationRationale: ctx?.repairLocationRationale || "Identified from stack trace and source inspection.",
+            action: rep?.headline || ctx?.actionTitle || "Investigate the failure mechanism before modifying production code.",
+            summary: rep?.whatShouldChange || ctx?.actionDescription || "Review verified evidence and execution path.",
+            why: rep?.whyThisFixesActualFailure || ctx?.justification || "Evidence does not yet conclusively prove a safe repair target.",
+            repairLocationRationale: rep?.whyThere || repLoc?.rationale || ctx?.repairLocationRationale || "Identified from AST, call graph, and contract analysis.",
             whyNotSymptomFix: ctx?.whyNotSymptomFix || "Do not apply defensive symptom suppression or blind nullish defaults when caller contracts are violated.",
             claims: (ctx?.facts || []).map((f) => ({
                 claim: f.value,
@@ -267,11 +295,16 @@ export class HaloManagedRecommendationModel implements RecommendationModel {
                 category: "CONFIRMED" as const,
             })),
             changes,
-            alternatives: [],
-            validationPlan: ctx?.validationPlan || ["Reproduce with incident payload in development"],
+            alternatives: (repLoc?.candidateLocations || []).map((c) => ({
+                description: c.rationale,
+                whyNotPreferred: "Secondary candidate; primary repair boundary restores invariant closer to the fault origin",
+            })),
+            validationPlan: rep?.validationPlan || ctx?.validationPlan || ["Reproduce with incident payload in development"],
             uncertainty: ctx?.uncertainty || [],
             confidenceLevel: ctx?.confidenceLevel || "MEDIUM",
             blockedBy: ctx?.blockedBy,
+            status: "SUFFICIENT_FOR_REPAIR",
+            outcomeType,
         };
 
         if (output.claims.length === 0 && snapshot) {

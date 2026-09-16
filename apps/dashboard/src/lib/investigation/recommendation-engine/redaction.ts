@@ -29,7 +29,7 @@ export function sanitizeForPrompt(str: string): string {
 
     // Neutralize prompt boundary injection and XML delimiter tags
     clean = clean.replace(
-        /<\/?(?:untrusted_production_telemetry|untrusted_repository_source|DATA_PAYLOAD|TELEMETRY_DATA|REPOSITORY_DATA|system|user|assistant)>/gi,
+        /<\/?(?:untrusted_production_telemetry|untrusted_repository_source|DATA_PAYLOAD|TELEMETRY_DATA|REPOSITORY_DATA|system|user|assistant|SYSTEM_[A-Z0-9_]+|[A-Z0-9_]{3,})>/gi,
         (match) => `[ESCAPED_DELIMITER: ${match.replace(/[<>]/g, "")}]`
     );
 
@@ -39,3 +39,11 @@ export function sanitizeForPrompt(str: string): string {
 
     return clean;
 }
+
+export function redactSensitiveFacts(facts: Array<{ id: string; value: string }>): Array<{ id: string; value: string }> {
+    return (facts || []).map((f) => ({
+        id: f.id,
+        value: redactSensitiveData(f.value),
+    }));
+}
+
