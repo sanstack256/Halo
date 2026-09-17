@@ -36,8 +36,8 @@ export function determineRepairLocation(
     // 0. External Vendor Outage with Resilient Application Behavior (No code change)
     if (
         snapshot.failure.exceptionType?.includes("ThirdPartyOutage") ||
-        excMessage.includes("503 service unavailable") ||
-        excMessage.includes("stripe api is currently down")
+        excMessage.includes("stripe api is currently down") ||
+        (excMessage.includes("503") && excMessage.includes("currently down"))
     ) {
         return {
             type: "NO_CODE_CHANGE",
@@ -177,18 +177,31 @@ export function determineRepairLocation(
         excMessage.includes("configuration error") ||
         excMessage.includes("is not configured") ||
         excMessage.includes("missing config") ||
+        excMessage.includes("environment variable") ||
         snapshot.investigation.hypotheses.some(h =>
             isHypoConfirmed(h) && (
                 h.title?.toLowerCase().includes("missing environment variable") ||
                 h.description?.toLowerCase().includes("environment variable") ||
-                h.title?.toLowerCase().includes("configuration bug")
+                h.title?.toLowerCase().includes("configuration defect") ||
+                h.title?.toLowerCase().includes("deployment configuration") ||
+                h.title?.toLowerCase().includes("deployment environment configuration") ||
+                (h.title?.toLowerCase().includes("configuration") && (h.description?.toLowerCase().includes("manifest") || h.description?.toLowerCase().includes("environment variable"))) ||
+                (h.description?.toLowerCase().includes("deployment") && (h.description?.toLowerCase().includes("manifest") || h.description?.toLowerCase().includes("omitted from deployment")))
             )
         )
     );
     if (isConfig) {
+        const isDeploymentEnv = Boolean(
+            snapshot.investigation.hypotheses.some(h =>
+                h.title?.toLowerCase().includes("deployment") ||
+                h.description?.toLowerCase().includes("deployment") ||
+                h.description?.toLowerCase().includes("manifest") ||
+                h.description?.toLowerCase().includes("code is correct")
+            )
+        );
         return {
             type: "CONFIGURATION",
-            targetFile: ".env",
+            targetFile: isDeploymentEnv ? ".env" : (failingFile || ".env"),
             targetSymbol: failingSymbol,
             ownershipEstablished: true,
             rationale: "Failure was caused by missing or invalid configuration/environment variables rather than application code defects.",
@@ -209,7 +222,7 @@ export function determineRepairLocation(
     );
     if (isRegressionConfirmed) {
         const cand = regressionContext.stronglySupportedCandidate;
-        const commitHash = (cand as any)?.shortSha || (cand as any)?.commitHash || cand?.commit?.hash || snapshot.investigation.hypotheses.find(h => isHypoConfirmed(h))?.title?.match(/[0-9a-f]{7,40}/i)?.[0] || "";
+        const commitHash = cand?.shortSha || cand?.commitSha || (cand as any)?.commitHash || (cand as any)?.commit?.hash || snapshot.investigation.hypotheses.find(h => isHypoConfirmed(h))?.title?.match(/[0-9a-f]{7,40}/i)?.[0] || "";
         const candLocations: DeterminedRepairLocation["candidateLocations"] = [
             {
                 type: "DEPLOYMENT",
@@ -240,14 +253,16 @@ export function determineRepairLocation(
     // 4b. Discovered Caller via AST/Hypothesis
     const registeredCaller = (snapshot.source as any)?.callers?.[0];
     const isRegisteredCallerDefect = Boolean(
-        registeredCaller &&
-        snapshot.investigation.hypotheses.some(h =>
-            isHypoConfirmed(h) && (
-                h.title?.toLowerCase().includes("scenario registry") ||
-                h.title?.toLowerCase().includes("construction omitted") ||
-                h.description?.toLowerCase().includes("scenario factory") ||
-                h.title?.toLowerCase().includes("caller") ||
-                h.description?.toLowerCase().includes("caller")
+        registeredCaller && (
+            registeredCaller.argumentExpressions?.some((arg: string) => arg === "undefined" || arg === "null") ||
+            snapshot.investigation.hypotheses.some(h =>
+                isHypoConfirmed(h) && (
+                    h.title?.toLowerCase().includes("scenario registry") ||
+                    h.title?.toLowerCase().includes("construction omitted") ||
+                    h.description?.toLowerCase().includes("scenario factory") ||
+                    h.title?.toLowerCase().includes("caller") ||
+                    h.description?.toLowerCase().includes("caller")
+                )
             )
         )
     );
@@ -327,10 +342,22 @@ export function determineRepairLocation(
             )
         )
     );
+    const isSerialization = Boolean(
+        (snapshot.failure.exceptionType?.toLowerCase().includes("syntaxerror") && excMessage.includes("json")) ||
+        excMessage.includes("unexpected token") ||
+        failingExpr.includes("JSON.parse")
+    );
+    const isCollectionBoundary = Boolean(
+        excMessage.includes("reduce of empty array") ||
+        excMessage.includes("empty array") ||
+        failingExpr.includes(".reduce(")
+    );
     const isResourceLeak = Boolean(
         excMessage.includes("pool exhausted") ||
-        excMessage.includes("leak") ||
+        excMessage.includes("client not released") ||
         excMessage.includes("connection pool") ||
+        excMessage.includes("connection already released") ||
+        excMessage.includes("leak") ||
         snapshot.investigation.hypotheses.some(h =>
             isHypoConfirmed(h) && (
                 h.title?.toLowerCase().includes("pool") ||
@@ -356,7 +383,7 @@ export function determineRepairLocation(
         )
     );
 
-    if ((isStateMachine || isAsyncRace || isResourceLeak || isLogicDefect) && sourceAst.hasExactSource && failingFile) {
+    if ((isStateMachine || isAsyncRace || isResourceLeak || isLogicDefect || isSerialization || isCollectionBoundary) && sourceAst.hasExactSource && failingFile) {
         return {
             type: "CALLEE",
             targetFile: failingFile,
@@ -368,6 +395,33 @@ export function determineRepairLocation(
             rationale: `Defect in internal control flow or invariant inside '${failingSymbol || failingFile}'. Caller is not causal.`,
             whyNotFailingLine: `The defect is in internal logic or lifecycle management in '${failingFile}'.`,
         };
+    }
+
+    // Case A / Case E: Caller violates explicit required contract
+    if (callerFrame && callerFrame.filePath && callerFrame.filePath !== failingFile && accessesCallerParam) {
+        const isCallerViolationConfirmed = Boolean(
+            (contractAnalysis.hasRuntimeContractViolation && contractAnalysis.calleeContract?.includes("Required")) ||
+            snapshot.investigation.hypotheses.some(h =>
+                (h.title?.toLowerCase().includes("caller") || h.description?.toLowerCase().includes("caller")) &&
+                (isHypoConfirmed(h) || (h as any).likelihood === "HIGH")
+            ) ||
+            snapshot.investigation.findings.some(f =>
+                f.title?.toLowerCase().includes("caller")
+            ) ||
+            (snapshot.source as any)?.callers?.length > 0
+        );
+        if (isCallerViolationConfirmed) {
+            return {
+                type: "CALLER",
+                targetFile: callerFrame.filePath,
+                targetSymbol: callerFrame.functionName,
+                lineRange: callerFrame.lineNumber ? { start: callerFrame.lineNumber, end: callerFrame.lineNumber } : undefined,
+                ownershipEstablished: true,
+                contractEvidence: `Caller '${callerFrame.functionName}' violated documented required callee contract for parameter '${accessedParam}'.`,
+                rationale: `Upstream caller '${callerFrame.functionName}' in '${callerFrame.filePath}' passed invalid/undefined argument '${accessedParam}' to '${failingSymbol}' which requires valid input.`,
+                whyNotFailingLine: `Altering '${failingFile}' would mask the caller's contract violation; the fix belongs at the data producer/caller '${callerFrame.filePath}'.`,
+            };
+        }
     }
 
     // Callee with existing validation guard: Function is explicitly designed as a validation boundary
@@ -399,30 +453,7 @@ export function determineRepairLocation(
         };
     }
 
-    // Case A / Case E: Caller violates explicit required contract
     if (callerFrame && callerFrame.filePath && callerFrame.filePath !== failingFile && accessesCallerParam) {
-        const isCallerViolationConfirmed = Boolean(
-            (contractAnalysis.hasRuntimeContractViolation && contractAnalysis.calleeContract?.includes("Required")) ||
-            snapshot.investigation.hypotheses.some(h =>
-                (h.title?.toLowerCase().includes("caller") || h.description?.toLowerCase().includes("caller")) &&
-                (isHypoConfirmed(h) || h.likelihood === "HIGH")
-            ) ||
-            snapshot.investigation.findings.some(f =>
-                f.title?.toLowerCase().includes("caller")
-            )
-        );
-        if (isCallerViolationConfirmed) {
-            return {
-                type: "CALLER",
-                targetFile: callerFrame.filePath,
-                targetSymbol: callerFrame.functionName,
-                lineRange: callerFrame.lineNumber ? { start: callerFrame.lineNumber, end: callerFrame.lineNumber } : undefined,
-                ownershipEstablished: true,
-                contractEvidence: `Caller '${callerFrame.functionName}' violated documented required callee contract for parameter '${accessedParam}'.`,
-                rationale: `Upstream caller '${callerFrame.functionName}' in '${callerFrame.filePath}' passed invalid/undefined argument '${accessedParam}' to '${failingSymbol}' which requires valid input.`,
-                whyNotFailingLine: `Altering '${failingFile}' would mask the caller's contract violation; the fix belongs at the data producer/caller '${callerFrame.filePath}'.`,
-            };
-        }
 
         // Case C: Both caller and callee remain plausible (Ambiguous contract ownership)
         const callerCand = {

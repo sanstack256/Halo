@@ -82,11 +82,13 @@ export function analyzeReleasesAndRegressions(
     }
 
     // Identify strongest candidate
-    const stronglySupported = candidates.find(
-        (c) =>
-            c.classification === "CONFIRMED_REGRESSION" ||
-            c.classification === "STRONGLY_SUPPORTED_REGRESSION"
-    );
+    const stronglySupported =
+        rawRelease.stronglySupportedCandidate ||
+        candidates.find(
+            (c) =>
+                c.classification === "CONFIRMED_REGRESSION" ||
+                c.classification === "STRONGLY_SUPPORTED_REGRESSION"
+        );
 
     return {
         deployedRelease: rawRelease.deployedRelease,

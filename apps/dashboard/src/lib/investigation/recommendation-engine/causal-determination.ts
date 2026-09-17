@@ -69,6 +69,17 @@ export function determineCausalEpistemicState(
             mechanismStatus = "CONFIRMED";
             mechanismRuntimeConfirmed = true;
             mechanismDesc = `Runtime invocation or property evaluation of '${failingExpr}' threw: ${excMessage}.`;
+        } else if (
+            excMessage.includes("504") ||
+            excMessage.includes("502") ||
+            excMessage.includes("econnrefused") ||
+            excMessage.includes("etimedout") ||
+            excMessage.includes("timeout") ||
+            excMessage.includes("network error")
+        ) {
+            mechanismStatus = "CONFIRMED";
+            mechanismRuntimeConfirmed = true;
+            mechanismDesc = `External network/service timeout encountered during '${failingExpr}': ${excMessage}.`;
         } else {
             const inv = sourceAst.invocationAnalysis;
             if (inv && inv.calleeOpacity === "CALLEE_IMPLEMENTATION_AND_FAILURE_SURFACE_NARROWED") {
@@ -81,7 +92,7 @@ export function determineCausalEpistemicState(
             } else if (inv && inv.calleeOpacity === "CALLEE_OPAQUE_UNRESOLVABLE") {
                 mechanismStatus = "UNKNOWN";
                 mechanismDesc = `Execution reached invocation '${failingExpr}' resulting in ${excType} (${excMessage}), but callee internals or dynamic argument values were not recorded.`;
-            } else if (snapshot.investigation.hypotheses.some(h => h.status === "CONFIRMED") || sourceAst.hasExactSource) {
+            } else if (snapshot.investigation.hypotheses.some(h => (h.status as any) === "CONFIRMED" || h.status === "VALIDATED") || sourceAst.hasExactSource) {
                 mechanismStatus = "CONFIRMED";
                 mechanismRuntimeConfirmed = true;
                 mechanismDesc = `Execution evaluated '${failingExpr}' producing ${excType}: ${excMessage}.`;

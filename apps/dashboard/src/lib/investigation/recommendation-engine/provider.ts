@@ -251,7 +251,8 @@ export class HaloManagedRecommendationModel implements RecommendationModel {
 
         const changes: StructuredLlmOutput["changes"] = [];
 
-        if (isRepairSufficient) {
+        const isNoCodeChange = repLoc?.type === "NO_CODE_CHANGE" || isNonCode;
+        if (isRepairSufficient && !isNoCodeChange) {
             if (rep?.multiFileChanges && rep.multiFileChanges.length > 0) {
                 for (const c of rep.multiFileChanges) {
                     const targetPath = c.filePath || c.file || repLoc?.targetFile || snapshot?.source?.filePath;

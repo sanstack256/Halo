@@ -40,7 +40,11 @@ export interface FactCheckResult {
  * Stack trace frames, primary source, mapped dist counterparts, release commit diffs,
  * callers, callees, producers, adapters, test suites, and referenced repo modules.
  */
-export function buildVerifiedFileGraph(snapshot: InvestigationSnapshot): Set<string> {
+export function buildVerifiedFileGraph(
+    snapshot: InvestigationSnapshot,
+    repairLocation?: DeterminedRepairLocation,
+    contractAnalysis?: ContractAnalysisResult
+): Set<string> {
     const files = new Set<string>();
 
     if (snapshot.source?.filePath) {
@@ -80,6 +84,22 @@ export function buildVerifiedFileGraph(snapshot: InvestigationSnapshot): Set<str
         for (const t of src.testFiles || []) {
             files.add(t.toLowerCase());
         }
+    }
+
+    // Add verified repair location targets if established upstream
+    if (repairLocation?.targetFile) {
+        files.add(repairLocation.targetFile.toLowerCase());
+    }
+    for (const cand of repairLocation?.candidateLocations || []) {
+        if (cand.targetFile) files.add(cand.targetFile.toLowerCase());
+    }
+
+    // Add contract analysis files if present
+    if (contractAnalysis) {
+        const ca = contractAnalysis as any;
+        if (ca.producerFile) files.add(ca.producerFile.toLowerCase());
+        if (ca.callerFile) files.add(ca.callerFile.toLowerCase());
+        if (ca.adapterFile) files.add(ca.adapterFile.toLowerCase());
     }
 
     for (const h of snapshot.investigation.hypotheses || []) {
@@ -161,8 +181,8 @@ export function runDeterministicFactCheck(
         }
     }
 
-    // 1. Build Verified File Graph (stack, source, counterpart, release diffs, callers, tests)
-    const fileGraph = buildVerifiedFileGraph(snapshot);
+    // 1. Build Verified File Graph (stack, source, counterpart, release diffs, callers, tests, repairLocation)
+    const fileGraph = buildVerifiedFileGraph(snapshot, repairLocation, contractAnalysis);
     const verifiedChanges: RecommendedChange[] = [];
 
     const rejectedSymbols: string[] = [];
@@ -179,6 +199,10 @@ export function runDeterministicFactCheck(
     }
     for (const c of (snapshot.source as any)?.callers || []) {
         if (c.callerSymbol) knownSymbols.add(c.callerSymbol);
+    }
+    if (repairLocation?.targetSymbol) knownSymbols.add(repairLocation.targetSymbol);
+    for (const cand of repairLocation?.candidateLocations || []) {
+        if (cand.targetSymbol) knownSymbols.add(cand.targetSymbol);
     }
 
     for (const change of rawOutput.changes || []) {
@@ -238,14 +262,14 @@ export function runDeterministicFactCheck(
 
         // Check for symptom masking in proposed code
         if (change.proposedCode) {
-            const isCallerContractViolated = Boolean(
-                snapshot.investigation.hypotheses.some(
-                    (h) =>
-                        h.title?.toLowerCase().includes("contract") ||
-                        h.description?.toLowerCase().includes("caller")
-                ) ||
-                snapshot.investigation.findings.some((f) =>
-                    f.title?.toLowerCase().includes("contract")
+            const isCallerContractViolated = repairLocation?.type === "CALLER" || (
+                repairLocation?.type !== "CALLEE" &&
+                Boolean(
+                    snapshot.investigation.hypotheses.some(
+                        (h) =>
+                            (h.title?.toLowerCase().includes("caller") && h.title?.toLowerCase().includes("violate")) ||
+                            (h.description?.toLowerCase().includes("caller") && h.description?.toLowerCase().includes("without"))
+                    )
                 )
             );
             const maskingCheck = detectSymptomMasking(change.proposedCode, isCallerContractViolated);
@@ -261,10 +285,13 @@ export function runDeterministicFactCheck(
 
         // If verified, retain; otherwise strip
         if (isCodeValid) {
+            const parsedLine = change.lines ? parseInt(change.lines.replace(/\D/g, ""), 10) : undefined;
             verifiedChanges.push({
                 file: change.file,
                 filePath: change.file,
                 symbol: change.symbol,
+                startLine: typeof parsedLine === "number" && !isNaN(parsedLine) ? parsedLine : undefined,
+                endLine: typeof parsedLine === "number" && !isNaN(parsedLine) ? parsedLine : undefined,
                 codeType: change.existingCode ? "EXISTING_AND_PROPOSED" : "PROPOSED_ONLY",
                 explanation: change.rationale,
                 whyHere: rawOutput.repairLocationRationale || "Identified repair boundary",
@@ -302,6 +329,11 @@ export function runDeterministicFactCheck(
 
     // 3. Verify Commit Claims and Relationship-level Causality
     const validCommitMap = new Map<string, any>();
+    if (snapshot.release.stronglySupportedCandidate) {
+        const ssc = snapshot.release.stronglySupportedCandidate;
+        if (ssc.shortSha) validCommitMap.set(ssc.shortSha.toLowerCase(), ssc);
+        if (ssc.commitSha) validCommitMap.set(ssc.commitSha.toLowerCase(), ssc);
+    }
     for (const cand of snapshot.release.candidates || []) {
         validCommitMap.set(cand.shortSha.toLowerCase(), cand);
         validCommitMap.set(cand.commitSha.toLowerCase(), cand);
