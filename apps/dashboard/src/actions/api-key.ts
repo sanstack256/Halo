@@ -46,26 +46,31 @@ export async function createApiKey(
 }
 
 export async function getApiKeys(projectId: string) {
-    const session = await getSession();
+    try {
+        const session = await getSession();
 
-    if (!session) {
-        throw new Error("Unauthorized");
+        if (!session) {
+            return [];
+        }
+
+        const project = await getProject(projectId);
+
+        if (!project) {
+            return [];
+        }
+
+        return await prisma.apiKey.findMany({
+            where: {
+                projectId,
+            },
+            orderBy: {
+                createdAt: "desc",
+            },
+        });
+    } catch (err) {
+        console.error("Error in getApiKeys:", err);
+        return [];
     }
-
-    const project = await getProject(projectId);
-
-    if (!project) {
-        throw new Error("Project not found");
-    }
-
-    return prisma.apiKey.findMany({
-        where: {
-            projectId,
-        },
-        orderBy: {
-            createdAt: "desc",
-        },
-    });
 }
 
 const verifiedKeyCache = new Map<string, { key: any; expiresAt: number }>();

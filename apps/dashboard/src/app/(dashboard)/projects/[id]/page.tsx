@@ -4,10 +4,13 @@ import { getProject } from "@/actions/project";
 import { getApiKeys } from "@/actions/api-key";
 import { getIssues } from "@/actions/issue";
 import { getProjectMetrics } from "@/actions/project-metrics";
+import { getReleaseCount } from "@/actions/release";
+import { getSession } from "@/lib/session";
+import { getOrganization } from "@/lib/organization";
+import { prisma } from "@/lib/prisma";
 
 import ProjectOverview from "@/components/projects/project-overview";
 import ProjectQuickStart from "@/components/projects/project-quick-start";
-import { getReleaseCount } from "@/actions/release";
 
 type Props = {
     params: Promise<{
@@ -20,7 +23,22 @@ export default async function ProjectPage({
 }: Props) {
     const { id } = await params;
 
-    const project = await getProject(id);
+    let targetId = id;
+    if (id === "current" || id === "ALL") {
+        const session = await getSession();
+        if (session) {
+            const org = await getOrganization(session.user.id);
+            if (org) {
+                const firstProj = await prisma.project.findFirst({
+                    where: { organizationId: org.id },
+                    orderBy: { createdAt: "asc" },
+                });
+                if (firstProj) targetId = firstProj.id;
+            }
+        }
+    }
+
+    const project = await getProject(targetId);
 
     if (!project) {
         notFound();
@@ -40,11 +58,11 @@ export default async function ProjectPage({
 
     const events = project.events ?? [];
 
-    const sortedEvents = [...events].sort(
-        (a, b) =>
-            b.timestamp.getTime() -
-            a.timestamp.getTime(),
-    );
+    const sortedEvents = [...events].sort((a, b) => {
+        const timeA = a.timestamp ? new Date(a.timestamp).getTime() : 0;
+        const timeB = b.timestamp ? new Date(b.timestamp).getTime() : 0;
+        return timeB - timeA;
+    });
 
     const recentEvents = sortedEvents
         .slice(0, 5)
@@ -53,17 +71,18 @@ export default async function ProjectPage({
             title: event.title,
             type: event.type,
             severity: event.severity,
-            timestamp: event.timestamp,
+            timestamp: event.timestamp ? new Date(event.timestamp) : new Date(),
             message: event.message ?? null,
         }));
 
     const lastEvent =
-        sortedEvents.length > 0
-            ? sortedEvents[0].timestamp
+        sortedEvents.length > 0 && sortedEvents[0].timestamp
+            ? new Date(sortedEvents[0].timestamp)
             : null;
 
+    const eventCount = (project as any)._count?.events ?? events.length;
     const hasApiKey = apiKeys.length > 0;
-    const hasEvents = events.length > 0;
+    const hasEvents = eventCount > 0;
 
     return (
         <div className="space-y-8">
@@ -80,10 +99,10 @@ export default async function ProjectPage({
                 {/* Main content */}
                 <ProjectOverview
                     projectId={project.id}
-                    eventCount={events.length}
+                    eventCount={eventCount}
                     issueCount={issues.length}
                     lastEvent={lastEvent}
-                    hasApiKey={apiKeys.length > 0}
+                    hasApiKey={hasApiKey}
                     recentEvents={recentEvents}
                     metrics={metrics}
                     releaseCount={releaseCount}

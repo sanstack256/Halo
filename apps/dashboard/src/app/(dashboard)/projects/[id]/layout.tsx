@@ -123,7 +123,7 @@ export default async function ProjectLayout({
             {/* Project navigation */}
 
             <div className="mt-7">
-                <ProjectNavigation projectId={id} />
+                <ProjectNavigation projectId={targetId} />
             </div>
 
             {/* Page content */}

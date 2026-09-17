@@ -143,59 +143,79 @@ export async function getProjects() {
 }
 
 export async function getProject(projectId: string) {
-  const session = await getSession();
+  try {
+    const session = await getSession();
 
-  if (!session) {
-    throw new Error("Unauthorized");
+    if (!session) {
+      return null;
+    }
+
+    const organization = await getOrganization(session.user.id);
+
+    if (!organization) {
+      return null;
+    }
+
+    return await prisma.project.findFirst({
+      where: {
+        OR: [
+          { id: projectId },
+          { slug: projectId },
+        ],
+        organizationId: organization.id,
+      },
+      include: {
+        environments: true,
+        _count: {
+          select: {
+            events: true,
+          },
+        },
+        events: {
+          take: 10,
+          orderBy: {
+            timestamp: "desc",
+          },
+        },
+      },
+    });
+  } catch (err) {
+    console.error("Error in getProject:", err);
+    return null;
   }
-
-  const organization = await getOrganization(session.user.id);
-
-  if (!organization) {
-    throw new Error("Organization not found");
-  }
-
-  return prisma.project.findFirst({
-    where: {
-      OR: [
-        { id: projectId },
-        { slug: projectId },
-      ],
-      organizationId: organization.id,
-    },
-    include: {
-      environments: true,
-      events: true,
-    },
-  });
 }
 
 export async function getProjectHeader(projectId: string) {
-  const session = await getSession();
+  try {
+    const session = await getSession();
 
-  if (!session) {
-    throw new Error("Unauthorized");
+    if (!session) {
+      return null;
+    }
+
+    const organization = await getOrganization(session.user.id);
+
+    if (!organization) {
+      return null;
+    }
+
+    return await prisma.project.findFirst({
+      where: {
+        OR: [
+          { id: projectId },
+          { slug: projectId },
+        ],
+        organizationId: organization.id,
+      },
+      select: {
+        id: true,
+        name: true,
+        description: true,
+        organizationId: true,
+      },
+    });
+  } catch (err) {
+    console.error("Error in getProjectHeader:", err);
+    return null;
   }
-
-  const organization = await getOrganization(session.user.id);
-
-  if (!organization) {
-    throw new Error("Organization not found");
-  }
-
-  return prisma.project.findFirst({
-    where: {
-      OR: [
-        { id: projectId },
-        { slug: projectId },
-      ],
-      organizationId: organization.id,
-    },
-    select: {
-      id: true,
-      name: true,
-      description: true,
-      organizationId: true,
-    },
-  });
 }

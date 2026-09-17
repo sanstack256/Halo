@@ -88,246 +88,273 @@ function percentile(
 export async function getProjectMetrics(
     projectId: string,
 ): Promise<ProjectMetrics> {
-    const [
-        sessions,
-        traces,
-        errors,
-    ] = await Promise.all([
-        prisma.telemetrySession.findMany({
-            where: {
-                projectId,
-            },
-            select: {
-                crashedAt: true,
-            },
-        }),
-
-        prisma.event.findMany({
-            where: {
-                projectId,
-                type: "TRACE",
-                durationMs: {
-                    not: null,
+    try {
+        const [
+            sessions,
+            traces,
+            errors,
+        ] = await Promise.all([
+            prisma.telemetrySession.findMany({
+                where: {
+                    projectId,
                 },
-            },
-            select: {
-                durationMs: true,
-                status: true,
-            },
-        }),
+                select: {
+                    crashedAt: true,
+                },
+            }),
 
-        prisma.event.count({
-            where: {
-                projectId,
-                type: "ERROR",
-            },
-        }),
-    ]);
+            prisma.event.findMany({
+                where: {
+                    projectId,
+                    type: "TRACE",
+                    durationMs: {
+                        not: null,
+                    },
+                },
+                select: {
+                    durationMs: true,
+                    status: true,
+                },
+            }),
 
-    /*
-     * --------------------------------------------------
-     * Crash-free sessions
-     * --------------------------------------------------
-     */
+            prisma.event.count({
+                where: {
+                    projectId,
+                    type: "ERROR",
+                },
+            }),
+        ]);
 
-    const totalSessions =
-        sessions.length;
+        /*
+         * --------------------------------------------------
+         * Crash-free sessions
+         * --------------------------------------------------
+         */
 
-    const crashedSessions =
-        sessions.filter(
-            (session) =>
-                session.crashedAt !== null,
-        ).length;
+        const totalSessions =
+            sessions.length;
 
-    const crashFreeSessions =
-        totalSessions > 0
-            ? (
-                (
-                    totalSessions -
-                    crashedSessions
+        const crashedSessions =
+            sessions.filter(
+                (session) =>
+                    session.crashedAt !== null,
+            ).length;
+
+        const crashFreeSessions =
+            totalSessions > 0
+                ? (
+                    (
+                        totalSessions -
+                        crashedSessions
+                    ) /
+                    totalSessions
+                ) *
+                100
+                : 100;
+
+        /*
+         * --------------------------------------------------
+         * Apdex
+         * --------------------------------------------------
+         *
+         * Satisfied:
+         * <= T
+         *
+         * Tolerating:
+         * > T and <= 4T
+         *
+         * Frustrated:
+         * > 4T
+         *
+         * Failed requests are treated as frustrated.
+         */
+
+        const durations =
+            traces
+                .map(
+                    (trace) =>
+                        trace.durationMs,
+                )
+                .filter(
+                    (
+                        duration,
+                    ): duration is number =>
+                        duration !== null &&
+                        duration >= 0,
+                );
+
+        let satisfied = 0;
+        let tolerating = 0;
+        let frustrated = 0;
+
+        for (
+            const trace of traces
+        ) {
+            if (
+                trace.durationMs ===
+                null
+            ) {
+                continue;
+            }
+
+            if (
+                isFailedStatus(
+                    trace.status,
+                )
+            ) {
+                frustrated++;
+                continue;
+            }
+
+            if (
+                trace.durationMs <=
+                APDEX_THRESHOLD_MS
+            ) {
+                satisfied++;
+            } else if (
+                trace.durationMs <=
+                APDEX_THRESHOLD_MS * 4
+            ) {
+                tolerating++;
+            } else {
+                frustrated++;
+            }
+        }
+
+        const apdexTotal =
+            satisfied +
+            tolerating +
+            frustrated;
+
+        const apdex =
+            apdexTotal > 0
+                ? (
+                    satisfied +
+                    tolerating / 2
                 ) /
-                totalSessions
-            ) *
-            100
-            : 100;
+                apdexTotal
+                : null;
 
-    /*
-     * --------------------------------------------------
-     * Apdex
-     * --------------------------------------------------
-     *
-     * Satisfied:
-     * <= T
-     *
-     * Tolerating:
-     * > T and <= 4T
-     *
-     * Frustrated:
-     * > 4T
-     *
-     * Failed requests are treated as frustrated.
-     */
+        /*
+         * --------------------------------------------------
+         * Performance
+         * --------------------------------------------------
+         */
 
-    const durations =
-        traces
-            .map(
-                (trace) =>
-                    trace.durationMs,
-            )
-            .filter(
-                (
-                    duration,
-                ): duration is number =>
-                    duration !== null &&
-                    duration >= 0,
-            );
+        const traceCount =
+            traces.length;
 
-    let satisfied = 0;
-    let tolerating = 0;
-    let frustrated = 0;
-
-    for (
-        const trace of traces
-    ) {
-        if (
-            trace.durationMs ===
-            null
-        ) {
-            continue;
-        }
-
-        if (
-            isFailedStatus(
-                trace.status,
-            )
-        ) {
-            frustrated++;
-            continue;
-        }
-
-        if (
-            trace.durationMs <=
-            APDEX_THRESHOLD_MS
-        ) {
-            satisfied++;
-        } else if (
-            trace.durationMs <=
-            APDEX_THRESHOLD_MS * 4
-        ) {
-            tolerating++;
-        } else {
-            frustrated++;
-        }
-    }
-
-    const apdexTotal =
-        satisfied +
-        tolerating +
-        frustrated;
-
-    const apdex =
-        apdexTotal > 0
-            ? (
-                satisfied +
-                tolerating / 2
-            ) /
-            apdexTotal
-            : null;
-
-    /*
-     * --------------------------------------------------
-     * Performance
-     * --------------------------------------------------
-     */
-
-    const traceCount =
-        traces.length;
-
-    const failedTraces =
-        traces.filter((trace) =>
-            isFailedStatus(
-                trace.status,
-            ),
-        ).length;
-
-    const traceFailureRate =
-        traceCount > 0
-            ? (
-                failedTraces /
-                traceCount
-            ) *
-            100
-            : 0;
-
-    return {
-        crashFreeSessions: {
-            percentage:
-                Number(
-                    crashFreeSessions.toFixed(
-                        2,
-                    ),
+        const failedTraces =
+            traces.filter((trace) =>
+                isFailedStatus(
+                    trace.status,
                 ),
+            ).length;
 
-            crashed:
-                crashedSessions,
+        const traceFailureRate =
+            traceCount > 0
+                ? (
+                    failedTraces /
+                    traceCount
+                ) *
+                100
+                : 0;
 
-            total:
-                totalSessions,
-        },
-
-        apdex: {
-            score:
-                apdex === null
-                    ? null
-                    : Number(
-                        apdex.toFixed(
-                            3,
+        return {
+            crashFreeSessions: {
+                percentage:
+                    Number(
+                        crashFreeSessions.toFixed(
+                            2,
                         ),
                     ),
 
-            satisfied,
+                crashed:
+                    crashedSessions,
 
-            tolerating,
+                total:
+                    totalSessions,
+            },
 
-            frustrated,
+            apdex: {
+                score:
+                    apdex === null
+                        ? null
+                        : Number(
+                            apdex.toFixed(
+                                3,
+                            ),
+                        ),
 
-            total:
-                apdexTotal,
+                satisfied,
 
-            thresholdMs:
-                APDEX_THRESHOLD_MS,
-        },
+                tolerating,
 
-        performance: {
-            traceCount,
+                frustrated,
 
-            errorCount:
-                errors,
+                total:
+                    apdexTotal,
 
-            traceFailureRate:
-                Number(
-                    traceFailureRate.toFixed(
-                        2,
+                thresholdMs:
+                    APDEX_THRESHOLD_MS,
+            },
+
+            performance: {
+                traceCount,
+
+                errorCount:
+                    errors,
+
+                traceFailureRate:
+                    Number(
+                        traceFailureRate.toFixed(
+                            2,
+                        ),
                     ),
-                ),
 
-            p50:
-                percentile(
-                    durations,
-                    0.5,
-                ),
+                p50:
+                    percentile(
+                        durations,
+                        0.5,
+                    ),
 
-            p95:
-                percentile(
-                    durations,
-                    0.95,
-                ),
+                p95:
+                    percentile(
+                        durations,
+                        0.95,
+                    ),
 
-            p99:
-                percentile(
-                    durations,
-                    0.99,
-                ),
-        },
-    };
+                p99:
+                    percentile(
+                        durations,
+                        0.99,
+                    ),
+            },
+        };
+    } catch (err) {
+        console.error("Error in getProjectMetrics:", err);
+        return {
+            crashFreeSessions: {
+                percentage: 100,
+                crashed: 0,
+                total: 0,
+            },
+            apdex: {
+                score: null,
+                satisfied: 0,
+                tolerating: 0,
+                frustrated: 0,
+                total: 0,
+                thresholdMs: APDEX_THRESHOLD_MS,
+            },
+            performance: {
+                traceCount: 0,
+                errorCount: 0,
+                traceFailureRate: 0,
+                p50: null,
+                p95: null,
+                p99: null,
+            },
+        };
+    }
 }

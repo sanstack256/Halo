@@ -86,11 +86,16 @@ export async function getReleases(
 export async function getReleaseCount(
     projectId: string,
 ) {
-    return prisma.release.count({
-        where: {
-            projectId,
-        },
-    });
+    try {
+        return await prisma.release.count({
+            where: {
+                projectId,
+            },
+        });
+    } catch (err) {
+        console.error("Error in getReleaseCount:", err);
+        return 0;
+    }
 }
 
 export async function getRelease(

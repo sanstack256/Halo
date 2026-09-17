@@ -50,34 +50,39 @@ export async function findOrCreateIssue(
 export async function getIssues(
     projectId: string,
 ) {
-    return prisma.issue.findMany({
-        where: {
-            projectId,
-        },
-        include: {
-            events: {
-                select: {
-                    id: true,
-                    timestamp: true,
-                    service: true,
-                    severity: true,
-                    sdkName: true,
-                    sdkVersion: true,
-                    environment: {
-                        select: {
-                            name: true,
+    try {
+        return await prisma.issue.findMany({
+            where: {
+                projectId,
+            },
+            include: {
+                events: {
+                    select: {
+                        id: true,
+                        timestamp: true,
+                        service: true,
+                        severity: true,
+                        sdkName: true,
+                        sdkVersion: true,
+                        environment: {
+                            select: {
+                                name: true,
+                            },
                         },
                     },
-                },
-                orderBy: {
-                    timestamp: "asc",
+                    orderBy: {
+                        timestamp: "asc",
+                    },
                 },
             },
-        },
-        orderBy: {
-            lastSeen: "desc",
-        },
-    });
+            orderBy: {
+                lastSeen: "desc",
+            },
+        });
+    } catch (err) {
+        console.error("Error in getIssues:", err);
+        return [];
+    }
 }
 
 export async function updateIssueStatus(
