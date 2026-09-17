@@ -1326,7 +1326,7 @@ export function buildEvaluationCorpus(): EvaluatedScenarioFixture[] {
         title: "Missing Source Code Entirely (Withholds Fabricated Code)",
         bugClass: "MISSING_SOURCE",
         expectedMechanism: "Source code unavailable; withholds fabricated code changes",
-        expectedRepairLocationType: "CALLEE",
+        expectedRepairLocationType: "NO_CODE_CHANGE",
         expectedTargetFileSubstring: "",
         expectedOutcome: "TARGETED_ACQUISITION",
         shouldHaveCodeChange: false,

@@ -171,15 +171,29 @@ export function evaluateEvidenceSufficiency(
         };
     }
 
-    // 5. Confirmed Mechanism: Check if Repair Location & Contract Ownership are Established
-    if (causalState.failureMechanism.status === "CONFIRMED") {
-        const isRepairOwnershipEstablished = Boolean(
-            repairLocation &&
-            repairLocation.ownershipEstablished &&
-            !repairLocation.isAmbiguous &&
-            repairLocation.type !== "NO_CODE_CHANGE"
-        );
+    // 4b. No Code Change Justified (External Outage)
+    if (repairLocation?.type === "NO_CODE_CHANGE" && repairLocation.ownershipEstablished) {
+        return {
+            state: "SUFFICIENT_FOR_REPAIR",
+            unresolvedDecision: "External third-party provider outage: monitor provider status page, no application code change required.",
+            establishedFacts,
+            inferredFacts,
+            contradictingFacts,
+            canSourceOrReleaseResolve: false,
+            isAdditionalRuntimeTelemetryNecessary: false,
+            minimumAdditionalEvidenceNeeded: [],
+        };
+    }
 
+    // 5. Confirmed Mechanism / Established Repair Location
+    const isRepairOwnershipEstablished = Boolean(
+        repairLocation &&
+        repairLocation.ownershipEstablished &&
+        !repairLocation.isAmbiguous &&
+        repairLocation.type !== "NO_CODE_CHANGE"
+    );
+
+    if (isRepairOwnershipEstablished || causalState.failureMechanism.status === "CONFIRMED") {
         if (isRepairOwnershipEstablished) {
             return {
                 state: "SUFFICIENT_FOR_REPAIR",

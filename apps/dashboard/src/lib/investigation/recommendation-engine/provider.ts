@@ -38,6 +38,7 @@ export interface ModelPrompt {
         validationPlan: string[];
         confidenceLevel: "LOW" | "MEDIUM" | "HIGH" | "VERY_HIGH";
         blockedBy?: string;
+        sufficiency?: any;
         preciseRepair?: any;
         causalState?: any;
         contractAnalysis?: any;
@@ -244,34 +245,39 @@ export class HaloManagedRecommendationModel implements RecommendationModel {
         const rep = ctx?.preciseRepair;
         const repLoc = ctx?.repairLocation;
 
+        const isNonCode = Boolean(rep && !rep.isCodeModification && rep.nonCodeRemediationDetails);
+        const sufficiencyState = ctx?.sufficiency?.state;
+        const isRepairSufficient = (sufficiencyState === "SUFFICIENT_FOR_REPAIR" || sufficiencyState === "NO_CODE_CHANGE_JUSTIFIED" || isNonCode) && (!ctx?.blockedBy || isNonCode);
+
         const changes: StructuredLlmOutput["changes"] = [];
 
-        if (rep?.multiFileChanges && rep.multiFileChanges.length > 0) {
-            for (const c of rep.multiFileChanges) {
-                const targetPath = c.filePath || c.file || repLoc?.targetFile || snapshot?.source?.filePath;
-                if (targetPath) {
-                    changes.push({
-                        file: targetPath,
-                        symbol: c.symbol || repLoc?.targetSymbol || snapshot?.source?.containingFunction,
-                        lines: c.startLine ? String(c.startLine) : snapshot?.source?.failingLineNumber ? String(snapshot.source.failingLineNumber) : "1",
-                        existingCode: c.currentCode || "",
-                        proposedCode: c.proposedCode || "",
-                        rationale: c.explanation || c.whyHere || rep.whyThere || "Restore contract invariant",
-                    });
+        if (isRepairSufficient) {
+            if (rep?.multiFileChanges && rep.multiFileChanges.length > 0) {
+                for (const c of rep.multiFileChanges) {
+                    const targetPath = c.filePath || c.file || repLoc?.targetFile || snapshot?.source?.filePath;
+                    if (targetPath) {
+                        changes.push({
+                            file: targetPath,
+                            symbol: c.symbol || repLoc?.targetSymbol || snapshot?.source?.containingFunction,
+                            lines: c.startLine ? String(c.startLine) : snapshot?.source?.failingLineNumber ? String(snapshot.source.failingLineNumber) : "1",
+                            existingCode: c.currentCode || "",
+                            proposedCode: c.proposedCode || "",
+                            rationale: c.explanation || c.whyHere || rep.whyThere || "Restore contract invariant",
+                        });
+                    }
                 }
+            } else if (rep?.proposedCodeChange && repLoc?.targetFile) {
+                changes.push({
+                    file: repLoc.targetFile,
+                    symbol: repLoc.targetSymbol || snapshot?.source?.containingFunction,
+                    lines: snapshot?.source?.failingLineNumber ? String(snapshot.source.failingLineNumber) : "1",
+                    existingCode: rep.verifiedCurrentCode || "",
+                    proposedCode: rep.proposedCodeChange,
+                    rationale: rep.whyThere || repLoc.rationale || "Restore contract invariant",
+                });
             }
-        } else if (rep?.proposedCodeChange && repLoc?.targetFile) {
-            changes.push({
-                file: repLoc.targetFile,
-                symbol: repLoc.targetSymbol || snapshot?.source?.containingFunction,
-                lines: snapshot?.source?.failingLineNumber ? String(snapshot.source.failingLineNumber) : "1",
-                existingCode: rep.verifiedCurrentCode || "",
-                proposedCode: rep.proposedCodeChange,
-                rationale: rep.whyThere || repLoc.rationale || "Restore contract invariant",
-            });
         }
 
-        const isNonCode = Boolean(rep && !rep.isCodeModification && rep.nonCodeRemediationDetails);
         const nonCodeType = rep?.nonCodeRemediationDetails?.type;
         const outcomeType = isNonCode
             ? (nonCodeType === "EXTERNAL_OUTAGE"
@@ -283,10 +289,12 @@ export class HaloManagedRecommendationModel implements RecommendationModel {
             ? "CODE_CHANGE_RECOMMENDED"
             : "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR";
 
+        const actionTitle = (isRepairSufficient ? rep?.headline : ctx?.actionTitle) || ctx?.actionTitle || rep?.headline || "Investigate the failure mechanism before modifying production code.";
+
         const output: StructuredLlmOutput = {
-            action: rep?.headline || ctx?.actionTitle || "Investigate the failure mechanism before modifying production code.",
-            summary: rep?.whatShouldChange || ctx?.actionDescription || "Review verified evidence and execution path.",
-            why: rep?.whyThisFixesActualFailure || ctx?.justification || "Evidence does not yet conclusively prove a safe repair target.",
+            action: actionTitle,
+            summary: (isRepairSufficient ? rep?.whatShouldChange : ctx?.actionDescription) || ctx?.actionDescription || "Review verified evidence and execution path.",
+            why: (isRepairSufficient ? rep?.whyThisFixesActualFailure : ctx?.justification) || ctx?.justification || "Evidence does not yet conclusively prove a safe repair target.",
             repairLocationRationale: rep?.whyThere || repLoc?.rationale || ctx?.repairLocationRationale || "Identified from AST, call graph, and contract analysis.",
             whyNotSymptomFix: ctx?.whyNotSymptomFix || "Do not apply defensive symptom suppression or blind nullish defaults when caller contracts are violated.",
             claims: (ctx?.facts || []).map((f) => ({
@@ -299,11 +307,11 @@ export class HaloManagedRecommendationModel implements RecommendationModel {
                 description: c.rationale,
                 whyNotPreferred: "Secondary candidate; primary repair boundary restores invariant closer to the fault origin",
             })),
-            validationPlan: rep?.validationPlan || ctx?.validationPlan || ["Reproduce with incident payload in development"],
+            validationPlan: isRepairSufficient && rep?.recommendedTest ? [rep.recommendedTest] : ctx?.validationPlan || ["Reproduce with incident payload in development"],
             uncertainty: ctx?.uncertainty || [],
             confidenceLevel: ctx?.confidenceLevel || "MEDIUM",
             blockedBy: ctx?.blockedBy,
-            status: "SUFFICIENT_FOR_REPAIR",
+            status: isRepairSufficient ? "SUFFICIENT_FOR_REPAIR" : sufficiencyState || "INSUFFICIENT",
             outcomeType,
         };
 

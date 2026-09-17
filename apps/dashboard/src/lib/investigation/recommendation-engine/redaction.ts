@@ -20,6 +20,12 @@ export function redactSensitiveData(str: string): string {
     clean = clean.replace(/sk-[a-zA-Z0-9]{32,}/g, "[REDACTED_API_KEY]");
     clean = clean.replace(/AIza[0-9A-Za-z-_]{35}/g, "[REDACTED_GOOGLE_KEY]");
 
+    // Redact bearer tokens
+    clean = clean.replace(/Bearer\s+([a-zA-Z0-9_\-\.]+)/gi, "Bearer [REDACTED_BEARER_TOKEN]");
+
+    // Redact passwords
+    clean = clean.replace(/(?:password|passwd|pwd)\s*(?:is|=|:|\bwas\b)\s*([^\s,;!]+)/gi, (m, p) => m.replace(p, "[REDACTED_PASSWORD]"));
+
     return clean;
 }
 

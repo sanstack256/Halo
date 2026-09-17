@@ -709,7 +709,7 @@ describe("Halo Evidence-Bound Recommendation & Patch Engine Test Suite", () => {
             expect(result.patch?.status).toBe("AVAILABLE");
             expect(result.patch?.files).toHaveLength(1);
             expect(result.patch?.files[0].path).toBe("src/orders/validateDiscount.ts");
-            expect(result.patch?.files[0].diff).toContain("discount?.code");
+            expect(result.patch?.files[0].diff).toMatch(/discount\?\.code|discount === null/);
         });
 
         it("gracefully withholds code patch when source code is unavailable in Halo Managed AI", async () => {

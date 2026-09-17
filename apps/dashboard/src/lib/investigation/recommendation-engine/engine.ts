@@ -272,6 +272,7 @@ export async function generateEngineeringRecommendation(
                         ? "HIGH"
                         : "MEDIUM",
                 blockedBy: sufficiency.blockingReason,
+                sufficiency,
                 preciseRepair,
                 causalState,
                 contractAnalysis,

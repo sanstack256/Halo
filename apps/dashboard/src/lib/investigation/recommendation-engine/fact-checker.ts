@@ -28,8 +28,11 @@ import { detectSymptomMasking } from "./symptom-masking";
 
 export interface FactCheckResult {
     passed: boolean;
+    isValid?: boolean;
     verifiedRecommendation: FixRecommendation;
     audit: FactCheckAudit;
+    hallucinatedFiles?: string[];
+    hallucinatedSymbols?: string[];
 }
 
 /**
@@ -162,27 +165,55 @@ export function runDeterministicFactCheck(
     const fileGraph = buildVerifiedFileGraph(snapshot);
     const verifiedChanges: RecommendedChange[] = [];
 
+    const rejectedSymbols: string[] = [];
+    const verifiedSymbols: string[] = [];
+
+    const knownSymbols = new Set<string>();
+    if (snapshot.source?.containingFunction) knownSymbols.add(snapshot.source.containingFunction);
+    if (snapshot.failure.executingFunction) knownSymbols.add(snapshot.failure.executingFunction);
+    for (const f of snapshot.failure.frames || []) {
+        if (f.functionName) knownSymbols.add(f.functionName);
+    }
+    for (const p of (snapshot.source as any)?.producers || []) {
+        if (p.producerSymbol) knownSymbols.add(p.producerSymbol);
+    }
+    for (const c of (snapshot.source as any)?.callers || []) {
+        if (c.callerSymbol) knownSymbols.add(c.callerSymbol);
+    }
+
     for (const change of rawOutput.changes || []) {
         let isCodeValid = true;
-        const changeFile = change.file?.toLowerCase();
+        const rawChange = change as any;
+        const targetPath = change.file || rawChange.filePath;
+        const changeFile = targetPath?.toLowerCase();
+        const changeSymbol = change.symbol || rawChange.symbolName;
 
         // Verify file path against the comprehensive repository graph
         if (!changeFile) {
             isCodeValid = false;
-            rejectedFiles.push(change.file || "unknown");
+            rejectedFiles.push(targetPath || "unknown");
             rejectionReasons.push("Code change is missing a target file path.");
         } else if (!isFileSupportedInGraph(changeFile, fileGraph)) {
             isCodeValid = false;
-            rejectedFiles.push(change.file);
+            rejectedFiles.push(targetPath);
             rejectionReasons.push(
-                `Code change references unverified file '${change.file}'. File is not in call graph, data-flow graph, stack frames, release diffs, or test suites.`
+                `Code change references unverified file '${targetPath}'. File is not in call graph, data-flow graph, stack frames, release diffs, or test suites.`
             );
         } else {
-            verifiedFiles.push(change.file);
+            verifiedFiles.push(targetPath);
+        }
+
+        // Verify symbol exists within the target file
+        const isPrimaryFile = Boolean(resolvedPath && changeFile && (resolvedPath.endsWith(changeFile) || changeFile.endsWith(resolvedPath)));
+        if (changeSymbol && isPrimaryFile && knownSymbols.size > 0 && !knownSymbols.has(changeSymbol)) {
+            isCodeValid = false;
+            rejectedSymbols.push(changeSymbol);
+            rejectionReasons.push(`Code change references unverified symbol '${changeSymbol}' not found in source or call graph.`);
+        } else if (changeSymbol) {
+            verifiedSymbols.push(changeSymbol);
         }
 
         // Verify line numbers if specified for the primary failing file
-        const isPrimaryFile = Boolean(resolvedPath && changeFile && (resolvedPath.endsWith(changeFile) || changeFile.endsWith(resolvedPath)));
         if (change.lines && isPrimaryFile) {
             const parsedLine = parseInt(change.lines.replace(/\D/g, ""), 10);
             if (!isNaN(parsedLine) && sourceLines.length > 0) {
@@ -383,7 +414,10 @@ export function runDeterministicFactCheck(
 
     return {
         passed,
+        isValid: passed,
         verifiedRecommendation,
         audit,
+        hallucinatedFiles: rejectedFiles,
+        hallucinatedSymbols: rejectedSymbols,
     };
 }

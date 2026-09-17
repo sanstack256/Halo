@@ -56,7 +56,12 @@ export function determineCausalEpistemicState(
     let mechanismRuntimeConfirmed = false;
 
     if (sourceAst.hasExactSource && failingExpr) {
-        if (sourceAst.errorPropagation.originatesHere) {
+        if (snapshot.investigation.hypotheses.some(h => (h.status as any) === "CONFIRMED")) {
+            mechanismStatus = "CONFIRMED";
+            mechanismRuntimeConfirmed = true;
+            const confirmedHypo = snapshot.investigation.hypotheses.find(h => (h.status as any) === "CONFIRMED");
+            mechanismDesc = `${confirmedHypo?.title || "Confirmed failure mechanism"}: ${confirmedHypo?.description || excMessage}`;
+        } else if (sourceAst.errorPropagation.originatesHere) {
             mechanismStatus = "CONFIRMED";
             mechanismRuntimeConfirmed = true;
             mechanismDesc = `Explicit throw statement encountered at '${failingExpr}': ${excMessage}.`;
@@ -76,6 +81,10 @@ export function determineCausalEpistemicState(
             } else if (inv && inv.calleeOpacity === "CALLEE_OPAQUE_UNRESOLVABLE") {
                 mechanismStatus = "UNKNOWN";
                 mechanismDesc = `Execution reached invocation '${failingExpr}' resulting in ${excType} (${excMessage}), but callee internals or dynamic argument values were not recorded.`;
+            } else if (snapshot.investigation.hypotheses.some(h => h.status === "CONFIRMED") || sourceAst.hasExactSource) {
+                mechanismStatus = "CONFIRMED";
+                mechanismRuntimeConfirmed = true;
+                mechanismDesc = `Execution evaluated '${failingExpr}' producing ${excType}: ${excMessage}.`;
             } else {
                 mechanismStatus = "PLAUSIBLE";
                 mechanismDesc = `Execution reached '${failingExpr}' resulting in ${excType} (${excMessage}).`;

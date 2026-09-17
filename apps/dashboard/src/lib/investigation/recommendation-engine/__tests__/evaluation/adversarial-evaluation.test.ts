@@ -53,14 +53,14 @@ describe("Halo Trace — Fix / Recommendation Engine Adversarial Evaluation", ()
                 if (scenario.shouldHaveCodeChange) {
                     expect(rec.isCodeModification).toBe(true);
                     expect(rec.changes.length).toBeGreaterThan(0);
-                    expect(rec.changes[0].proposed).toBeTruthy();
+                    expect(rec.changes[0].proposedCode || (rec.changes[0] as any).proposed).toBeTruthy();
                 } else if (scenario.expectedOutcome === "NO_CODE_CHANGE") {
                     expect(rec.isCodeModification).toBe(false);
                     expect(rec.actionAnswer.toUpperCase()).toContain("NO APPLICATION CODE CHANGE");
                 }
 
                 // 5. Fact check integrity
-                expect(result.factCheckReport.isValid).toBe(true);
+                expect(result.audit.passed).toBe(true);
             });
         }
     });

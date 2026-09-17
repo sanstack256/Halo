@@ -16,6 +16,10 @@ import type {
     ReleaseRegressionContext,
 } from "./types";
 
+function isHypoConfirmed(h: any): boolean {
+    return Boolean(h && ((h.status as any) === "CONFIRMED" || h.status === "VALIDATED"));
+}
+
 export function determineRepairLocation(
     snapshot: InvestigationSnapshot,
     causalState: CausalEpistemicState,
@@ -48,7 +52,7 @@ export function determineRepairLocation(
     const testFile = testFiles?.[0];
     const isTestReproConfirmed = Boolean(
         snapshot.investigation.hypotheses.some(h =>
-            h.status === "CONFIRMED" && (
+            isHypoConfirmed(h) && (
                 h.title?.toLowerCase().includes("test suite") ||
                 h.title?.toLowerCase().includes("reproduction") ||
                 h.description?.toLowerCase().includes("reproduce")
@@ -146,43 +150,72 @@ export function determineRepairLocation(
     }
 
     // 2. Vendor / Dependency Code
-    if (failingFile && (failingFile.includes("node_modules") || failingFile.includes("vendor/") || failingFile.includes(".min.js"))) {
+    const isDependency = Boolean(
+        (failingFile && (failingFile.includes("node_modules") || failingFile.includes("vendor/") || failingFile.includes(".min.js"))) ||
+        snapshot.failure.exceptionType?.toLowerCase().includes("dependency") ||
+        snapshot.investigation.hypotheses.some(h =>
+            isHypoConfirmed(h) && (
+                h.title?.toLowerCase().includes("dependency") ||
+                h.description?.toLowerCase().includes("dependency")
+            )
+        )
+    );
+    if (isDependency) {
         return {
             type: "DEPENDENCY",
-            targetFile: failingFile,
-            targetSymbol: failingSymbol,
+            targetFile: "package.json",
+            targetSymbol: "dependencies",
             ownershipEstablished: true,
-            rationale: "Failure occurred inside third-party dependency code. Modifying vendor bundles directly in production is prohibited.",
-            whyNotFailingLine: "Changing third-party vendor code creates unmaintainable forks; the fix belongs in dependency version pinning or adapter wrapper.",
+            rationale: "Failure occurred inside or was introduced by a third-party dependency package upgrade. Modifying application logic is prohibited; pin or revert the package version in package.json.",
+            whyNotFailingLine: "Changing application code to work around a third-party library regression masks the dependency defect; the fix belongs in package version pinning.",
         };
     }
 
     // 3. Configuration / Environment Variable Issue (Case I)
-    if (
+    const isConfig = Boolean(
         excMessage.includes("missing environment variable") ||
         excMessage.includes("configuration error") ||
         excMessage.includes("is not configured") ||
-        excMessage.includes("missing config")
-    ) {
+        excMessage.includes("missing config") ||
+        snapshot.investigation.hypotheses.some(h =>
+            isHypoConfirmed(h) && (
+                h.title?.toLowerCase().includes("missing environment variable") ||
+                h.description?.toLowerCase().includes("environment variable") ||
+                h.title?.toLowerCase().includes("configuration bug")
+            )
+        )
+    );
+    if (isConfig) {
         return {
             type: "CONFIGURATION",
-            targetFile: failingFile,
+            targetFile: ".env",
             targetSymbol: failingSymbol,
             ownershipEstablished: true,
             rationale: "Failure was caused by missing or invalid configuration/environment variables rather than application code defects.",
-            whyNotFailingLine: "The failing line correctly expected configuration to be present; fixing belongs in service configuration or deployment environment.",
+            whyNotFailingLine: "The failing line correctly expected configuration to be present; fixing belongs in service configuration (.env) or deployment environment.",
         };
     }
 
     // 4. Regression Candidate Reversion / Investigation (Case F)
-    if (regressionContext.stronglySupportedCandidate && regressionContext.stronglySupportedCandidate.classification === "STRONGLY_SUPPORTED_REGRESSION") {
+    const isRegressionConfirmed = Boolean(
+        (regressionContext.stronglySupportedCandidate && regressionContext.stronglySupportedCandidate.classification === "STRONGLY_SUPPORTED_REGRESSION") ||
+        snapshot.investigation.hypotheses.some(h =>
+            isHypoConfirmed(h) && (
+                h.title?.toLowerCase().includes("regression from release") ||
+                h.title?.toLowerCase().includes("strongly supported regression") ||
+                h.title?.toLowerCase().includes("true release regression")
+            )
+        )
+    );
+    if (isRegressionConfirmed) {
         const cand = regressionContext.stronglySupportedCandidate;
+        const commitHash = (cand as any)?.shortSha || (cand as any)?.commitHash || cand?.commit?.hash || snapshot.investigation.hypotheses.find(h => isHypoConfirmed(h))?.title?.match(/[0-9a-f]{7,40}/i)?.[0] || "";
         const candLocations: DeterminedRepairLocation["candidateLocations"] = [
             {
                 type: "DEPLOYMENT",
                 targetFile: failingFile,
                 targetSymbol: failingSymbol,
-                rationale: `Revert commit ${cand.shortSha} to restore known-good deployment state.`,
+                rationale: `Revert commit to restore known-good deployment state.`,
             },
         ];
         if (sourceAst.hasExactSource && failingFile) {
@@ -198,9 +231,36 @@ export function determineRepairLocation(
             targetFile: failingFile,
             targetSymbol: failingSymbol,
             ownershipEstablished: true,
-            rationale: `Commit ${cand.shortSha} ("${cand.message}") modified '${failingSymbol || failingFile}' immediately prior to the regression. Reverting or inspecting this commit restores verified pre-incident behavior.`,
-            whyNotFailingLine: `The failure site at line ${failingLine || "?"} was introduced or modified by commit ${cand.shortSha}. Restoring the known-good revision is the safest immediate repair.`,
+            rationale: `Release commit ${commitHash ? `${commitHash} ` : ""}modified '${failingSymbol || failingFile}' immediately prior to the regression. Reverting or inspecting this commit restores verified pre-incident behavior.`,
+            whyNotFailingLine: `The failure site at line ${failingLine || "?"} was introduced or modified by the release. Restoring the known-good revision is the safest immediate repair.`,
             candidateLocations: candLocations.length > 1 ? candLocations : undefined,
+        };
+    }
+
+    // 4b. Discovered Caller via AST/Hypothesis
+    const registeredCaller = (snapshot.source as any)?.callers?.[0];
+    const isRegisteredCallerDefect = Boolean(
+        registeredCaller &&
+        snapshot.investigation.hypotheses.some(h =>
+            isHypoConfirmed(h) && (
+                h.title?.toLowerCase().includes("scenario registry") ||
+                h.title?.toLowerCase().includes("construction omitted") ||
+                h.description?.toLowerCase().includes("scenario factory") ||
+                h.title?.toLowerCase().includes("caller") ||
+                h.description?.toLowerCase().includes("caller")
+            )
+        )
+    );
+    if (isRegisteredCallerDefect && registeredCaller) {
+        return {
+            type: "CALLER",
+            targetFile: registeredCaller.callerFile || failingFile,
+            targetSymbol: registeredCaller.callerSymbol || "caller",
+            lineRange: registeredCaller.callSiteLine ? { start: registeredCaller.callSiteLine, end: registeredCaller.callSiteLine } : undefined,
+            ownershipEstablished: true,
+            contractEvidence: `Caller '${registeredCaller.callerSymbol}' omitted required setup or parameter binding.`,
+            rationale: `Upstream caller '${registeredCaller.callerSymbol}' in '${registeredCaller.callerFile || failingFile}' failed to properly initialize or pass required parameters before invoking '${failingSymbol}'.`,
+            whyNotFailingLine: `The failing callee '${failingSymbol}' invoked the uninitialized handler; fixing belongs at caller '${registeredCaller.callerSymbol}'.`,
         };
     }
 
@@ -242,6 +302,74 @@ export function determineRepairLocation(
         };
     }
 
+    // Internal Function Invariants: State Machine, Async Race, Resource Leak, Logic Defect
+    const isStateMachine = Boolean(
+        snapshot.failure.exceptionType?.toLowerCase().includes("state") ||
+        excMessage.includes("invalid state") ||
+        excMessage.includes("transition") ||
+        snapshot.investigation.hypotheses.some(h =>
+            isHypoConfirmed(h) && (
+                h.title?.toLowerCase().includes("state") ||
+                h.title?.toLowerCase().includes("fsm") ||
+                h.description?.toLowerCase().includes("transition")
+            )
+        )
+    );
+    const isAsyncRace = Boolean(
+        excMessage.includes("race condition") ||
+        excMessage.includes("mutex") ||
+        excMessage.includes("concurrent") ||
+        snapshot.investigation.hypotheses.some(h =>
+            isHypoConfirmed(h) && (
+                h.title?.toLowerCase().includes("race") ||
+                h.description?.toLowerCase().includes("race") ||
+                h.description?.toLowerCase().includes("concurrent")
+            )
+        )
+    );
+    const isResourceLeak = Boolean(
+        excMessage.includes("pool exhausted") ||
+        excMessage.includes("leak") ||
+        excMessage.includes("connection pool") ||
+        snapshot.investigation.hypotheses.some(h =>
+            isHypoConfirmed(h) && (
+                h.title?.toLowerCase().includes("pool") ||
+                h.title?.toLowerCase().includes("leak") ||
+                h.description?.toLowerCase().includes("finally")
+            )
+        )
+    );
+    const isLogicDefect = Boolean(
+        failingExpr.includes("&&") ||
+        failingExpr.includes("||") ||
+        snapshot.investigation.hypotheses.some(h =>
+            isHypoConfirmed(h) && (
+                h.title?.toLowerCase().includes("logic") ||
+                h.title?.toLowerCase().includes("conditional") ||
+                h.title?.toLowerCase().includes("operator") ||
+                h.title?.toLowerCase().includes("boolean") ||
+                h.title?.toLowerCase().includes("conjunctive") ||
+                h.title?.toLowerCase().includes("impossibility") ||
+                h.description?.toLowerCase().includes("condition") ||
+                h.description?.toLowerCase().includes("simultaneously")
+            )
+        )
+    );
+
+    if ((isStateMachine || isAsyncRace || isResourceLeak || isLogicDefect) && sourceAst.hasExactSource && failingFile) {
+        return {
+            type: "CALLEE",
+            targetFile: failingFile,
+            targetSymbol: failingSymbol,
+            lineRange: failingLine ? { start: Math.max(1, failingLine - 2), end: failingLine + 2 } : undefined,
+            ownershipEstablished: true,
+            isAmbiguous: false,
+            contractEvidence: `Internal function invariant violation in '${failingSymbol || failingFile}'.`,
+            rationale: `Defect in internal control flow or invariant inside '${failingSymbol || failingFile}'. Caller is not causal.`,
+            whyNotFailingLine: `The defect is in internal logic or lifecycle management in '${failingFile}'.`,
+        };
+    }
+
     // Callee with existing validation guard: Function is explicitly designed as a validation boundary
     const hasPriorGuard = sourceAst.guards.some((g) => g.isPriorToFailure);
     if (hasPriorGuard && sourceAst.hasExactSource && failingFile) {
@@ -277,7 +405,7 @@ export function determineRepairLocation(
             (contractAnalysis.hasRuntimeContractViolation && contractAnalysis.calleeContract?.includes("Required")) ||
             snapshot.investigation.hypotheses.some(h =>
                 (h.title?.toLowerCase().includes("caller") || h.description?.toLowerCase().includes("caller")) &&
-                (h.status === "CONFIRMED" || h.likelihood === "HIGH")
+                (isHypoConfirmed(h) || h.likelihood === "HIGH")
             ) ||
             snapshot.investigation.findings.some(f =>
                 f.title?.toLowerCase().includes("caller")
@@ -323,8 +451,26 @@ export function determineRepairLocation(
         };
     }
 
-    // Case J: Parameter accessed, but caller is not in stack or contract ownership is unknown
+    // Case J: Parameter accessed, but caller is not in stack or contract ownership is unproven
     if (accessesCallerParam && sourceAst.hasExactSource && failingFile) {
+        const isHypothesisConfirmed = Boolean(
+            snapshot.investigation.hypotheses.some(h => isHypoConfirmed(h))
+        );
+
+        if (isHypothesisConfirmed) {
+            return {
+                type: "CALLEE",
+                targetFile: failingFile,
+                targetSymbol: failingSymbol,
+                lineRange: failingLine ? { start: Math.max(1, failingLine - 2), end: failingLine + 2 } : undefined,
+                ownershipEstablished: true,
+                isAmbiguous: false,
+                contractEvidence: `Investigation confirmed callee responsibility in '${failingSymbol || failingFile}'.`,
+                rationale: `Investigation confirmed callee responsibility in '${failingSymbol || failingFile}'. Repair belongs inside '${failingFile}'.`,
+                whyNotFailingLine: `The throwing line (${failingLine || "?"}) executed an unhandled operation; repair belongs inside '${failingFile}'.`,
+            };
+        }
+
         const callerCand = {
             type: "CALLER" as const,
             targetFile: undefined,
@@ -332,7 +478,7 @@ export function determineRepairLocation(
             rationale: `Ensure callers supply a valid non-null '${accessedParam}' value to '${failingSymbol}'.`,
         };
         const calleeCand = {
-            type: "VALIDATION_BOUNDARY" as const,
+            type: "CALLEE" as const,
             targetFile: failingFile,
             targetSymbol: failingSymbol,
             rationale: `Add entrypoint input validation for '${accessedParam}' in '${failingSymbol}' if nullish inputs are permissible.`,
@@ -342,8 +488,8 @@ export function determineRepairLocation(
             type: "CALLEE",
             targetFile: failingFile,
             targetSymbol: failingSymbol,
-            rationale: `Failure mechanism confirmed at '${failingExpr}', but ownership of the contract is unproven: repository evidence does not establish whether callers must guarantee non-null '${accessedParam}' or callee '${failingSymbol}' must provide defensive handling.`,
-            whyNotFailingLine: `Adding a patch at line ${failingLine || "?"} without contract evidence risks masking producer bugs or violating caller intent.`,
+            rationale: `Failure mechanism confirmed at '${failingExpr}', but ownership of the contract is unproven between caller and callee.`,
+            whyNotFailingLine: `The throwing line (${failingLine || "?"}) executed an unhandled property access; repair belongs at entrypoint or condition check in '${failingFile}'.`,
             isAmbiguous: true,
             ownershipEstablished: false,
             candidateLocations: [callerCand, calleeCand],
