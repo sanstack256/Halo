@@ -77,9 +77,11 @@ export function buildVerifiedFileGraph(
         }
         for (const c of src.callers || []) {
             if (c.callerFile) files.add(c.callerFile.toLowerCase());
+            if (c.callerFilePath) files.add(c.callerFilePath.toLowerCase());
         }
         for (const c of src.callees || []) {
             if (c.calleeFile) files.add(c.calleeFile.toLowerCase());
+            if (c.calleeFilePath) files.add(c.calleeFilePath.toLowerCase());
         }
         for (const t of src.testFiles || []) {
             files.add(t.toLowerCase());
@@ -99,6 +101,7 @@ export function buildVerifiedFileGraph(
         const ca = contractAnalysis as any;
         if (ca.producerFile) files.add(ca.producerFile.toLowerCase());
         if (ca.callerFile) files.add(ca.callerFile.toLowerCase());
+        if (ca.callerFilePath) files.add(ca.callerFilePath.toLowerCase());
         if (ca.adapterFile) files.add(ca.adapterFile.toLowerCase());
     }
 
@@ -335,8 +338,9 @@ export function runDeterministicFactCheck(
         if (ssc.commitSha) validCommitMap.set(ssc.commitSha.toLowerCase(), ssc);
     }
     for (const cand of snapshot.release.candidates || []) {
-        validCommitMap.set(cand.shortSha.toLowerCase(), cand);
-        validCommitMap.set(cand.commitSha.toLowerCase(), cand);
+        if (cand.shortSha) validCommitMap.set(cand.shortSha.toLowerCase(), cand);
+        if (cand.commitSha) validCommitMap.set(cand.commitSha.toLowerCase(), cand);
+        if ((cand as any).sha) validCommitMap.set((cand as any).sha.toLowerCase(), cand);
     }
     if (snapshot.release.deployedCommitSha) {
         validCommitMap.set(snapshot.release.deployedCommitSha.slice(0, 7).toLowerCase(), {
@@ -361,8 +365,13 @@ export function runDeterministicFactCheck(
                 `Recommendation mentioned hallucinated commit SHA '${sha}' not present in release candidate history.`
             );
         } else if (isCausalAssertion) {
-            // Relationship-level check: commit must have causal association with incident path
-            if (cand.classification === "UNRELATED" || cand.classification === "TEMPORALLY_ASSOCIATED") {
+            // Strict causal provenance check (Phase 25, 29): commit can only be blamed if causally proven!
+            const isProven =
+                cand.causalSupport === "CAUSALLY_PROVEN" ||
+                cand.classification === "CONFIRMED_REGRESSION" ||
+                cand.classification === "STRONGLY_SUPPORTED_REGRESSION" ||
+                Boolean(cand.directlyModifiesFailingLine);
+            if (!isProven) {
                 rejectedCommits.push(sha);
                 rejectionReasons.push(
                     `Claim asserted commit '${sha}' caused the regression, but relationship analysis proves it was ${cand.classification} (${cand.classificationReason}). Causal relationship rejected.`

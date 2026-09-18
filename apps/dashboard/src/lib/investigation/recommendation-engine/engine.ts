@@ -51,6 +51,8 @@ import { getRecommendationModel, type RecommendationModel } from "./provider";
 import { buildRepairCase } from "../repair-intelligence/repair-case-builder";
 import { runActiveInvestigationLoop } from "./investigation-loop";
 import { generatePreciseRepair } from "./repair-generator";
+import { evaluateRecommendationDecisionGate } from "./recommendation-decision-gate";
+import type { DecomposedConfidence } from "./types";
 
 export interface GenerateRecommendationPipelineOptions {
     snapshot: EvidenceSnapshot | InvestigationSnapshot;
@@ -568,31 +570,63 @@ export async function generateEngineeringRecommendation(
         repairLocation
     );
 
+    // 16. Recommendation Decision Gate (Phase 30)
+    const relCandidates = snapshot.release?.candidates || [];
+    const causalRels = causalState.causalRelationships || [];
+    const initialDecomposedConfidence: DecomposedConfidence = {
+        failureLocation: causalState.failureLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+        failureMechanism: causalState.failureMechanism.status === "CONFIRMED" ? "CONFIRMED" : causalState.failureMechanism.status === "PLAUSIBLE" ? "PLAUSIBLE" : "UNKNOWN",
+        causalCause: snapshot.release?.causallyProvenCandidate ? "PROVEN" : causalRels.some((c) => c.confidence === "SUPPORTED") ? "SUPPORTED" : "UNKNOWN",
+        regressionAssociation: relCandidates.some((c) => c.temporalAssociation === "PRE_INCIDENT_IMMEDIATE" || c.sourceAssociation === "FAILING_FILE") ? "HIGH" : relCandidates.length > 0 ? "MEDIUM" : "NONE",
+        repairOwnership: repairLocation.ownershipEstablished ? "ESTABLISHED" : repairLocation.isAmbiguous ? "AMBIGUOUS" : "UNKNOWN",
+        repairBoundary: (factCheck.verifiedRecommendation.changes.length > 0 || repairLocation.type === "DEPLOYMENT") && repairLocation.ownershipEstablished ? "VERIFIED" : repairLocation.candidateLocations ? "CANDIDATE" : "UNKNOWN",
+        repairCorrectness: sufficiency.state === "SUFFICIENT_FOR_REPAIR" || sufficiency.state === "VERIFIED_REPAIR" ? "PROVEN" : "UNVALIDATED",
+        behavioralValidation: (snapshot as any).behavioralValidationStatus || "UNTESTED",
+    };
+
+    const gateVerdict = evaluateRecommendationDecisionGate({
+        recommendation: factCheck.verifiedRecommendation,
+        snapshot,
+        causalState,
+        repairLocation,
+        sufficiency,
+        decomposedConfidence: initialDecomposedConfidence,
+        regressionContext,
+    });
+
+    const finalRecommendation: FixRecommendation = {
+        ...factCheck.verifiedRecommendation,
+        status: gateVerdict.calibratedState,
+        decomposedConfidence: gateVerdict.calibratedConfidence,
+        confidence: (!factCheck.passed || !gateVerdict.allowed) ? "LOW" : factCheck.verifiedRecommendation.confidence,
+        repairLocation: {
+            type: repairLocation.type,
+            targetFile: repairLocation.targetFile,
+            targetSymbol: repairLocation.targetSymbol,
+            rationale: repairLocation.rationale,
+        },
+        completedSteps,
+        isCodeModification: preciseRepair.isCodeModification,
+        nonCodeRemediationDetails: preciseRepair.nonCodeRemediationDetails,
+        activeInvestigationDetails: {
+            requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded,
+            attemptedAcquisitions: completedSteps.map((s) => s.label),
+            remainingBlocker: sufficiency.blockingReason,
+        },
+    };
+
     return {
         success: factCheck.passed,
         source: "LLM_SYNTHESIZED",
-        confidence: factCheck.verifiedRecommendation.confidence,
-        recommendation: {
-            ...factCheck.verifiedRecommendation,
-            repairLocation: {
-                type: repairLocation.type,
-                targetFile: repairLocation.targetFile,
-                targetSymbol: repairLocation.targetSymbol,
-                rationale: repairLocation.rationale,
-            },
-            completedSteps,
-            isCodeModification: preciseRepair.isCodeModification,
-            nonCodeRemediationDetails: preciseRepair.nonCodeRemediationDetails,
-            activeInvestigationDetails: {
-                requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded,
-                attemptedAcquisitions: completedSteps.map((s) => s.label),
-                remainingBlocker: sufficiency.blockingReason,
-            },
-        },
+        confidence: finalRecommendation.confidence,
+        recommendation: finalRecommendation,
         causalEpistemicState: causalState,
         repairLocation,
         sufficiency,
-        audit: factCheck.audit,
+        audit: {
+            ...factCheck.audit,
+            warnings: [...factCheck.audit.warnings, ...gateVerdict.warnings],
+        },
         modelInfo: {
             provider: model.id,
             model: model.name,

@@ -15,6 +15,7 @@ import type {
     SourceAstAnalysis,
     ReleaseRegressionContext,
 } from "./types";
+import { evaluateCausalRegressionGate } from "./causal-regression-gate";
 
 function isHypoConfirmed(h: any): boolean {
     return Boolean(h && ((h.status as any) === "CONFIRMED" || h.status === "VALIDATED"));
@@ -209,26 +210,31 @@ export function determineRepairLocation(
         };
     }
 
-    // 4. Regression Candidate Reversion / Investigation (Case F)
-    const isRegressionConfirmed = Boolean(
-        (regressionContext.stronglySupportedCandidate && regressionContext.stronglySupportedCandidate.classification === "STRONGLY_SUPPORTED_REGRESSION") ||
-        snapshot.investigation.hypotheses.some(h =>
-            isHypoConfirmed(h) && (
-                h.title?.toLowerCase().includes("regression from release") ||
-                h.title?.toLowerCase().includes("strongly supported regression") ||
-                h.title?.toLowerCase().includes("true release regression")
-            )
+    // 4. Regression Candidate Reversion / Investigation (Phases 4, 7, 8)
+    const gateVerdict = evaluateCausalRegressionGate({
+        snapshot,
+        regressionContext,
+        causalState,
+        sourceAst,
+    });
+
+    const confirmedRegressionHypo = snapshot.investigation.hypotheses.find(h =>
+        isHypoConfirmed(h) && (
+            h.title?.toLowerCase().includes("regression from release") ||
+            h.title?.toLowerCase().includes("strongly supported regression") ||
+            h.title?.toLowerCase().includes("true release regression")
         )
     );
-    if (isRegressionConfirmed) {
-        const cand = regressionContext.stronglySupportedCandidate;
-        const commitHash = cand?.shortSha || cand?.commitSha || (cand as any)?.commitHash || (cand as any)?.commit?.hash || snapshot.investigation.hypotheses.find(h => isHypoConfirmed(h))?.title?.match(/[0-9a-f]{7,40}/i)?.[0] || "";
+
+    if ((gateVerdict.isRollbackEligible && gateVerdict.promotedCandidate) || confirmedRegressionHypo) {
+        const cand = gateVerdict.promotedCandidate || regressionContext.stronglySupportedCandidate || regressionContext.candidates[0];
+        const commitHash = cand?.shortSha || confirmedRegressionHypo?.title?.match(/[0-9a-f]{7,40}/i)?.[0] || confirmedRegressionHypo?.description?.match(/[0-9a-f]{7,40}/i)?.[0] || "";
         const candLocations: DeterminedRepairLocation["candidateLocations"] = [
             {
                 type: "DEPLOYMENT",
                 targetFile: failingFile,
                 targetSymbol: failingSymbol,
-                rationale: `Revert commit to restore known-good deployment state.`,
+                rationale: `Roll back or revert commit ${commitHash} to eliminate verified failure mechanism.`,
             },
         ];
         if (sourceAst.hasExactSource && failingFile) {
@@ -236,7 +242,7 @@ export function determineRepairLocation(
                 type: "CALLEE",
                 targetFile: failingFile,
                 targetSymbol: failingSymbol,
-                rationale: `Fix regressed code directly in '${failingFile}'.`,
+                rationale: `Apply targeted code fix directly in '${failingFile}' to minimize blast radius.`,
             });
         }
         return {
@@ -244,8 +250,8 @@ export function determineRepairLocation(
             targetFile: failingFile,
             targetSymbol: failingSymbol,
             ownershipEstablished: true,
-            rationale: `Release commit ${commitHash ? `${commitHash} ` : ""}modified '${failingSymbol || failingFile}' immediately prior to the regression. Reverting or inspecting this commit restores verified pre-incident behavior.`,
-            whyNotFailingLine: `The failure site at line ${failingLine || "?"} was introduced or modified by the release. Restoring the known-good revision is the safest immediate repair.`,
+            rationale: `Release commit ${commitHash} introduced verified failure mechanism (${causalState.failureMechanism.description}). Rollback restores invariant.`,
+            whyNotFailingLine: `The failure site was introduced by release commit ${commitHash}.`,
             candidateLocations: candLocations.length > 1 ? candLocations : undefined,
         };
     }
@@ -267,15 +273,19 @@ export function determineRepairLocation(
         )
     );
     if (isRegisteredCallerDefect && registeredCaller) {
+        const callerTargetFile = registeredCaller.callerFile || registeredCaller.callerFilePath || failingFile;
+        const callerTargetSymbol = registeredCaller.callerSymbol || registeredCaller.callerFunction || "caller";
+        const callerLine = registeredCaller.callSiteLine || registeredCaller.callerLineNumber;
+
         return {
             type: "CALLER",
-            targetFile: registeredCaller.callerFile || failingFile,
-            targetSymbol: registeredCaller.callerSymbol || "caller",
-            lineRange: registeredCaller.callSiteLine ? { start: registeredCaller.callSiteLine, end: registeredCaller.callSiteLine } : undefined,
+            targetFile: callerTargetFile,
+            targetSymbol: callerTargetSymbol,
+            lineRange: callerLine ? { start: callerLine, end: callerLine } : undefined,
             ownershipEstablished: true,
-            contractEvidence: `Caller '${registeredCaller.callerSymbol}' omitted required setup or parameter binding.`,
-            rationale: `Upstream caller '${registeredCaller.callerSymbol}' in '${registeredCaller.callerFile || failingFile}' failed to properly initialize or pass required parameters before invoking '${failingSymbol}'.`,
-            whyNotFailingLine: `The failing callee '${failingSymbol}' invoked the uninitialized handler; fixing belongs at caller '${registeredCaller.callerSymbol}'.`,
+            contractEvidence: `Caller '${callerTargetSymbol}' omitted required setup or parameter binding.`,
+            rationale: `Upstream caller '${callerTargetSymbol}' in '${callerTargetFile}' failed to properly initialize or pass required parameters before invoking '${failingSymbol}'.`,
+            whyNotFailingLine: `The failing callee '${failingSymbol}' invoked the uninitialized handler; fixing belongs at caller '${callerTargetSymbol}'.`,
         };
     }
 

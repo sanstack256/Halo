@@ -91,7 +91,7 @@ export function evaluateEvidenceSufficiency(
     // 4. Check if mechanism is underdetermined AND cannot be resolved by source/release
     const isMechanismUnderdetermined =
         causalState.failureMechanism.status === "UNKNOWN" &&
-        !regressionContext.stronglySupportedCandidate;
+        !regressionContext.causallyProvenCandidate;
 
     if (isMechanismUnderdetermined) {
         const expr = causalState.failureLocation.expression || "operation";
@@ -241,7 +241,22 @@ export function evaluateEvidenceSufficiency(
         }
     }
 
-    // 6. Check if regression candidate is strongly supported (allows regression diagnosis/revert)
+    // 6. Check if regression candidate is causally proven or strongly supported
+    if (regressionContext.causallyProvenCandidate) {
+        return {
+            state: "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+            unresolvedDecision: `Verify rollback or targeted fix for causally proven commit ${regressionContext.causallyProvenCandidate.shortSha} in staging or test harness.`,
+            establishedFacts,
+            inferredFacts,
+            contradictingFacts,
+            canSourceOrReleaseResolve: true,
+            isAdditionalRuntimeTelemetryNecessary: false,
+            minimumAdditionalEvidenceNeeded: [
+                `Local reproduction or test validation of commit ${regressionContext.causallyProvenCandidate.shortSha}`,
+            ],
+            blockingReason: `Commit ${regressionContext.causallyProvenCandidate.shortSha} is proven causal, but behavioral validation has not yet completed.`,
+        };
+    }
     if (regressionContext.stronglySupportedCandidate) {
         return {
             state: "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR",

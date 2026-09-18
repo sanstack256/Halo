@@ -115,11 +115,23 @@ export function FixRecommendationView({
     };
 
     const getOutcomePill = (type?: string, status?: string) => {
-        if (status === "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR" || type === "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR") {
-            return { label: "Diagnosis Established (Repair Withheld)", className: "halo-fix-outcome-observability" };
-        }
-        if (status === "BLOCKED_BY_AMBIGUITY" || type === "BLOCKED_BY_AMBIGUITY") {
-            return { label: "Contract Ambiguity (Repair Withheld)", className: "halo-fix-outcome-observability" };
+        switch (status) {
+            case "VERIFIED_REPAIR":
+                return { label: "Verified Repair (Validated)", className: "halo-fix-outcome-code" };
+            case "SUPPORTED_REPAIR_REQUIRES_VALIDATION":
+                return { label: "Supported Repair (Validation Required)", className: "halo-fix-outcome-code" };
+            case "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED":
+                return { label: "Diagnosis Established (Repair Withheld)", className: "halo-fix-outcome-observability" };
+            case "NO_CODE_CHANGE_JUSTIFIED":
+                return { label: "No Code Change Required", className: "halo-fix-outcome-fixed" };
+            case "EVIDENCE_ACQUISITION_REQUIRED":
+                return { label: "Evidence Acquisition Required", className: "halo-fix-outcome-observability" };
+            case "BLOCKED_BY_UNAVAILABLE_EVIDENCE":
+                return { label: "Blocked by Unavailable Evidence", className: "halo-fix-outcome-observability" };
+            case "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR":
+                return { label: "Diagnosis Established (Repair Withheld)", className: "halo-fix-outcome-observability" };
+            case "BLOCKED_BY_AMBIGUITY":
+                return { label: "Contract Ambiguity (Repair Withheld)", className: "halo-fix-outcome-observability" };
         }
         switch (type) {
             case "CODE_CHANGE_RECOMMENDED":
@@ -191,6 +203,35 @@ export function FixRecommendationView({
                         </button>
                     )}
                 </div>
+
+                {recommendation?.decomposedConfidence && (
+                    <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2.5 border-t border-white/5 text-[11px] font-mono mt-3">
+                        <div className="p-2 rounded bg-black/40 border border-white/5 flex items-center justify-between">
+                            <span className="text-zinc-400">Mechanism:</span>
+                            <span className={recommendation.decomposedConfidence.failureMechanism === "CONFIRMED" ? "text-emerald-400 font-bold" : recommendation.decomposedConfidence.failureMechanism === "PLAUSIBLE" ? "text-blue-400 font-bold" : "text-amber-400 font-bold"}>
+                                {recommendation.decomposedConfidence.failureMechanism}
+                            </span>
+                        </div>
+                        <div className="p-2 rounded bg-black/40 border border-white/5 flex items-center justify-between">
+                            <span className="text-zinc-400">Regression:</span>
+                            <span className={recommendation.decomposedConfidence.regressionAssociation === "HIGH" ? "text-blue-400 font-bold" : "text-zinc-400"}>
+                                {recommendation.decomposedConfidence.regressionAssociation}
+                            </span>
+                        </div>
+                        <div className="p-2 rounded bg-black/40 border border-white/5 flex items-center justify-between">
+                            <span className="text-zinc-400">Repair Boundary:</span>
+                            <span className={recommendation.decomposedConfidence.repairBoundary === "VERIFIED" ? "text-emerald-400 font-bold" : recommendation.decomposedConfidence.repairBoundary === "CANDIDATE" ? "text-blue-400" : "text-zinc-500"}>
+                                {recommendation.decomposedConfidence.repairBoundary}
+                            </span>
+                        </div>
+                        <div className="p-2 rounded bg-black/40 border border-white/5 flex items-center justify-between">
+                            <span className="text-zinc-400">Validation:</span>
+                            <span className={recommendation.decomposedConfidence.behavioralValidation === "EXECUTED_PASSED" ? "text-emerald-400 font-bold" : "text-zinc-400"}>
+                                {recommendation.decomposedConfidence.behavioralValidation}
+                            </span>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {/* Stale Banner */}

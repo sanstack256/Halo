@@ -68,7 +68,14 @@ export function evaluateHardConstraints(
 
     // REVERT_OR_INVESTIGATE_REGRESSION hard constraint
     if (action.category === "REVERT_OR_INVESTIGATE_REGRESSION") {
-        if (!context.regressionContext.stronglySupportedCandidate) {
+        const isRevertAction = action.title.toLowerCase().includes("revert") || action.repairLocation?.type === "DEPLOYMENT";
+        if (isRevertAction && causalState.failureMechanism.status === "UNKNOWN") {
+            return {
+                passed: false,
+                disqualificationReason: "Failure mechanism is UNKNOWN; a commit cannot be recommended for revert/rollback without proving the failure mechanism.",
+            };
+        }
+        if (!context.regressionContext.stronglySupportedCandidate && !context.regressionContext.causallyProvenCandidate) {
             return {
                 passed: false,
                 disqualificationReason: "No regression candidate with verified behavioral association exists.",
@@ -104,21 +111,29 @@ function scoreCandidateAction(
     // 1. Evidence Grounding: supported by verified facts
     const evidenceGrounding = Math.min(10, Math.max(2, action.evidenceSupport.length * 3));
 
-    // 2. Causal Directness — code changes rank highest when mechanism is proven
+    // 2. Causal Directness — code changes rank highest when mechanism is proven; proven regression ranks highest
+    const isProvenRegression =
+        action.category === "REVERT_OR_INVESTIGATE_REGRESSION" &&
+        (Boolean(context.regressionContext.causallyProvenCandidate) ||
+            Boolean(context.regressionContext.stronglySupportedCandidate));
+
     let causalDirectness = 5;
-    if ((action.category === "MAKE_CODE_CHANGE" || action.category === "MULTI_FILE_CODE_CHANGE") && causalState.failureMechanism.status === "CONFIRMED") {
+    if (isProvenRegression) {
+        causalDirectness = 10;
+    } else if ((action.category === "MAKE_CODE_CHANGE" || action.category === "MULTI_FILE_CODE_CHANGE") && causalState.failureMechanism.status === "CONFIRMED") {
         causalDirectness = 10;
     } else if ((action.category === "MAKE_CODE_CHANGE" || action.category === "MULTI_FILE_CODE_CHANGE") && causalState.failureMechanism.status === "PLAUSIBLE") {
         // Probable mechanism still supports code change
         causalDirectness = 9;
-    } else if (action.category === "REVERT_OR_INVESTIGATE_REGRESSION") {
-        causalDirectness = 9;
+    } else if (action.category === "COLLECT_MISSING_RUNTIME_SIGNAL") {
+        causalDirectness = (sufficiency.state === "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE" || sufficiency.isAdditionalRuntimeTelemetryNecessary) ? 10 : 6;
     } else if (action.category === "APPLICATION_RESILIENCE_CHANGE") {
         causalDirectness = 8;
-    } else if (action.category === "COLLECT_MISSING_RUNTIME_SIGNAL") {
-        causalDirectness = 6;
     } else if (action.category === "INVESTIGATE_EXTERNAL_DEPENDENCY") {
         causalDirectness = 7;
+    } else if (action.category === "REVERT_OR_INVESTIGATE_REGRESSION") {
+        // Unproven regression candidate — investigatory only
+        causalDirectness = 4;
     }
 
     // 3. Blast Radius Safety
@@ -137,24 +152,29 @@ function scoreCandidateAction(
     const uncertaintyPreservation = action.uncertainty.length > 0 ? 9 : 7;
 
     // 7. Information Gain
-    const informationGain =
+    let informationGain =
         action.informationGain === "CRITICAL" ? 10 : action.informationGain === "HIGH" ? 7 : 3;
+    if (action.category === "COLLECT_MISSING_RUNTIME_SIGNAL" && (sufficiency.state === "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE" || sufficiency.isAdditionalRuntimeTelemetryNecessary)) {
+        informationGain = 10;
+    }
 
     // 8. Diagnostic Economy — concrete repairs beat investigatory actions when evidenced
     let diagnosticEconomy = 6;
-    if (action.category === "MAKE_CODE_CHANGE" || action.category === "MULTI_FILE_CODE_CHANGE") {
+    if (isProvenRegression) {
+        diagnosticEconomy = 10;
+    } else if (action.category === "MAKE_CODE_CHANGE" || action.category === "MULTI_FILE_CODE_CHANGE") {
         // A code change backed by evidence is the most economical resolution
         diagnosticEconomy = sufficiency.state === "SUFFICIENT_FOR_REPAIR" ? 10
             : causalState.failureMechanism.status !== "UNKNOWN" ? 8
             : 4;
+    } else if (action.category === "COLLECT_MISSING_RUNTIME_SIGNAL") {
+        diagnosticEconomy = (sufficiency.state === "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE" || sufficiency.isAdditionalRuntimeTelemetryNecessary) ? 10 : 5;
     } else if (action.category === "APPLICATION_RESILIENCE_CHANGE") {
         diagnosticEconomy = 8;
-    } else if (action.category === "REVERT_OR_INVESTIGATE_REGRESSION") {
-        diagnosticEconomy = 9;
     } else if (action.category === "INSPECT_SOURCE_BEFORE_CHANGING") {
         diagnosticEconomy = 7;
-    } else if (action.category === "COLLECT_MISSING_RUNTIME_SIGNAL") {
-        diagnosticEconomy = 5;
+    } else if (action.category === "REVERT_OR_INVESTIGATE_REGRESSION") {
+        diagnosticEconomy = 4;
     } else if (action.category === "DO_NOT_MODIFY_CODE_YET") {
         // This should be a last resort, never a first recommendation
         diagnosticEconomy = 1;
@@ -168,27 +188,26 @@ function scoreCandidateAction(
 
     // 11. Sufficiency Alignment
     let sufficiencyAlignment = 5;
-    if (sufficiency.state === "SUFFICIENT_FOR_REPAIR") {
+    if (isProvenRegression) {
+        sufficiencyAlignment = 10;
+    } else if (sufficiency.state === "SUFFICIENT_FOR_REPAIR") {
         sufficiencyAlignment = (action.category === "MAKE_CODE_CHANGE" || action.category === "MULTI_FILE_CODE_CHANGE") ? 10 : 7;
     } else if (sufficiency.state === "BLOCKED_BY_AMBIGUITY") {
-        // Even with ambiguity, a concrete repair is still preferred over investigation
-        // if the failure mechanism is confirmed
         if (action.category === "MAKE_CODE_CHANGE" || action.category === "MULTI_FILE_CODE_CHANGE") {
-            sufficiencyAlignment = 8; // Still valuable — engine will explain uncertainty
+            sufficiencyAlignment = 8;
         } else {
             sufficiencyAlignment = 5;
         }
     } else if (sufficiency.state === "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE") {
         sufficiencyAlignment =
-            action.category === "COLLECT_MISSING_RUNTIME_SIGNAL" ? 9
+            action.category === "COLLECT_MISSING_RUNTIME_SIGNAL" ? 10
             : action.category === "REPRODUCE_EXECUTION_PATH" ? 8
-            : (action.category === "MAKE_CODE_CHANGE" || action.category === "MULTI_FILE_CODE_CHANGE") ? 6
-            : 4;
+            : (action.category === "MAKE_CODE_CHANGE" || action.category === "MULTI_FILE_CODE_CHANGE") ? 5
+            : 3;
     } else if (sufficiency.state === "BLOCKED_BY_MISSING_SOURCE") {
         sufficiencyAlignment =
             action.category === "INSPECT_SOURCE_BEFORE_CHANGING" ? 10 : 4;
     } else if (sufficiency.state === "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR") {
-        // Diagnosis is confirmed — prefer concrete repair over waiting
         sufficiencyAlignment =
             (action.category === "MAKE_CODE_CHANGE" || action.category === "MULTI_FILE_CODE_CHANGE") ? 9
             : action.category === "REVERT_OR_INVESTIGATE_REGRESSION" ? 8
@@ -342,36 +361,64 @@ export function generateAndEvaluateCandidateActions(
     }
 
     // ─────────────────────────────────────────────────────────────────────────────
-    // Candidate 3: Strongly Supported Regression Candidate → Revert or Inspect Commit
+    // Candidate 3: Regression Candidate → Causal Revert vs Association Investigation
     // ─────────────────────────────────────────────────────────────────────────────
-    if (regressionContext.stronglySupportedCandidate) {
-        const cand = regressionContext.stronglySupportedCandidate;
+    const regressionCand =
+        regressionContext.causallyProvenCandidate ||
+        regressionContext.stronglySupportedCandidate ||
+        regressionContext.candidates.find((c) => c.classification === "CONFIRMED_REGRESSION" || c.classification === "PATH_ASSOCIATED");
+
+    if (regressionCand) {
+        const isCausallyProven = regressionCand.causalSupport === "CAUSALLY_PROVEN" && causalState.failureMechanism.status === "CONFIRMED";
+        const title = isCausallyProven
+            ? `Roll back or revert regressed commit ${regressionCand.shortSha}`
+            : `Investigate candidate commit ${regressionCand.shortSha} association (causality unproven)`;
+
+        const description = isCausallyProven
+            ? `Commit ${regressionCand.shortSha} ("${regressionCand.message}") introduced the verified failure mechanism in '${failingSymbol || failingFile}'. Reverting this commit or applying a targeted fix eliminates the failure.`
+            : `Commit ${regressionCand.shortSha} ("${regressionCand.message}") modified '${failingSymbol || failingFile}' prior to the incident, but the failure mechanism (${causalState.failureMechanism.status}) is not proven to be caused by this change. Inspect diff before selecting a repair.`;
+
+        const repairLoc: DeterminedRepairLocation = isCausallyProven
+            ? {
+                  type: "DEPLOYMENT",
+                  targetFile: failingFile,
+                  targetSymbol: failingSymbol,
+                  ownershipEstablished: true,
+                  rationale: `Commit ${regressionCand.shortSha} introduced verified failure mechanism (${causalState.failureMechanism.description}).`,
+                  whyNotFailingLine: "Restoring the verified revision eliminates the regressed behavior safely.",
+              }
+            : {
+                  type: "NO_CODE_CHANGE",
+                  targetFile: failingFile,
+                  targetSymbol: failingSymbol,
+                  ownershipEstablished: false,
+                  rationale: `Commit ${regressionCand.shortSha} is temporally/source associated, but causal mechanism is unproven.`,
+                  whyNotFailingLine: "Do not roll back without verifying that changed code caused the failure.",
+              };
+
         candidates.push({
-            id: `act-regression-${cand.shortSha}`,
+            id: `act-regression-${regressionCand.shortSha}`,
             category: "REVERT_OR_INVESTIGATE_REGRESSION",
-            title: `Inspect or revert regression commit ${cand.shortSha}`,
-            description: `Commit ${cand.shortSha} ("${cand.message}") modified '${failingSymbol || failingFile}' immediately before this incident first appeared. Reverting this commit or inspecting its diff isolates the regression.`,
-            repairLocation: {
-                type: "DEPLOYMENT",
-                targetFile: failingFile,
-                targetSymbol: failingSymbol,
-                ownershipEstablished: true,
-                rationale: `Commit ${cand.shortSha} touched the exact incident execution path ${cand.classificationReason}.`,
-                whyNotFailingLine: "Restoring the known-good revision eliminates the regressed behavior safely.",
-            },
+            title,
+            description,
+            repairLocation: repairLoc,
             evidenceSupport: [
-                `Commit ${cand.shortSha} authored by ${cand.author}`,
-                cand.classificationReason,
+                `Commit ${regressionCand.shortSha} authored by ${regressionCand.author}`,
+                regressionCand.classificationReason,
                 `Incident first seen at ${snapshot.incident.firstSeen.toISOString()}`,
             ],
-            justification: `Pre-incident baseline did not exhibit this failure; commit ${cand.shortSha} modified the failing symbol '${failingSymbol || failingFile}'.`,
-            regressionRisk: "LOW",
+            justification: isCausallyProven
+                ? `Commit ${regressionCand.shortSha} introduced the verified failure mechanism in '${failingSymbol || failingFile}'.`
+                : `Commit ${regressionCand.shortSha} is associated with the incident, but causality has not been proven; diff inspection required.`,
+            regressionRisk: isCausallyProven ? "LOW" : "HIGH",
             blastRadius: "LOCAL_ONLY",
             reversibility: "IMMEDIATE",
             informationGain: "HIGH",
-            uncertainty: ["Whether reverting commit introduces other side effects"],
+            uncertainty: isCausallyProven
+                ? ["Whether reverting commit introduces other side effects in unrelated modules"]
+                : ["Whether changed behavior created the failure mechanism", "Dynamic runtime values"],
             validationPlan: [
-                `Review git diff of commit ${cand.shortSha}`,
+                `Review git diff of commit ${regressionCand.shortSha}`,
                 "Run test suite against the previous deployment commit",
                 "Deploy to staging to verify incident resolution",
             ],
@@ -435,8 +482,8 @@ export function generateAndEvaluateCandidateActions(
     // Only generated when all repair paths above are unavailable.
     // ─────────────────────────────────────────────────────────────────────────────
     if (
-        sufficiency.state === "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE" &&
-        candidates.filter(c => c.category === "MAKE_CODE_CHANGE" || c.category === "MULTI_FILE_CODE_CHANGE" || c.category === "REVERT_OR_INVESTIGATE_REGRESSION").length === 0
+        sufficiency.state === "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE" ||
+        sufficiency.isAdditionalRuntimeTelemetryNecessary
     ) {
         const expl = sufficiency.actionExplanation;
         const isRepro = sufficiency.canSourceOrReleaseResolve && !sufficiency.isAdditionalRuntimeTelemetryNecessary;

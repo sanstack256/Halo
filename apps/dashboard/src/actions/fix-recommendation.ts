@@ -130,8 +130,8 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
                 commitDate: c.commitDate ? new Date(c.commitDate) : new Date(),
                 deploymentDate: c.deploymentDate ? new Date(c.deploymentDate) : undefined,
                 classification:
-                    c.confidence === "STRONGLY_SUPPORTED" || c.confidence === "OBSERVED"
-                        ? "STRONGLY_SUPPORTED_REGRESSION"
+                    c.confidence === "OBSERVED"
+                        ? "CONFIRMED_REGRESSION"
                         : c.codeRelationship === "MODIFIED" || c.codeRelationship === "INTRODUCED"
                         ? "PATH_ASSOCIATED"
                         : "TEMPORALLY_ASSOCIATED",
@@ -166,7 +166,7 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
             deployedRelease: anchorError?.release,
             candidates: regressionCandidates,
             stronglySupportedCandidate: regressionCandidates.find(
-                (c) => c.classification === "STRONGLY_SUPPORTED_REGRESSION"
+                (c) => c.classification === "CONFIRMED_REGRESSION"
             ),
         },
     });

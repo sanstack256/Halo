@@ -93,6 +93,7 @@ export interface CausalEpistemicState {
         isRuntimeConfirmed: boolean;
         provenance: string;
     };
+    causalRelationships?: Array<{ from?: string; to?: string; confidence: string }>;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -136,6 +137,68 @@ export type RegressionCandidateClassification =
     | "STRONGLY_SUPPORTED_REGRESSION"
     | "CONFIRMED_REGRESSION";
 
+export type TemporalAssociation =
+    | "PRE_INCIDENT_IMMEDIATE"
+    | "PRE_INCIDENT_WINDOW"
+    | "POST_INCIDENT"
+    | "UNKNOWN";
+
+export type SourceAssociation =
+    | "FAILING_FILE"
+    | "CALLER"
+    | "CALLEE"
+    | "PRODUCER"
+    | "CONSUMER"
+    | "ADAPTER"
+    | "CONFIGURATION"
+    | "DEPENDENCY"
+    | "BUILD_ARTIFACT"
+    | "UNRELATED";
+
+export type ExecutionRelevance =
+    | "ACTIVE_EXECUTION_PATH_PROVEN"
+    | "CALL_GRAPH_REACHABLE"
+    | "STATICALLY_DISCONNECTED"
+    | "RUNTIME_CONTRADICTED"
+    | "UNKNOWN";
+
+export type BehavioralRelevance =
+    | "CONTROL_FLOW_ALTERED"
+    | "RETURN_VALUE_ALTERED"
+    | "CONTRACT_ALTERED"
+    | "RESOURCE_LIFECYCLE_ALTERED"
+    | "ERROR_HANDLING_ALTERED"
+    | "CONFIGURATION_ALTERED"
+    | "NO_BEHAVIORAL_CHANGE"
+    | "UNKNOWN";
+
+export type MechanismRelevance =
+    | "CAN_PRODUCE_MECHANISM"
+    | "CANNOT_PRODUCE_MECHANISM"
+    | "MECHANISM_UNKNOWN"
+    | "CONTRADICTS_MECHANISM";
+
+export type CausalSupport =
+    | "CAUSALLY_PROVEN"
+    | "PLAUSIBLE_CANDIDATE"
+    | "UNPROVEN_ASSOCIATION"
+    | "CONTRADICTED";
+
+export interface RollbackAuditRecord {
+    behaviorIntroducedProven: boolean;
+    rollbackRemovesBehavior: boolean;
+    previousRevisionHealthy: boolean;
+    unrelatedChangesBlastRadius: "MINIMAL" | "MODERATE" | "HIGH" | "UNKNOWN";
+    invariantRestored: boolean;
+    reintroducesKnownDefect: boolean;
+    migrationOrDataImplications: boolean;
+    safeForDeploymentState: boolean;
+    targetedRepairSmallerBlastRadius: boolean;
+    behaviorallyValidated: boolean;
+    auditPassed: boolean;
+    refusalReason?: string;
+}
+
 export interface EvaluatedRegressionCandidate {
     commitSha: string;
     shortSha: string;
@@ -149,6 +212,17 @@ export interface EvaluatedRegressionCandidate {
     modifiesFailingSymbol: boolean;
     diffSnippet?: string;
     changedFiles: string[];
+    // Strict multi-dimensional regression semantics
+    temporalAssociation?: TemporalAssociation;
+    sourceAssociation?: SourceAssociation;
+    executionRelevance?: ExecutionRelevance;
+    behavioralRelevance?: BehavioralRelevance;
+    mechanismRelevance?: MechanismRelevance;
+    causalSupport?: CausalSupport;
+    regressionConfidence?: QualitativeConfidence;
+    repairConfidence?: QualitativeConfidence;
+    semanticDiffSummary?: string;
+    rollbackAudit?: RollbackAuditRecord;
 }
 
 export interface ReleaseRegressionContext {
@@ -158,6 +232,7 @@ export interface ReleaseRegressionContext {
     previousKnownGoodCommitSha?: string;
     candidates: EvaluatedRegressionCandidate[];
     stronglySupportedCandidate?: EvaluatedRegressionCandidate;
+    causallyProvenCandidate?: EvaluatedRegressionCandidate;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -344,7 +419,25 @@ export interface CandidateAction {
 /* 9. Evidence Sufficiency States                                             */
 /* -------------------------------------------------------------------------- */
 
+export const FormalRecommendationStateSchema = z.enum([
+    "VERIFIED_REPAIR",
+    "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+    "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED",
+    "NO_CODE_CHANGE_JUSTIFIED",
+    "EVIDENCE_ACQUISITION_REQUIRED",
+    "BLOCKED_BY_UNAVAILABLE_EVIDENCE",
+]);
+export type FormalRecommendationState = z.infer<typeof FormalRecommendationStateSchema>;
+
 export const EvidenceSufficiencyStateSchema = z.enum([
+    // Six formal recommendation states
+    "VERIFIED_REPAIR",
+    "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+    "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED",
+    "NO_CODE_CHANGE_JUSTIFIED",
+    "EVIDENCE_ACQUISITION_REQUIRED",
+    "BLOCKED_BY_UNAVAILABLE_EVIDENCE",
+    // Backwards-compatible investigation states
     "SUFFICIENT_FOR_REPAIR",
     "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR",
     "PARTIALLY_SUFFICIENT",
@@ -354,6 +447,18 @@ export const EvidenceSufficiencyStateSchema = z.enum([
     "BLOCKED_BY_AMBIGUITY",
 ]);
 export type EvidenceSufficiencyState = z.infer<typeof EvidenceSufficiencyStateSchema>;
+
+export const DecomposedConfidenceSchema = z.object({
+    failureLocation: z.enum(["HIGH", "MEDIUM", "LOW", "UNKNOWN"]).default("UNKNOWN"),
+    failureMechanism: z.enum(["CONFIRMED", "PLAUSIBLE", "UNKNOWN"]).default("UNKNOWN"),
+    causalCause: z.enum(["PROVEN", "SUPPORTED", "UNKNOWN", "CONTRADICTED"]).default("UNKNOWN"),
+    regressionAssociation: z.enum(["HIGH", "MEDIUM", "LOW", "NONE"]).default("NONE"),
+    repairOwnership: z.enum(["ESTABLISHED", "AMBIGUOUS", "UNKNOWN"]).default("UNKNOWN"),
+    repairBoundary: z.enum(["VERIFIED", "CANDIDATE", "UNKNOWN"]).default("UNKNOWN"),
+    repairCorrectness: z.enum(["PROVEN", "PLAUSIBLE", "UNVALIDATED"]).default("UNVALIDATED"),
+    behavioralValidation: z.enum(["EXECUTED_PASSED", "REPRODUCED", "UNTESTED"]).default("UNTESTED"),
+});
+export type DecomposedConfidence = z.infer<typeof DecomposedConfidenceSchema>;
 
 export interface EvidenceSufficiencyEvaluation {
     state: EvidenceSufficiencyState;
@@ -528,6 +633,8 @@ export const FixRecommendationSchema = z.object({
         attemptedAcquisitions: z.array(z.string()).default([]),
         remainingBlocker: z.string().optional(),
     }).optional(),
+    decomposedConfidence: DecomposedConfidenceSchema.optional(),
+    rollbackAudit: z.any().optional(),
 });
 export type FixRecommendation = z.infer<typeof FixRecommendationSchema>;
 
@@ -1092,15 +1199,6 @@ export interface ClaimProvenance {
     analysisComponent: string;
     epistemicStatus: "EMPIRICALLY_VERIFIED" | "DERIVED_FROM_AST" | "CONFIRMED_VIA_EXECUTION" | "AMBIGUOUS_UNRESOLVED";
 }
-
-// --- FORMAL RECOMMENDATION STATE ---
-export type FormalRecommendationState =
-    | "VERIFIED_REPAIR"
-    | "SUPPORTED_REPAIR_REQUIRES_VALIDATION"
-    | "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED"
-    | "NO_CODE_CHANGE_JUSTIFIED"
-    | "EVIDENCE_ACQUISITION_REQUIRED"
-    | "BLOCKED_BY_UNAVAILABLE_EVIDENCE";
 
 export interface InformationFrontierAuditRecord {
     decisionsEvaluated: string[];

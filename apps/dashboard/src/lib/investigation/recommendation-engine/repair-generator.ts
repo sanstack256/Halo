@@ -561,27 +561,56 @@ export function generatePreciseRepair(
         };
     }
 
-    // Release Regression Revert (Deployment rollback)
+    // Release Regression Revert (Deployment rollback) - Phase 8, 23, 25
     if (repairLocation.type === "DEPLOYMENT") {
-        const cand = snapshot.release?.stronglySupportedCandidate;
+        const cand =
+            snapshot.release?.causallyProvenCandidate ||
+            snapshot.release?.stronglySupportedCandidate ||
+            snapshot.release?.candidates?.find(c => c.classification === "STRONGLY_SUPPORTED_REGRESSION" || c.classification === "CONFIRMED_REGRESSION") ||
+            snapshot.release?.candidates?.[0];
         const sha = cand?.shortSha || cand?.commitSha || "release commit";
+        const isCausallyProven =
+            cand?.causalSupport === "CAUSALLY_PROVEN" ||
+            cand?.classification === "STRONGLY_SUPPORTED_REGRESSION" ||
+            cand?.classification === "CONFIRMED_REGRESSION" ||
+            Boolean((cand as any)?.directlyModifiesFailingLine);
+        const mechDesc = snapshot.investigation.rootCause?.description || snapshot.investigation.hypotheses[0]?.description || "verified failure mechanism";
+
+        const headline = isCausallyProven
+            ? `Roll back commit ${sha} which introduced verified failure mechanism`
+            : `Investigate commit ${sha} associated with '${targetFile}'`;
+
+        const whatShouldChange = isCausallyProven
+            ? `Roll back commit ${sha} or apply targeted fix in '${targetFile}' to eliminate the introduced failure mechanism.`
+            : `Inspect diff of commit ${sha} in '${targetFile}' to establish whether changed behavior caused the failure.`;
+
+        const whyThisFixesActualFailure = isCausallyProven
+            ? `Reverting commit ${sha} removes the verified causal changes that produced the ${mechDesc}.`
+            : `Diff inspection is required to determine whether commit ${sha} introduced the failure mechanism.`;
+
+        const riskAssessment = cand?.rollbackAudit?.unrelatedChangesBlastRadius === "HIGH"
+            ? "Moderate-High blast radius: commit modified multiple files; a targeted source repair in the failing file has smaller blast radius than a full rollback."
+            : "Blast radius localized to modified files; verify no schema migrations or data dependencies are reverted.";
+
         return {
-            headline: `Revert release commit ${sha} causing '${excType}: ${excMessage}'`,
+            headline,
             whatFile: targetFile,
             whatSymbol: targetSymbol,
-            whatShouldChange: `Roll back or revert release commit ${sha} that introduced the regression in '${targetFile}'.`,
+            whatShouldChange,
             whyThere: repairLocation.rationale,
-            currentContractBroken: `Release regression: commit ${sha} modified '${targetFile}' immediately prior to incident.`,
-            valueFlowSummary: `Release commit introduced breaking changes to '${targetSymbol || targetFile}'.`,
-            whyThisFixesActualFailure: "Reverting the regressed release commit restores the previously verified, working production state immediately.",
-            otherImpactedCallers: "All callers and components affected by the regressed release commit.",
-            regressionRiskAssessment: "Low risk: returns system to the known-good previous release state.",
-            recommendedTest: "Run full regression test suite against the reverted commit state.",
-            validationPlan: chosenAction?.validationPlan || ["Revert commit in staging", "Verify incident symptoms disappear in staging"],
+            currentContractBroken: isCausallyProven
+                ? `Verified regression: commit ${sha} altered behavior in '${targetFile}', introducing ${mechDesc}.`
+                : `Associated commit: ${sha} modified '${targetFile}' prior to incident, but causality remains unproven.`,
+            valueFlowSummary: `Release commit modified '${targetSymbol || targetFile}'.`,
+            whyThisFixesActualFailure,
+            otherImpactedCallers: "All callers and components invoking the modified symbols in this commit.",
+            regressionRiskAssessment: riskAssessment,
+            recommendedTest: "Execute regression tests against pre-commit revision and verify the failure mechanism disappears.",
+            validationPlan: chosenAction?.validationPlan || ["Test reverted commit in staging", "Verify incident symptoms disappear"],
             isCodeModification: false,
             nonCodeRemediationDetails: {
                 type: "DEPLOYMENT_CONFIGURATION",
-                remediationInstruction: `Execute \`git revert ${sha}\` or deploy the previous known-good release image.`,
+                remediationInstruction: `Execute \`git revert ${sha}\` or deploy the previous release image if targeted source repair is not preferred.`,
                 operationalAction: "Coordinate release rollback with deployment pipeline.",
             },
         };
