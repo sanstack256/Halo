@@ -456,7 +456,7 @@ export const DecomposedConfidenceSchema = z.object({
     repairOwnership: z.enum(["ESTABLISHED", "AMBIGUOUS", "UNKNOWN"]).default("UNKNOWN"),
     repairBoundary: z.enum(["VERIFIED", "CANDIDATE", "UNKNOWN"]).default("UNKNOWN"),
     repairCorrectness: z.enum(["PROVEN", "PLAUSIBLE", "UNVALIDATED"]).default("UNVALIDATED"),
-    behavioralValidation: z.enum(["EXECUTED_PASSED", "REPRODUCED", "UNTESTED"]).default("UNTESTED"),
+    behavioralValidation: z.enum(["EXECUTED_PASSED", "REPRODUCED", "UNTESTED", "REGRESSION_DETECTED"]).default("UNTESTED"),
 });
 export type DecomposedConfidence = z.infer<typeof DecomposedConfidenceSchema>;
 
@@ -635,6 +635,7 @@ export const FixRecommendationSchema = z.object({
     }).optional(),
     decomposedConfidence: DecomposedConfidenceSchema.optional(),
     rollbackAudit: z.any().optional(),
+    repairEquivalence: z.any().optional(),
 });
 export type FixRecommendation = z.infer<typeof FixRecommendationSchema>;
 
@@ -888,6 +889,7 @@ export interface ValidatedPipelineResult {
     causalEpistemicState?: CausalEpistemicState;
     repairLocation?: DeterminedRepairLocation;
     sufficiency?: EvidenceSufficiencyEvaluation;
+    authoritativeDecision?: AuthoritativeEngineeringDecision;
     audit: FactCheckAudit;
     modelInfo: {
         provider: string;
@@ -1228,3 +1230,97 @@ export interface FormalRecommendationContract {
         prominenceOrder: number;
     }[];
 }
+
+// --- REPAIR EQUIVALENCE RECORD (Phase 8) ---
+export interface RepairEquivalenceRecord {
+    isRepairEquivalent: boolean;
+    equivalentHypothesisIds: string[];
+    sharedInvariant: string;
+    sharedRepairBoundary: string;
+    sharedRepairAction: string;
+    unresolvedUpstreamCausalityReason: string;
+}
+
+// --- SINGLE AUTHORITATIVE ENGINEERING DECISION OBJECT (Phase 2) ---
+export interface AuthoritativeEngineeringDecision {
+    occurrenceId: string;
+    investigationVersion: number;
+    failure: {
+        location: {
+            filePath?: string;
+            lineNumber?: number;
+            symbol?: string;
+            status: FailureLocationStatus;
+            provenance: string;
+        };
+        expression?: string;
+        executionContext?: string;
+    };
+    mechanism: {
+        status: FailureMechanismStatus;
+        description: string;
+        evidenceIds: string[];
+    };
+    causality: {
+        status: "PROVEN" | "SUPPORTED" | "PLAUSIBLE" | "COINCIDENTAL" | "REFUTED" | "UNKNOWN";
+        causalChain: string[];
+        evidenceIds: string[];
+    };
+    invariant: {
+        description: string;
+        formalStatement?: string;
+        evidenceIds: string[];
+    };
+    ownership: {
+        status: "ESTABLISHED" | "AMBIGUOUS" | "UNKNOWN";
+        owner?: string;
+        evidenceIds: string[];
+    };
+    repairBoundary: {
+        status: "VERIFIED" | "CANDIDATE" | "UNKNOWN";
+        entity?: string;
+        boundaryType: string;
+        evidenceIds: string[];
+    };
+    candidates: CandidateAction[];
+    selectedCandidate?: {
+        candidateId: string;
+        category: ActionCategory;
+        title: string;
+        justification: string;
+    };
+    regression: {
+        temporalAssociation: TemporalAssociation;
+        sourceAssociation: SourceAssociation;
+        executionRelevance: ExecutionRelevance;
+        behavioralRelevance: BehavioralRelevance;
+        mechanismRelevance: MechanismRelevance;
+        causalSupport: CausalSupport;
+        rollbackAudit?: RollbackAuditRecord;
+        isRollbackSuperior?: boolean;
+        superiorityReason?: string;
+    };
+    evidence: {
+        supporting: string[];
+        contradicting: string[];
+        missing: string[];
+        stale: string[];
+    };
+    decisionGap?: DecisionGap;
+    acquisitionPlan?: EvidenceAcquisitionLifecycleRecord | any;
+    diagnosisProof?: DiagnosisProof;
+    repairProof?: RepairProof;
+    behavioralProof?: BehavioralProof;
+    validation?: {
+        steps: string[];
+        isExecuted: boolean;
+        isCleanPass: boolean;
+    };
+    consequences?: ConsequenceAnalysisRecord;
+    uncertainty: string[];
+    finalState: FormalRecommendationState;
+    decomposedConfidence: DecomposedConfidence;
+    repairEquivalence?: RepairEquivalenceRecord;
+    provenance: ClaimProvenance[];
+}
+

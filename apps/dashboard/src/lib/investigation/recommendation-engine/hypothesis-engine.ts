@@ -20,6 +20,7 @@ import type {
     ConditionStatus,
     CausalEstablishmentTier,
     EngineeringQuestion,
+    RepairEquivalenceRecord,
 } from "./types";
 import { reconcileEvidenceForDecision, type EvidenceItemForDecision } from "./evidence-reconciliation";
 
@@ -180,3 +181,83 @@ export function evaluateHypothesisConditionGraph(
         status,
     };
 }
+
+/**
+ * Detects whether two or more competing hypotheses imply the SAME safe repair boundary and invariant action (Phase 8).
+ * When true, Halo establishes the confirmed mechanism, invariant, ownership, and repair boundary,
+ * while preserving the upstream cause as unresolved.
+ */
+export function detectRepairEquivalentHypotheses(
+    hypotheses: readonly any[],
+    repairLocationOrInvariant?: any,
+    sharedRepairBoundaryName?: string
+): RepairEquivalenceRecord | null {
+    if (!hypotheses || !Array.isArray(hypotheses)) {
+        return null;
+    }
+
+    const activeHypotheses = hypotheses.filter(
+        (h) => (h as any).status === "PLAUSIBLE" || (h as any).status === "STRONGLY_SUPPORTED" || (h as any).status === "CONFIRMED" || (h as any).status === "VALIDATED"
+    );
+
+    if (activeHypotheses.length < 2) {
+        return null;
+    }
+
+    let invariant = "Enforce contract invariant at receiver boundary";
+    let boundary = "Shared Receiver / Invariant Owner Boundary";
+
+    if (typeof repairLocationOrInvariant === "string") {
+        invariant = repairLocationOrInvariant;
+        if (sharedRepairBoundaryName) {
+            boundary = sharedRepairBoundaryName;
+        }
+    } else if (repairLocationOrInvariant && typeof repairLocationOrInvariant === "object") {
+        boundary = repairLocationOrInvariant.targetFile || repairLocationOrInvariant.targetSymbol || boundary;
+        invariant = repairLocationOrInvariant.rationale || invariant;
+    }
+
+    // Check if hypotheses share identical or equivalent repair implications
+    const firstImplication = activeHypotheses[0]!.repairImplications?.trim().toLowerCase();
+    const allShareImplications = Boolean(firstImplication && activeHypotheses.every((h: any) => {
+        const imp = h.repairImplications?.trim().toLowerCase();
+        return imp && (imp === firstImplication || imp.includes(firstImplication) || firstImplication.includes(imp));
+    }));
+
+    // Check if hypotheses are competing upstream causes for the same failure
+    const areCompetingUpstream = activeHypotheses.every((h: any) => {
+        const text = `${h.title || ""} ${h.description || ""}`.toLowerCase();
+        return (
+            text.includes("caller") ||
+            text.includes("provider") ||
+            text.includes("upstream") ||
+            text.includes("producer") ||
+            text.includes("config") ||
+            text.includes("factory") ||
+            text.includes("header") ||
+            text.includes("parameter") ||
+            text.includes("argument") ||
+            text.includes("input") ||
+            text.includes("client")
+        );
+    });
+
+    const hasExplicitRepairBoundary = Boolean(repairLocationOrInvariant && (
+        (typeof repairLocationOrInvariant === "object" && repairLocationOrInvariant.targetFile) ||
+        sharedRepairBoundaryName
+    ));
+
+    if (allShareImplications || (areCompetingUpstream && hasExplicitRepairBoundary)) {
+        return {
+            isRepairEquivalent: true,
+            equivalentHypothesisIds: activeHypotheses.map((h: any) => h.id),
+            sharedInvariant: invariant,
+            sharedRepairBoundary: boundary,
+            sharedRepairAction: activeHypotheses[0]!.repairImplications || `Enforce invariant '${invariant}' at '${boundary}'`,
+            unresolvedUpstreamCausalityReason: `Multiple competing upstream causes (${activeHypotheses.map((h: any) => h.id).join(", ")}) remain plausible, but all imply the identical invariant restoration at '${boundary}'. Upstream root cause remains under investigation while repair proceeds safely.`,
+        };
+    }
+
+    return null;
+}
+

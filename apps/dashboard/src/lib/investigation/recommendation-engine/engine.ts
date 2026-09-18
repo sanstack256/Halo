@@ -33,6 +33,7 @@ import type {
     DecisionGap,
     InformationFrontierAuditRecord,
     ClaimProvenance,
+    AuthoritativeEngineeringDecision,
 } from "./types";
 import { StructuredLlmOutputSchema } from "./types";
 import { buildInvestigationSnapshot } from "./investigation-snapshot";
@@ -52,7 +53,33 @@ import { buildRepairCase } from "../repair-intelligence/repair-case-builder";
 import { runActiveInvestigationLoop } from "./investigation-loop";
 import { generatePreciseRepair } from "./repair-generator";
 import { evaluateRecommendationDecisionGate } from "./recommendation-decision-gate";
+import { detectRepairEquivalentHypotheses } from "./hypothesis-engine";
+import { buildAuthoritativeEngineeringDecision } from "./authoritative-decision";
+import { evaluateCausalRegressionGate } from "./causal-regression-gate";
 import type { DecomposedConfidence } from "./types";
+
+function toFormalRecommendationState(state?: string): FormalRecommendationState {
+    if (
+        state === "VERIFIED_REPAIR" ||
+        state === "SUPPORTED_REPAIR_REQUIRES_VALIDATION" ||
+        state === "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED" ||
+        state === "NO_CODE_CHANGE_JUSTIFIED" ||
+        state === "EVIDENCE_ACQUISITION_REQUIRED" ||
+        state === "BLOCKED_BY_UNAVAILABLE_EVIDENCE"
+    ) {
+        return state;
+    }
+    if (state === "SUFFICIENT_FOR_REPAIR") {
+        return "SUPPORTED_REPAIR_REQUIRES_VALIDATION";
+    }
+    if (state === "EXTERNAL_DEPENDENCY" || state === "ENVIRONMENT_ISSUE") {
+        return "NO_CODE_CHANGE_JUSTIFIED";
+    }
+    if (state === "BLOCKED_BY_AMBIGUITY") {
+        return "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED";
+    }
+    return "EVIDENCE_ACQUISITION_REQUIRED";
+}
 
 export interface GenerateRecommendationPipelineOptions {
     snapshot: EvidenceSnapshot | InvestigationSnapshot;
@@ -151,6 +178,12 @@ export async function generateEngineeringRecommendation(
         contractAnalysis
     );
 
+    // Phase 8: Detect repair-equivalent hypotheses
+    const repairEquivalence = detectRepairEquivalentHypotheses(
+        snapshot.investigation.hypotheses,
+        repairLocation
+    );
+
     // 6. Short-circuit ONLY when there is an absolute evidence boundary:
     //    Source is completely missing AND failure mechanism is completely unknown.
     //    All other states (BLOCKED_BY_AMBIGUITY, SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR, etc.)
@@ -204,7 +237,39 @@ export async function generateEngineeringRecommendation(
                 attemptedAcquisitions: completedSteps.map((s) => s.label),
                 remainingBlocker: sufficiency.blockingReason,
             },
+            repairEquivalence,
         };
+
+        const earlyGateVerdict = evaluateCausalRegressionGate({
+            snapshot,
+            regressionContext,
+            causalState,
+            sourceAst,
+        });
+
+        const authoritativeDecision = buildAuthoritativeEngineeringDecision({
+            snapshot,
+            causalState,
+            repairLocation,
+            evidenceSufficiency: sufficiency,
+            candidateActions: candidates,
+            selectedCandidate: selectedAction,
+            regressionContext,
+            gateVerdict: earlyGateVerdict,
+            uncertainty: selectedAction?.uncertainty,
+            finalState: toFormalRecommendationState(sufficiency.state),
+            decomposedConfidence: {
+                failureLocation: causalState.failureLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+                failureMechanism: causalState.failureMechanism.status === "CONFIRMED" ? "CONFIRMED" : "UNKNOWN",
+                causalCause: "UNKNOWN",
+                regressionAssociation: "NONE",
+                repairOwnership: "UNKNOWN",
+                repairBoundary: "UNKNOWN",
+                repairCorrectness: "UNVALIDATED",
+                behavioralValidation: "UNTESTED",
+            },
+            repairEquivalence: repairEquivalence ?? undefined,
+        });
 
         return {
             success: false,
@@ -214,6 +279,7 @@ export async function generateEngineeringRecommendation(
             causalEpistemicState: causalState,
             repairLocation,
             sufficiency,
+            authoritativeDecision,
             audit: {
                 passed: true,
                 verifiedFiles: [],
@@ -290,6 +356,37 @@ export async function generateEngineeringRecommendation(
         durationMs = response.durationMs;
     } catch (err: any) {
         // Section 29: Clear generation failure state, DO NOT fabricate fallback
+        const unc = ["Provider execution error", ...selectedAction.uncertainty];
+        const earlyGateVerdict = evaluateCausalRegressionGate({
+            snapshot,
+            regressionContext,
+            causalState,
+            sourceAst,
+        });
+        const fallbackAuthoritativeDecision = buildAuthoritativeEngineeringDecision({
+            snapshot,
+            causalState,
+            repairLocation,
+            evidenceSufficiency: sufficiency,
+            candidateActions: candidates,
+            selectedCandidate: selectedAction,
+            regressionContext,
+            gateVerdict: earlyGateVerdict,
+            uncertainty: unc,
+            finalState: "EVIDENCE_ACQUISITION_REQUIRED",
+            decomposedConfidence: {
+                failureLocation: causalState.failureLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+                failureMechanism: causalState.failureMechanism.status === "CONFIRMED" ? "CONFIRMED" : "UNKNOWN",
+                causalCause: "UNKNOWN",
+                regressionAssociation: "NONE",
+                repairOwnership: "UNKNOWN",
+                repairBoundary: "UNKNOWN",
+                repairCorrectness: "UNVALIDATED",
+                behavioralValidation: "UNTESTED",
+            },
+            repairEquivalence: repairEquivalence ?? undefined,
+        });
+
         return {
             success: false,
             source: "LLM_SYNTHESIZED",
@@ -315,16 +412,18 @@ export async function generateEngineeringRecommendation(
                 validationSteps: selectedAction.validationPlan,
                 missingEvidence: sufficiency.minimumAdditionalEvidenceNeeded,
                 nextActionBeforeRepair: selectedAction.description,
-                uncertainty: ["Provider execution error", ...selectedAction.uncertainty],
+                uncertainty: unc,
                 confidence: "LOW",
                 evidenceReferences: [],
                 hasInsufficientEvidence: true,
                 refusalReason: err?.message || "Provider error",
                 isProviderFailure: true,
+                repairEquivalence,
             } as any,
             causalEpistemicState: causalState,
             repairLocation,
             sufficiency,
+            authoritativeDecision: fallbackAuthoritativeDecision,
             audit: {
                 passed: false,
                 verifiedFiles: [],
@@ -359,6 +458,36 @@ export async function generateEngineeringRecommendation(
         }
         parsedJson = JSON.parse(cleaned);
     } catch {
+        const earlyGateVerdict = evaluateCausalRegressionGate({
+            snapshot,
+            regressionContext,
+            causalState,
+            sourceAst,
+        });
+        const fallbackAuthoritativeDecision = buildAuthoritativeEngineeringDecision({
+            snapshot,
+            causalState,
+            repairLocation,
+            evidenceSufficiency: sufficiency,
+            candidateActions: candidates,
+            selectedCandidate: selectedAction,
+            regressionContext,
+            gateVerdict: earlyGateVerdict,
+            uncertainty: selectedAction.uncertainty,
+            finalState: toFormalRecommendationState(sufficiency.state),
+            decomposedConfidence: {
+                failureLocation: causalState.failureLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+                failureMechanism: causalState.failureMechanism.status === "CONFIRMED" ? "CONFIRMED" : "UNKNOWN",
+                causalCause: "UNKNOWN",
+                regressionAssociation: "NONE",
+                repairOwnership: "UNKNOWN",
+                repairBoundary: "UNKNOWN",
+                repairCorrectness: "UNVALIDATED",
+                behavioralValidation: "UNTESTED",
+            },
+            repairEquivalence: repairEquivalence ?? undefined,
+        });
+
         return {
             success: false,
             source: "LLM_SYNTHESIZED",
@@ -390,10 +519,12 @@ export async function generateEngineeringRecommendation(
                     attemptedAcquisitions: completedSteps.map((s) => s.label),
                     remainingBlocker: sufficiency.blockingReason,
                 },
+                repairEquivalence,
             },
             causalEpistemicState: causalState,
             repairLocation,
             sufficiency,
+            authoritativeDecision: fallbackAuthoritativeDecision,
             audit: {
                 passed: false,
                 verifiedFiles: [],
@@ -531,10 +662,39 @@ export async function generateEngineeringRecommendation(
                     attemptedAcquisitions: completedSteps.map((s) => s.label),
                     remainingBlocker: sufficiency.blockingReason,
                 },
+                repairEquivalence,
             },
             causalEpistemicState: causalState,
             repairLocation,
             sufficiency,
+            authoritativeDecision: buildAuthoritativeEngineeringDecision({
+                snapshot,
+                causalState,
+                repairLocation,
+                evidenceSufficiency: sufficiency,
+                candidateActions: candidates,
+                selectedCandidate: selectedAction,
+                regressionContext,
+                gateVerdict: evaluateCausalRegressionGate({
+                    snapshot,
+                    regressionContext,
+                    causalState,
+                    sourceAst,
+                }),
+                uncertainty: selectedAction.uncertainty,
+                finalState: toFormalRecommendationState(sufficiency.state),
+                decomposedConfidence: {
+                    failureLocation: causalState.failureLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+                    failureMechanism: causalState.failureMechanism.status === "CONFIRMED" ? "CONFIRMED" : "UNKNOWN",
+                    causalCause: "UNKNOWN",
+                    regressionAssociation: "NONE",
+                    repairOwnership: "UNKNOWN",
+                    repairBoundary: "UNKNOWN",
+                    repairCorrectness: "UNVALIDATED",
+                    behavioralValidation: "UNTESTED",
+                },
+                repairEquivalence: repairEquivalence ?? undefined,
+            }),
             audit: {
                 passed: false,
                 verifiedFiles: [],
@@ -584,6 +744,36 @@ export async function generateEngineeringRecommendation(
         behavioralValidation: (snapshot as any).behavioralValidationStatus || "UNTESTED",
     };
 
+    const causalRegressionGateVerdict = evaluateCausalRegressionGate({
+        snapshot,
+        regressionContext,
+        causalState,
+        sourceAst,
+    });
+
+    const preliminaryAuthoritativeDecision = buildAuthoritativeEngineeringDecision({
+        snapshot,
+        causalState,
+        repairLocation,
+        evidenceSufficiency: sufficiency,
+        candidateActions: candidates,
+        selectedCandidate: selectedAction,
+        regressionContext,
+        gateVerdict: causalRegressionGateVerdict,
+        decisionGap: (snapshot as any).decisionGap,
+        acquisitionPlan: (snapshot as any).acquisitionPlan,
+        diagnosisProof: (snapshot as any).diagnosisProof,
+        repairProof: (snapshot as any).repairProof,
+        behavioralProof: (snapshot as any).behavioralProof,
+        validation: (snapshot as any).validationResult,
+        consequences: (snapshot as any).consequences,
+        uncertainty: selectedAction?.uncertainty,
+        finalState: toFormalRecommendationState(sufficiency.state),
+        decomposedConfidence: initialDecomposedConfidence,
+        repairEquivalence: repairEquivalence ?? undefined,
+        provenance: (factCheck.verifiedRecommendation as any).claimsWithProvenance,
+    });
+
     const gateVerdict = evaluateRecommendationDecisionGate({
         recommendation: factCheck.verifiedRecommendation,
         snapshot,
@@ -592,7 +782,14 @@ export async function generateEngineeringRecommendation(
         sufficiency,
         decomposedConfidence: initialDecomposedConfidence,
         regressionContext,
+        authoritativeDecision: preliminaryAuthoritativeDecision,
     });
+
+    const authoritativeDecision: AuthoritativeEngineeringDecision = {
+        ...preliminaryAuthoritativeDecision,
+        finalState: toFormalRecommendationState(gateVerdict.calibratedState),
+        decomposedConfidence: gateVerdict.calibratedConfidence,
+    };
 
     const finalRecommendation: FixRecommendation = {
         ...factCheck.verifiedRecommendation,
@@ -613,6 +810,7 @@ export async function generateEngineeringRecommendation(
             attemptedAcquisitions: completedSteps.map((s) => s.label),
             remainingBlocker: sufficiency.blockingReason,
         },
+        repairEquivalence,
     };
 
     return {
@@ -623,6 +821,7 @@ export async function generateEngineeringRecommendation(
         causalEpistemicState: causalState,
         repairLocation,
         sufficiency,
+        authoritativeDecision,
         audit: {
             ...factCheck.audit,
             warnings: [...factCheck.audit.warnings, ...gateVerdict.warnings],

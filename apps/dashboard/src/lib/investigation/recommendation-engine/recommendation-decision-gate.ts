@@ -31,6 +31,7 @@ import type {
     EvidenceSufficiencyEvaluation,
     DecomposedConfidence,
     ReleaseRegressionContext,
+    AuthoritativeEngineeringDecision,
 } from "./types";
 
 export interface DecisionGateVerdict {
@@ -50,6 +51,7 @@ export function evaluateRecommendationDecisionGate(params: {
     sufficiency: EvidenceSufficiencyEvaluation;
     decomposedConfidence: DecomposedConfidence;
     regressionContext?: ReleaseRegressionContext;
+    authoritativeDecision?: AuthoritativeEngineeringDecision;
 }): DecisionGateVerdict {
     const {
         recommendation,
@@ -59,6 +61,7 @@ export function evaluateRecommendationDecisionGate(params: {
         sufficiency,
         decomposedConfidence,
         regressionContext,
+        authoritativeDecision,
     } = params;
 
     const warnings: string[] = [];
@@ -79,11 +82,15 @@ export function evaluateRecommendationDecisionGate(params: {
         snapshot.release?.causallyProvenCandidate ||
         snapshot.release?.stronglySupportedCandidate;
 
-    // 1. Rollback Gate: Rollback CANNOT be recommended if mechanism is UNKNOWN or candidate is not causally proven
+    // 1. Rollback Gate: Rollback CANNOT be recommended if mechanism is UNKNOWN, candidate is not causally proven, or rollback is disqualified by superiority gate
+    const isRollbackDisqualifiedBySuperiority = authoritativeDecision?.regression?.isRollbackSuperior === false;
     if (isRollbackProposed) {
-        if (!provenCand || !isMechanismConfirmed) {
-            downgradeReason = "Rollback proposal blocked by decision gate: failure mechanism is unconfirmed or commit is not causally proven.";
+        if (!provenCand || !isMechanismConfirmed || isRollbackDisqualifiedBySuperiority) {
+            downgradeReason = isRollbackDisqualifiedBySuperiority
+                ? `Rollback proposal blocked by superiority gate: ${authoritativeDecision?.regression?.superiorityReason || "Targeted repair is superior to broad rollback."}`
+                : "Rollback proposal blocked by decision gate: failure mechanism is unconfirmed or commit is not causally proven.";
             warnings.push(downgradeReason);
+            strippedUnsupportedClaims.push("Broad release rollback");
         }
     }
 
@@ -96,20 +103,28 @@ export function evaluateRecommendationDecisionGate(params: {
         }
     }
 
+    // Failed patch feedback loop (Phase 18, 19, 20)
+    const patchExecutionFailed = authoritativeDecision?.validation?.isExecuted === true && authoritativeDecision.validation.isCleanPass === false;
+    if (patchExecutionFailed) {
+        warnings.push("Candidate patch failed validation execution / reproduction; cannot be promoted to VERIFIED_REPAIR.");
+    }
+
     // 3. Calibrate Formal Recommendation State
     let calibratedState: FixRecommendation["status"] = sufficiency.state;
 
-    if (isRollbackProposed && (!provenCand || !isMechanismConfirmed)) {
+    if (isRollbackProposed && (!provenCand || !isMechanismConfirmed || isRollbackDisqualifiedBySuperiority)) {
         calibratedState = isMechanismConfirmed
             ? "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED"
             : (sufficiency.state === "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE" ? "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE" : "EVIDENCE_ACQUISITION_REQUIRED");
     } else if (repairLocation?.type === "NO_CODE_CHANGE" && isOwnershipEstablished) {
         calibratedState = "NO_CODE_CHANGE_JUSTIFIED";
-    } else if (hasVerifiedChanges && isMechanismConfirmed && isOwnershipEstablished) {
+    } else if (hasVerifiedChanges && isMechanismConfirmed && isOwnershipEstablished && !patchExecutionFailed) {
         // If behaviorally executed and proven: VERIFIED_REPAIR; else SUPPORTED_REPAIR_REQUIRES_VALIDATION
         calibratedState = decomposedConfidence.behavioralValidation === "EXECUTED_PASSED"
             ? "VERIFIED_REPAIR"
             : "SUPPORTED_REPAIR_REQUIRES_VALIDATION";
+    } else if (hasVerifiedChanges && patchExecutionFailed) {
+        calibratedState = "SUPPORTED_REPAIR_REQUIRES_VALIDATION";
     } else if (isMechanismConfirmed && !isOwnershipEstablished) {
         calibratedState = "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED";
     } else if (!isMechanismConfirmed) {
@@ -138,7 +153,7 @@ export function evaluateRecommendationDecisionGate(params: {
         repairOwnership: isOwnershipEstablished ? "ESTABLISHED" : repairLocation?.isAmbiguous ? "AMBIGUOUS" : "UNKNOWN",
         repairBoundary: (hasVerifiedChanges || isRollbackProposed) && isOwnershipEstablished ? "VERIFIED" : repairLocation?.candidateLocations ? "CANDIDATE" : "UNKNOWN",
         repairCorrectness: calibratedState === "VERIFIED_REPAIR" ? "PROVEN" : calibratedState === "SUPPORTED_REPAIR_REQUIRES_VALIDATION" ? "PLAUSIBLE" : "UNVALIDATED",
-        behavioralValidation: decomposedConfidence.behavioralValidation || "UNTESTED",
+        behavioralValidation: patchExecutionFailed ? "REGRESSION_DETECTED" : (decomposedConfidence.behavioralValidation || "UNTESTED"),
     };
 
     return {

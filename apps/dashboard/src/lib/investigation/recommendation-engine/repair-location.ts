@@ -226,9 +226,9 @@ export function determineRepairLocation(
         )
     );
 
-    if ((gateVerdict.isRollbackEligible && gateVerdict.promotedCandidate) || confirmedRegressionHypo) {
-        const cand = gateVerdict.promotedCandidate || regressionContext.stronglySupportedCandidate || regressionContext.candidates[0];
-        const commitHash = cand?.shortSha || confirmedRegressionHypo?.title?.match(/[0-9a-f]{7,40}/i)?.[0] || confirmedRegressionHypo?.description?.match(/[0-9a-f]{7,40}/i)?.[0] || "";
+    if (gateVerdict.isRollbackEligible && gateVerdict.promotedCandidate) {
+        const cand = gateVerdict.promotedCandidate;
+        const commitHash = cand.shortSha;
         const candLocations: DeterminedRepairLocation["candidateLocations"] = [
             {
                 type: "DEPLOYMENT",
@@ -253,6 +253,49 @@ export function determineRepairLocation(
             rationale: `Release commit ${commitHash} introduced verified failure mechanism (${causalState.failureMechanism.description}). Rollback restores invariant.`,
             whyNotFailingLine: `The failure site was introduced by release commit ${commitHash}.`,
             candidateLocations: candLocations.length > 1 ? candLocations : undefined,
+        };
+    }
+
+    if (gateVerdict.isCausallyValid && gateVerdict.promotedCandidate && !gateVerdict.isRollbackSuperior) {
+        // Rollback disqualified due to safety/superiority gate (blast radius, unrelated changes)
+        const cand = gateVerdict.promotedCandidate;
+        const commitHash = cand.shortSha;
+        const targetFile = failingFile || cand.changedFiles[0] || "unknown";
+        const targetSymbol = failingSymbol || (cand as any).changedSymbols?.[0] || "unknown";
+        return {
+            type: "CALLEE",
+            targetFile,
+            targetSymbol,
+            ownershipEstablished: true,
+            rationale: `Commit ${commitHash} introduced verified failure mechanism, but targeted repair is selected over rollback (${gateVerdict.superiorityRationale}).`,
+            whyNotFailingLine: `Targeted repair at failure site avoids broad rollback blast radius while restoring invariant.`,
+            candidateLocations: [
+                {
+                    type: "CALLEE",
+                    targetFile,
+                    targetSymbol,
+                    rationale: `Apply targeted code fix in '${targetFile}' to resolve invariant violation without reverting unrelated features.`,
+                },
+                {
+                    type: "DEPLOYMENT",
+                    targetFile,
+                    targetSymbol,
+                    rationale: `Alternative: Revert commit ${commitHash} if code fix cannot be deployed immediately.`,
+                },
+            ],
+        };
+    }
+
+    if (confirmedRegressionHypo && !gateVerdict.blockingReason) {
+        const cand = regressionContext.stronglySupportedCandidate || regressionContext.candidates[0];
+        const commitHash = cand?.shortSha || confirmedRegressionHypo?.title?.match(/[0-9a-f]{7,40}/i)?.[0] || confirmedRegressionHypo?.description?.match(/[0-9a-f]{7,40}/i)?.[0] || "";
+        return {
+            type: "DEPLOYMENT",
+            targetFile: failingFile,
+            targetSymbol: failingSymbol,
+            ownershipEstablished: true,
+            rationale: `Release regression identified (${causalState.failureMechanism.description}). Rollback restores invariant.`,
+            whyNotFailingLine: `The failure site was introduced by release commit ${commitHash}.`,
         };
     }
 

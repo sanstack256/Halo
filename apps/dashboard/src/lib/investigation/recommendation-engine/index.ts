@@ -5,3 +5,6 @@ export * from "./prompt-builder";
 export * from "./patch-validator";
 export * from "./output-validator";
 export * from "./engine";
+export * from "./authoritative-decision";
+export * from "./hypothesis-engine";
+export * from "./causal-regression-gate";
