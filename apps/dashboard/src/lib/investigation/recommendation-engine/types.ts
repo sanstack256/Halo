@@ -822,3 +822,311 @@ export interface AiConnectionTestResult {
     model?: string;
     errorMessage?: string;
 }
+
+/* -------------------------------------------------------------------------- */
+/* 15. Deep Autonomous Engineering Repair Epistemic Types (Phase 40)           */
+/* -------------------------------------------------------------------------- */
+
+export type EngineeringQuestion =
+    | "WHAT_ACTUALLY_EXECUTED"
+    | "WHAT_SOURCE_IMPLEMENTS_SYMBOL"
+    | "WHAT_BEHAVIOR_IS_INTENDED"
+    | "WHAT_CONFIG_WAS_ACTIVE"
+    | "DID_CODE_CHANGE_CAUSE_INCIDENT"
+    | "DID_REPAIR_WORK";
+
+export type EvidenceAuthoritySourceType =
+    | "RUNTIME_TRACE"
+    | "VERIFIED_SOURCE"
+    | "STATIC_AST"
+    | "TESTS_AND_CONTRACTS"
+    | "DEPLOYMENT_CONFIG"
+    | "TEMPORAL_EVIDENCE"
+    | "POST_PATCH_EXECUTION"
+    | "CODE_CALLERS"
+    | "HISTORICAL_COMMITS"
+    | "RUNTIME_METRICS";
+
+export interface DecisionAuthorityRule {
+    question: EngineeringQuestion;
+    primaryAuthorities: EvidenceAuthoritySourceType[];
+    supportingAuthorities: EvidenceAuthoritySourceType[];
+    deterministicResolutionStrategy: "AUTHORITY_DOMINANCE" | "CORROBORATION_REQUIRED" | "TEMPORAL_CAUSAL_VALIDATION" | "EMPIRICAL_EXECUTION_ONLY";
+}
+
+export interface EvidenceContradiction {
+    id: string;
+    question: EngineeringQuestion;
+    conflictingEvidence: {
+        source: string;
+        claim: string;
+        evidenceId: string;
+    }[];
+    isResolved: boolean;
+    resolutionExplanation?: string;
+    dominatingEvidenceId?: string;
+}
+
+// --- HYPOTHESIS AS CONDITION GRAPH ---
+export type ConditionStatus = "CONFIRMED" | "SUPPORTED" | "UNKNOWN" | "CONTRADICTED";
+
+export interface HypothesisCondition {
+    id: string;
+    description: string;
+    requiredFact: string;
+    attachedEvidenceIds: string[];
+    contradictingEvidenceIds: string[];
+    status: ConditionStatus;
+    evaluationRationale: string;
+}
+
+export type CausalEstablishmentTier =
+    | "DEFECT_EXISTS"
+    | "DEFECT_CAN_PRODUCE_FAILURE"
+    | "DEFECT_PARTICIPATED_IN_OCCURRENCE"
+    | "DEFECT_CAUSED_OCCURRENCE";
+
+export interface CausalHypothesis {
+    id: string;
+    mechanism: string;
+    causalEstablishmentTier: CausalEstablishmentTier;
+    conditions: HypothesisCondition[];
+    supportingEvidenceIds: string[];
+    contradictingEvidenceIds: string[];
+    missingEvidenceDescriptions: string[];
+    causalRelationships: {
+        upstreamConditionId: string;
+        downstreamEffect: string;
+        causalLinkType: "NECESSARY" | "CONTRIBUTORY" | "SUFFICIENT";
+    }[];
+    affectedExecutionPath: string[];
+    affectedResourceOrValue?: string;
+    repairImplications: string;
+    status: "CONFIRMED" | "STRONGLY_SUPPORTED" | "PLAUSIBLE" | "CONTRADICTED" | "ELIMINATED" | "UNKNOWN";
+}
+
+// --- GENERAL DECISION-GAP MODEL ---
+export interface DecisionGap {
+    id: string;
+    decision: string;
+    currentConclusion: string;
+    unknown: string;
+    hypothesesAffected: string[];
+    evidenceCurrentlyAvailable: string[];
+    evidenceCapableOfResolving: string[];
+    acquisitionMethods: {
+        mechanismType: "STATIC_CODE_INSPECTION" | "LOCAL_TEST_EXECUTION" | "LOCAL_REPRODUCTION" | "TARGETED_RUNTIME_TELEMETRY" | "DEPLOYMENT_AUDIT";
+        description: string;
+        acquisitionCost: "NEGLIGIBLE" | "LOW" | "MEDIUM" | "EXPENSIVE";
+        privacyRisk: "NONE" | "LOW_ANONYMIZED" | "HIGH_PII";
+        operationalRisk: "NONE" | "READ_ONLY" | "PROCESS_RESTART" | "TRAFFIC_MUTATION";
+        canExecuteAutonomously: boolean;
+    }[];
+    expectedDecisionImpact: "CRITICAL_PATH" | "BOUNDARY_DISCRIMINATING" | "CONFIRMATORY" | "MARGINAL";
+}
+
+// --- AUTONOMOUS EVIDENCE ACQUISITION LIFECYCLE ---
+export interface EvidenceAcquisitionLifecycleRecord {
+    gapId: string;
+    specification: {
+        targetSymbolOrTrace: string;
+        requiredFact: string;
+        dataScope: string;
+    };
+    privacyClassification: "SAFE_CODE_METADATA" | "RUNTIME_METRIC" | "POTENTIAL_PII_BLOCKED";
+    safetyClassification: "SAFE_READ" | "ISOLATED_CONTAINER" | "UNSAFE_PRODUCTION_MUTATION";
+    capabilityStatus: "AUTONOMOUSLY_CAPABLE" | "REQUIRES_DEVELOPER_CONSENT" | "TECHNICALLY_IMPOSSIBLE";
+    selectedMechanism?: string;
+    executionResult?: {
+        success: boolean;
+        collectedEvidenceIds: string[];
+        executionDurationMs: number;
+        logs: string;
+    };
+    temporaryInstrumentationCleanupVerified: boolean;
+    graphUpdateCompleted: boolean;
+}
+
+// --- FIRST-CLASS REPRODUCTION ---
+export type ReproductionState =
+    | "REPRODUCED"
+    | "NOT_REPRODUCED"
+    | "PARTIALLY_REPRODUCED"
+    | "UNREPRODUCIBLE_ENVIRONMENT"
+    | "REPRODUCTION_CONTRADICTS_HYPOTHESIS";
+
+export interface ReproductionRecord {
+    id: string;
+    state: ReproductionState;
+    repositoryRevision: string;
+    runtimeVersion: string;
+    environmentRequirements: string[];
+    inputPayloadOrArgs: Record<string, unknown>;
+    executionCommand: string;
+    observedResult: string;
+    expectedResult: string;
+    exitCode: number;
+    stdout: string;
+    stderr: string;
+    evidenceReferences: string[];
+    hypothesisImpactRationale: string;
+}
+
+// --- OPEN REPAIR BOUNDARY & CANDIDATE SEARCH ---
+export interface OpenRepairBoundary {
+    id: string;
+    entity: string;
+    entityRoleDescription: string;
+    discoveredVia: "INVARIANT_PARTICIPANT" | "DATA_FLOW_MUTATION" | "OWNERSHIP_HANDOFF" | "RESOURCE_CONTROLLER";
+    classificationTag?: "CALLER" | "PRODUCER" | "CONSUMER" | "CALLEE" | "ADAPTER" | "SHARED_ABSTRACTION" | "CONFIGURATION" | "DEPENDENCY" | "DEPLOYMENT" | "TEST" | "NO_CODE_CHANGE" | "CUSTOM_BOUNDARY";
+    isCapableOfRestoringInvariant: boolean;
+    ownershipEvidenceIds: string[];
+    eliminationRationale?: string;
+}
+
+export interface CandidateRepair {
+    id: string;
+    boundaryId: string;
+    targetedMechanism: string;
+    restoredInvariant: string;
+    evidenceSupportingRelationship: string[];
+    modifications: {
+        filePath: string;
+        symbol: string;
+        startLine: number;
+        endLine: number;
+        originalCode: string;
+        replacementCode: string;
+    }[];
+    reusedExistingAbstractions: {
+        abstractionName: string;
+        sourcePath: string;
+        roleInRepair: string;
+    }[];
+}
+
+// --- MECHANISM-COVERAGE & CONSEQUENCE ANALYSIS ---
+export type MechanismCoverageType = "DIRECT" | "PARTIAL" | "INDIRECT" | "NONE";
+
+export interface MechanismCoverageRecord {
+    candidateId: string;
+    coverageType: MechanismCoverageType;
+    eliminatesRootMechanism: boolean;
+    merelyRaisesFailureThreshold: boolean;
+    suppressesSymptomWithoutFix: boolean;
+    restoresViolatedInvariant: boolean;
+    evaluationRationale: string;
+}
+
+export interface ConsequenceAnalysisRecord {
+    candidateId: string;
+    secondOrderEffects: {
+        category: "CONCURRENCY" | "RETRIES" | "RESOURCE_SATURATION" | "IDEMPOTENCY" | "PERFORMANCE" | "SECURITY" | "API_CONTRACT";
+        description: string;
+        isAcceptable: boolean;
+    }[];
+    classification: "FIXES_MECHANISM" | "MASKS_SYMPTOM" | "SHIFTS_FAILURE" | "CREATES_NEW_FAILURE_MODE";
+    isApprovedForExecution: boolean;
+}
+
+// --- BASELINE FAILURE PARTITIONING & EXECUTION ---
+export interface BaselineExecutionRecord {
+    failingTests: string[];
+    buildErrors: string[];
+    typeErrors: string[];
+    timestamp: number;
+}
+
+export interface PostPatchValidationRecord {
+    baselineFailures: BaselineExecutionRecord;
+    originalFailureResolved: boolean;
+    intendedBehaviorRestored: boolean;
+    violatedInvariantRestored: boolean;
+    unchangedBaselineFailures: string[];
+    patchIntroducedFailures: string[];
+    patchFixedFailures: string[];
+    unrelatedFailures: string[];
+    behavioralOutputVerified: boolean;
+    isCleanPass: boolean;
+}
+
+// --- THREE-TIER PROOF RECORDS ---
+export interface DiagnosisProof {
+    incidentId: string;
+    confirmedMechanism: string;
+    violatedInvariant: string;
+    causalChainEvidenceIds: string[];
+    epistemicTier: "DEFECT_CAUSED_OCCURRENCE";
+    cryptographicHash: string;
+}
+
+export interface RepairProof {
+    candidateId: string;
+    targetBoundary: OpenRepairBoundary;
+    mechanismCoverage: MechanismCoverageRecord;
+    consequenceApproval: ConsequenceAnalysisRecord;
+    architecturalReuseEvidenceIds: string[];
+    cryptographicHash: string;
+}
+
+export interface BehavioralProof {
+    candidateId: string;
+    postPatchValidation: PostPatchValidationRecord;
+    reproductionRecord: ReproductionRecord;
+    executionLogExcerpt: string;
+    cryptographicHash: string;
+}
+
+export interface ComprehensiveProofRecord {
+    diagnosisProof: DiagnosisProof;
+    repairProof: RepairProof;
+    behavioralProof: BehavioralProof;
+    verifiedAt: number;
+}
+
+// --- CLAIM-LEVEL PROVENANCE ---
+export interface ClaimProvenance {
+    claimText: string;
+    referencedEvidenceIds: string[];
+    referencedSourceLocations: string[];
+    analysisComponent: string;
+    epistemicStatus: "EMPIRICALLY_VERIFIED" | "DERIVED_FROM_AST" | "CONFIRMED_VIA_EXECUTION" | "AMBIGUOUS_UNRESOLVED";
+}
+
+// --- FORMAL RECOMMENDATION STATE ---
+export type FormalRecommendationState =
+    | "VERIFIED_REPAIR"
+    | "SUPPORTED_REPAIR_REQUIRES_VALIDATION"
+    | "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED"
+    | "NO_CODE_CHANGE_JUSTIFIED"
+    | "EVIDENCE_ACQUISITION_REQUIRED"
+    | "BLOCKED_BY_UNAVAILABLE_EVIDENCE";
+
+export interface InformationFrontierAuditRecord {
+    decisionsEvaluated: string[];
+    hypothesesEvaluated: string[];
+    repositoryAreasSearched: string[];
+    sourceAreasSearched: string[];
+    testsInspected: string[];
+    configurationInspected: string[];
+    deploymentEvidenceInspected: string[];
+    reproductionAttempted: boolean;
+    runtimeEvidenceInspected: string[];
+    acquisitionMethodsAttempted: string[];
+    remainingUnknown: string;
+    whyUnknownChangesRepairDecision: string;
+    whyHaloCannotResolve: string;
+}
+
+export interface FormalRecommendationContract {
+    state: FormalRecommendationState;
+    proof?: ComprehensiveProofRecord;
+    decisionGap?: DecisionGap;
+    informationFrontierRecord?: InformationFrontierAuditRecord;
+    claimsWithProvenance: ClaimProvenance[];
+    adaptiveSections: {
+        title: string;
+        contentMarkdown: string;
+        prominenceOrder: number;
+    }[];
+}

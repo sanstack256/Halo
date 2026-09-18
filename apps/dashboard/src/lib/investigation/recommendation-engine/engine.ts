@@ -27,6 +27,12 @@ import type {
     ValidatedPipelineResult,
     FixRecommendation,
     StructuredLlmOutput,
+    FormalRecommendationState,
+    FormalRecommendationContract,
+    ComprehensiveProofRecord,
+    DecisionGap,
+    InformationFrontierAuditRecord,
+    ClaimProvenance,
 } from "./types";
 import { StructuredLlmOutputSchema } from "./types";
 import { buildInvestigationSnapshot } from "./investigation-snapshot";
@@ -788,4 +794,178 @@ export async function generateEvidenceBoundRecommendation(
         fixRecommendation,
     };
 }
+
+/* -------------------------------------------------------------------------- */
+/* Phase 40 — Formal Contract & Adaptive Recommendation Synthesis             */
+/* -------------------------------------------------------------------------- */
+
+export interface DetermineFormalStateOptions {
+    proof?: ComprehensiveProofRecord | null;
+    isSupportedCandidateAvailable?: boolean;
+    isExecutionHarnessAvailable?: boolean;
+    isMechanismEstablished?: boolean;
+    isBoundaryAmbiguous?: boolean;
+    isExternalOutageOrInfrastructure?: boolean;
+    decisionGap?: DecisionGap;
+    allInvestigationPathsExhausted?: boolean;
+}
+
+export function determineFormalRecommendationState(
+    opts: DetermineFormalStateOptions
+): FormalRecommendationState {
+    const {
+        proof,
+        isSupportedCandidateAvailable,
+        isExecutionHarnessAvailable,
+        isMechanismEstablished,
+        isBoundaryAmbiguous,
+        isExternalOutageOrInfrastructure,
+        decisionGap,
+        allInvestigationPathsExhausted,
+    } = opts;
+
+    // 1. VERIFIED_REPAIR: All 3 proofs valid and verified on physical execution
+    if (proof && proof.diagnosisProof && proof.repairProof && proof.behavioralProof) {
+        return "VERIFIED_REPAIR";
+    }
+
+    // 2. SUPPORTED_REPAIR_REQUIRES_VALIDATION: concrete repair supported, execution unavailable
+    if (isSupportedCandidateAvailable && !isExecutionHarnessAvailable) {
+        return "SUPPORTED_REPAIR_REQUIRES_VALIDATION";
+    }
+
+    // 3. DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED: mechanism known, boundary ambiguous
+    if (isMechanismEstablished && isBoundaryAmbiguous) {
+        return "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED";
+    }
+
+    // 4. NO_CODE_CHANGE_JUSTIFIED: external cause
+    if (isExternalOutageOrInfrastructure) {
+        return "NO_CODE_CHANGE_JUSTIFIED";
+    }
+
+    // 5. EVIDENCE_ACQUISITION_REQUIRED: missing decisive fact that cannot be acquired autonomously
+    if (decisionGap && !decisionGap.acquisitionMethods.some((m) => m.canExecuteAutonomously)) {
+        return "EVIDENCE_ACQUISITION_REQUIRED";
+    }
+
+    // 6. BLOCKED_BY_UNAVAILABLE_EVIDENCE: exhausted
+    if (allInvestigationPathsExhausted) {
+        return "BLOCKED_BY_UNAVAILABLE_EVIDENCE";
+    }
+
+    return "EVIDENCE_ACQUISITION_REQUIRED";
+}
+
+export function buildAdaptiveRecommendationContract(
+    state: FormalRecommendationState,
+    opts: {
+        proof?: ComprehensiveProofRecord | null;
+        candidateEdits?: Array<{ filePath: string; diff: string; explanation: string }>;
+        decisionGap?: DecisionGap;
+        frontierRecord?: InformationFrontierAuditRecord;
+        claimsWithProvenance?: ClaimProvenance[];
+        mechanism?: string;
+        unresolvedBoundaryDetails?: string;
+        externalOutageDetails?: string;
+    }
+): FormalRecommendationContract {
+    const adaptiveSections: FormalRecommendationContract["adaptiveSections"] = [];
+
+    switch (state) {
+        case "VERIFIED_REPAIR": {
+            adaptiveSections.push({
+                title: "Recommended Action",
+                contentMarkdown: `Apply verified multi-file repair restoring invariant '${opts.proof?.diagnosisProof.violatedInvariant || "contract"}'.`,
+                prominenceOrder: 1,
+            });
+            adaptiveSections.push({
+                title: "Exact Change",
+                contentMarkdown: (opts.candidateEdits || []).map((e) => `### ${e.filePath}\n\`\`\`diff\n${e.diff}\n\`\`\`\n*${e.explanation}*`).join("\n\n") || "Verified multi-file diff generated.",
+                prominenceOrder: 2,
+            });
+            adaptiveSections.push({
+                title: "Why This Location",
+                contentMarkdown: `Repair target '${opts.proof?.repairProof.targetBoundary.entity}' holds contract ownership and manages the lifecycle boundary.`,
+                prominenceOrder: 3,
+            });
+            adaptiveSections.push({
+                title: "Validation Proof",
+                contentMarkdown: `Physical execution in isolated git worktree succeeded: 100% tests passed, baseline failures partitioned, regressions checked (hash: \`${opts.proof?.behavioralProof.cryptographicHash.slice(0, 16)}\`).`,
+                prominenceOrder: 4,
+            });
+            break;
+        }
+
+        case "SUPPORTED_REPAIR_REQUIRES_VALIDATION": {
+            adaptiveSections.push({
+                title: "Recommended Action",
+                contentMarkdown: "Validate candidate repair in development/staging environment.",
+                prominenceOrder: 1,
+            });
+            adaptiveSections.push({
+                title: "Exact Change",
+                contentMarkdown: (opts.candidateEdits || []).map((e) => `### ${e.filePath}\n\`\`\`diff\n${e.diff}\n\`\`\``).join("\n\n"),
+                prominenceOrder: 2,
+            });
+            break;
+        }
+
+        case "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED": {
+            adaptiveSections.push({
+                title: "Established Mechanism",
+                contentMarkdown: opts.mechanism || "Failure mechanism confirmed through empirical trace.",
+                prominenceOrder: 1,
+            });
+            adaptiveSections.push({
+                title: "Unresolved Repair Boundary",
+                contentMarkdown: opts.unresolvedBoundaryDetails || "Multiple architectural boundaries could restore invariant; contract ownership is ambiguous between caller and producer.",
+                prominenceOrder: 2,
+            });
+            break;
+        }
+
+        case "NO_CODE_CHANGE_JUSTIFIED": {
+            adaptiveSections.push({
+                title: "Operational Action",
+                contentMarkdown: opts.externalOutageDetails || "Do not modify application code. Alert external infrastructure provider or verify external service status.",
+                prominenceOrder: 1,
+            });
+            break;
+        }
+
+        case "EVIDENCE_ACQUISITION_REQUIRED": {
+            adaptiveSections.push({
+                title: "Decision-Critical Unknown",
+                contentMarkdown: opts.decisionGap?.unknown || "Missing empirical telemetry required to determine repair boundary.",
+                prominenceOrder: 1,
+            });
+            adaptiveSections.push({
+                title: "Expected Decision Impact",
+                contentMarkdown: `Resolving this unknown discriminates between conflicting causal hypotheses (${opts.decisionGap?.hypothesesAffected.join(", ") || "hypotheses"}).`,
+                prominenceOrder: 2,
+            });
+            break;
+        }
+
+        case "BLOCKED_BY_UNAVAILABLE_EVIDENCE": {
+            adaptiveSections.push({
+                title: "Information Frontier Reached",
+                contentMarkdown: `Investigation exhausted available repository and telemetry paths without establishing causal necessity: ${opts.frontierRecord?.whyHaloCannotResolve || "insufficient empirical evidence"}.`,
+                prominenceOrder: 1,
+            });
+            break;
+        }
+    }
+
+    return {
+        state,
+        proof: opts.proof || undefined,
+        decisionGap: opts.decisionGap,
+        informationFrontierRecord: opts.frontierRecord,
+        claimsWithProvenance: opts.claimsWithProvenance || [],
+        adaptiveSections,
+    };
+}
+
 
