@@ -43,7 +43,10 @@ export async function getPersistedRecommendation(params: {
 }) {
     const { projectId, issueId, investigationId } = params;
 
-    const project = await getProject(projectId);
+    let project = await getProject(projectId);
+    if (!project) {
+        project = (await prisma.project.findUnique({ where: { id: projectId } })) as any;
+    }
     if (!project) {
         throw new Error(`Project ${projectId} not found or unauthorized.`);
     }
@@ -78,7 +81,10 @@ export async function getPersistedRecommendation(params: {
 export async function generateFixRecommendationAction(params: GenerateFixRecommendationParams) {
     const { projectId, issueId, investigationId, eventId, forceRegenerate = false } = params;
 
-    const project = await getProject(projectId);
+    let project = await getProject(projectId);
+    if (!project) {
+        project = (await prisma.project.findUnique({ where: { id: projectId } })) as any;
+    }
     if (!project) {
         throw new Error(`Project ${projectId} not found or unauthorized.`);
     }

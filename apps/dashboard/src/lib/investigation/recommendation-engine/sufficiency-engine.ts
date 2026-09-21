@@ -56,7 +56,13 @@ export function evaluateEvidenceSufficiency(
     }
 
     // 2. Zero telemetry check
-    if (snapshot.investigation.rawEvidence.length === 0) {
+    if (
+        snapshot.investigation.rawEvidence.length === 0 &&
+        !snapshot.runtimeContext?.anchorErrorId &&
+        !snapshot.failure?.stack &&
+        !snapshot.failure?.primaryFrame &&
+        (!snapshot.incident.eventCount || snapshot.incident.eventCount === 0)
+    ) {
         return {
             state: "INSUFFICIENT",
             unresolvedDecision: "Determine whether an incident occurrence actually transpired.",

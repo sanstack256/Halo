@@ -38,7 +38,7 @@ export function determineRepairLocation(
     if (
         snapshot.failure.exceptionType?.includes("ThirdPartyOutage") ||
         excMessage.includes("stripe api is currently down") ||
-        (excMessage.includes("503") && excMessage.includes("currently down"))
+        (excMessage.includes("503") && (excMessage.includes("currently down") || excMessage.includes("outage")))
     ) {
         return {
             type: "NO_CODE_CHANGE",
@@ -100,12 +100,11 @@ export function determineRepairLocation(
 
     // 0d. Adapter Defect
     const isAdapter = Boolean(
-        failingFile?.toLowerCase().includes("adapter") ||
-        failingSymbol?.toLowerCase().includes("adapt") ||
         snapshot.investigation.hypotheses.some(h =>
             h.title?.toLowerCase().includes("adapter") ||
             h.description?.toLowerCase().includes("adapter")
-        )
+        ) ||
+        (Boolean(failingSymbol?.toLowerCase().includes("adapt")) && Boolean(failingFile?.toLowerCase().includes("adapter")))
     );
     if (isAdapter && failingFile) {
         return {
@@ -352,7 +351,8 @@ export function determineRepairLocation(
             failingExpr === p ||
             failingExpr.startsWith(`${p}.`) ||
             failingExpr.startsWith(`${p}[`) ||
-            failingExpr.startsWith(`${p}(`)
+            failingExpr.startsWith(`${p}(`) ||
+            new RegExp(`\\b${p}\\b`).test(failingExpr)
     );
     const accessesCallerParam = Boolean(accessedParam);
 
@@ -436,9 +436,39 @@ export function determineRepairLocation(
         )
     );
 
+    // Case A / Case E: Caller violates explicit required contract
+    if (callerFrame && callerFrame.filePath && callerFrame.filePath !== failingFile) {
+        const isCallerViolationConfirmed = Boolean(
+            (contractAnalysis.hasRuntimeContractViolation && contractAnalysis.calleeContract?.includes("Required")) ||
+            excMessage.includes("missing required") ||
+            excMessage.includes("required parameter") ||
+            snapshot.investigation.hypotheses.some(h =>
+                (h.title?.toLowerCase().includes("caller") || h.description?.toLowerCase().includes("caller")) &&
+                (isHypoConfirmed(h) || (h as any).likelihood === "HIGH")
+            ) ||
+            snapshot.investigation.findings.some(f =>
+                f.title?.toLowerCase().includes("caller") || (f as any).category === "CALLER_CONTRACT_VIOLATION"
+            ) ||
+            Boolean((snapshot.source as any)?.callers && (snapshot.source as any).callers.length > 0)
+        );
+        if (isCallerViolationConfirmed) {
+            return {
+                type: "CALLER",
+                targetFile: callerFrame.filePath,
+                targetSymbol: callerFrame.functionName,
+                lineRange: callerFrame.lineNumber ? { start: callerFrame.lineNumber, end: callerFrame.lineNumber } : undefined,
+                ownershipEstablished: true,
+                contractEvidence: `Caller '${callerFrame.functionName}' violated documented required callee contract${accessedParam ? ` for parameter '${accessedParam}'` : ""}.`,
+                rationale: `Upstream caller '${callerFrame.functionName}' in '${callerFrame.filePath}' passed invalid/undefined argument${accessedParam ? ` '${accessedParam}'` : ""} to '${failingSymbol}' which requires valid input.`,
+                whyNotFailingLine: `Altering '${failingFile}' would mask the caller's contract violation; the fix belongs at the data producer/caller '${callerFrame.filePath}'.`,
+            };
+        }
+    }
+
     if ((isStateMachine || isAsyncRace || isResourceLeak || isLogicDefect || isSerialization || isCollectionBoundary) && sourceAst.hasExactSource && failingFile) {
         return {
             type: "CALLEE",
+            remediationCategory: "REPAIR",
             targetFile: failingFile,
             targetSymbol: failingSymbol,
             lineRange: failingLine ? { start: Math.max(1, failingLine - 2), end: failingLine + 2 } : undefined,
@@ -448,33 +478,6 @@ export function determineRepairLocation(
             rationale: `Defect in internal control flow or invariant inside '${failingSymbol || failingFile}'. Caller is not causal.`,
             whyNotFailingLine: `The defect is in internal logic or lifecycle management in '${failingFile}'.`,
         };
-    }
-
-    // Case A / Case E: Caller violates explicit required contract
-    if (callerFrame && callerFrame.filePath && callerFrame.filePath !== failingFile && accessesCallerParam) {
-        const isCallerViolationConfirmed = Boolean(
-            (contractAnalysis.hasRuntimeContractViolation && contractAnalysis.calleeContract?.includes("Required")) ||
-            snapshot.investigation.hypotheses.some(h =>
-                (h.title?.toLowerCase().includes("caller") || h.description?.toLowerCase().includes("caller")) &&
-                (isHypoConfirmed(h) || (h as any).likelihood === "HIGH")
-            ) ||
-            snapshot.investigation.findings.some(f =>
-                f.title?.toLowerCase().includes("caller")
-            ) ||
-            (snapshot.source as any)?.callers?.length > 0
-        );
-        if (isCallerViolationConfirmed) {
-            return {
-                type: "CALLER",
-                targetFile: callerFrame.filePath,
-                targetSymbol: callerFrame.functionName,
-                lineRange: callerFrame.lineNumber ? { start: callerFrame.lineNumber, end: callerFrame.lineNumber } : undefined,
-                ownershipEstablished: true,
-                contractEvidence: `Caller '${callerFrame.functionName}' violated documented required callee contract for parameter '${accessedParam}'.`,
-                rationale: `Upstream caller '${callerFrame.functionName}' in '${callerFrame.filePath}' passed invalid/undefined argument '${accessedParam}' to '${failingSymbol}' which requires valid input.`,
-                whyNotFailingLine: `Altering '${failingFile}' would mask the caller's contract violation; the fix belongs at the data producer/caller '${callerFrame.filePath}'.`,
-            };
-        }
     }
 
     // Callee with existing validation guard: Function is explicitly designed as a validation boundary

@@ -144,6 +144,7 @@ function detectArchetype(
         msg.includes("invalid transition") ||
         msg.includes("state machine") ||
         msg.includes("unexpected state") ||
+        msg.includes("cannot transition") ||
         expr.includes("state.") ||
         expr.includes(".transition(")
     ) return "STATE_MACHINE";
@@ -226,18 +227,28 @@ function synthesizeSerializationRepair(
     failingExpr: string,
     verifiedCurrent: string
 ): { proposed: string; headline: string; whyFixes: string; test: string } {
-    const proposed = `let data;
-    try {
-        data = JSON.parse(rawInput);
-    } catch (err) {
-        data = {}; // Gracefully handle malformed payload
+    let proposed = `try {
+        return JSON.parse(rawInput);
+    } catch {
+        return {};
     }`;
+
+    if (verifiedCurrent.includes("const ") || verifiedCurrent.includes("let ")) {
+        const varNameMatch = verifiedCurrent.match(/(?:const|let|var)\s+([a-zA-Z0-9_$]+)\s*=/);
+        const varName = varNameMatch ? varNameMatch[1] : "data";
+        proposed = `let ${varName};
+    try {
+        ${varName} = JSON.parse(rawInput);
+    } catch {
+        ${varName} = {};
+    }`;
+    }
 
     return {
         proposed,
-        headline: `Fix JSON parsing error in '${targetSymbol}' with safe try/catch handling`,
-        whyFixes: "Catches malformed JSON safely at parse time, preventing unhandled exceptions.",
-        test: `Add test: verify '${targetSymbol}' handles malformed JSON without crashing.`,
+        headline: `Fix JSON parsing in '${targetSymbol}' — safely handle non-JSON and malformed payloads`,
+        whyFixes: "Safely parses JSON payload and falls back to empty object on non-JSON input instead of unhandled SyntaxError crash.",
+        test: `Add test: verify '${targetSymbol}' handles non-JSON payloads gracefully.`,
     };
 }
 
@@ -290,13 +301,18 @@ function synthesizeStateMachineRepair(
     failingExpr: string,
     verifiedCurrent: string
 ): { proposed: string; headline: string; whyFixes: string; test: string } {
-    const proposed = `this.state = newState;\n        return this.state;`;
+    const proposed = `// Enforce state transition invariant
+        if (typeof this.canTransition === "function" && !this.canTransition(newState)) {
+            throw new Error(\`IllegalStateTransition: Cannot transition from \${this.state} to \${newState}\`);
+        }
+        this.state = newState;
+        return this.state;`;
 
     return {
         proposed,
-        headline: `Fix state machine invalid transition in '${targetSymbol || targetFile}'`,
-        whyFixes: "Guards against invalid state transitions gracefully without throwing fatal errors.",
-        test: `Add test: verify '${targetSymbol}' safely handles invalid transitions.`,
+        headline: `Fix state machine transition invariant in '${targetSymbol || targetFile}'`,
+        whyFixes: "Enforces transition prerequisite invariants before state mutation, preventing illegal state corruption.",
+        test: `Add test: verify '${targetSymbol}' validates state prerequisites before transitioning.`,
     };
 }
 
@@ -473,18 +489,15 @@ function synthesizeNullDereferenceRepair(
         };
     }
 
-    // Property access dereference repair (e.g. record.metadata.flags.priority)
+    // Property access dereference: safe navigation when accessing nested properties on an object
     if (failingExpr.includes(".") && verifiedCurrent.includes(failingExpr)) {
-        const safeExpr = failingExpr.replace(/\./g, "?.");
-        let proposed = verifiedCurrent.replace(failingExpr, safeExpr);
-        if (proposed.includes("flags.priority")) {
-            proposed = proposed.replace("flags.priority", "flags?.priority");
-        }
+        const safeExpr = failingExpr.replace(/\.([a-zA-Z0-9_$]+)/g, "?.$1");
+        const proposed = verifiedCurrent.replace(failingExpr, safeExpr);
         return {
             proposed,
-            headline: `Fix null dereference in '${targetSymbol || targetFile}' — add safe optional navigation`,
-            whyFixes: "Prevents TypeError by safely evaluating nested properties that may be undefined at runtime.",
-            test: `Add test: verify '${targetSymbol}' safely returns undefined when nested properties are absent.`,
+            headline: `Fix optional navigation in '${targetSymbol || targetFile}' — satisfy optional contract`,
+            whyFixes: "Safely evaluates property navigation without throwing TypeError.",
+            test: `Add test: verify '${targetSymbol}' safely handles absent optional property.`,
         };
     }
 

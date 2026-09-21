@@ -111,6 +111,8 @@ export function evaluateCausalRegressionGate(params: {
     // Question 2: Where did it execute?
     const executesOnFailurePath =
         candidate.executionRelevance === "ACTIVE_EXECUTION_PATH_PROVEN" ||
+        candidate.executionRelevance === "CALL_GRAPH_REACHABLE" ||
+        candidate.executionRelevance === "DEFINITIVE_ON_PATH" ||
         Boolean((candidate as any).directlyModifiesFailingLine) ||
         Boolean(candidate.modifiesFailingFile);
 
@@ -128,6 +130,7 @@ export function evaluateCausalRegressionGate(params: {
         candidate.behavioralRelevance === "RESOURCE_LIFECYCLE_ALTERED" ||
         candidate.behavioralRelevance === "ERROR_HANDLING_ALTERED" ||
         candidate.behavioralRelevance === "CONFIGURATION_ALTERED" ||
+        candidate.behavioralRelevance === "ALTERS_OBSERVED_BEHAVIOR" ||
         Boolean((candidate as any).directlyModifiesFailingLine) ||
         candidate.classification === "STRONGLY_SUPPORTED_REGRESSION" ||
         candidate.classification === "CONFIRMED_REGRESSION";
@@ -139,7 +142,9 @@ export function evaluateCausalRegressionGate(params: {
     }
 
     // Question 4 & 5: What mechanism does that behavior create, and does it explain this occurrence?
-    const isMechanismConfirmed = causalState.failureMechanism.status === "CONFIRMED";
+    const isMechanismConfirmed =
+        causalState.failureMechanism.status === "CONFIRMED" ||
+        candidate.causalSupport === "CAUSALLY_PROVEN";
     if (!isMechanismConfirmed) {
         causalityQuestions.push(
             `Failure mechanism is '${causalState.failureMechanism.status}'; a commit cannot be identified as causal while the failure mechanism itself remains unknown.`

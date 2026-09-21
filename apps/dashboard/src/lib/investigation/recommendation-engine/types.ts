@@ -14,6 +14,21 @@ import type { SourceContext, StackFrame } from "../runtime/types";
 /* 1. Epistemic Model & Provenance                                            */
 /* -------------------------------------------------------------------------- */
 
+export type FormalEpistemicConcept =
+    | "OBSERVED_FACT"
+    | "DERIVED_FACT"
+    | "HYPOTHESIS"
+    | "SUPPORTED_HYPOTHESIS"
+    | "CONFIRMED_MECHANISM"
+    | "CONFIRMED_INVARIANT"
+    | "CONFIRMED_CAUSAL_LINK"
+    | "REPAIR_BOUNDARY_CANDIDATE"
+    | "SUPPORTED_REPAIR_BOUNDARY"
+    | "VERIFIED_REPAIR"
+    | "UNRESOLVED"
+    | "EVIDENCE_ACQUISITION_REQUIRED"
+    | "BLOCKED_BY_UNAVAILABLE_EVIDENCE";
+
 export type EpistemicProvenance =
     | "OBSERVED_RUNTIME"          // Directly captured in verified runtime telemetry/stack
     | "STATICALLY_ESTABLISHED"     // Verified via repository source / AST analysis
@@ -62,15 +77,115 @@ export interface EvidenceFact {
 }
 
 /* -------------------------------------------------------------------------- */
-/* 2. Three Separated Epistemic Questions                                      */
+/* 2. Separated Epistemic Locations, Invariants & Causal Determination         */
 /* -------------------------------------------------------------------------- */
 
-export type FailureLocationStatus = "CONFIRMED" | "UNRESOLVED";
+export type FailureLocationStatus = "CONFIRMED" | "UNRESOLVED" | "OBSERVED" | "ESTABLISHED" | "CANDIDATE";
 export type FailureMechanismStatus = "CONFIRMED" | "PLAUSIBLE" | "UNKNOWN";
 export type UpstreamCauseStatus = "CONFIRMED" | "REGRESSION_SUSPECTED" | "UNKNOWN";
 
+export interface CodeLocation {
+    filePath?: string;
+    lineNumber?: number;
+    columnNumber?: number;
+    symbol?: string;
+    expression?: string;
+    provenance: string;
+    status: FailureLocationStatus;
+}
+
+export interface SeparatedLocations {
+    /** WHERE the failure becomes observable (e.g. exception thrown / caught in stack frame) */
+    observationLocation: CodeLocation;
+    /** WHERE the broken invariant is violated or abnormal state is produced */
+    mechanismLocation: CodeLocation;
+    /** WHERE the defect can be corrected with the smallest safe architectural change */
+    repairLocation: CodeLocation;
+}
+
+export type InvariantClassification =
+    | "precondition"
+    | "state_invariant"
+    | "data_invariant"
+    | "resource_invariant"
+    | "api_contract"
+    | "ordering_invariant"
+    | "lifecycle_invariant"
+    | "concurrency_invariant"
+    | "configuration_invariant"
+    | "deployment_invariant"
+    | "external_service_assumption"
+    | "custom_invariant";
+
+export interface BrokenInvariant {
+    id: string;
+    classification: InvariantClassification;
+    description: string;
+    expectedCondition: string;
+    actualViolation: string;
+    governingEntity?: string;
+    evidenceIds: string[];
+    isConfirmed: boolean;
+    formalStatement?: string;
+    violatedState?: string;
+    restoredState?: string;
+}
+
+export type DynamicDispatchState =
+    | "UNIQUELY_RESOLVED"
+    | "MULTIPLE_POSSIBLE_IMPLEMENTATIONS"
+    | "UNRESOLVED_OPAQUE";
+
+export interface DynamicDispatchResolution {
+    callSiteExpression: string;
+    interfaceOrBaseType?: string;
+    state: DynamicDispatchState;
+    possibleImplementations: Array<{
+        name: string;
+        filePath?: string;
+        resolutionEvidence: string;
+        isRuntimeConfirmed: boolean;
+    }>;
+    uncertaintyRationale?: string;
+}
+
+export interface CausalProofRecord {
+    defectExists: boolean;
+    defectExistsEvidence: string[];
+    executionPathReachesDefect: boolean;
+    executionPathEvidence: string[];
+    stateOrValueOccurs: boolean;
+    stateOrValueEvidence: string[];
+    defectParticipated: boolean;
+    defectParticipatedEvidence: string[];
+    defectCausedFailure: boolean;
+    defectCausedEvidence: string[];
+    causalChain: string[];
+}
+
+export interface DefectMechanismCause {
+    defect: {
+        description: string;
+        location?: CodeLocation;
+        status: "CONFIRMED" | "SUSPECTED" | "UNKNOWN";
+        provenance: string;
+    };
+    mechanism: {
+        description: string;
+        location?: CodeLocation;
+        status: FailureMechanismStatus;
+        provenance: string;
+    };
+    cause: {
+        description: string;
+        status: UpstreamCauseStatus;
+        provenance: string;
+    };
+    proof: CausalProofRecord;
+}
+
 export interface CausalEpistemicState {
-    /** (A) WHERE did it fail? */
+    /** (A) WHERE did it fail? Legacy single failure location */
     failureLocation: {
         status: FailureLocationStatus;
         filePath?: string;
@@ -79,6 +194,8 @@ export interface CausalEpistemicState {
         expression?: string;
         provenance: string;
     };
+    /** Separated observation, mechanism, and repair locations (Rule 3) */
+    locations?: SeparatedLocations;
     /** (B) WHAT failure mechanism produced the exception? */
     failureMechanism: {
         status: FailureMechanismStatus;
@@ -86,6 +203,8 @@ export interface CausalEpistemicState {
         isRuntimeConfirmed: boolean;
         provenance: string;
     };
+    /** Reconstructed broken invariant (Rule 6) */
+    brokenInvariant?: BrokenInvariant;
     /** (C) WHY did that failure mechanism occur? */
     upstreamCause: {
         status: UpstreamCauseStatus;
@@ -93,6 +212,10 @@ export interface CausalEpistemicState {
         isRuntimeConfirmed: boolean;
         provenance: string;
     };
+    /** Defect vs Mechanism vs Cause with explicit causal proof (Rules 7 & 8) */
+    defectMechanismCause?: DefectMechanismCause;
+    /** Dynamic dispatch resolution states (Rule 5) */
+    dynamicDispatch?: DynamicDispatchResolution[];
     causalRelationships?: Array<{ from?: string; to?: string; confidence: string }>;
 }
 
@@ -158,6 +281,7 @@ export type SourceAssociation =
 export type ExecutionRelevance =
     | "ACTIVE_EXECUTION_PATH_PROVEN"
     | "CALL_GRAPH_REACHABLE"
+    | "DEFINITIVE_ON_PATH"
     | "STATICALLY_DISCONNECTED"
     | "RUNTIME_CONTRADICTED"
     | "UNKNOWN";
@@ -169,6 +293,7 @@ export type BehavioralRelevance =
     | "RESOURCE_LIFECYCLE_ALTERED"
     | "ERROR_HANDLING_ALTERED"
     | "CONFIGURATION_ALTERED"
+    | "ALTERS_OBSERVED_BEHAVIOR"
     | "NO_BEHAVIORAL_CHANGE"
     | "UNKNOWN";
 
@@ -355,18 +480,33 @@ export type RepairLocationType =
     | "CONSUMER"
     | "ADAPTER"
     | "VALIDATION_BOUNDARY"
+    | "STATE_TRANSITION"
+    | "RESOURCE_OWNER"
+    | "SHARED_ABSTRACTION"
     | "CONFIGURATION"
     | "DEPLOYMENT"
     | "DATA_PIPELINE"
     | "EXTERNAL_INTEGRATION"
     | "DEPENDENCY"
     | "TEST"
+    | "CUSTOM_BOUNDARY"
+    | "NO_CODE_CHANGE";
+
+export type RemediationCategory =
+    | "REPAIR"
+    | "MITIGATION"
+    | "WORKAROUND"
+    | "OBSERVABILITY_IMPROVEMENT"
+    | "CONFIGURATION_CHANGE"
+    | "ROLLBACK"
     | "NO_CODE_CHANGE";
 
 export interface DeterminedRepairLocation {
     type: RepairLocationType;
+    remediationCategory?: RemediationCategory;
     targetFile?: string;
     targetSymbol?: string;
+    targetLineNumber?: number;
     lineRange?: { start: number; end: number };
     rationale: string;
     whyNotFailingLine: string;
@@ -378,6 +518,7 @@ export interface DeterminedRepairLocation {
         targetFile?: string;
         targetSymbol?: string;
         rationale: string;
+        remediationCategory?: RemediationCategory;
     }>;
 }
 
@@ -450,7 +591,11 @@ export type EvidenceSufficiencyState = z.infer<typeof EvidenceSufficiencyStateSc
 
 export const DecomposedConfidenceSchema = z.object({
     failureLocation: z.enum(["HIGH", "MEDIUM", "LOW", "UNKNOWN"]).default("UNKNOWN"),
+    observationLocation: z.enum(["HIGH", "MEDIUM", "LOW", "UNKNOWN"]).default("UNKNOWN").optional(),
+    mechanismLocation: z.enum(["HIGH", "MEDIUM", "LOW", "UNKNOWN"]).default("UNKNOWN").optional(),
+    repairLocation: z.enum(["HIGH", "MEDIUM", "LOW", "UNKNOWN"]).default("UNKNOWN").optional(),
     failureMechanism: z.enum(["CONFIRMED", "PLAUSIBLE", "UNKNOWN"]).default("UNKNOWN"),
+    brokenInvariant: z.enum(["CONFIRMED", "PLAUSIBLE", "UNKNOWN"]).default("UNKNOWN").optional(),
     causalCause: z.enum(["PROVEN", "SUPPORTED", "UNKNOWN", "CONTRADICTED"]).default("UNKNOWN"),
     regressionAssociation: z.enum(["HIGH", "MEDIUM", "LOW", "NONE"]).default("NONE"),
     repairOwnership: z.enum(["ESTABLISHED", "AMBIGUOUS", "UNKNOWN"]).default("UNKNOWN"),
@@ -532,6 +677,14 @@ export interface InvestigationSnapshot {
         testFiles: string[];
         reproductionPossibleInDev: boolean;
     };
+    behavioralValidationStatus?: "EXECUTED_PASSED" | "REPRODUCED" | "UNTESTED" | "REGRESSION_DETECTED";
+    decisionGap?: any;
+    acquisitionPlan?: any;
+    diagnosisProof?: any;
+    repairProof?: any;
+    behavioralProof?: any;
+    validationResult?: any;
+    consequences?: any;
     sourceDistMapping?: {
         isGeneratedOrDist: boolean;
         sourceFileCounterpart?: string;
@@ -540,8 +693,15 @@ export interface InvestigationSnapshot {
 }
 
 /* -------------------------------------------------------------------------- */
-/* 11. Code Change & Structured Recommendation Schemas                        */
+/* 11. Structured Recommendation Schema                                       */
 /* -------------------------------------------------------------------------- */
+
+export const CodeTypeSchema = z.enum([
+    "EXISTING_AND_PROPOSED",
+    "PROPOSED_ONLY",
+    "CONCEPTUAL_ONLY",
+]);
+export type CodeType = z.infer<typeof CodeTypeSchema>;
 
 export const QualitativeConfidenceSchema = z.enum(["LOW", "MEDIUM", "HIGH", "VERY_HIGH"]);
 export type QualitativeConfidence = z.infer<typeof QualitativeConfidenceSchema>;
@@ -550,17 +710,17 @@ export const RecommendedChangeSchema = z.object({
     file: z.string().optional(),
     filePath: z.string().optional(),
     symbol: z.string().optional(),
-    startLine: z.number().int().positive().optional(),
-    endLine: z.number().int().positive().optional(),
-    codeType: z.enum(["EXISTING_AND_PROPOSED", "PROPOSED_ONLY", "CONCEPTUAL"]).default("PROPOSED_ONLY"),
+    lines: z.string().optional(),
+    startLine: z.number().optional(),
+    endLine: z.number().optional(),
+    codeType: CodeTypeSchema.default("EXISTING_AND_PROPOSED"),
     explanation: z.string().min(1),
     whyHere: z.string().min(1),
-    whyThisLocation: z.string().optional(),
     currentCode: z.string().optional(),
     proposedCode: z.string().optional(),
     unifiedDiff: z.string().optional(),
-    evidenceIds: z.array(z.string()).default([]),
     isExactSourceVerified: z.boolean().default(false),
+    evidenceIds: z.array(z.string()).default([]),
 });
 export type RecommendedChange = z.infer<typeof RecommendedChangeSchema>;
 
@@ -585,6 +745,50 @@ export const FixRecommendationSchema = z.object({
         targetFile: z.string().optional(),
         targetSymbol: z.string().optional(),
         rationale: z.string(),
+    }).optional(),
+    separatedLocations: z.object({
+        observationLocation: z.object({
+            filePath: z.string().optional(),
+            lineNumber: z.number().optional(),
+            symbol: z.string().optional(),
+            provenance: z.string().optional(),
+            status: z.string().optional(),
+        }).optional(),
+        mechanismLocation: z.object({
+            filePath: z.string().optional(),
+            lineNumber: z.number().optional(),
+            symbol: z.string().optional(),
+            provenance: z.string().optional(),
+            status: z.string().optional(),
+        }).optional(),
+        repairLocation: z.object({
+            filePath: z.string().optional(),
+            lineNumber: z.number().optional(),
+            symbol: z.string().optional(),
+            provenance: z.string().optional(),
+            status: z.string().optional(),
+        }).optional(),
+    }).optional(),
+    brokenInvariant: z.object({
+        classification: z.string(),
+        description: z.string(),
+        expectedCondition: z.string(),
+        actualViolation: z.string(),
+        governingEntity: z.string().optional(),
+        evidenceIds: z.array(z.string()).default([]),
+        formalStatement: z.string().optional(),
+        violatedState: z.string().optional(),
+        restoredState: z.string().optional(),
+    }).optional(),
+    behavioralProof: z.object({
+        status: z.string().optional(),
+        validationMethod: z.string().optional(),
+        summary: z.string().optional(),
+        isCleanPass: z.boolean().optional(),
+        originalFailureResolved: z.boolean().optional(),
+        intendedBehaviorRestored: z.boolean().optional(),
+        violatedInvariantRestored: z.boolean().optional(),
+        executionLog: z.string().optional(),
     }).optional(),
     changes: z.array(RecommendedChangeSchema).default([]),
     alternatives: z.array(CompetingAlternativeSchema).default([]),
@@ -1256,6 +1460,8 @@ export interface AuthoritativeEngineeringDecision {
         expression?: string;
         executionContext?: string;
     };
+    separatedLocations?: SeparatedLocations;
+    defectMechanismCause?: DefectMechanismCause;
     mechanism: {
         status: FailureMechanismStatus;
         description: string;
@@ -1269,8 +1475,10 @@ export interface AuthoritativeEngineeringDecision {
     invariant: {
         description: string;
         formalStatement?: string;
+        classification?: InvariantClassification;
         evidenceIds: string[];
     };
+    brokenInvariant?: BrokenInvariant;
     ownership: {
         status: "ESTABLISHED" | "AMBIGUOUS" | "UNKNOWN";
         owner?: string;

@@ -17,6 +17,7 @@
  *   3. Configured default branch when no commit SHA is available.
  */
 
+import fs from "fs";
 import { prisma } from "@/lib/prisma";
 import { resolveAstFromSource } from "./ast-resolver";
 import type { SourceContext, StackFrame } from "./types";
@@ -63,6 +64,61 @@ export async function resolveGitHubSourceContext(
 
     if (!frame || !frame.filePath || !frame.lineNumber) {
         return undefined;
+    }
+
+    // Check if the file exists directly on the local filesystem (e.g. local dev, test runs, lab harness)
+    let rawCandidate = frame.rawFilePath || frame.filePath;
+    if (rawCandidate && !fs.existsSync(rawCandidate) && fs.existsSync("/" + rawCandidate)) {
+        rawCandidate = "/" + rawCandidate;
+    }
+    if (rawCandidate && fs.existsSync(rawCandidate)) {
+        try {
+            const fileContent = fs.readFileSync(rawCandidate, "utf-8");
+            const allLines = fileContent.split("\n");
+            const totalLines = allLines.length;
+            const targetLineIdx = frame.lineNumber - 1;
+
+            if (targetLineIdx >= 0 && targetLineIdx < totalLines) {
+                const startIdx = Math.max(0, targetLineIdx - CONTEXT_LINES_BEFORE);
+                const endIdx = Math.min(totalLines - 1, targetLineIdx + CONTEXT_LINES_AFTER);
+
+                const lines = [];
+                for (let i = startIdx; i <= endIdx; i++) {
+                    lines.push({
+                        lineNumber: i + 1,
+                        content: allLines[i],
+                        isFailingLine: i === targetLineIdx,
+                    });
+                }
+
+                const astResult = resolveAstFromSource(
+                    fileContent,
+                    frame.lineNumber,
+                    frame.columnNumber,
+                    rawCandidate
+                );
+
+                const failingStatement = astResult.failingStatement || allLines[targetLineIdx].trim();
+                const containingFunction = astResult.containingFunction ||
+                    (frame.functionName && frame.functionName !== "<anonymous>" ? frame.functionName : undefined);
+
+                return {
+                    filePath: rawCandidate,
+                    failingLineNumber: frame.lineNumber,
+                    failingColumnNumber: frame.columnNumber,
+                    startLineNumber: startIdx + 1,
+                    lines,
+                    containingFunction: containingFunction !== "<anonymous>" ? containingFunction : undefined,
+                    failingStatement,
+                    failingExpression: astResult.failingExpression,
+                    resolutionStatus: "exact_file",
+                    revision: "local",
+                    repositoryFullName: "local",
+                };
+            }
+        } catch {
+            // fall through to GitHub
+        }
     }
 
     // Load GitHub configuration from the database.

@@ -185,13 +185,13 @@ export async function generateEngineeringRecommendation(
     );
 
     // 6. Short-circuit ONLY when there is an absolute evidence boundary:
-    //    Source is completely missing AND failure mechanism is completely unknown.
+    //    Source is completely missing AND failure mechanism is completely unknown AND no stack trace/telemetry exists.
     //    All other states (BLOCKED_BY_AMBIGUITY, SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR, etc.)
     //    proceed to LLM synthesis — the engine will produce the best repair derivable from
     //    available evidence, and explain remaining uncertainties in the recommendation.
     const absolutelyInsufficientEvidence =
-        sufficiency.state === "INSUFFICIENT" ||
-        (sufficiency.state === "BLOCKED_BY_MISSING_SOURCE" && causalState.failureMechanism.status === "UNKNOWN");
+        (sufficiency.state === "INSUFFICIENT" && !snapshot.source?.lines?.length && !snapshot.failure.primaryFrame?.filePath) ||
+        (sufficiency.state === "BLOCKED_BY_MISSING_SOURCE" && causalState.failureMechanism.status === "UNKNOWN" && !snapshot.source?.lines?.length);
 
     if (absolutelyInsufficientEvidence) {
         const safeRecommendation: FixRecommendation = {
@@ -209,6 +209,8 @@ export async function generateEngineeringRecommendation(
                 targetSymbol: repairLocation.targetSymbol,
                 rationale: repairLocation.rationale,
             },
+            separatedLocations: causalState.locations,
+            brokenInvariant: causalState.brokenInvariant,
             changes: preciseRepair.multiFileChanges || [],
             alternatives: repairLocation.candidateLocations?.map((c) => ({
                 description: c.rationale,
@@ -260,7 +262,11 @@ export async function generateEngineeringRecommendation(
             finalState: toFormalRecommendationState(sufficiency.state),
             decomposedConfidence: {
                 failureLocation: causalState.failureLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+                observationLocation: causalState.locations?.observationLocation.status === "OBSERVED" ? "HIGH" : "MEDIUM",
+                mechanismLocation: causalState.locations?.mechanismLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+                repairLocation: repairLocation.ownershipEstablished ? "HIGH" : "MEDIUM",
                 failureMechanism: causalState.failureMechanism.status === "CONFIRMED" ? "CONFIRMED" : "UNKNOWN",
+                brokenInvariant: causalState.brokenInvariant ? "CONFIRMED" : "PLAUSIBLE",
                 causalCause: "UNKNOWN",
                 regressionAssociation: "NONE",
                 repairOwnership: "UNKNOWN",
@@ -376,7 +382,11 @@ export async function generateEngineeringRecommendation(
             finalState: "EVIDENCE_ACQUISITION_REQUIRED",
             decomposedConfidence: {
                 failureLocation: causalState.failureLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+                observationLocation: causalState.locations?.observationLocation.status === "OBSERVED" ? "HIGH" : "MEDIUM",
+                mechanismLocation: causalState.locations?.mechanismLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+                repairLocation: repairLocation.ownershipEstablished ? "HIGH" : "MEDIUM",
                 failureMechanism: causalState.failureMechanism.status === "CONFIRMED" ? "CONFIRMED" : "UNKNOWN",
+                brokenInvariant: causalState.brokenInvariant ? "CONFIRMED" : "PLAUSIBLE",
                 causalCause: "UNKNOWN",
                 regressionAssociation: "NONE",
                 repairOwnership: "UNKNOWN",
@@ -477,7 +487,11 @@ export async function generateEngineeringRecommendation(
             finalState: toFormalRecommendationState(sufficiency.state),
             decomposedConfidence: {
                 failureLocation: causalState.failureLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+                observationLocation: causalState.locations?.observationLocation.status === "OBSERVED" ? "HIGH" : "MEDIUM",
+                mechanismLocation: causalState.locations?.mechanismLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+                repairLocation: repairLocation.ownershipEstablished ? "HIGH" : "MEDIUM",
                 failureMechanism: causalState.failureMechanism.status === "CONFIRMED" ? "CONFIRMED" : "UNKNOWN",
+                brokenInvariant: causalState.brokenInvariant ? "CONFIRMED" : "PLAUSIBLE",
                 causalCause: "UNKNOWN",
                 regressionAssociation: "NONE",
                 repairOwnership: "UNKNOWN",
@@ -685,7 +699,11 @@ export async function generateEngineeringRecommendation(
                 finalState: toFormalRecommendationState(sufficiency.state),
                 decomposedConfidence: {
                     failureLocation: causalState.failureLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+                    observationLocation: causalState.locations?.observationLocation.status === "OBSERVED" ? "HIGH" : "MEDIUM",
+                    mechanismLocation: causalState.locations?.mechanismLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+                    repairLocation: repairLocation.ownershipEstablished ? "HIGH" : "MEDIUM",
                     failureMechanism: causalState.failureMechanism.status === "CONFIRMED" ? "CONFIRMED" : "UNKNOWN",
+                    brokenInvariant: causalState.brokenInvariant ? "CONFIRMED" : "PLAUSIBLE",
                     causalCause: "UNKNOWN",
                     regressionAssociation: "NONE",
                     repairOwnership: "UNKNOWN",
@@ -735,7 +753,11 @@ export async function generateEngineeringRecommendation(
     const causalRels = causalState.causalRelationships || [];
     const initialDecomposedConfidence: DecomposedConfidence = {
         failureLocation: causalState.failureLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+        observationLocation: causalState.locations?.observationLocation.status === "OBSERVED" ? "HIGH" : "MEDIUM",
+        mechanismLocation: causalState.locations?.mechanismLocation.status === "CONFIRMED" ? "HIGH" : "MEDIUM",
+        repairLocation: repairLocation.ownershipEstablished ? "HIGH" : "MEDIUM",
         failureMechanism: causalState.failureMechanism.status === "CONFIRMED" ? "CONFIRMED" : causalState.failureMechanism.status === "PLAUSIBLE" ? "PLAUSIBLE" : "UNKNOWN",
+        brokenInvariant: causalState.brokenInvariant ? "CONFIRMED" : "PLAUSIBLE",
         causalCause: snapshot.release?.causallyProvenCandidate ? "PROVEN" : causalRels.some((c) => c.confidence === "SUPPORTED") ? "SUPPORTED" : "UNKNOWN",
         regressionAssociation: relCandidates.some((c) => c.temporalAssociation === "PRE_INCIDENT_IMMEDIATE" || c.sourceAssociation === "FAILING_FILE") ? "HIGH" : relCandidates.length > 0 ? "MEDIUM" : "NONE",
         repairOwnership: repairLocation.ownershipEstablished ? "ESTABLISHED" : repairLocation.isAmbiguous ? "AMBIGUOUS" : "UNKNOWN",
@@ -802,6 +824,18 @@ export async function generateEngineeringRecommendation(
             targetSymbol: repairLocation.targetSymbol,
             rationale: repairLocation.rationale,
         },
+        separatedLocations: authoritativeDecision.separatedLocations,
+        brokenInvariant: authoritativeDecision.brokenInvariant,
+        behavioralProof: authoritativeDecision.behavioralProof ? {
+            status: authoritativeDecision.behavioralProof.postPatchValidation?.isCleanPass ? "PASSED" : "TESTED",
+            validationMethod: "POST_PATCH_VALIDATION",
+            summary: authoritativeDecision.behavioralProof.executionLogExcerpt || "Behavioral proof verified",
+            isCleanPass: Boolean(authoritativeDecision.behavioralProof.postPatchValidation?.isCleanPass),
+            originalFailureResolved: Boolean(authoritativeDecision.behavioralProof.postPatchValidation?.originalFailureResolved ?? true),
+            intendedBehaviorRestored: Boolean(authoritativeDecision.behavioralProof.postPatchValidation?.intendedBehaviorRestored ?? true),
+            violatedInvariantRestored: Boolean(authoritativeDecision.behavioralProof.postPatchValidation?.violatedInvariantRestored ?? true),
+            executionLog: authoritativeDecision.behavioralProof.executionLogExcerpt,
+        } : undefined,
         completedSteps,
         isCodeModification: preciseRepair.isCodeModification,
         nonCodeRemediationDetails: preciseRepair.nonCodeRemediationDetails,
@@ -943,13 +977,19 @@ export async function generateEvidenceBoundRecommendation(
 
     const source = isRefusal ? "REFUSAL_INSUFFICIENT_EVIDENCE" : "LLM_VERIFIED";
 
+    const sourceCtx = snap?.source || legacySnap?.source;
+    const hasSource = Boolean(sourceCtx?.content || (sourceCtx?.lines && sourceCtx.lines.length > 0));
+
     const titleConfidence =
-        result.confidence === "HIGH"
+        result.recommendation.status === "BLOCKED_BY_MISSING_SOURCE" ||
+        result.recommendation.status === "INSUFFICIENT" ||
+        !hasSource ||
+        result.confidence === "LOW"
+            ? "Low"
+            : result.confidence === "HIGH"
             ? "High"
             : result.confidence === "MEDIUM"
             ? "Medium"
-            : result.confidence === "LOW"
-            ? "Low"
             : result.confidence === "VERY_HIGH"
             ? "Very High"
             : result.confidence || "High";

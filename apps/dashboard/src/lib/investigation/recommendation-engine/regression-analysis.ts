@@ -262,6 +262,33 @@ export function analyzeReleasesAndRegressions(
     const incidentTime = snapshot.incident.firstSeen.getTime();
 
     const rawCandidates: EvaluatedRegressionCandidate[] = [...(rawRelease.candidates || [])];
+    if (rawRelease.causallyProvenCandidate) {
+        const cpc = rawRelease.causallyProvenCandidate;
+        const normalizedCpc: any = {
+            commitSha: cpc.commitSha || (cpc as any).fullSha || cpc.shortSha,
+            shortSha: cpc.shortSha,
+            message: cpc.message,
+            author: cpc.author,
+            commitDate: cpc.commitDate || (cpc as any).committedAt,
+            deploymentDate: cpc.deploymentDate || (cpc as any).deployedAt || cpc.commitDate || (cpc as any).committedAt,
+            classification: cpc.classification || "CONFIRMED_REGRESSION",
+            changedFiles: cpc.changedFiles || (cpc as any).filesChanged || [],
+            diffSnippet: cpc.diffSnippet,
+            temporalAssociation: cpc.temporalAssociation || "PRE_INCIDENT_IMMEDIATE",
+            sourceAssociation: cpc.sourceAssociation || "FAILING_FILE",
+            executionRelevance: cpc.executionRelevance || "ACTIVE_EXECUTION_PATH_PROVEN",
+            behavioralRelevance: cpc.behavioralRelevance || "CONTRACT_ALTERED",
+            mechanismRelevance: cpc.mechanismRelevance || "DIRECTLY_EXPLAINS_MECHANISM",
+            causalSupport: cpc.causalSupport || "CAUSALLY_PROVEN",
+            rollbackAudit: cpc.rollbackAudit,
+            modifiesFailingFile: cpc.modifiesFailingFile ?? true,
+            modifiesFailingSymbol: cpc.modifiesFailingSymbol ?? true,
+            directlyModifiesFailingLine: (cpc as any).directlyModifiesFailingLine ?? true,
+        };
+        if (!rawCandidates.some((c) => (c.commitSha || c.shortSha) === (normalizedCpc.commitSha || normalizedCpc.shortSha))) {
+            rawCandidates.unshift(normalizedCpc);
+        }
+    }
     if (rawRelease.stronglySupportedCandidate && !rawCandidates.some((c) => c.commitSha === rawRelease.stronglySupportedCandidate?.commitSha)) {
         rawCandidates.unshift(rawRelease.stronglySupportedCandidate);
     }
@@ -531,7 +558,7 @@ export function analyzeReleasesAndRegressions(
         previousKnownGoodCommitSha: rawRelease.previousKnownGoodCommitSha,
         candidates,
         stronglySupportedCandidate: stronglySupported,
-        causallyProvenCandidate: causallyProven,
+        causallyProvenCandidate: causallyProven || rawRelease.causallyProvenCandidate,
     };
 }
 

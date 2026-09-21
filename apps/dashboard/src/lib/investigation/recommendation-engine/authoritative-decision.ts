@@ -36,6 +36,7 @@ import type {
     RepairEquivalenceRecord,
     ClaimProvenance,
     AuthoritativeEngineeringDecision,
+    FailureLocationStatus,
 } from "./types";
 import type { CausalRegressionGateVerdict } from "./causal-regression-gate";
 
@@ -154,20 +155,46 @@ export function buildAuthoritativeEngineeringDecision(
         });
     }
 
+    const separatedLocations = {
+        observationLocation: causalState.locations?.observationLocation || {
+            filePath: snapshot.failure.primaryFrame?.filePath || snapshot.source?.filePath,
+            lineNumber: snapshot.failure.primaryFrame?.lineNumber || snapshot.source?.failingLineNumber,
+            symbol: snapshot.failure.primaryFrame?.functionName || snapshot.source?.containingFunction,
+            status: "OBSERVED" as FailureLocationStatus,
+            provenance: "Primary frame observation",
+        },
+        mechanismLocation: causalState.locations?.mechanismLocation || {
+            filePath: causalState.failureLocation?.filePath || snapshot.source?.filePath,
+            lineNumber: causalState.failureLocation?.lineNumber || snapshot.source?.failingLineNumber,
+            symbol: causalState.failureLocation?.symbol || snapshot.source?.containingFunction,
+            status: (causalState.failureLocation?.status || "UNRESOLVED") as FailureLocationStatus,
+            provenance: failureLocationProvenance,
+        },
+        repairLocation: {
+            filePath: repairLocation?.targetFile || causalState.locations?.repairLocation?.filePath || causalState.failureLocation?.filePath || snapshot.source?.filePath,
+            lineNumber: (repairLocation as any)?.targetLineNumber || repairLocation?.lineRange?.start || causalState.locations?.repairLocation?.lineNumber || causalState.failureLocation?.lineNumber || snapshot.source?.failingLineNumber,
+            symbol: repairLocation?.targetSymbol || causalState.locations?.repairLocation?.symbol || causalState.failureLocation?.symbol || snapshot.source?.containingFunction,
+            status: (repairLocation?.ownershipEstablished ? "ESTABLISHED" : "CANDIDATE") as FailureLocationStatus,
+            provenance: repairLocation?.rationale || "Determined repair boundary",
+        },
+    };
+
     return {
         occurrenceId: snapshot.incident.issueId || "halo-incident",
         investigationVersion: snapshot.incident.eventCount || 1,
         failure: {
             location: {
-                filePath: causalState.failureLocation?.filePath || snapshot.source?.filePath,
-                lineNumber: causalState.failureLocation?.lineNumber || snapshot.source?.failingLineNumber,
-                symbol: causalState.failureLocation?.symbol || snapshot.source?.containingFunction,
+                filePath: separatedLocations.mechanismLocation.filePath || snapshot.source?.filePath,
+                lineNumber: separatedLocations.mechanismLocation.lineNumber || snapshot.source?.failingLineNumber,
+                symbol: separatedLocations.mechanismLocation.symbol || snapshot.source?.containingFunction,
                 status: causalState.failureLocation?.status || "UNRESOLVED",
                 provenance: failureLocationProvenance,
             },
             expression: causalState.failureLocation?.expression || snapshot.source?.failingExpression,
             executionContext: snapshot.incident.environment,
         },
+        separatedLocations,
+        defectMechanismCause: causalState.defectMechanismCause,
         mechanism: {
             status: causalState.failureMechanism?.status || "UNKNOWN",
             description: causalState.failureMechanism?.description || "",
@@ -179,10 +206,12 @@ export function buildAuthoritativeEngineeringDecision(
             evidenceIds: (causalState.upstreamCause as any)?.evidenceIds || [],
         },
         invariant: {
-            description: (causalState as any).invariantViolation?.description || "Execution invariant restored without violation.",
-            formalStatement: (causalState as any).invariantViolation?.formalInvariant,
-            evidenceIds: (causalState as any).invariantViolation?.evidenceIds || [],
+            description: causalState.brokenInvariant?.formalStatement || (causalState as any).invariantViolation?.description || "Execution invariant restored without violation.",
+            formalStatement: causalState.brokenInvariant?.formalStatement || (causalState as any).invariantViolation?.formalInvariant,
+            classification: causalState.brokenInvariant?.classification,
+            evidenceIds: causalState.brokenInvariant?.evidenceIds || (causalState as any).invariantViolation?.evidenceIds || [],
         },
+        brokenInvariant: causalState.brokenInvariant,
         ownership: {
             status: repairLocation?.ownershipEstablished ? "ESTABLISHED" : repairLocation?.isAmbiguous ? "AMBIGUOUS" : "UNKNOWN",
             owner: repairLocation?.targetSymbol || repairLocation?.targetFile,

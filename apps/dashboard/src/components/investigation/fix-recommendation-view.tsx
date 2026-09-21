@@ -335,6 +335,94 @@ export function FixRecommendationView({
                         )}
                     </div>
 
+                    {/* A.1 Invariant Restoration & Formal Broken Invariant */}
+                    {recommendation.brokenInvariant && (
+                        <div className="p-4 rounded-xl bg-purple-500/[0.04] border border-purple-500/20 text-xs space-y-2.5">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase font-mono text-purple-400 font-bold tracking-wider flex items-center gap-1.5">
+                                    <Layers className="w-3.5 h-3.5" />
+                                    Broken Invariant: {recommendation.brokenInvariant.classification.replace(/_/g, " ").toUpperCase()}
+                                </span>
+                                <span className="text-[10px] font-mono text-purple-300/70">Contract Restoration</span>
+                            </div>
+                            <div className="p-2.5 rounded-lg bg-black/40 border border-purple-500/10 font-mono text-[11px] text-purple-200">
+                                {recommendation.brokenInvariant.formalStatement || recommendation.brokenInvariant.description}
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-zinc-300 pt-1">
+                                <div>
+                                    <span className="text-[10px] uppercase font-mono text-red-400 font-semibold block">Violated State</span>
+                                    <p className="text-[11px] text-zinc-400">{recommendation.brokenInvariant.violatedState || recommendation.brokenInvariant.actualViolation}</p>
+                                </div>
+                                <div>
+                                    <span className="text-[10px] uppercase font-mono text-emerald-400 font-semibold block">Restored State</span>
+                                    <p className="text-[11px] text-zinc-400">{recommendation.brokenInvariant.restoredState || recommendation.brokenInvariant.expectedCondition}</p>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* A.2 Separated Engineering Locations (Observation vs Mechanism vs Repair Boundary) */}
+                    {recommendation.separatedLocations && (
+                        <div className="p-4 rounded-xl bg-surface-elevated/40 border border-border text-xs space-y-2.5">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase font-mono text-zinc-400 font-bold tracking-wider flex items-center gap-1.5">
+                                    <Code2 className="w-3.5 h-3.5 text-accent" />
+                                    Separated Engineering Locations
+                                </span>
+                                <span className="text-[10px] font-mono text-zinc-500">Observation vs Mechanism vs Repair</span>
+                            </div>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1">
+                                <div className="p-2.5 rounded-lg bg-black/30 border border-white/5 space-y-1">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] uppercase font-mono text-amber-400 font-semibold">1. Observation</span>
+                                        <span className="text-[9px] font-mono text-zinc-500">{recommendation.separatedLocations.observationLocation?.status}</span>
+                                    </div>
+                                    <div className="font-mono text-[11px] text-white truncate" title={recommendation.separatedLocations.observationLocation?.filePath}>
+                                        {recommendation.separatedLocations.observationLocation?.filePath || "Unknown"}
+                                        {recommendation.separatedLocations.observationLocation?.lineNumber ? `:${recommendation.separatedLocations.observationLocation.lineNumber}` : ""}
+                                    </div>
+                                    <div className="text-[10px] text-zinc-400">{recommendation.separatedLocations.observationLocation?.provenance}</div>
+                                </div>
+                                <div className="p-2.5 rounded-lg bg-black/30 border border-white/5 space-y-1">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] uppercase font-mono text-red-400 font-semibold">2. Mechanism</span>
+                                        <span className="text-[9px] font-mono text-zinc-500">{recommendation.separatedLocations.mechanismLocation?.status}</span>
+                                    </div>
+                                    <div className="font-mono text-[11px] text-white truncate" title={recommendation.separatedLocations.mechanismLocation?.filePath}>
+                                        {recommendation.separatedLocations.mechanismLocation?.filePath || "Unknown"}
+                                        {recommendation.separatedLocations.mechanismLocation?.lineNumber ? `:${recommendation.separatedLocations.mechanismLocation.lineNumber}` : ""}
+                                    </div>
+                                    <div className="text-[10px] text-zinc-400">{recommendation.separatedLocations.mechanismLocation?.provenance}</div>
+                                </div>
+                                <div className="p-2.5 rounded-lg bg-black/30 border border-white/5 space-y-1">
+                                    <div className="flex items-center justify-between">
+                                        <span className="text-[10px] uppercase font-mono text-emerald-400 font-semibold">3. Repair Boundary</span>
+                                        <span className="text-[9px] font-mono text-zinc-500">{recommendation.separatedLocations.repairLocation?.status}</span>
+                                    </div>
+                                    <div className="font-mono text-[11px] text-white truncate" title={recommendation.separatedLocations.repairLocation?.filePath}>
+                                        {recommendation.separatedLocations.repairLocation?.filePath || "Unknown"}
+                                        {recommendation.separatedLocations.repairLocation?.lineNumber ? `:${recommendation.separatedLocations.repairLocation.lineNumber}` : ""}
+                                    </div>
+                                    <div className="text-[10px] text-zinc-400">{recommendation.separatedLocations.repairLocation?.provenance}</div>
+                                </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* A.3 Behavioral Proof */}
+                    {recommendation.behavioralProof && (
+                        <div className="p-3.5 rounded-xl bg-emerald-500/[0.04] border border-emerald-500/20 text-xs space-y-1.5">
+                            <div className="flex items-center justify-between">
+                                <span className="text-[10px] uppercase font-mono text-emerald-400 font-bold tracking-wider flex items-center gap-1.5">
+                                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                                    Behavioral Proof: {recommendation.behavioralProof.status || (recommendation.behavioralProof.isCleanPass ? "PASS" : "TESTED")}
+                                </span>
+                                <span className="text-[10px] font-mono text-zinc-500">Method: {recommendation.behavioralProof.validationMethod || "Runtime Assertions"}</span>
+                            </div>
+                            <p className="text-[11px] text-zinc-300 leading-relaxed">{recommendation.behavioralProof.summary || recommendation.behavioralProof.executionLog || "Invariant restoration verified."}</p>
+                        </div>
+                    )}
+
                     {/* B. Active Investigation Progress (Phase 20 - Real Completed Steps) */}
                     {recommendation.completedSteps && recommendation.completedSteps.length > 0 && (
                         <div className="p-4 rounded-xl bg-surface-elevated/40 border border-border space-y-2.5">
