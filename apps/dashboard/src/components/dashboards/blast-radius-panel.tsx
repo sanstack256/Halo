@@ -6,7 +6,6 @@ import {
     ArrowDownRight,
     Layers,
     Radio,
-    Sparkles,
     X,
 } from "lucide-react";
 import type { BlastRadiusResult } from "@/lib/analytics/types";
@@ -51,7 +50,6 @@ export function BlastRadiusPanel({ blastRadius, projectId, onClose }: BlastRadiu
                         href={investigateUrl}
                         className="halo-btn halo-btn-primary halo-btn-xs"
                     >
-                        <Sparkles size={11} />
                         <span>Investigate Blast Radius</span>
                     </Link>
 

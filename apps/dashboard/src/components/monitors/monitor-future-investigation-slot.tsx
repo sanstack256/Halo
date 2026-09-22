@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
-import { ArrowRight, ArrowUpRight, CheckCircle2, Clock, HelpCircle, ShieldAlert, Sparkles } from "lucide-react";
+import { ArrowRight, ArrowUpRight, CheckCircle2, Clock, HelpCircle, ShieldAlert } from "lucide-react";
+import { HaloLogo } from "@/components/ui/halo-logo";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { formatDeterministicDateTime } from "@/lib/date-format";
 import type { MonitorFullDetails } from "@/actions/monitor";
@@ -17,7 +18,7 @@ export function MonitorFutureInvestigationSlot({ data }: MonitorFutureInvestigat
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-[var(--border)] pb-4">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                        <Sparkles size={14} className="text-[var(--accent)]" />
+                        <HaloLogo size={14} />
                         <h3 className="text-xs font-semibold text-white uppercase tracking-wider font-mono">
                             Automated Root-Cause Investigations
                         </h3>

@@ -15,7 +15,6 @@ import {
     Radio,
     Server,
     ShieldAlert,
-    Sparkles,
     X,
 } from "lucide-react";
 import type { ServiceDetailedContext, ServiceLandscapeItem } from "@/lib/analytics/types";
@@ -120,7 +119,6 @@ export function ServiceInspectorDrawer({
                             href={investigateUrl}
                             className="halo-btn halo-btn-primary halo-btn-sm shrink-0"
                         >
-                            <Sparkles size={12} />
                             <span>Analyze Service</span>
                         </Link>
                     </div>

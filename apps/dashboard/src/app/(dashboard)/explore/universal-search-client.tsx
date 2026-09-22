@@ -2,7 +2,7 @@
 
 import { useState, useTransition } from "react";
 import { universalSearch, type SearchResultItem } from "@/actions/search";
-import { Compass, FileWarning, FolderKanban, Loader2, Search, Sparkles, Terminal, Waypoints } from "lucide-react";
+import { Compass, FileWarning, FolderKanban, Loader2, Search, Terminal, Waypoints } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 

@@ -2,12 +2,12 @@
 
 import React, { useState } from "react";
 import Link from "next/link";
+import { HaloLogo } from "@/components/ui/halo-logo";
 import {
     Activity,
     GitCommit,
     Info,
     Layers,
-    Sparkles,
 } from "lucide-react";
 import type { ChangeExplanation, EvidenceClassification } from "@/lib/analytics/types";
 
@@ -65,7 +65,7 @@ export function ChangeExplanationPanel({
             <div className="halo-panel-header">
                 <div className="halo-panel-title-group">
                     <div className="halo-dash-icon-box">
-                        <Sparkles size={16} />
+                        <HaloLogo size={16} />
                     </div>
                     <div>
                         <div className="flex items-center gap-2 flex-wrap">
@@ -94,7 +94,6 @@ export function ChangeExplanationPanel({
                         href={investigateUrl}
                         className="halo-btn halo-btn-primary halo-btn-sm shrink-0"
                     >
-                        <Sparkles size={12} />
                         <span>Launch Investigation</span>
                     </Link>
                 )}

@@ -29,7 +29,6 @@ import {
     ShieldAlert,
     ShieldCheck,
     ShieldX,
-    Sparkles,
     Terminal,
     Type,
     X,
@@ -1155,9 +1154,8 @@ export function ReplayPlayerClient({
 
                     <Link
                         href={`/projects/${replaySession.projectId}/investigations/new?issueId=${replaySession.issueId || ""}&traceId=${replaySession.traceId || ""}&sessionId=${replaySession.sessionId}&replayId=${replaySession.id}`}
-                        className="halo-btn halo-btn-sm halo-btn-primary text-xs gap-1.5"
+                        className="halo-btn halo-btn-sm halo-btn-primary text-xs"
                     >
-                        <Sparkles size={12} />
                         Investigate
                     </Link>
                 </div>
@@ -1332,9 +1330,8 @@ export function ReplayPlayerClient({
                     {replaySession.issueId && (
                         <Link
                             href={`/projects/${replaySession.projectId}/investigations/new?issueId=${replaySession.issueId}&traceId=${replaySession.traceId || ""}&sessionId=${replaySession.sessionId}&replayId=${replaySession.id}`}
-                            className="halo-btn halo-btn-sm halo-btn-primary text-xs gap-1.5"
+                            className="halo-btn halo-btn-sm halo-btn-primary text-xs"
                         >
-                            <Sparkles size={12} />
                             Investigate Failure
                         </Link>
                     )}

@@ -16,7 +16,6 @@ import {
     RotateCcw,
     Server,
     ShieldAlert,
-    Sparkles,
 } from "lucide-react";
 import type { DependencyNode, DependencyEdge, BlastRadiusResult, CriticalPathItem } from "@/lib/analytics/types";
 import { computeBlastRadius } from "@/lib/analytics/blast-radius";
@@ -493,7 +492,6 @@ export function DependencyTopologyGraph({
                                     href={`/projects/${projectId || "current"}/investigations/new?service=${encodeURIComponent(selectedNode.name)}`}
                                     className="halo-btn halo-btn-primary halo-btn-xs"
                                 >
-                                    <Sparkles size={11} />
                                     <span>Analyze Node</span>
                                 </Link>
                                 <button

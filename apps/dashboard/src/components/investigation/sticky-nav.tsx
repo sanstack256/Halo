@@ -7,7 +7,7 @@ import {
     GitBranch,
     Layers,
     Network,
-    Sparkles,
+    Wrench,
 } from "lucide-react";
 
 interface CategoryNavItem {
@@ -65,7 +65,7 @@ const CATEGORIES: CategoryNavItem[] = [
         label: "Actions",
         targetSectionId: "section-recommendations",
         sectionIds: ["section-recommendations"],
-        icon: Sparkles,
+        icon: Wrench,
     },
 ];
 

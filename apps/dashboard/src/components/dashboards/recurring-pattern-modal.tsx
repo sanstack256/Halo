@@ -13,10 +13,10 @@ import {
     Layers,
     Radio,
     ShieldAlert,
-    Sparkles,
     TrendingUp,
     X,
 } from "lucide-react";
+import { HaloLogo } from "@/components/ui/halo-logo";
 import type { RecurringPatternItem, OccurrenceComparison } from "@/lib/analytics/types";
 import { getOccurrenceComparisonAction } from "@/actions/analytics";
 import { formatDeterministicDateTime } from "@/lib/date-format";
@@ -108,7 +108,6 @@ export function RecurringPatternModal({
                         href={investigateUrl}
                         className="halo-btn halo-btn-primary halo-btn-sm shrink-0"
                     >
-                        <Sparkles size={12} />
                         <span>Investigate Pattern</span>
                     </Link>
                 </div>
@@ -138,7 +137,7 @@ export function RecurringPatternModal({
                     <div className="p-4 rounded-xl bg-surface border border-accent/30 space-y-3">
                         <div className="text-[11px] font-semibold text-white uppercase tracking-wider border-b border-border pb-1.5 flex items-center justify-between">
                             <span className="flex items-center gap-1.5 text-accent">
-                                <Sparkles size={13} />
+                                <HaloLogo size={13} />
                                 <span>What&apos;s Different This Time?</span>
                             </span>
                             <span className="text-[10px] text-muted normal-case font-normal">

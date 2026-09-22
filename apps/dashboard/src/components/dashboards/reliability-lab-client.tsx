@@ -7,7 +7,6 @@ import {
     Layers,
     Radio,
     ShieldAlert,
-    Sparkles,
 } from "lucide-react";
 import type { ReliabilityLabData } from "@/lib/analytics/types";
 import { DashboardFilterBar } from "./dashboard-filter-bar";

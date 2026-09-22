@@ -554,7 +554,7 @@ await runWithContext({ traceId: "req_checkout_01" }, async () => {
 
                     <div className="rounded-lg border border-border bg-surface p-3.5 space-y-1.5">
                         <div className="flex items-center gap-2 text-secondary text-xs font-semibold uppercase tracking-wider">
-                            <Sparkles className="h-3.5 w-3.5" />
+                            <HaloLogo size={14} className="h-3.5 w-3.5" />
                             <span>Web Vitals</span>
                         </div>
                         <p className="text-xs text-secondary leading-normal">

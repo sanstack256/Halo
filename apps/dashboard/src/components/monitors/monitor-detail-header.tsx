@@ -18,7 +18,6 @@ import {
     Radio,
     ShieldAlert,
     Smartphone,
-    Sparkles,
     Trash2,
     Volume2,
     VolumeX,

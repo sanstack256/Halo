@@ -6,7 +6,6 @@ import {
     Activity,
     Clock,
     Layers,
-    Sparkles,
 } from "lucide-react";
 import type { TimeBucketPoint, TimelineEventMarker } from "@/lib/analytics/types";
 import { MultiSignalTimelineChart, type SignalType } from "./multi-signal-timeline-chart";
@@ -192,7 +191,6 @@ export function SynchronizedTimeline({
                             href={`/projects/${projectId || "current"}/investigations/new?intervalTime=${encodeURIComponent(activePoint.timestamp)}`}
                             className="halo-btn halo-btn-primary halo-btn-xs"
                         >
-                            <Sparkles size={11} />
                             <span>Analyze Interval</span>
                         </Link>
                     </div>

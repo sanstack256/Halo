@@ -9,7 +9,6 @@ import {
     ShieldAlert,
     HelpCircle,
     CheckCircle2,
-    Sparkles,
     ExternalLink,
     ArrowUpRight,
     ArrowLeft,

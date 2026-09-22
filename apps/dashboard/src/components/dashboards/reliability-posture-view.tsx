@@ -10,7 +10,6 @@ import {
     Layers,
     ShieldAlert,
     ShieldCheck,
-    Sparkles,
     TrendingDown,
     TrendingUp,
     Zap,

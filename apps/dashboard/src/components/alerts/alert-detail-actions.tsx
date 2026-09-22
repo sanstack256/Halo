@@ -3,7 +3,7 @@
 import React, { useState, useTransition } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { CheckCheck, Radio, Sparkles } from "lucide-react";
+import { CheckCheck, Radio } from "lucide-react";
 import { acknowledgeAlert, resolveAlert, updateAlertNotes, type AlertWithMonitor } from "@/actions/alert";
 
 interface AlertDetailActionsProps {

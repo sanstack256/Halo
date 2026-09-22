@@ -14,7 +14,6 @@ import {
     Layers,
     ArrowRight,
     ArrowUpRight,
-    Sparkles,
     ShieldAlert,
     AlertTriangle,
     CheckCircle2,

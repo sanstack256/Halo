@@ -11,7 +11,6 @@ import {
     Radio,
     Server,
     ShieldAlert,
-    Sparkles,
 } from "lucide-react";
 import type { SystemExplorerData, TimeBucketPoint } from "@/lib/analytics/types";
 import { DashboardFilterBar } from "./dashboard-filter-bar";

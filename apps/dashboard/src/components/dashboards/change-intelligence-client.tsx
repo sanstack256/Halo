@@ -7,7 +7,6 @@ import {
     GitCommit,
     Layers,
     ShieldAlert,
-    Sparkles,
 } from "lucide-react";
 import type { ChangeIntelligenceData, ChangeImpactItem } from "@/lib/analytics/types";
 import { DashboardFilterBar } from "./dashboard-filter-bar";

@@ -8,7 +8,6 @@ import {
     Network,
     Radio,
     ShieldAlert,
-    Sparkles,
 } from "lucide-react";
 import type { DependencyIntelligenceData } from "@/lib/analytics/types";
 import { DashboardFilterBar } from "./dashboard-filter-bar";

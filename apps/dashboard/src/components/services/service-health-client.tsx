@@ -9,7 +9,6 @@ import {
     AlertTriangle,
     HelpCircle,
     CheckCircle2,
-    Sparkles,
     ArrowUpRight,
     ArrowRight,
     Search,

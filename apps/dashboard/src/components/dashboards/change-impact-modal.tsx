@@ -13,7 +13,6 @@ import {
     Layers,
     Radio,
     ShieldAlert,
-    Sparkles,
     X,
 } from "lucide-react";
 import type { ChangeImpactDeepAnalysis, ChangeImpactItem } from "@/lib/analytics/types";
@@ -105,7 +104,6 @@ export function ChangeImpactModal({
                         href={investigateUrl}
                         className="halo-btn halo-btn-primary halo-btn-sm shrink-0"
                     >
-                        <Sparkles size={12} />
                         <span>Analyze Release</span>
                     </Link>
                 </div>

@@ -1,7 +1,8 @@
 "use client";
 
 import Link from "next/link";
-import { AlertCircle, Clock, Lock, ShieldAlert, Sparkles, VideoOff, WifiOff } from "lucide-react";
+import { HaloLogo } from "@/components/ui/halo-logo";
+import { AlertCircle, Clock, Lock, ShieldAlert, VideoOff, WifiOff } from "lucide-react";
 
 export type ReplayStateStatus =
     | "NO_REPLAY"
@@ -40,8 +41,8 @@ export function ReplayStatus({
         case "PROCESSING":
             return (
                 <div className="halo-card p-6 flex flex-col items-center justify-center text-center space-y-3 min-h-[260px]">
-                    <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent animate-spin">
-                        <Sparkles size={20} />
+                    <div className="w-10 h-10 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center text-accent">
+                        <HaloLogo size={20} />
                     </div>
                     <div className="space-y-1">
                         <h4 className="text-sm font-semibold text-white">Processing Session Replay</h4>
@@ -82,8 +83,7 @@ export function ReplayStatus({
                             Watch the exact DOM interactions, mouse clicks, and network requests leading up to this crash with privacy-safe browser session reconstruction.
                         </p>
                     </div>
-                    <Link href="/pricing" className="halo-btn halo-btn-sm halo-btn-primary text-xs gap-1.5">
-                        <Sparkles size={13} />
+                    <Link href="/pricing" className="halo-btn halo-btn-sm halo-btn-primary text-xs">
                         Upgrade to Developer Plan
                     </Link>
                 </div>

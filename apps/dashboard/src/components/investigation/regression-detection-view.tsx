@@ -15,11 +15,11 @@ import {
     HelpCircle,
     Layers,
     ShieldAlert,
-    Sparkles,
     Terminal,
     User,
     Zap,
 } from "lucide-react";
+import { HaloLogo } from "@/components/ui/halo-logo";
 import { formatDeterministicDateTime, formatDeterministicTime } from "@/lib/date-format";
 import { getClientTimezone } from "@/lib/timezone";
 import type {
@@ -106,7 +106,7 @@ export function RegressionDetectionView({ regression, projectId }: Props) {
             {/* Headline Callout */}
             <div className="p-4 rounded-xl bg-surface/60 border border-border/80 space-y-2">
                 <div className="flex items-start gap-2.5">
-                    <Sparkles className="w-4 h-4 text-accent shrink-0 mt-0.5" />
+                    <HaloLogo size={16} className="w-4 h-4 shrink-0 mt-0.5" />
                     <div className="space-y-1">
                         <h3 className="text-xs font-semibold text-white">
                             {headline}

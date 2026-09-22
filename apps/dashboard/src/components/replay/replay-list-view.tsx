@@ -14,11 +14,11 @@ import {
     ExternalLink,
     ChevronLeft,
     ChevronRight,
-    Sparkles,
     Laptop,
     Smartphone,
     Globe,
 } from "lucide-react";
+import { HaloLogo } from "@/components/ui/halo-logo";
 import { RelativeTime } from "@/components/ui/relative-time";
 import { HaloSelect } from "@/components/ui/halo-select";
 import { formatDeterministicDateTime, formatDeterministicTime } from "@/lib/date-format";
@@ -366,7 +366,7 @@ export function ReplayListView({
                                                 ) : replay.triggerType === "RAGE_CLICK" ? (
                                                     <div className="space-y-0.5">
                                                         <span className="inline-flex items-center gap-1 text-amber-400 text-[11px] font-medium">
-                                                            <Sparkles className="h-3 w-3 shrink-0" />
+                                                            <HaloLogo size={12} className="h-3 w-3 shrink-0" />
                                                             Rage Interaction
                                                         </span>
                                                         <div className="text-[10px] text-zinc-400 truncate max-w-[200px]">
@@ -376,7 +376,7 @@ export function ReplayListView({
                                                 ) : replay.triggerType === "DEAD_CLICK" ? (
                                                     <div className="space-y-0.5">
                                                         <span className="inline-flex items-center gap-1 text-amber-400 text-[11px] font-medium">
-                                                            <Sparkles className="h-3 w-3 shrink-0" />
+                                                            <HaloLogo size={12} className="h-3 w-3 shrink-0" />
                                                             Dead Click
                                                         </span>
                                                         <div className="text-[10px] text-zinc-400 truncate max-w-[200px]">

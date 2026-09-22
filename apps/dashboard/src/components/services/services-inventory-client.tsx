@@ -19,7 +19,6 @@ import {
     Clock,
     Layers,
     Code,
-    Sparkles,
     CheckCircle2,
     Calendar,
 } from "lucide-react";

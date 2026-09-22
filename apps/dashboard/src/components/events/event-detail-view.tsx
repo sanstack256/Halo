@@ -18,7 +18,6 @@ import {
     Play,
     Server,
     ShieldAlert,
-    Sparkles,
     Tag,
     Terminal,
     User as UserIcon,

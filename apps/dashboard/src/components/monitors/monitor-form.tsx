@@ -18,8 +18,8 @@ import {
     Save,
     ShieldAlert,
     Smartphone,
-    Sparkles,
 } from "lucide-react";
+import { HaloLogo } from "@/components/ui/halo-logo";
 import { createMonitor, updateMonitor, type OrgMonitor } from "@/actions/monitor";
 import type { MonitorType, MonitorSeverity } from "@/generated/prisma/client";
 import { HaloSelect, type HaloSelectOption } from "@/components/ui/halo-select";
@@ -704,7 +704,7 @@ export function MonitorForm({
             {/* STEP 5: Live Configuration Summary Preview */}
             <div className="p-6 rounded-xl bg-accent/5 border border-accent/20 space-y-4">
                 <div className="flex items-center gap-2 text-accent font-bold text-xs uppercase font-sans">
-                    <Sparkles size={14} />
+                    <HaloLogo size={14} />
                     <span>Configuration Summary Preview</span>
                 </div>
 

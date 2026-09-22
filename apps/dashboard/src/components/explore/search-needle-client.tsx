@@ -14,9 +14,9 @@ import {
     Radio,
     Clock,
     ArrowUpRight,
-    Sparkles,
     ChevronRight,
 } from "lucide-react";
+import { HaloLogo } from "@/components/ui/halo-logo";
 import type { CategorizedSearchResults, EvidenceNeedleResult } from "@/lib/explore/evidence-needle";
 import type { CanonicalEvidenceRecord } from "@/lib/explore/evidence-types";
 import { ExploreHeader } from "./explore-header";
@@ -445,7 +445,7 @@ export function SearchNeedleClient({
                     <div className="lg:col-span-6 space-y-3 sticky top-6">
                         <div className="flex items-center justify-between pb-1 border-b border-border text-xs font-mono">
                             <div className="flex items-center gap-1.5 text-accent font-semibold">
-                                <Sparkles size={13} />
+                                <HaloLogo size={13} />
                                 <span>THE EVIDENCE NEEDLE</span>
                             </div>
                             {needle && (
