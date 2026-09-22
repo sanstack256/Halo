@@ -2,7 +2,8 @@ import Link from "next/link";
 import { getOverviewData } from "@/actions/overview";
 import { getOrgAlerts } from "@/actions/alert";
 import { RelativeTime } from "@/components/ui/relative-time";
-import { ArrowUpRight, BellRing, Compass, ShieldAlert, Sparkles } from "lucide-react";
+import { HaloLogo } from "@/components/ui/halo-logo";
+import { ArrowUpRight, BellRing, Compass, ShieldAlert } from "lucide-react";
 
 export default async function InvestigatePage() {
     const [data, alertsResult] = await Promise.all([
@@ -24,7 +25,7 @@ export default async function InvestigatePage() {
             {/* Prompt Card */}
             <div className="halo-card p-6 border-accent/20 bg-accent/5">
                 <div className="flex items-center gap-3 mb-3 text-accent font-medium text-sm">
-                    <Sparkles size={18} />
+                    <HaloLogo size={18} className="w-[18px] h-[18px]" />
                     Autonomous Root Cause Analysis
                 </div>
                 <p className="text-sm text-secondary leading-relaxed">

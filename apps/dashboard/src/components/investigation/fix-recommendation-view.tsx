@@ -1,8 +1,8 @@
 "use client";
 
 import React, { useState } from "react";
+import { HaloLogo } from "@/components/ui/halo-logo";
 import {
-    Sparkles,
     CheckCircle2,
     Copy,
     Check,
@@ -166,7 +166,7 @@ export function FixRecommendationView({
             <div className="halo-fix-header">
                 <div className="space-y-1">
                     <div className="flex items-center gap-2">
-                        <Sparkles className="w-4 h-4 text-accent" />
+                        <HaloLogo size={16} className="w-4 h-4" />
                         <h2 className="text-sm font-bold uppercase tracking-wider text-white">
                             WHAT SHOULD I DO TO FIX THIS ISSUE?
                         </h2>
@@ -270,7 +270,7 @@ export function FixRecommendationView({
             {!recommendation && !isGenerating && (
                 <div className="py-10 px-6 rounded-xl bg-[#080b11] border border-dashed border-white/10 text-center space-y-4">
                     <div className="w-12 h-12 rounded-xl bg-accent/10 border border-accent/20 flex items-center justify-center mx-auto text-accent">
-                        <Sparkles className="w-6 h-6" />
+                        <HaloLogo size={24} className="w-6 h-6" />
                     </div>
                     <div className="space-y-1 max-w-md mx-auto">
                         <h3 className="text-sm font-bold text-white">Determine Engineering Fix</h3>
@@ -282,9 +282,8 @@ export function FixRecommendationView({
                         <button
                             type="button"
                             onClick={() => handleGenerate(false)}
-                            className="halo-btn halo-btn-primary inline-flex items-center gap-2 px-5 py-2.5 text-xs font-semibold"
+                            className="halo-btn halo-btn-primary inline-flex items-center px-5 py-2.5 text-xs font-semibold"
                         >
-                            <Sparkles size={14} />
                             <span>Generate recommendation</span>
                         </button>
                     </div>

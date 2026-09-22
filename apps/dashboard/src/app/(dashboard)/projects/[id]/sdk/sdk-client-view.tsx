@@ -22,8 +22,8 @@ import {
     Lock,
     Eye,
     KeyRound,
-    Sparkles,
 } from "lucide-react";
+import { HaloLogo } from "@/components/ui/halo-logo";
 import { CodeSnippet } from "./code-snippet";
 import { triggerSdkVerificationEvent, getProjectSdkStatus, type ProjectSdkStatus } from "@/actions/project-sdk";
 import { SDK_PUBLIC_ENDPOINT } from "@/lib/sdk-config";

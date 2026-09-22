@@ -31,7 +31,6 @@ import {
     RotateCcw,
     Server,
     ShieldAlert,
-    Sparkles,
     Terminal,
     XCircle,
     Zap,
@@ -659,7 +658,6 @@ function InvestigationView({
                             href="/dashboards/system"
                             className="halo-btn halo-btn-secondary halo-btn-xs"
                         >
-                            <Sparkles size={11} />
                             <span>System Explorer</span>
                         </Link>
                     </div>

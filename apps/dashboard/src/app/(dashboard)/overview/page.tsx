@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { getOverviewData } from "@/actions/overview";
 import { RelativeTime } from "@/components/ui/relative-time";
+import { HaloLogo } from "@/components/ui/halo-logo";
 import {
     ArrowRight,
     CheckCircle2,
@@ -9,7 +10,6 @@ import {
     Radio,
     Server,
     ShieldAlert,
-    Sparkles,
 } from "lucide-react";
 
 export default async function OverviewPage() {
@@ -51,7 +51,7 @@ export default async function OverviewPage() {
 
             {!hasProjects ? (
                 <div className="halo-empty-state">
-                    <Sparkles className="halo-empty-state-icon text-accent" />
+                    <HaloLogo size={48} className="halo-empty-state-icon" />
                     <h2 className="halo-empty-state-title">No projects initialized</h2>
                     <p className="halo-empty-state-description">
                         Create a project and install the Halo SDK to enable real-time telemetry streaming and automated causal investigation.

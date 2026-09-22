@@ -12,9 +12,9 @@ import {
     type SafeAiConfig,
     type AiConnectionTestResult,
 } from "@/lib/investigation/recommendation-engine/types";
+import { HaloLogo } from "@/components/ui/halo-logo";
 import {
     Bot,
-    Sparkles,
     Key,
     ShieldCheck,
     CheckCircle2,
@@ -191,7 +191,7 @@ export function AiSettingsCard({ projectId, initialConfig }: AiSettingsCardProps
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
                 <div className="flex items-center gap-3">
                     <div className="w-10 h-10 rounded-lg flex items-center justify-center bg-surface-elevated border border-border">
-                        <Sparkles size={20} className="text-primary" />
+                        <HaloLogo size={20} />
                     </div>
                     <div>
                         <div className="flex items-center gap-2">
@@ -305,7 +305,7 @@ export function AiSettingsCard({ projectId, initialConfig }: AiSettingsCardProps
                     >
                         <div className="flex items-center justify-between mb-2">
                             <div className="flex items-center gap-2">
-                                <Sparkles size={18} className={selectedProvider === AiProvider.GEMINI ? "text-amber-400" : "text-muted"} />
+                                <Bot size={18} className={selectedProvider === AiProvider.GEMINI ? "text-amber-400" : "text-muted"} />
                                 <span className="text-xs font-semibold text-white">Google Gemini</span>
                             </div>
                             <span className="px-1.5 py-0.5 text-[10px] rounded bg-amber-500/10 text-amber-300 font-mono">
@@ -503,7 +503,7 @@ export function AiSettingsCard({ projectId, initialConfig }: AiSettingsCardProps
                             disabled={isTesting || isSaving || (!apiKey && !config.hasKey)}
                             className="halo-btn halo-btn-secondary gap-1 text-xs"
                         >
-                            {isTesting ? <Loader2 size={13} className="animate-spin" /> : <Sparkles size={13} />}
+                            {isTesting && <Loader2 size={13} className="animate-spin" />}
                             Test Connection
                         </button>
                     )}
