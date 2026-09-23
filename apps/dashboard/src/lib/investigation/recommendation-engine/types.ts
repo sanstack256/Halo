@@ -763,8 +763,9 @@ export const RecommendedChangeSchema = z.object({
     startLine: z.number().optional(),
     endLine: z.number().optional(),
     codeType: CodeTypeSchema.default("EXISTING_AND_PROPOSED"),
-    explanation: z.string().min(1),
-    whyHere: z.string().min(1),
+    explanation: z.string().default("Apply code repair to restore invariant"),
+    whyHere: z.string().default("Target boundary where defect occurs"),
+    rationale: z.string().optional(),
     currentCode: z.string().optional(),
     proposedCode: z.string().optional(),
     unifiedDiff: z.string().optional(),
@@ -821,8 +822,8 @@ export const FixRecommendationSchema = z.object({
     brokenInvariant: z.object({
         classification: z.string(),
         description: z.string(),
-        expectedCondition: z.string(),
-        actualViolation: z.string(),
+        expectedCondition: z.string().default("Invariant satisfied on all valid execution paths"),
+        actualViolation: z.string().default("Invariant violated at runtime execution"),
         governingEntity: z.string().optional(),
         evidenceIds: z.array(z.string()).default([]),
         formalStatement: z.string().optional(),
@@ -841,7 +842,15 @@ export const FixRecommendationSchema = z.object({
     }).optional(),
     changes: z.array(RecommendedChangeSchema).default([]),
     alternatives: z.array(CompetingAlternativeSchema).default([]),
-    doNotChange: z.array(z.string()).default([]),
+    doNotChange: z.array(
+        z.union([
+            z.string(),
+            z.object({
+                target: z.string().optional(),
+                reason: z.string().optional(),
+            }).transform((o) => (o.reason ? `${o.target ? o.target + ": " : ""}${o.reason}` : o.target || "")),
+        ])
+    ).default([]),
     verification: z.array(z.string()).default([]),
     validationSteps: z.array(z.string()).default([]),
     missingEvidence: z.array(z.string()).default([]),

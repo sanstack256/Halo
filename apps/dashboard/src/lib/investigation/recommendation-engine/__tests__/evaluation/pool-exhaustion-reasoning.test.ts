@@ -22,6 +22,7 @@ import { describe, it, expect } from "vitest";
 import { buildInvestigationSnapshot } from "../../investigation-snapshot";
 import { generateEngineeringRecommendation } from "../../engine";
 import { EngineeringReasoningLoop } from "../../engineering-reasoning-loop";
+import { FixRecommendationSchema } from "../../types";
 import { MockRecommendationModel } from "../evaluation/real-patch-harness";
 
 describe("Parts 48, 49, 77, 78: Pool Exhaustion & Engineering Reasoning Core", () => {
@@ -113,6 +114,9 @@ describe("Parts 48, 49, 77, 78: Pool Exhaustion & Engineering Reasoning Core", (
 
         // 5. Decomposed confidence must reflect confirmed mechanism
         expect(res.recommendation.decomposedConfidence?.failureMechanism).toBe("CONFIRMED");
+
+        // 6. Must strictly satisfy FixRecommendationSchema
+        expect(() => FixRecommendationSchema.parse(res.recommendation)).not.toThrow();
     });
 
     it("Scenario 2: Pool Exhaustion without Leak (Concurrency Saturation) -> Recommends Pool Tuning", async () => {
@@ -186,6 +190,9 @@ describe("Parts 48, 49, 77, 78: Pool Exhaustion & Engineering Reasoning Core", (
         // 3. Must recommend configuration / pool capacity increase
         expect(res.recommendation.actionAnswer?.toLowerCase()).toContain("pool");
         expect(res.repairLocation?.type).toBe("CONFIGURATION");
+
+        // 4. Must strictly satisfy FixRecommendationSchema
+        expect(() => FixRecommendationSchema.parse(res.recommendation)).not.toThrow();
     });
 
     it("Scenario 3: Closed-Loop Reasoning Replay & Hypotheses Elimination", async () => {

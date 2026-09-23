@@ -494,6 +494,8 @@ export class EngineeringReasoningLoop {
                 classification: explicitInvariant.classification as any,
                 description: explicitInvariant.statement,
                 formalStatement: explicitInvariant.formalPredicate,
+                expectedCondition: explicitInvariant.formalPredicate || "Resource acquired must be released on all execution exit paths in a try/finally block",
+                actualViolation: "Resource acquired without guaranteed release on error or early-return exit paths",
                 violatedState: `Resource acquired without guaranteed release`,
                 restoredState: `Guaranteed release in finally block`,
                 invariantLocation: {
@@ -591,10 +593,13 @@ export class EngineeringReasoningLoop {
                 : primaryCandidate?.proposedDiff
                 ? [{
                       file: repairLocation.targetFile || failingFile,
+                      filePath: repairLocation.targetFile || failingFile,
                       symbol: repairLocation.targetSymbol || failingSymbol,
                       lines: String(repairLocation.targetLineNumber || failingLine),
                       proposedCode: primaryCandidate.proposedDiff,
                       rationale: primaryCandidate.justification,
+                      explanation: primaryCandidate.description || primaryCandidate.justification || "Wrap resource acquisition in try/finally block to guarantee disposal",
+                      whyHere: repairLocation.rationale || "Location where resource is acquired without guaranteed release",
                   }]
                 : [],
             alternatives: candidates.slice(1).map((c) => ({
@@ -602,10 +607,7 @@ export class EngineeringReasoningLoop {
                 whyNotPreferred: `Alternative hypothesis (${c.category}) is secondary to primary evidenced mechanism.`,
             })),
             doNotChange: [
-                {
-                    target: failingFile,
-                    reason: "Do not add superficial defensive null checks or retry loops around the acquire call without fixing unreleased exit paths.",
-                },
+                `Do not add superficial defensive null checks or retry loops around the acquire call in '${failingFile}' without fixing unreleased exit paths.`,
             ],
             verification: primaryCandidate?.validationPlan || [
                 "Run test suite in isolated workspace",
