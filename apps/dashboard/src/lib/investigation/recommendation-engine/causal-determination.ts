@@ -327,9 +327,40 @@ export function determineCausalEpistemicState(
         };
     }
 
+    // Compute originLocation and contractViolationLocation
+    const originLocation: CodeLocation = producerMeta?.producerFile
+        ? {
+              filePath: producerMeta.producerFile,
+              lineNumber: producerMeta.producerLine,
+              symbol: producerMeta.producerSymbol || "producer",
+              status: "CONFIRMED",
+              provenance: `Value origin at ${producerMeta.producerFile}`,
+          }
+        : effectiveCallerFile
+        ? {
+              filePath: effectiveCallerFile,
+              lineNumber: callerFrame?.lineNumber || callerMeta?.callSiteLine || callerMeta?.callerLineNumber,
+              symbol: callerFrame?.functionName || callerMeta?.callerSymbol || "origin",
+              status: "CONFIRMED",
+              provenance: `Execution origin at ${effectiveCallerFile}`,
+          }
+        : { ...observationLocation };
+
+    const contractViolationLocation: CodeLocation = effectiveCallerFile
+        ? {
+              filePath: effectiveCallerFile,
+              lineNumber: callerFrame?.lineNumber || callerMeta?.callSiteLine || callerMeta?.callerLineNumber,
+              symbol: callerFrame?.functionName || callerMeta?.callerSymbol || "caller",
+              status: "CONFIRMED",
+              provenance: `Contract breach at ${effectiveCallerFile} calling ${observationLocation.symbol || "callee"}`,
+          }
+        : { ...observationLocation };
+
     const separatedLocations: SeparatedLocations = {
         observationLocation,
+        originLocation,
         mechanismLocation,
+        contractViolationLocation,
         repairLocation: repairLocationLoc,
     };
 

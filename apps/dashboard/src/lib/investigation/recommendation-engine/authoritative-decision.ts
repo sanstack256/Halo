@@ -37,6 +37,7 @@ import type {
     ClaimProvenance,
     AuthoritativeEngineeringDecision,
     FailureLocationStatus,
+    SeparatedLocations,
 } from "./types";
 import type { CausalRegressionGateVerdict } from "./causal-regression-gate";
 
@@ -155,7 +156,7 @@ export function buildAuthoritativeEngineeringDecision(
         });
     }
 
-    const separatedLocations = {
+    const separatedLocations: SeparatedLocations = {
         observationLocation: causalState.locations?.observationLocation || {
             filePath: snapshot.failure.primaryFrame?.filePath || snapshot.source?.filePath,
             lineNumber: snapshot.failure.primaryFrame?.lineNumber || snapshot.source?.failingLineNumber,
@@ -163,6 +164,7 @@ export function buildAuthoritativeEngineeringDecision(
             status: "OBSERVED" as FailureLocationStatus,
             provenance: "Primary frame observation",
         },
+        originLocation: causalState.locations?.originLocation,
         mechanismLocation: causalState.locations?.mechanismLocation || {
             filePath: causalState.failureLocation?.filePath || snapshot.source?.filePath,
             lineNumber: causalState.failureLocation?.lineNumber || snapshot.source?.failingLineNumber,
@@ -170,6 +172,7 @@ export function buildAuthoritativeEngineeringDecision(
             status: (causalState.failureLocation?.status || "UNRESOLVED") as FailureLocationStatus,
             provenance: failureLocationProvenance,
         },
+        contractViolationLocation: causalState.locations?.contractViolationLocation,
         repairLocation: {
             filePath: repairLocation?.targetFile || causalState.locations?.repairLocation?.filePath || causalState.failureLocation?.filePath || snapshot.source?.filePath,
             lineNumber: (repairLocation as any)?.targetLineNumber || repairLocation?.lineRange?.start || causalState.locations?.repairLocation?.lineNumber || causalState.failureLocation?.lineNumber || snapshot.source?.failingLineNumber,
@@ -261,5 +264,96 @@ export function buildAuthoritativeEngineeringDecision(
         decomposedConfidence,
         repairEquivalence,
         provenance: consolidatedProvenance,
+        evidenceStoreHash: (snapshot as any).evidenceStore?.computeHash?.() || undefined,
+        findings: [
+            {
+                id: "finding-observed-failure",
+                type: "ObservedFailure",
+                status: "OBSERVED",
+                title: "Observed Failure Manifestation",
+                description: `${snapshot.failure.exceptionType}: ${snapshot.failure.exceptionMessage}`,
+                evidenceRefs: [snapshot.runtimeContext.anchorErrorId || "anchor-error"],
+                evidenceIds: [snapshot.runtimeContext.anchorErrorId || "anchor-error"],
+                confidence: "CONFIRMED",
+                createdAt: new Date(),
+            },
+            {
+                id: "finding-observation-location",
+                type: "ObservationLocation",
+                status: separatedLocations.observationLocation.status === "CONFIRMED" ? "CONFIRMED" : "OBSERVED",
+                title: "Failure Observation Location",
+                description: `${separatedLocations.observationLocation.filePath}:${separatedLocations.observationLocation.lineNumber || "?"}`,
+                evidenceRefs: separatedLocations.observationLocation.filePath ? [`file:${separatedLocations.observationLocation.filePath}`] : [],
+                evidenceIds: separatedLocations.observationLocation.filePath ? [`file:${separatedLocations.observationLocation.filePath}`] : [],
+                confidence: "CONFIRMED",
+                createdAt: new Date(),
+            },
+            {
+                id: "finding-mechanism-location",
+                type: "MechanismLocation",
+                status: separatedLocations.mechanismLocation.status === "CONFIRMED" ? "CONFIRMED" : "SUPPORTED",
+                title: "Failure Mechanism Location",
+                description: `${separatedLocations.mechanismLocation.filePath}:${separatedLocations.mechanismLocation.lineNumber || "?"}`,
+                evidenceRefs: separatedLocations.mechanismLocation.filePath ? [`file:${separatedLocations.mechanismLocation.filePath}`] : [],
+                evidenceIds: separatedLocations.mechanismLocation.filePath ? [`file:${separatedLocations.mechanismLocation.filePath}`] : [],
+                confidence: "CONFIRMED",
+                createdAt: new Date(),
+            },
+            ...(separatedLocations.originLocation ? [{
+                id: "finding-origin-location",
+                type: "OriginLocation" as const,
+                status: separatedLocations.originLocation.status === "CONFIRMED" ? "CONFIRMED" as const : "SUPPORTED" as const,
+                title: "Value / State Origin Location",
+                description: `${separatedLocations.originLocation.filePath}:${separatedLocations.originLocation.lineNumber || "?"}`,
+                evidenceRefs: separatedLocations.originLocation.filePath ? [`file:${separatedLocations.originLocation.filePath}`] : [],
+                evidenceIds: separatedLocations.originLocation.filePath ? [`file:${separatedLocations.originLocation.filePath}`] : [],
+                confidence: "CONFIRMED" as const,
+                createdAt: new Date(),
+            }] : []),
+            ...(separatedLocations.contractViolationLocation ? [{
+                id: "finding-contract-violation-location",
+                type: "ContractViolationLocation" as const,
+                status: "CONFIRMED" as const,
+                title: "Contract Violation Boundary",
+                description: `${separatedLocations.contractViolationLocation.filePath}:${separatedLocations.contractViolationLocation.lineNumber || "?"}`,
+                evidenceRefs: separatedLocations.contractViolationLocation.filePath ? [`file:${separatedLocations.contractViolationLocation.filePath}`] : [],
+                evidenceIds: separatedLocations.contractViolationLocation.filePath ? [`file:${separatedLocations.contractViolationLocation.filePath}`] : [],
+                confidence: "CONFIRMED" as const,
+                createdAt: new Date(),
+            }] : []),
+            {
+                id: "finding-broken-invariant",
+                type: "BrokenInvariant",
+                status: causalState.brokenInvariant ? "CONFIRMED" : "SUPPORTED",
+                title: "Violated Invariant",
+                description: causalState.brokenInvariant?.description || "Execution invariant violated",
+                evidenceRefs: causalState.brokenInvariant?.evidenceIds || [],
+                evidenceIds: causalState.brokenInvariant?.evidenceIds || [],
+                confidence: causalState.brokenInvariant ? "CONFIRMED" : "PLAUSIBLE",
+                createdAt: new Date(),
+            },
+            {
+                id: "finding-repair-boundary",
+                type: "RepairBoundary",
+                status: repairLocation?.ownershipEstablished ? "CONFIRMED" : "SUPPORTED",
+                title: "Authoritative Repair Boundary",
+                description: `${repairLocation.type} at ${repairLocation.targetFile || "target"}: ${repairLocation.rationale}`,
+                evidenceRefs: (repairLocation as any)?.evidenceIds || [],
+                evidenceIds: (repairLocation as any)?.evidenceIds || [],
+                confidence: repairLocation?.ownershipEstablished ? "CONFIRMED" : "PLAUSIBLE",
+                createdAt: new Date(),
+            },
+            ...(selectedCandidate ? [{
+                id: "finding-candidate-repair",
+                type: "CandidateRepair" as const,
+                status: finalState === "VERIFIED_REPAIR" ? "CONFIRMED" as const : "SUPPORTED" as const,
+                title: selectedCandidate.title,
+                description: selectedCandidate.justification,
+                evidenceRefs: [selectedCandidate.id],
+                evidenceIds: [selectedCandidate.id],
+                confidence: finalState === "VERIFIED_REPAIR" ? "CONFIRMED" as const : "SUPPORTED" as const,
+                createdAt: new Date(),
+            }] : []),
+        ],
     };
 }

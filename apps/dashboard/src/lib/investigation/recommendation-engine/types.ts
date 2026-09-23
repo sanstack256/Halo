@@ -97,10 +97,56 @@ export interface CodeLocation {
 export interface SeparatedLocations {
     /** WHERE the failure becomes observable (e.g. exception thrown / caught in stack frame) */
     observationLocation: CodeLocation;
+    /** WHERE the invalid state or abnormal value originated */
+    originLocation?: CodeLocation;
     /** WHERE the broken invariant is violated or abnormal state is produced */
     mechanismLocation: CodeLocation;
+    /** WHERE the caller/callee contract was breached */
+    contractViolationLocation?: CodeLocation;
     /** WHERE the defect can be corrected with the smallest safe architectural change */
     repairLocation: CodeLocation;
+}
+
+export type CanonicalEpistemicState =
+    | "OBSERVED"
+    | "DERIVED"
+    | "HYPOTHESIS"
+    | "SUPPORTED"
+    | "CONFIRMED"
+    | "REJECTED"
+    | "UNKNOWN"
+    | "BLOCKED";
+
+export type CanonicalFindingType =
+    | "ObservedFailure"
+    | "ExecutionPath"
+    | "ObservationLocation"
+    | "OriginLocation"
+    | "MechanismLocation"
+    | "ContractViolationLocation"
+    | "ValueOrigin"
+    | "ResourceOrigin"
+    | "BrokenInvariant"
+    | "Contract"
+    | "ContractOwner"
+    | "CausalRelationship"
+    | "RepairBoundary"
+    | "CandidateRepair"
+    | "ValidationResult"
+    | "RegressionResult";
+
+export interface CanonicalFinding<T = unknown> {
+    id: string;
+    type: CanonicalFindingType;
+    status: CanonicalEpistemicState;
+    title: string;
+    description: string;
+    evidenceRefs: string[];
+    evidenceIds?: string[];
+    derivedFrom?: string[];
+    confidence: "CONFIRMED" | "SUPPORTED" | "PLAUSIBLE" | "UNKNOWN";
+    payload?: T;
+    createdAt: Date;
 }
 
 export type InvariantClassification =
@@ -690,6 +736,7 @@ export interface InvestigationSnapshot {
         sourceFileCounterpart?: string;
         sourceMapAvailable: boolean;
     };
+    evidenceStore?: any;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -1530,5 +1577,9 @@ export interface AuthoritativeEngineeringDecision {
     decomposedConfidence: DecomposedConfidence;
     repairEquivalence?: RepairEquivalenceRecord;
     provenance: ClaimProvenance[];
+    findings?: CanonicalFinding[];
+    evidenceStoreHash?: string;
 }
+
+export * from "./canonical-evidence-store";
 

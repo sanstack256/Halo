@@ -11,6 +11,7 @@ import crypto from "crypto";
 import type { Evidence, Investigation, Hypothesis, Finding, CausalChain } from "@halo/investigation-engine";
 import type { StackFrame, SourceContext } from "../runtime/types";
 import type { InvestigationSnapshot, ReleaseRegressionContext } from "./types";
+import { CanonicalEvidenceStore, getCanonicalEvidenceId } from "./canonical-evidence-store";
 
 export interface BuildInvestigationSnapshotOptions {
     incident: {
@@ -138,6 +139,158 @@ export function buildInvestigationSnapshot(
         candidates: [],
     };
 
+    // Initialize CanonicalEvidenceStore (Collect Once, Store Once, Reference Everywhere)
+    const evidenceStore = new CanonicalEvidenceStore(incident.issueId, incident.issueId, snapshotId);
+
+    // 1. Register all raw telemetry events with stable identities
+    for (const ev of rawEvidence) {
+        const isAnchor = ev.id === anchorError?.id;
+        const kind = ev.type === "ERROR" || isAnchor ? "ERROR_OCCURRENCE" : "RUNTIME_EVENT";
+        evidenceStore.register({
+            id: getCanonicalEvidenceId(kind, ev.id),
+            kind,
+            source: ev.source || "telemetry",
+            collectedAt: new Date(),
+            observedAt: ev.timestamp ? new Date(ev.timestamp) : undefined,
+            provenance: {
+                method: "INGEST",
+                origin: ev.service || incident.service || "service",
+                redacted: true,
+            },
+            content: ev,
+        });
+    }
+
+    // 2. Register stack frames with stable identities & link to anchor error
+    if (anchorError) {
+        const anchorRecordId = getCanonicalEvidenceId("ERROR_OCCURRENCE", anchorError.id);
+        for (const frame of stackFrames) {
+            if (frame.filePath) {
+                const frameKey = `${frame.filePath}:${frame.lineNumber || 1}:${frame.columnNumber || 0}`;
+                const frameRecordId = getCanonicalEvidenceId("STACK_FRAME", frameKey);
+                evidenceStore.register({
+                    id: frameRecordId,
+                    kind: "STACK_FRAME",
+                    source: "stack_parser",
+                    collectedAt: new Date(),
+                    provenance: {
+                        method: "STATIC_ANALYSIS",
+                        origin: frame.filePath,
+                        redacted: false,
+                    },
+                    content: frame,
+                });
+                evidenceStore.addRelationship({
+                    fromId: anchorRecordId,
+                    relation: "executed",
+                    toId: frameRecordId,
+                    confidence: "CONFIRMED",
+                });
+            }
+        }
+    }
+
+    // 3. Register source snapshot with stable identity
+    if (source && source.filePath) {
+        const sourceKey = `${incident.release || "head"}:${source.filePath}`;
+        const sourceRecordId = getCanonicalEvidenceId("SOURCE_SNAPSHOT", sourceKey);
+        evidenceStore.register({
+            id: sourceRecordId,
+            kind: "SOURCE_SNAPSHOT",
+            source: "repository",
+            collectedAt: new Date(),
+            provenance: {
+                method: "STATIC_ANALYSIS",
+                origin: source.filePath,
+                redacted: false,
+            },
+            content: {
+                filePath: source.filePath,
+                containingFunction: source.containingFunction,
+                failingLineNumber: source.failingLineNumber,
+                lineCount: source.lines?.length || 0,
+            },
+        });
+
+        // Link primary stack frame to source snapshot
+        if (primaryFrame && primaryFrame.filePath) {
+            const frameKey = `${primaryFrame.filePath}:${primaryFrame.lineNumber || 1}:${primaryFrame.columnNumber || 0}`;
+            const frameRecordId = getCanonicalEvidenceId("STACK_FRAME", frameKey);
+            evidenceStore.addRelationship({
+                fromId: frameRecordId,
+                relation: "locatedAt",
+                toId: sourceRecordId,
+                confidence: "CONFIRMED",
+            });
+        }
+    }
+
+    // 4. Register git regression candidates
+    for (const cand of releaseContext.candidates) {
+        const commitRecordId = getCanonicalEvidenceId("GIT_COMMIT", cand.commitSha);
+        evidenceStore.register({
+            id: commitRecordId,
+            kind: "GIT_COMMIT",
+            source: "git_repository",
+            collectedAt: new Date(),
+            observedAt: cand.commitDate,
+            provenance: {
+                method: "GIT_API",
+                origin: cand.commitSha,
+                redacted: false,
+            },
+            content: cand,
+        });
+
+        if (source && source.filePath && cand.changedFiles?.includes(source.filePath)) {
+            const sourceKey = `${incident.release || "head"}:${source.filePath}`;
+            const sourceRecordId = getCanonicalEvidenceId("SOURCE_SNAPSHOT", sourceKey);
+            evidenceStore.addRelationship({
+                fromId: commitRecordId,
+                relation: "modified",
+                toId: sourceRecordId,
+                confidence: "CONFIRMED",
+            });
+        }
+    }
+
+    // 5. Register release deployment
+    if (incident.release) {
+        const releaseRecordId = getCanonicalEvidenceId("RELEASE_DEPLOYMENT", incident.release);
+        evidenceStore.register({
+            id: releaseRecordId,
+            kind: "RELEASE_DEPLOYMENT",
+            source: "deployment_system",
+            collectedAt: new Date(),
+            provenance: {
+                method: "INGEST",
+                origin: incident.release,
+                redacted: false,
+            },
+            content: {
+                release: incident.release,
+                candidatesCount: releaseContext.candidates.length,
+            },
+        });
+    }
+
+    // 6. Register replay session if available
+    if (replay?.sessionId) {
+        const replayRecordId = getCanonicalEvidenceId("REPLAY_SESSION", replay.sessionId);
+        evidenceStore.register({
+            id: replayRecordId,
+            kind: "REPLAY_SESSION",
+            source: "session_replay",
+            collectedAt: new Date(),
+            provenance: {
+                method: "INGEST",
+                origin: replay.sessionId,
+                redacted: true,
+            },
+            content: replay,
+        });
+    }
+
     return Object.freeze({
         snapshotId,
         createdAt: new Date(),
@@ -196,5 +349,6 @@ export function buildInvestigationSnapshot(
         release: Object.freeze(releaseContext),
         tests: opts.tests ? Object.freeze(opts.tests) : undefined,
         sourceDistMapping: opts.sourceDistMapping ? Object.freeze(opts.sourceDistMapping) : undefined,
+        evidenceStore,
     });
 }
