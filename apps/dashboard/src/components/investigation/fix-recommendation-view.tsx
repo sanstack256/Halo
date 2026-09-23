@@ -66,11 +66,12 @@ export function FixRecommendationView({
                 forceRegenerate,
             });
 
-            if (res.success && res.recommendation) {
+            if (res && res.recommendation) {
                 setRecommendation(res.recommendation);
                 setRecommendationId(res.id);
-                setIsStale(res.isStale);
-                setVersion(res.version);
+                setIsStale(res.isStale ?? false);
+                setVersion(res.version ?? 1);
+                setErrorMessage(null);
             } else {
                 setErrorMessage("Unable to generate recommendation from current evidence.");
             }
@@ -207,7 +208,7 @@ export function FixRecommendationView({
                 {recommendation?.decomposedConfidence && (
                     <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2.5 border-t border-white/5 text-[11px] font-mono mt-3">
                         <div className="p-2 rounded bg-black/40 border border-white/5 flex items-center justify-between">
-                            <span className="text-zinc-400">Mechanism:</span>
+                            <span className="text-zinc-400">Mechanism Proof:</span>
                             <span className={recommendation.decomposedConfidence.failureMechanism === "CONFIRMED" ? "text-emerald-400 font-bold" : recommendation.decomposedConfidence.failureMechanism === "PLAUSIBLE" ? "text-blue-400 font-bold" : "text-amber-400 font-bold"}>
                                 {recommendation.decomposedConfidence.failureMechanism}
                             </span>
@@ -219,7 +220,7 @@ export function FixRecommendationView({
                             </span>
                         </div>
                         <div className="p-2 rounded bg-black/40 border border-white/5 flex items-center justify-between">
-                            <span className="text-zinc-400">Repair Boundary:</span>
+                            <span className="text-zinc-400">Repair Validity:</span>
                             <span className={recommendation.decomposedConfidence.repairBoundary === "VERIFIED" ? "text-emerald-400 font-bold" : recommendation.decomposedConfidence.repairBoundary === "CANDIDATE" ? "text-blue-400" : "text-zinc-500"}>
                                 {recommendation.decomposedConfidence.repairBoundary}
                             </span>
@@ -373,8 +374,8 @@ export function FixRecommendationView({
                             <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1">
                                 <div className="p-2.5 rounded-lg bg-black/30 border border-white/5 space-y-1">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-[10px] uppercase font-mono text-amber-400 font-semibold">1. Observation</span>
-                                        <span className="text-[9px] font-mono text-zinc-500">{recommendation.separatedLocations.observationLocation?.status}</span>
+                                        <span className="text-[10px] uppercase font-mono text-amber-400 font-semibold">1. Observation Site</span>
+                                        <span className="text-[9px] font-mono text-zinc-500">{recommendation.separatedLocations.observationLocation?.status === "CONFIRMED" ? "LOCATED" : recommendation.separatedLocations.observationLocation?.status}</span>
                                     </div>
                                     <div className="font-mono text-[11px] text-white truncate" title={recommendation.separatedLocations.observationLocation?.filePath}>
                                         {recommendation.separatedLocations.observationLocation?.filePath || "Unknown"}
@@ -384,8 +385,8 @@ export function FixRecommendationView({
                                 </div>
                                 <div className="p-2.5 rounded-lg bg-black/30 border border-white/5 space-y-1">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-[10px] uppercase font-mono text-red-400 font-semibold">2. Mechanism</span>
-                                        <span className="text-[9px] font-mono text-zinc-500">{recommendation.separatedLocations.mechanismLocation?.status}</span>
+                                        <span className="text-[10px] uppercase font-mono text-red-400 font-semibold">2. Mechanism Site</span>
+                                        <span className="text-[9px] font-mono text-zinc-500">{recommendation.separatedLocations.mechanismLocation?.status === "CONFIRMED" ? "LOCATED" : recommendation.separatedLocations.mechanismLocation?.status}</span>
                                     </div>
                                     <div className="font-mono text-[11px] text-white truncate" title={recommendation.separatedLocations.mechanismLocation?.filePath}>
                                         {recommendation.separatedLocations.mechanismLocation?.filePath || "Unknown"}
@@ -395,7 +396,7 @@ export function FixRecommendationView({
                                 </div>
                                 <div className="p-2.5 rounded-lg bg-black/30 border border-white/5 space-y-1">
                                     <div className="flex items-center justify-between">
-                                        <span className="text-[10px] uppercase font-mono text-emerald-400 font-semibold">3. Repair Boundary</span>
+                                        <span className="text-[10px] uppercase font-mono text-emerald-400 font-semibold">3. Repair Target Site</span>
                                         <span className="text-[9px] font-mono text-zinc-500">{recommendation.separatedLocations.repairLocation?.status}</span>
                                     </div>
                                     <div className="font-mono text-[11px] text-white truncate" title={recommendation.separatedLocations.repairLocation?.filePath}>

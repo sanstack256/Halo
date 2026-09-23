@@ -143,35 +143,82 @@ export function traceOwnershipHandoff(
     let handoffCall: OwnershipHandoffRecord["handoffCall"] = undefined;
     const exitPathsWithoutHandoff: OwnershipHandoffRecord["exitPathsWithoutHandoff"] = [];
 
+    // Pre-pass: Check for any disposal/handoff within a finally block
+    let finallyHandoffCall: OwnershipHandoffRecord["handoffCall"] = undefined;
+    function preScanFinally(node: ts.Node) {
+        if (ts.isTryStatement(node) && node.finallyBlock) {
+            function checkFinallyNode(childNode: ts.Node) {
+                if (ts.isCallExpression(childNode)) {
+                    const isMethodCallOnResource =
+                        ts.isPropertyAccessExpression(childNode.expression) &&
+                        childNode.expression.expression.getText(sourceFile) === resourceIdentifier;
+                    const isArgumentToCall = childNode.arguments.some(
+                        (arg) => arg.getText(sourceFile) === resourceIdentifier
+                    );
+                    if (isMethodCallOnResource || isArgumentToCall) {
+                        const line = sourceFile.getLineAndCharacterOfPosition(childNode.getStart(sourceFile)).line + 1;
+                        if (line > allocLine) {
+                            finallyHandoffCall = {
+                                callee: childNode.expression.getText(sourceFile),
+                                argumentIndex: isArgumentToCall
+                                    ? childNode.arguments.findIndex((a) => a.getText(sourceFile) === resourceIdentifier)
+                                    : -1,
+                                line,
+                                isInFinallyBlock: true,
+                                isGuardedByTryCatch: true,
+                            };
+                        }
+                    }
+                }
+                ts.forEachChild(childNode, checkFinallyNode);
+            }
+            checkFinallyNode(node.finallyBlock);
+        }
+        ts.forEachChild(node, preScanFinally);
+    }
+    preScanFinally(enclosingFunction);
+
+    if (finallyHandoffCall) {
+        handoffCall = finallyHandoffCall;
+    }
+
     // Scan for calls involving the identifier
-    function findHandoff(node: ts.Node, inFinally = false, inTryCatch = false) {
+    function findHandoff(node: ts.Node, inFinally = false, inTryCatch = false, inTryWithFinally = false) {
         if (ts.isTryStatement(node)) {
+            const hasGuaranteedFinally = Boolean(node.finallyBlock && finallyHandoffCall);
             if (node.tryBlock) {
-                node.tryBlock.forEachChild((child) => findHandoff(child, inFinally, true));
+                node.tryBlock.forEachChild((child) =>
+                    findHandoff(child, inFinally, true, inTryWithFinally || hasGuaranteedFinally)
+                );
             }
             if (node.catchClause) {
-                node.catchClause.forEachChild((child) => findHandoff(child, inFinally, true));
+                node.catchClause.forEachChild((child) =>
+                    findHandoff(child, inFinally, true, inTryWithFinally || hasGuaranteedFinally)
+                );
             }
             if (node.finallyBlock) {
-                node.finallyBlock.forEachChild((child) => findHandoff(child, true, inTryCatch));
+                node.finallyBlock.forEachChild((child) =>
+                    findHandoff(child, true, inTryCatch, inTryWithFinally)
+                );
             }
             return;
         }
 
         if (ts.isCallExpression(node)) {
-            const text = node.getText(sourceFile);
-            // Check if method on the resource (e.g. res.method()) or passed as argument (e.g. manager.method(res))
-            const isMethodCallOnResource = ts.isPropertyAccessExpression(node.expression) &&
+            const isMethodCallOnResource =
+                ts.isPropertyAccessExpression(node.expression) &&
                 node.expression.expression.getText(sourceFile) === resourceIdentifier;
             const isArgumentToCall = node.arguments.some((arg) => arg.getText(sourceFile) === resourceIdentifier);
 
             if (isMethodCallOnResource || isArgumentToCall) {
                 const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
                 // If it is later than allocation and in a finally block or at the end of scope
-                if (line > allocLine) {
+                if (line > allocLine && (!handoffCall || inFinally)) {
                     handoffCall = {
                         callee: node.expression.getText(sourceFile),
-                        argumentIndex: isArgumentToCall ? node.arguments.findIndex((a) => a.getText(sourceFile) === resourceIdentifier) : -1,
+                        argumentIndex: isArgumentToCall
+                            ? node.arguments.findIndex((a) => a.getText(sourceFile) === resourceIdentifier)
+                            : -1,
                         line,
                         isInFinallyBlock: inFinally,
                         isGuardedByTryCatch: inTryCatch,
@@ -183,7 +230,7 @@ export function traceOwnershipHandoff(
         // Check for return / throw statements that exit before handoff
         if (ts.isReturnStatement(node)) {
             const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
-            if (line > allocLine && (!handoffCall || line < handoffCall.line) && !inFinally) {
+            if (line > allocLine && !inFinally && !inTryWithFinally && (!handoffCall || line < handoffCall.line)) {
                 exitPathsWithoutHandoff.push({
                     exitType: "RETURN",
                     line,
@@ -194,7 +241,7 @@ export function traceOwnershipHandoff(
 
         if (ts.isThrowStatement(node)) {
             const line = sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1;
-            if (line > allocLine && (!handoffCall || !handoffCall.isInFinallyBlock)) {
+            if (line > allocLine && !inFinally && !inTryWithFinally && (!handoffCall || !handoffCall.isInFinallyBlock)) {
                 exitPathsWithoutHandoff.push({
                     exitType: "THROW",
                     line,
@@ -203,7 +250,7 @@ export function traceOwnershipHandoff(
             }
         }
 
-        ts.forEachChild(node, (child) => findHandoff(child, inFinally, inTryCatch));
+        ts.forEachChild(node, (child) => findHandoff(child, inFinally, inTryCatch, inTryWithFinally));
     }
 
     findHandoff(enclosingFunction);

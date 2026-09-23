@@ -90,10 +90,19 @@ export function buildInvestigationSnapshot(
     }
 
     if (!exceptionType) {
-        exceptionType = anchorError?.title?.split(":")[0]?.trim() || "Error";
+        exceptionType =
+            (opts.incident as any)?.exceptionType ||
+            anchorError?.title?.split(":")[0]?.trim() ||
+            opts.incident?.title?.split(":")[0]?.trim() ||
+            "Error";
     }
     if (!exceptionMessage) {
-        exceptionMessage = anchorError?.description || anchorError?.title || "Unknown error";
+        exceptionMessage =
+            (opts.incident as any)?.errorMessage ||
+            anchorError?.description ||
+            anchorError?.title ||
+            opts.incident?.title ||
+            "Unknown error";
     }
 
     // Primary application frame

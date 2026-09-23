@@ -100,7 +100,7 @@ export function evaluateEvidenceSufficiency(
         !regressionContext.causallyProvenCandidate;
 
     if (isMechanismUnderdetermined) {
-        const expr = causalState.failureLocation.expression || "operation";
+        const expr = causalState.failureLocation.expression || causalState.failureLocation.symbol || "statement";
         const inv = sourceAst.invocationAnalysis;
         const tests = sourceAst.testsContractEvidence;
 

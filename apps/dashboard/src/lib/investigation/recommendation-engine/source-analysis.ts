@@ -204,7 +204,7 @@ export function analyzeSourceAst(snapshot: InvestigationSnapshot): SourceAstAnal
         const isParamCall = Boolean(rootIdentifier && scan.functionParameters?.includes(rootIdentifier));
         const isDeclaredLocally = Boolean(calleeText && declaredFunctionNames.includes(calleeText));
         const isBuiltin = /^(parseInt|parseFloat|Number|String|Boolean|Array|Object|Math|JSON|Date|RegExp|Error|TypeError|RangeError|SyntaxError|Buffer|setTimeout|clearTimeout|setInterval|clearInterval|console|process)(\..+)?$/.test(calleeText);
-        const isStandardMethod = /\.(map|filter|reduce|forEach|find|some|every|includes|indexOf|slice|splice|concat|join|split|replace|match|trim|toLowerCase|toUpperCase|then|catch|finally|push|pop|shift|unshift|query|connect|release|json|text|status|send)$/.test(calleeText);
+        const isStandardMethod = /\.(map|filter|reduce|forEach|find|some|every|includes|indexOf|slice|splice|concat|join|split|replace|match|trim|toLowerCase|toUpperCase|then|catch|finally|push|pop|shift|unshift|query|connect|acquire|release|json|text|status|send)$/.test(calleeText);
 
         let calleeOpacity: CalleeOpacity = "CALLEE_OPAQUE_UNRESOLVABLE";
         if (scan.containsErrorConstructionMatchingMessage) {

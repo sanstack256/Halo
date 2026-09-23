@@ -91,6 +91,16 @@ export function evaluateHardConstraints(
                 disqualificationReason: "Additional runtime telemetry is not necessary; deterministic repository evidence can resolve the decision.",
             };
         }
+        // Rule 16: Disqualify generic telemetry requests that lack explicit hypothesis distinction
+        if (
+            action.title.includes("'operation'") ||
+            action.title.toLowerCase().includes("runtime signal for 'operation'")
+        ) {
+            return {
+                passed: false,
+                disqualificationReason: "Rule 16: Generic 'operation' telemetry request without specific hypothesis separation is prohibited.",
+            };
+        }
     }
 
     return { passed: true };
@@ -487,12 +497,18 @@ export function generateAndEvaluateCandidateActions(
     ) {
         const expl = sufficiency.actionExplanation;
         const isRepro = sufficiency.canSourceOrReleaseResolve && !sufficiency.isAdditionalRuntimeTelemetryNecessary;
+        const targetExpr = (causalState.failureLocation.expression && causalState.failureLocation.expression !== "operation" && causalState.failureLocation.expression !== "statement")
+            ? causalState.failureLocation.expression
+            : undefined;
+
         candidates.push({
             id: isRepro ? "act-reproduce-in-dev" : "act-collect-telemetry",
             category: isRepro ? "REPRODUCE_EXECUTION_PATH" : "COLLECT_MISSING_RUNTIME_SIGNAL",
             title: isRepro
                 ? `Reproduce execution path in development using test fixture before altering production`
-                : `Capture runtime signal for '${causalState.failureLocation.expression || "operation"}' to resolve failure mechanism`,
+                : targetExpr
+                ? `Capture runtime signal for '${targetExpr}' to resolve failure mechanism`
+                : `Inspect execution path and establish failure mechanism before modifying production code`,
             description: expl
                 ? `${expl.whatWeKnow} ${expl.whatShouldHappenNext}`
                 : `Source and release analysis cannot distinguish competing runtime failure mechanisms. Deploy targeted instrumentation or reproduce in development before modifying code.`,

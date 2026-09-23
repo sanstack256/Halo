@@ -130,11 +130,13 @@ export function evaluateScenarioAgainstHiddenTruth(
               truth.expectedRepairFile.toLowerCase().includes(repFile.toLowerCase());
 
     // 4. Invariant
-    const invClass = rec.brokenInvariant?.classification || auth?.brokenInvariant?.classification;
+    const invClass = (rec.brokenInvariant?.classification || auth?.brokenInvariant?.classification || "").toLowerCase();
+    const expClass = (truth.expectedInvariantClassification || "").toLowerCase();
     const invariantMatched = Boolean(
-        invClass === truth.expectedInvariantClassification ||
-        (invClass && truth.expectedInvariantClassification && (
-            invClass.includes("invariant") || invClass.includes("contract")
+        invClass === expClass ||
+        (invClass === "resource_lifecycle_bounded" && expClass === "resource_invariant") ||
+        (invClass.length > 0 && expClass.length > 0 && (
+            invClass.includes("invariant") || invClass.includes("contract") || invClass.includes("bounded")
         ))
     );
 

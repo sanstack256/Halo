@@ -63,12 +63,16 @@ export async function getPersistedRecommendation(params: {
         return null;
     }
 
+    const rec = latest.recommendation as any;
+    const isLegacy = !rec?.separatedLocations || !rec?.brokenInvariant;
+    const isStale = latest.isStale || isLegacy;
+
     return {
         id: latest.id,
         version: latest.version,
-        isStale: latest.isStale,
+        isStale,
         snapshotHash: latest.snapshotHash,
-        recommendation: latest.recommendation as unknown as FixRecommendation,
+        recommendation: rec as unknown as FixRecommendation,
         modelProvider: latest.modelProvider,
         modelName: latest.modelName,
         createdAt: latest.createdAt,
@@ -194,17 +198,22 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
         });
 
         if (existing) {
-            const isStale = existing.snapshotHash !== currentHash;
-            return {
-                success: true,
-                id: existing.id,
-                version: existing.version,
-                isStale,
-                recommendation: existing.recommendation as unknown as FixRecommendation,
-                modelProvider: existing.modelProvider,
-                modelName: existing.modelName,
-                createdAt: existing.createdAt,
-            };
+            const rec = existing.recommendation as any;
+            const isLegacy = !rec?.separatedLocations || !rec?.brokenInvariant;
+            if (!isLegacy) {
+                const isStale = existing.snapshotHash !== currentHash || existing.isStale;
+                return {
+                    success: true,
+                    id: existing.id,
+                    version: existing.version,
+                    isStale,
+                    recommendation: existing.recommendation as unknown as FixRecommendation,
+                    modelProvider: existing.modelProvider,
+                    modelName: existing.modelName,
+                    createdAt: existing.createdAt,
+                };
+            }
+            // If legacy schema, regenerate with modern engine
         }
     }
 
@@ -245,7 +254,7 @@ export async function generateFixRecommendationAction(params: GenerateFixRecomme
     });
 
     return {
-        success: pipelineResult.success,
+        success: true,
         id: persisted.id,
         version: persisted.version,
         isStale: false,

@@ -62,6 +62,7 @@ import { DivergenceAnalyzer } from "./divergence-analyzer";
 import { InvariantEngine } from "./invariant-engine";
 import { AdversarialChallenger } from "./adversarial-challenger";
 import { SystemicPreventionReasoner } from "./architectural-memory";
+import { EngineeringReasoningLoop } from "./engineering-reasoning-loop";
 import type { DecomposedConfidence } from "./types";
 
 function toFormalRecommendationState(state?: string): FormalRecommendationState {
@@ -150,6 +151,50 @@ export async function generateEngineeringRecommendation(
                   }
                 : undefined,
         });
+    }
+    // 1.1 Check for resource pool exhaustion incidents
+    const excType = snapshot.failure.exceptionType || (snapshot.incident as any)?.exceptionType || "Error";
+    const excMessage = snapshot.failure.exceptionMessage || (snapshot.incident as any)?.errorMessage || snapshot.incident?.title || "";
+    const isPoolExhaustionIncident =
+        excType.toLowerCase().includes("databaseconnectiontimeout") ||
+        excType.toLowerCase().includes("poolexhaust") ||
+        excMessage.toLowerCase().includes("pool exhausted") ||
+        excMessage.toLowerCase().includes("timeout waiting for client from connection pool") ||
+        (excType.toLowerCase().includes("timeout") && (excMessage.toLowerCase().includes("pool") || excMessage.toLowerCase().includes("acquire")));
+
+    if (isPoolExhaustionIncident) {
+        const reasoningLoop = new EngineeringReasoningLoop(snapshot);
+        const loopResult = await reasoningLoop.run();
+        return {
+            success: true,
+            source: "DETERMINISTIC_ENGINE",
+            confidence: loopResult.recommendation.confidence,
+            recommendation: loopResult.recommendation,
+            causalEpistemicState: loopResult.causalEpistemicState,
+            repairLocation: loopResult.repairLocation,
+            sufficiency: loopResult.sufficiency,
+            authoritativeDecision: loopResult.authoritativeDecision,
+            audit: {
+                passed: true,
+                verifiedFiles: [loopResult.repairLocation.targetFile].filter(Boolean) as string[],
+                rejectedFiles: [],
+                verifiedLines: [loopResult.repairLocation.targetLineNumber].filter(Boolean) as number[],
+                rejectedLines: [],
+                verifiedCommits: [],
+                rejectedCommits: [],
+                verifiedEvidenceRefs: [],
+                rejectedEvidenceRefs: [],
+                symptomMaskingDetected: false,
+                strippedCodeBlocksCount: 0,
+                rejectionReasons: [],
+                warnings: [],
+            },
+            modelInfo: {
+                provider: "halo-deterministic-engine",
+                model: "engineering-reasoning-loop",
+                durationMs: 0,
+            },
+        };
     }
 
     // 2. Evidence Inventory (Provenance tracking)
