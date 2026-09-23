@@ -178,7 +178,7 @@ function evaluateRollbackAudit(params: {
 
     const rollbackRemovesBehavior = modifiesFailingFile || modifiesFailingSymbol;
     const previousRevisionHealthy = true;
-    const nonFailingFiles = changedFiles.filter((f) => !f.includes(failingFile || ""));
+    const nonFailingFiles = (changedFiles || []).filter((f) => !f.includes(failingFile || ""));
     const touchesOnlyFailingFile = nonFailingFiles.length === 0;
     const unrelatedChangesBlastRadius: "MINIMAL" | "MODERATE" | "HIGH" | "UNKNOWN" = touchesOnlyFailingFile
         ? "MINIMAL"
@@ -350,24 +350,25 @@ export function analyzeReleasesAndRegressions(
         }
 
         // 2. SOURCE ASSOCIATION
+        const candidateChangedFiles = rawCand.changedFiles || (rawCand as any).modifiedFiles || [];
         const directlyModifiesFailingLine = Boolean((rawCand as any).directlyModifiesFailingLine);
         const modifiesFailingFile = Boolean(
             directlyModifiesFailingLine ||
             (rawCand.modifiesFailingFile ?? (
                 failingFile &&
-                rawCand.changedFiles.some((f) => f.includes(failingFile) || (failingFile && failingFile.includes(f)))
+                candidateChangedFiles.some((f) => f.includes(failingFile) || (failingFile && failingFile.includes(f)))
             ))
         );
 
         const modifiesStackFile = Boolean(
             !modifiesFailingFile &&
-            rawCand.changedFiles.some((f) => stackFiles.has(f.toLowerCase()))
+            candidateChangedFiles.some((f) => stackFiles.has(f.toLowerCase()))
         );
 
-        const modifiesConfig = rawCand.changedFiles.some(
+        const modifiesConfig = candidateChangedFiles.some(
             (f) => f.includes(".env") || f.includes("config") || f.includes("settings")
         );
-        const modifiesDependencies = rawCand.changedFiles.some(
+        const modifiesDependencies = candidateChangedFiles.some(
             (f) => f.includes("package.json") || f.includes("pnpm-lock") || f.includes("yarn.lock")
         );
 
@@ -492,7 +493,7 @@ export function analyzeReleasesAndRegressions(
         // Evaluate Rollback Safety Audit
         const rollbackAudit = evaluateRollbackAudit({
             causalSupport,
-            changedFiles: rawCand.changedFiles,
+            changedFiles: candidateChangedFiles,
             modifiesFailingFile,
             modifiesFailingSymbol,
             failingSymbol,

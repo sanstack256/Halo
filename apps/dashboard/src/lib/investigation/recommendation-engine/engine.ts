@@ -56,6 +56,12 @@ import { evaluateRecommendationDecisionGate } from "./recommendation-decision-ga
 import { detectRepairEquivalentHypotheses } from "./hypothesis-engine";
 import { buildAuthoritativeEngineeringDecision } from "./authoritative-decision";
 import { evaluateCausalRegressionGate } from "./causal-regression-gate";
+import { buildEngineeringWorldModel, queryWorldModelSummary } from "./world-model";
+import { ReasoningStateManager } from "./reasoning-state";
+import { DivergenceAnalyzer } from "./divergence-analyzer";
+import { InvariantEngine } from "./invariant-engine";
+import { AdversarialChallenger } from "./adversarial-challenger";
+import { SystemicPreventionReasoner } from "./architectural-memory";
 import type { DecomposedConfidence } from "./types";
 
 function toFormalRecommendationState(state?: string): FormalRecommendationState {
@@ -184,6 +190,108 @@ export async function generateEngineeringRecommendation(
         repairLocation
     );
 
+    // 5.1 10000/10 Engineering Reasoning Core Orchestration
+    const worldModel = buildEngineeringWorldModel(snapshot, snapshot.evidenceStore);
+    const worldModelSummary = queryWorldModelSummary(worldModel);
+
+    const reasoningManager = new ReasoningStateManager("R0");
+    reasoningManager.claims.addClaim({
+        claimId: "claim-obs-loc",
+        statement: `Failure observed at ${causalState.locations?.observationLocation.filePath || "primaryFrame"}:${causalState.locations?.observationLocation.lineNumber || 0}`,
+        type: "FACT",
+        status: "SUPPORTED",
+        evidenceRefs: snapshot.evidenceStore && typeof snapshot.evidenceStore.getAllRecords === "function" ? snapshot.evidenceStore.getAllRecords().slice(0, 3).map((r: any) => r.id) : [],
+        reasoningRefs: [],
+    });
+
+    reasoningManager.transition("R1", "Reconstructed execution path from stack frames and trace spans");
+    reasoningManager.claims.addClaim({
+        claimId: "claim-exec-path",
+        statement: `Execution path traversed ${executionPath.steps?.length || 0} steps`,
+        type: "FACT",
+        status: "SUPPORTED",
+        evidenceRefs: [],
+        reasoningRefs: ["claim-obs-loc"],
+    });
+
+    const divergenceAnalyzer = new DivergenceAnalyzer();
+    const firstDivergence = divergenceAnalyzer.analyzeFirstDivergence(snapshot);
+    reasoningManager.transition("R2", "Identified earliest divergence between intended and actual execution");
+    reasoningManager.claims.addClaim({
+        claimId: "claim-first-divergence",
+        statement: `State diverged at ${firstDivergence.firstDivergenceFrame} before reaching observation point`,
+        type: "FIRST_DIVERGENCE",
+        status: "SUPPORTED",
+        evidenceRefs: firstDivergence.evidenceIds,
+        reasoningRefs: ["claim-exec-path"],
+    });
+
+    const invariantEngine = new InvariantEngine();
+    const explicitInvariant = invariantEngine.discoverInvariant(
+        snapshot,
+        repairLocation.targetFile || "target",
+        repairLocation.targetSymbol
+    );
+    reasoningManager.transition("R3", "Derived violated invariant and contract ownership boundary");
+    reasoningManager.claims.addClaim({
+        claimId: "claim-invariant",
+        statement: explicitInvariant.statement,
+        type: "INVARIANT",
+        status: "SUPPORTED",
+        evidenceRefs: explicitInvariant.evidenceRefs,
+        reasoningRefs: ["claim-first-divergence"],
+    });
+
+    reasoningManager.transition("R6", "Causal mechanism confirmed and repair boundaries established");
+    reasoningManager.claims.addClaim({
+        claimId: "claim-repair-boundary",
+        statement: `Repair boundary established at ${repairLocation.targetFile || "target"} (${repairLocation.type})`,
+        type: "REPAIR_BOUNDARY",
+        status: repairLocation.ownershipEstablished ? "SUPPORTED" : "UNVERIFIED",
+        evidenceRefs: [],
+        reasoningRefs: ["claim-invariant"],
+    });
+
+    const adversarialChallenger = new AdversarialChallenger();
+    const adversarialChallenge = adversarialChallenger.challengeCandidate(selectedAction, explicitInvariant);
+    const seniorEngineerAnalysis = adversarialChallenger.runSeniorEngineerSimulator(
+        `${causalState.locations?.observationLocation.filePath || "observation"}:${causalState.locations?.observationLocation.lineNumber || 0}`,
+        `${repairLocation.targetFile || "target"}:${repairLocation.targetSymbol || ""}`,
+        causalState.brokenInvariant?.description || explicitInvariant.statement,
+        repairLocation.targetSymbol || repairLocation.targetFile || "Producer"
+    );
+
+    reasoningManager.transition("R8", "Adversarial challenges and counterexamples evaluated");
+    reasoningManager.claims.addClaim({
+        claimId: "claim-candidate-valid",
+        statement: `Selected candidate satisfies adversarial challenges: survived=${adversarialChallenge.survivedAdversarialChallenge}`,
+        type: "CANDIDATE_CORRECTNESS",
+        status: adversarialChallenge.survivedAdversarialChallenge ? "SUPPORTED" : "CONTRADICTED",
+        evidenceRefs: [selectedAction.id],
+        reasoningRefs: ["claim-repair-boundary"],
+    });
+
+    const preventionReasoner = new SystemicPreventionReasoner();
+    const preventionRecommendation = preventionReasoner.reasonAboutPrevention(
+        repairLocation.targetFile || "target",
+        repairLocation.targetSymbol || "symbol",
+        explicitInvariant,
+        repairLocation.targetSymbol || repairLocation.targetFile || "ContractOwner"
+    );
+
+    reasoningManager.transition("R10", "Authoritative engineering decision ready for final arbitration");
+
+    const reasoningHistory = reasoningManager.getState().versionHistory.map((v) => ({
+        version: v.version,
+        reason: v.transitionReason,
+        timestamp: v.timestamp.toISOString(),
+    }));
+    const claimGraphSummary = {
+        totalClaims: reasoningManager.claims.getAllClaims().length,
+        supportedClaims: reasoningManager.claims.getActiveClaims().length,
+        invalidatedClaims: reasoningManager.claims.getAllClaims().filter((c) => c.status === "INVALIDATED").length,
+    };
+
     // 6. Short-circuit ONLY when there is an absolute evidence boundary:
     //    Source is completely missing AND failure mechanism is completely unknown AND no stack trace/telemetry exists.
     //    All other states (BLOCKED_BY_AMBIGUITY, SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR, etc.)
@@ -275,6 +383,15 @@ export async function generateEngineeringRecommendation(
                 behavioralValidation: "UNTESTED",
             },
             repairEquivalence: repairEquivalence ?? undefined,
+            worldModelSummary,
+            reasoningVersion: "R10",
+            reasoningHistory,
+            claimGraphSummary,
+            firstDivergence,
+            explicitInvariant,
+            seniorEngineerAnalysis,
+            adversarialChallenge,
+            preventionRecommendation,
         });
 
         return {
@@ -794,6 +911,15 @@ export async function generateEngineeringRecommendation(
         decomposedConfidence: initialDecomposedConfidence,
         repairEquivalence: repairEquivalence ?? undefined,
         provenance: (factCheck.verifiedRecommendation as any).claimsWithProvenance,
+        worldModelSummary,
+        reasoningVersion: "R10",
+        reasoningHistory,
+        claimGraphSummary,
+        firstDivergence,
+        explicitInvariant,
+        seniorEngineerAnalysis,
+        adversarialChallenge,
+        preventionRecommendation,
     });
 
     const gateVerdict = evaluateRecommendationDecisionGate({

@@ -90,7 +90,7 @@ export interface CanonicalEvidenceGraph {
  * Deterministic Stable Evidence Identity Generator
  */
 export function getCanonicalEvidenceId(kind: EvidenceKind, key: string): string {
-    const sanitizedKey = key.trim().replace(/\s+/g, "_");
+    const sanitizedKey = String(key || "unknown").trim().replace(/\s+/g, "_");
     switch (kind) {
         case "RUNTIME_EVENT":
             return `runtime-event:${sanitizedKey}`;

@@ -600,6 +600,8 @@ export interface CandidateAction {
     uncertainty: string[];
     validationPlan: string[];
     score: number; // Internal ranking score
+    changes?: Array<{ file?: string; original?: string; replacement?: string; line?: number }>;
+    confidence?: string;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -1579,6 +1581,240 @@ export interface AuthoritativeEngineeringDecision {
     provenance: ClaimProvenance[];
     findings?: CanonicalFinding[];
     evidenceStoreHash?: string;
+    // --- 10000/10 ENGINEERING REASONING EXTENSIONS ---
+    worldModelSummary?: {
+        servicesCount: number;
+        symbolsCount: number;
+        edgesCount: number;
+    };
+    reasoningVersion?: string;
+    reasoningHistory?: Array<{ version: string; reason: string; timestamp: string }>;
+    claimGraphSummary?: {
+        totalClaims: number;
+        supportedClaims: number;
+        invalidatedClaims: number;
+    };
+    firstDivergence?: FirstDivergenceRecord;
+    valueOriginChain?: ValueOriginChain;
+    explicitInvariant?: ExplicitInvariant;
+    seniorEngineerAnalysis?: SeniorEngineerAnalysis;
+    adversarialChallenge?: AdversarialChallengeRecord;
+    preventionRecommendation?: PreventionRecommendation;
+    systemicDefects?: SystemicDefectRecord[];
+}
+
+// ============================================================================
+// 10000/10 ENGINEERING REASONING CORE TYPES (Sections 0 - 93)
+// ============================================================================
+
+export interface EngineeringWorldNode {
+    id: string; // Canonical evidence ID or stable entity key
+    type: "SERVICE" | "MODULE" | "FILE" | "FUNCTION" | "CLASS" | "VARIABLE" | "RESOURCE" | "TEST" | "COMMIT" | "DEPLOYMENT" | "CONFIGURATION";
+    name: string;
+    filePath?: string;
+    lineNumber?: number;
+    metadata?: Record<string, unknown>;
+}
+
+export interface EngineeringWorldEdge {
+    sourceId: string;
+    targetId: string;
+    relation: "CALLS" | "PRODUCES" | "TRANSFORMS" | "CONSUMES" | "ACQUIRES" | "RELEASES" | "MODIFIES" | "VERIFIES" | "ENFORCES" | "DEPENDS_ON";
+    evidenceId?: string;
+    metadata?: Record<string, unknown>;
+}
+
+export interface EngineeringWorldModel {
+    id: string;
+    snapshotId: string;
+    nodes: Map<string, EngineeringWorldNode> | Record<string, EngineeringWorldNode>;
+    edges: EngineeringWorldEdge[];
+    createdAt: Date;
+}
+
+export type ReasoningStateVersion = "R0" | "R1" | "R2" | "R3" | "R4" | "R5" | "R6" | "R7" | "R8" | "R9" | "R10";
+
+export type ClaimType =
+    | "FACT"
+    | "INVARIANT"
+    | "INTENT"
+    | "CONTRACT_OWNERSHIP"
+    | "FIRST_DIVERGENCE"
+    | "CAUSAL_MECHANISM"
+    | "REPAIR_BOUNDARY"
+    | "CANDIDATE_CORRECTNESS"
+    | "BEHAVIORAL_PROOF"
+    | "REGRESSION_SAFETY";
+
+export type ClaimStatus = "SUPPORTED" | "UNVERIFIED" | "CONTRADICTED" | "INVALIDATED";
+
+export interface Claim {
+    claimId: string;
+    statement: string;
+    type: ClaimType;
+    status: ClaimStatus;
+    evidenceRefs: string[]; // Canonical evidence IDs
+    reasoningRefs: string[]; // Dependent claim IDs
+    counterEvidence?: string[];
+    createdAt: Date;
+    invalidatedAt?: Date;
+    invalidationReason?: string;
+}
+
+export interface ClaimDependencyGraph {
+    claims: Record<string, Claim>;
+    dependencies: Record<string, string[]>; // claimId -> array of child claim IDs that depend on it
+}
+
+export interface HypothesisElimination {
+    hypothesisId: string;
+    statement: string;
+    requiredConditions: string[];
+    supportingEvidence: string[];
+    contradictingEvidence: string[];
+    status: "SUPPORTED" | "WEAK" | "CONTRADICTED" | "REJECTED" | "UNRESOLVED" | "CONFIRMED" | "UNKNOWN";
+    eliminationReason?: string;
+}
+
+export interface EngineeringReasoningState {
+    version: ReasoningStateVersion;
+    versionHistory: Array<{
+        version: ReasoningStateVersion;
+        transitionReason: string;
+        timestamp: Date;
+    }>;
+    claims: ClaimDependencyGraph;
+    hypotheses: HypothesisElimination[];
+    whyRecursion: Array<{
+        level: number;
+        question: string;
+        answer: string;
+        contractOwner?: string;
+    }>;
+    decisionChangingConditions: string[];
+}
+
+export interface FirstDivergenceRecord {
+    observationFrame: string;
+    firstDivergenceFrame: string;
+    firstDivergenceFile: string;
+    firstDivergenceLine?: number;
+    expectedStateDescription: string;
+    actualStateDescription: string;
+    framesBeforeFailure: number;
+    evidenceIds: string[];
+}
+
+export interface ValueOriginStep {
+    symbol: string;
+    location: string;
+    producer: string;
+    transformation: string;
+    consumer: string;
+    stateBefore: string;
+    stateAfter: string;
+    evidenceId?: string;
+}
+
+export interface ValueOriginChain {
+    targetValue: string;
+    steps: ValueOriginStep[];
+    originBoundary: "EXTERNAL_INPUT" | "TRUSTED_CONSTANT" | "CONFIGURATION" | "DATABASE" | "USER_INPUT" | "RUNTIME_STATE" | "UNKNOWN";
+    boundaryLocation: string;
+}
+
+export interface IntentConflict {
+    conflictId: string;
+    statement: string;
+    sourceA: { source: "TYPES" | "SCHEMA" | "TESTS" | "DOCS" | "RUNTIME"; assertion: string };
+    sourceB: { source: "TYPES" | "SCHEMA" | "TESTS" | "DOCS" | "RUNTIME"; assertion: string };
+    authoritativeSource: "TYPES" | "SCHEMA" | "TESTS" | "DOCS" | "RUNTIME";
+    resolutionJustification: string;
+}
+
+export interface ExplicitInvariant {
+    invariantId: string;
+    statement: string;
+    scope: string;
+    preconditions: string[];
+    expectedState: Record<string, unknown>;
+    violatedState: Record<string, unknown>;
+    evidenceRefs: string[];
+    ownerCandidates: string[];
+    enforcementPoints: string[];
+    violationPoint: string;
+    restorationCandidates: string[];
+}
+
+export interface ResourceLifecycleRecord {
+    resourceType: string;
+    acquisitionCall: string;
+    releaseCall: string;
+    ownerComponent: string;
+    isReleasedOnFailure: boolean;
+    detectedLeakLocation?: string;
+}
+
+export interface StateTransitionRecord {
+    stateMachine: string;
+    fromState: string;
+    toState: string;
+    isLegal: boolean;
+    violationType?: "ILLEGAL_TRANSITION" | "MISSING_TRANSITION" | "PREMATURE_TRANSITION" | "DUPLICATE_TRANSITION" | "RACE_CONDITION";
+    evidenceId?: string;
+}
+
+export interface CounterexampleCase {
+    caseName: string;
+    inputDescription: string;
+    expectedBehavior: string;
+    actualCandidateBehavior: "PASS" | "FAIL";
+    status: "SURVIVED" | "DISPROVED";
+    notes?: string;
+}
+
+export interface SeniorEngineerAnalysis {
+    whyNotObviousFix: string; // e.g. "Why not just add optional chaining `?.` or a null guard?"
+    whatJuniorWouldMiss: string;
+    whatStaffEngineerWouldNotice: string;
+    whatWouldChangeDecision: string;
+}
+
+export interface AdversarialChallengeRecord {
+    candidateId: string;
+    attacksEvaluated: string[];
+    symptomMaskingDetected: boolean;
+    maskingReason?: string;
+    counterexamples: CounterexampleCase[];
+    minimalityVerified: boolean;
+    necessityVerified: boolean;
+    survivedAdversarialChallenge: boolean;
+}
+
+export interface StructuralExperienceRecord {
+    experienceId: string;
+    failureStructure: string;
+    executionStructure: string;
+    mechanismPattern: string;
+    invariantPattern: string;
+    contractOwnershipPattern: string;
+    successfulRepairBoundary: string;
+    relevanceCount: number;
+}
+
+export interface SystemicDefectRecord {
+    defectClusterId: string;
+    sharedBrokenInvariant: string;
+    sharedContractBoundary: string;
+    affectedOccurrencesCount: number;
+    systemicRecommendation: string;
+}
+
+export interface PreventionRecommendation {
+    immediateRepair: string;
+    systemicPrevention: string;
+    architecturalEnforcementBoundary: string;
+    preventionMechanism: "SCHEMA_VALIDATION" | "TYPE_BOUND" | "GATEWAY_FILTER" | "RESOURCE_RAII" | "INVARIANT_ASSERTION";
 }
 
 export * from "./canonical-evidence-store";

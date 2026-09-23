@@ -227,7 +227,8 @@ export function buildInvestigationSnapshot(
 
     // 4. Register git regression candidates
     for (const cand of releaseContext.candidates) {
-        const commitRecordId = getCanonicalEvidenceId("GIT_COMMIT", cand.commitSha);
+        const commitSha = cand.commitSha || (cand as any).sha || "unknown";
+        const commitRecordId = getCanonicalEvidenceId("GIT_COMMIT", commitSha);
         evidenceStore.register({
             id: commitRecordId,
             kind: "GIT_COMMIT",

@@ -38,6 +38,13 @@ import type {
     AuthoritativeEngineeringDecision,
     FailureLocationStatus,
     SeparatedLocations,
+    FirstDivergenceRecord,
+    ValueOriginChain,
+    ExplicitInvariant,
+    SeniorEngineerAnalysis,
+    AdversarialChallengeRecord,
+    PreventionRecommendation,
+    SystemicDefectRecord,
 } from "./types";
 import type { CausalRegressionGateVerdict } from "./causal-regression-gate";
 
@@ -66,6 +73,26 @@ export interface BuildAuthoritativeDecisionParams {
     decomposedConfidence: DecomposedConfidence;
     repairEquivalence?: RepairEquivalenceRecord;
     provenance?: ClaimProvenance[];
+    // 10000/10 Reasoning Core additions
+    worldModelSummary?: {
+        servicesCount: number;
+        symbolsCount: number;
+        edgesCount: number;
+    };
+    reasoningVersion?: string;
+    reasoningHistory?: Array<{ version: string; reason: string; timestamp: string }>;
+    claimGraphSummary?: {
+        totalClaims: number;
+        supportedClaims: number;
+        invalidatedClaims: number;
+    };
+    firstDivergence?: FirstDivergenceRecord;
+    valueOriginChain?: ValueOriginChain;
+    explicitInvariant?: ExplicitInvariant;
+    seniorEngineerAnalysis?: SeniorEngineerAnalysis;
+    adversarialChallenge?: AdversarialChallengeRecord;
+    preventionRecommendation?: PreventionRecommendation;
+    systemicDefects?: SystemicDefectRecord[];
 }
 
 export function buildAuthoritativeEngineeringDecision(
@@ -92,6 +119,17 @@ export function buildAuthoritativeEngineeringDecision(
         decomposedConfidence,
         repairEquivalence,
         provenance = [],
+        worldModelSummary,
+        reasoningVersion,
+        reasoningHistory,
+        claimGraphSummary,
+        firstDivergence,
+        valueOriginChain,
+        explicitInvariant,
+        seniorEngineerAnalysis,
+        adversarialChallenge,
+        preventionRecommendation,
+        systemicDefects,
     } = params;
 
     const cand =
@@ -355,5 +393,16 @@ export function buildAuthoritativeEngineeringDecision(
                 createdAt: new Date(),
             }] : []),
         ],
+        worldModelSummary,
+        reasoningVersion,
+        reasoningHistory,
+        claimGraphSummary,
+        firstDivergence,
+        valueOriginChain,
+        explicitInvariant,
+        seniorEngineerAnalysis,
+        adversarialChallenge,
+        preventionRecommendation,
+        systemicDefects,
     };
 }

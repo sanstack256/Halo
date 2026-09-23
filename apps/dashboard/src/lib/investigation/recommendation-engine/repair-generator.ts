@@ -545,8 +545,8 @@ export function generatePreciseRepair(
 
     const currentLines = sourceAst.surroundingLines || [];
     const failingLineObj = currentLines.find((l) => (l as any).isFailingLine || l.lineNumber === sourceAst.failingLine);
-    const verifiedCurrent = failingLineObj ? failingLineObj.content.trim() : failingExpr;
-    const allSourceLines = currentLines.map(l => l.content).join("\n");
+    const verifiedCurrent = failingLineObj?.content ? failingLineObj.content.trim() : failingExpr;
+    const allSourceLines = currentLines.map(l => (typeof l === "string" ? l : (l as any)?.content || "")).join("\n");
 
     // ── Non-Code Remediation Cases ────────────────────────────────────────────
 

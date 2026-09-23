@@ -104,7 +104,8 @@ export function evaluateCausalRegressionGate(params: {
     const causalityQuestions: string[] = [];
 
     // Question 1: What changed?
-    if (!candidate.diffSnippet && candidate.changedFiles.length === 0) {
+    const candFiles = candidate.changedFiles || (candidate as any).modifiedFiles || [];
+    if (!candidate.diffSnippet && candFiles.length === 0) {
         causalityQuestions.push("Exact diff and changed AST nodes are unavailable.");
     }
 
