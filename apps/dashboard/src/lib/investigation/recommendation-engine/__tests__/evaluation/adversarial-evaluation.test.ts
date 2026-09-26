@@ -56,7 +56,7 @@ describe("Halo Trace — Fix / Recommendation Engine Adversarial Evaluation", ()
                     expect(rec.changes[0].proposedCode || (rec.changes[0] as any).proposed).toBeTruthy();
                 } else if (scenario.expectedOutcome === "NO_CODE_CHANGE") {
                     expect(rec.isCodeModification).toBe(false);
-                    expect(rec.actionAnswer.toUpperCase()).toContain("NO APPLICATION CODE CHANGE");
+                    expect(rec.actionAnswer?.toUpperCase()).toContain("NO APPLICATION CODE CHANGE");
                 }
 
                 // 5. Fact check integrity
@@ -261,8 +261,8 @@ describe("Halo Trace — Fix / Recommendation Engine Adversarial Evaluation", ()
             const runA = await generateEngineeringRecommendation({ snapshot });
             const runB = await generateEngineeringRecommendation({ snapshot });
 
-            expect(runA.recommendation.repairLocation.type).toBe(runB.recommendation.repairLocation.type);
-            expect(runA.recommendation.repairLocation.targetFile).toBe(runB.recommendation.repairLocation.targetFile);
+            expect(runA.recommendation.repairLocation?.type).toBe(runB.recommendation.repairLocation?.type);
+            expect(runA.recommendation.repairLocation?.targetFile).toBe(runB.recommendation.repairLocation?.targetFile);
             expect(runA.recommendation.actionAnswer).toBe(runB.recommendation.actionAnswer);
         });
     });

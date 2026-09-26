@@ -127,7 +127,7 @@ describe("Phase 14 & 15: Dual-Gate Rollback & Superiority Evaluation", () => {
         expect(verdict.isRollbackEligible).toBe(true);
         expect(verdict.superiorityRationale).toContain("safe, clean, and directly restores");
 
-        const repairLoc = determineRepairLocation(snapshot, defaultCausalState, defaultSourceAst, {} as any, regressionContext);
+        const repairLoc = determineRepairLocation(snapshot, defaultCausalState, {} as any, defaultSourceAst, regressionContext);
         expect(repairLoc.type).toBe("DEPLOYMENT");
     });
 
@@ -215,7 +215,7 @@ describe("Phase 14 & 15: Dual-Gate Rollback & Superiority Evaluation", () => {
         expect(verdict.superiorityRationale).toContain("broad rollback is disqualified because it contains unrelated changes with high blast radius");
 
         // The repair location engine must select targeted code fix (CALLEE), NOT DEPLOYMENT!
-        const repairLoc = determineRepairLocation(snapshot, defaultCausalState, defaultSourceAst, {} as any, regressionContext);
+        const repairLoc = determineRepairLocation(snapshot, defaultCausalState, {} as any, defaultSourceAst, regressionContext);
         expect(repairLoc.type).toBe("CALLEE");
         expect(repairLoc.targetFile).toBe("src/billing/tax.ts");
         expect(repairLoc.rationale).toContain("targeted repair is selected over rollback");

@@ -21,7 +21,7 @@ export interface ReconstructedInvariant {
     invariantType: InvariantType;
     governingEntity: string;
     formalStatement: string;
-    derivedFrom: "TEST_ASSERTION" | "TYPESCRIPT_TYPE_SYSTEM" | "RUNTIME_GUARD" | "CALLER_ASSUMPTION";
+    derivedFrom: "TEST_ASSERTION" | "TYPESCRIPT_TYPE_SYSTEM" | "RUNTIME_GUARD" | "CALLER_ASSUMPTION" | "API_PRECONDITION";
     isViolatedInIncident: boolean;
     violationEvidence?: string;
     evidenceId: string;

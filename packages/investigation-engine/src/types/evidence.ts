@@ -8,7 +8,9 @@ export type EvidenceType =
     | "CONFIG"
     | "FEATURE_FLAG"
     | "INFRASTRUCTURE"
-    | "THIRD_PARTY";
+    | "THIRD_PARTY"
+    | "RELEASE"
+    | "SPAN";
 
 export interface Evidence {
     id: string;
@@ -46,6 +48,8 @@ export interface Evidence {
     resource?: string;
 
     durationMs?: number;
+
+    duration?: number;
 
     value?: number;
 

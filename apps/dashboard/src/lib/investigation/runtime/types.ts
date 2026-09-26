@@ -34,11 +34,11 @@ export interface StackFrame {
     order: number;
     functionName: string;
     moduleOrPackage?: string;
-    rawFilePath: string;
+    rawFilePath?: string;
     filePath: string;
     lineNumber?: number;
     columnNumber?: number;
-    isInternal: boolean;
+    isInternal?: boolean;
     isApplication: boolean;
     /** Developer-facing classification used to filter the application call chain */
     classification: FrameClassification;
@@ -50,12 +50,12 @@ export interface SourceContext {
     filePath: string;
     failingLineNumber: number;
     failingColumnNumber?: number;
-    startLineNumber: number;
-    lines: { lineNumber: number; content: string; isFailingLine: boolean }[];
+    startLineNumber?: number;
+    lines: { lineNumber: number; content: string; isFailingLine?: boolean }[];
     containingFunction?: string;
     failingExpression?: string;
     failingStatement?: string;
-    resolutionStatus:
+    resolutionStatus?:
         | "exact_file"                  // Retrieved from disk or GitHub at exact commit
         | "source_revision_unavailable" // Commit SHA known but file could not be found at that revision
         | "file_not_found"              // File path not found locally or on GitHub
@@ -88,10 +88,10 @@ export interface CallChainStep {
     filePath?: string;
     lineNumber?: number;
     isFailingSite: boolean;
-    isApplication: boolean;
-    classification: FrameClassification;
+    isApplication?: boolean;
+    classification?: FrameClassification;
     failingExpression?: string;
-    provenance: ReconstructionProvenance;
+    provenance?: ReconstructionProvenance;
 }
 
 export interface RuntimeFailureReconstruction {

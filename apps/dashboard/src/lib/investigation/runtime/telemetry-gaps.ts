@@ -69,8 +69,8 @@ export function detectMaterialGaps(
             github_api_error: "A GitHub API error occurred during source resolution.",
             source_map_unavailable: "A source map is required to resolve the original source but was not found.",
         };
-        const friendlyStatus = statusMessage[sourceContext.resolutionStatus] ??
-            `Source code resolution status: ${sourceContext.resolutionStatus}.`;
+        const friendlyStatus = (sourceContext.resolutionStatus ? statusMessage[sourceContext.resolutionStatus] : undefined) ??
+            `Source code resolution status: ${sourceContext.resolutionStatus || "unknown"}.`;
 
         gaps.push({
             missingSignal: "Source Code Context",

@@ -8,6 +8,7 @@
 
 import { z } from "zod";
 import type { Evidence, Hypothesis, Finding, CausalChain, Investigation } from "@halo/investigation-engine";
+export type { Hypothesis } from "@halo/investigation-engine";
 import type { SourceContext, StackFrame } from "../runtime/types";
 
 /* -------------------------------------------------------------------------- */
@@ -82,7 +83,7 @@ export interface EvidenceFact {
 
 export type FailureLocationStatus = "CONFIRMED" | "UNRESOLVED" | "OBSERVED" | "ESTABLISHED" | "CANDIDATE";
 export type FailureMechanismStatus = "CONFIRMED" | "PLAUSIBLE" | "UNKNOWN";
-export type UpstreamCauseStatus = "CONFIRMED" | "REGRESSION_SUSPECTED" | "UNKNOWN";
+export type UpstreamCauseStatus = "CONFIRMED" | "REGRESSION_SUSPECTED" | "UNKNOWN" | "AMBIGUOUS";
 
 export interface CodeLocation {
     filePath?: string;
@@ -362,12 +363,13 @@ export interface RollbackAuditRecord {
     unrelatedChangesBlastRadius: "MINIMAL" | "MODERATE" | "HIGH" | "UNKNOWN";
     invariantRestored: boolean;
     reintroducesKnownDefect: boolean;
-    migrationOrDataImplications: boolean;
+    migrationOrDataImplications?: boolean;
     safeForDeploymentState: boolean;
     targetedRepairSmallerBlastRadius: boolean;
     behaviorallyValidated: boolean;
     auditPassed: boolean;
     refusalReason?: string;
+    touchesOnlyFailingFile?: boolean;
 }
 
 export interface EvaluatedRegressionCandidate {
@@ -375,12 +377,14 @@ export interface EvaluatedRegressionCandidate {
     shortSha: string;
     message: string;
     author: string;
-    commitDate: Date;
+    commitDate?: Date;
+    timestamp?: Date;
     deploymentDate?: Date;
-    classification: RegressionCandidateClassification;
-    classificationReason: string;
-    modifiesFailingFile: boolean;
-    modifiesFailingSymbol: boolean;
+    classification?: RegressionCandidateClassification;
+    classificationReason?: string;
+    modifiesFailingFile?: boolean;
+    modifiesFailingSymbol?: boolean;
+    directlyModifiesFailingLine?: boolean;
     diffSnippet?: string;
     changedFiles: string[];
     // Strict multi-dimensional regression semantics
@@ -418,20 +422,22 @@ export interface SourceAstAnalysis {
     functionParameters?: string[];
     optionalParameters?: string[];
     failingExpression?: string;
-    surroundingLines: Array<{ lineNumber: number; content: string; isFailingLine: boolean }>;
-    guards: Array<{
+    surroundingLines?: Array<{ lineNumber: number; content: string; isFailingLine: boolean }>;
+    guards?: Array<{
         type: "null_check" | "truthy_check" | "typeof" | "optional_chaining" | "assertion";
         line: number;
         expression: string;
         isPriorToFailure: boolean;
     }>;
-    hasOptionalChaining: boolean;
-    hasFallbackCoalescing: boolean;
-    hasCatchBlock: boolean;
+    hasOptionalChaining?: boolean;
+    hasFallbackCoalescing?: boolean;
+    hasCatchBlock?: boolean;
     errorPropagation: {
         originatesHere: boolean;
-        isTransformed: boolean;
-        isRethrown: boolean;
+        isTransformed?: boolean;
+        isRethrown?: boolean;
+        catchesAndRethrows?: boolean;
+        isSilentSuppression?: boolean;
     };
     invocationAnalysis?: InvocationAnalysis;
     sourceDistMapping?: {
@@ -507,12 +513,21 @@ export interface ValueFlowStep {
 }
 
 export interface ContractAnalysisResult {
-    hasStaticContractDifference: boolean;
-    hasRuntimeContractViolation: boolean;
+    hasStaticContractDifference?: boolean;
+    hasRuntimeContractViolation?: boolean;
     description?: string;
     callerContract?: string;
     calleeContract?: string;
-    valueFlow: ValueFlowStep[];
+    valueFlow?: ValueFlowStep[];
+    preconditions?: any[];
+    postconditions?: any[];
+    invariants?: any[];
+    hasMismatch?: boolean;
+    brokenBoundary?: any;
+    recommendedRepairSide?: string;
+    isAlreadyFixed?: boolean;
+    alreadyFixedDetails?: string;
+    antiMaskingAlert?: string;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -555,7 +570,7 @@ export interface DeterminedRepairLocation {
     targetLineNumber?: number;
     lineRange?: { start: number; end: number };
     rationale: string;
-    whyNotFailingLine: string;
+    whyNotFailingLine?: string;
     isAmbiguous?: boolean;
     ownershipEstablished?: boolean;
     contractEvidence?: string;
@@ -655,16 +670,22 @@ export type DecomposedConfidence = z.infer<typeof DecomposedConfidenceSchema>;
 
 export interface EvidenceSufficiencyEvaluation {
     state: EvidenceSufficiencyState;
-    unresolvedDecision: string;
-    establishedFacts: string[];
-    inferredFacts: string[];
-    contradictingFacts: string[];
-    canSourceOrReleaseResolve: boolean;
-    isAdditionalRuntimeTelemetryNecessary: boolean;
-    minimumAdditionalEvidenceNeeded: string[];
+    unresolvedDecision?: string;
+    establishedFacts?: string[];
+    inferredFacts?: string[];
+    contradictingFacts?: string[];
+    canSourceOrReleaseResolve?: boolean;
+    isAdditionalRuntimeTelemetryNecessary?: boolean;
+    minimumAdditionalEvidenceNeeded?: string[];
     blockingReason?: string;
     informationFrontier?: InformationFrontier;
     actionExplanation?: HighestInformationNextActionExplanation;
+    isSufficientForDiagnosis?: boolean;
+    isSufficientForRepair?: boolean;
+    supportingEvidenceIds?: string[];
+    contradictingEvidenceIds?: string[];
+    missingEvidenceTypes?: string[];
+    staleEvidenceIds?: string[];
 }
 
 /* -------------------------------------------------------------------------- */
@@ -906,27 +927,38 @@ export type FixRecommendation = z.infer<typeof FixRecommendationSchema>;
 /* -------------------------------------------------------------------------- */
 
 export const StructuredLlmOutputSchema = z.object({
-    action: z.string().min(1),
-    summary: z.string().min(1),
-    why: z.string().min(1),
-    repairLocationRationale: z.string().min(1),
+    action: z.string().optional(),
+    actionTitle: z.string().optional(),
+    summary: z.string().optional(),
+    actionDescription: z.string().optional(),
+    why: z.string().optional(),
+    justification: z.string().optional(),
+    repairLocationRationale: z.string().optional(),
+    repairLocation: z.any().optional(),
     whyNotSymptomFix: z.string().optional(),
     claims: z.array(
         z.object({
-            claim: z.string().min(1),
+            claim: z.string(),
             factId: z.string().optional(),
-            category: z.enum(["CONFIRMED", "SUPPORTED", "POSSIBLE", "UNKNOWN"]),
-        })
-    ).min(1),
+            category: z.enum(["CONFIRMED", "SUPPORTED", "POSSIBLE", "UNKNOWN"]).optional(),
+        }).passthrough()
+    ).default([]),
     changes: z.array(
         z.object({
-            file: z.string(),
+            file: z.string().optional(),
+            filePath: z.string().optional(),
             symbol: z.string().optional(),
+            symbolName: z.string().optional(),
             lines: z.string().optional(),
+            current: z.string().optional(),
+            currentCode: z.string().optional(),
             existingCode: z.string().optional(),
+            proposed: z.string().optional(),
             proposedCode: z.string().optional(),
-            rationale: z.string().min(1),
-        })
+            rationale: z.string().optional(),
+            explanation: z.string().optional(),
+            whyHere: z.string().optional(),
+        }).passthrough()
     ).default([]),
     alternatives: z.array(
         z.object({
@@ -938,8 +970,11 @@ export const StructuredLlmOutputSchema = z.object({
     uncertainty: z.array(z.string()).default([]),
     status: z.string().optional(),
     outcomeType: z.string().optional(),
-    confidenceLevel: QualitativeConfidenceSchema.default("MEDIUM"),
+    confidenceLevel: QualitativeConfidenceSchema.default("MEDIUM").optional(),
+    confidence: z.any().optional(),
     blockedBy: z.string().optional(),
+    doNotChange: z.any().optional(),
+    evidenceReferences: z.any().optional(),
 });
 export type StructuredLlmOutput = z.infer<typeof StructuredLlmOutputSchema>;
 

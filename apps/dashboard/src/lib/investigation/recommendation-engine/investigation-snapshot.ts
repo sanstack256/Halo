@@ -14,41 +14,59 @@ import type { InvestigationSnapshot, ReleaseRegressionContext } from "./types";
 import { CanonicalEvidenceStore, getCanonicalEvidenceId } from "./canonical-evidence-store";
 
 export interface BuildInvestigationSnapshotOptions {
+    [key: string]: any;
     incident: {
         issueId: string;
         title: string;
         fingerprint?: string;
-        firstSeen: Date;
-        lastSeen: Date;
+        firstSeen: Date | string;
+        lastSeen: Date | string;
         eventCount?: number;
         environment?: string;
         service?: string;
         release?: string;
+        exceptionType?: string;
+        errorMessage?: string;
     };
-    rawEvidence: Evidence[];
+    rawEvidence: Array<
+        Omit<Partial<Evidence>, "timestamp" | "type"> & {
+            id: string;
+            type?: EvidenceType | string;
+            timestamp?: Date | string;
+            [key: string]: any;
+        }
+    >;
     investigation?: Partial<Investigation> | {
         status?: string;
-        hypotheses?: any[];
-        findings?: any[];
-        causalChains?: any[];
+        hypotheses?: readonly any[];
+        findings?: readonly any[];
+        causalChains?: readonly any[];
         rootCause?: any;
         summary?: string;
         [key: string]: any;
     };
-    stackFrames?: StackFrame[];
-    source?: SourceContext & {
+    stackFrames?: (Partial<StackFrame> & {
+        filePath: string;
+        [key: string]: any;
+    })[];
+    source?: Partial<SourceContext> & {
         sourceFileCounterpart?: string;
         sourceMapAvailable?: boolean;
+        callers?: any[];
+        producers?: any[];
+        testFiles?: any[];
+        lines?: Array<{ lineNumber: number; content: string; isFailingLine?: boolean }>;
+        [key: string]: any;
     };
     release?: ReleaseRegressionContext;
     replay?: {
         isAvailable: boolean;
         sessionId?: string;
-        eventsSummary: string[];
+        eventsSummary?: readonly string[];
     };
     tests?: {
         hasRelevantTests: boolean;
-        testFiles: string[];
+        testFiles?: readonly string[];
         reproductionPossibleInDev: boolean;
     };
     sourceDistMapping?: {
@@ -61,7 +79,12 @@ export interface BuildInvestigationSnapshotOptions {
 export function buildInvestigationSnapshot(
     opts: BuildInvestigationSnapshotOptions
 ): InvestigationSnapshot {
-    const { incident = { issueId: "issue-unknown", title: "Incident", firstSeen: new Date(), lastSeen: new Date() }, rawEvidence = [], investigation, stackFrames = [], source, release, replay } = opts;
+    const rawEvidenceList = (opts.rawEvidence || []).map((e) => ({
+        ...e,
+        timestamp: typeof e.timestamp === "string" ? new Date(e.timestamp) : (e.timestamp || new Date()),
+    })) as Evidence[];
+
+    const { incident = { issueId: "issue-unknown", title: "Incident", firstSeen: new Date(), lastSeen: new Date() }, rawEvidence = rawEvidenceList, investigation, stackFrames = [], source, release, replay } = opts;
 
     // Identify primary anchor error
     const anchorError =
@@ -308,8 +331,8 @@ export function buildInvestigationSnapshot(
             issueId: incident.issueId,
             title: incident.title,
             fingerprint: incident.fingerprint,
-            firstSeen: incident.firstSeen,
-            lastSeen: incident.lastSeen,
+            firstSeen: typeof incident.firstSeen === "string" ? new Date(incident.firstSeen) : (incident.firstSeen || new Date()),
+            lastSeen: typeof incident.lastSeen === "string" ? new Date(incident.lastSeen) : (incident.lastSeen || new Date()),
             eventCount: incident.eventCount ?? rawEvidence.length,
             environment: incident.environment || anchorError?.environment || "production",
             service: incident.service || anchorError?.service || "unknown-service",

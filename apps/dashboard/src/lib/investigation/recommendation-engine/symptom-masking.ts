@@ -22,8 +22,13 @@ export interface SymptomMaskingEvaluation {
 
 export function detectSymptomMasking(
     codeDiffOrProposal: string,
-    isCallerContractViolated: boolean = false
+    isCallerContractViolatedOrExceptionType: boolean | string = false,
+    _exceptionMessage?: string
 ): SymptomMaskingEvaluation {
+    const isCallerContractViolated =
+        typeof isCallerContractViolatedOrExceptionType === "boolean"
+            ? isCallerContractViolatedOrExceptionType
+            : false;
     const detectedPatterns: string[] = [];
     let maskingTechnique: SymptomMaskingEvaluation["maskingTechnique"] = undefined;
 

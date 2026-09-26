@@ -33,6 +33,7 @@ import type {
     ConsequenceAnalysisRecord,
     DecomposedConfidence,
     FormalRecommendationState,
+    EvidenceSufficiencyState,
     RepairEquivalenceRecord,
     ClaimProvenance,
     AuthoritativeEngineeringDecision,
@@ -69,7 +70,7 @@ export interface BuildAuthoritativeDecisionParams {
     };
     consequences?: ConsequenceAnalysisRecord;
     uncertainty?: string[];
-    finalState: FormalRecommendationState;
+    finalState: FormalRecommendationState | EvidenceSufficiencyState | string;
     decomposedConfidence: DecomposedConfidence;
     repairEquivalence?: RepairEquivalenceRecord;
     provenance?: ClaimProvenance[];

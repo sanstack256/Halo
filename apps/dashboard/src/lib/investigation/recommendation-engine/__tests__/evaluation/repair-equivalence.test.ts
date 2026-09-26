@@ -50,10 +50,10 @@ describe("Phase 8 & 49: Repair-Equivalent Hypotheses Evaluation", () => {
 
         const record = detectRepairEquivalentHypotheses(hypotheses, repairLocation);
 
-        expect(record.isRepairEquivalent).toBe(true);
-        expect(record.equivalentHypothesisIds).toEqual(["hypo-producer-a", "hypo-producer-b"]);
-        expect(record.sharedRepairBoundary).toBe("src/client/http.ts");
-        expect(record.unresolvedUpstreamCausalityReason).toContain("Upstream root cause remains under investigation");
+        expect(record!.isRepairEquivalent).toBe(true);
+        expect(record!.equivalentHypothesisIds).toEqual(["hypo-producer-a", "hypo-producer-b"]);
+        expect(record!.sharedRepairBoundary).toBe("src/client/http.ts");
+        expect(record!.unresolvedUpstreamCausalityReason).toContain("Upstream root cause remains under investigation");
     });
 
     it("does NOT mark repair equivalence when hypotheses target distinct components or repair locations", () => {

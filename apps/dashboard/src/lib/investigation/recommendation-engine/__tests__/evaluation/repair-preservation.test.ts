@@ -98,8 +98,8 @@ describe("Step 6 — Repair-Location Preservation Audit", () => {
         });
 
         const result = await generateEngineeringRecommendation({ snapshot });
-        expect(result.repairLocation.type).toBe("CALLER");
-        expect(result.repairLocation.targetFile).toContain("caller.js");
+        expect(result.repairLocation?.type).toBe("CALLER");
+        expect(result.repairLocation?.targetFile).toContain("caller.js");
         expect(result.recommendation.repairLocation?.type).toBe("CALLER");
         expect(result.recommendation.repairLocation?.targetFile).toContain("caller.js");
         // Must NOT demote to CALLEE!
@@ -156,8 +156,8 @@ describe("Step 6 — Repair-Location Preservation Audit", () => {
         });
 
         const result = await generateEngineeringRecommendation({ snapshot });
-        expect(result.repairLocation.type).toBe("PRODUCER");
-        expect(result.repairLocation.targetFile).toContain("tax-calculator.js");
+        expect(result.repairLocation?.type).toBe("PRODUCER");
+        expect(result.repairLocation?.targetFile).toContain("tax-calculator.js");
         expect(result.recommendation.repairLocation?.type).toBe("PRODUCER");
         expect(result.recommendation.repairLocation?.targetFile).toContain("tax-calculator.js");
         // Must NOT demote to CALLEE!
@@ -207,8 +207,8 @@ describe("Step 6 — Repair-Location Preservation Audit", () => {
         });
 
         const result = await generateEngineeringRecommendation({ snapshot });
-        expect(result.repairLocation.type).toBe("ADAPTER");
-        expect(result.repairLocation.targetFile).toContain("auth-adapter.js");
+        expect(result.repairLocation?.type).toBe("ADAPTER");
+        expect(result.repairLocation?.targetFile).toContain("auth-adapter.js");
         expect(result.recommendation.repairLocation?.type).toBe("ADAPTER");
         expect(result.recommendation.repairLocation?.type).not.toBe("CALLEE");
     });
@@ -255,12 +255,12 @@ describe("Step 6 — Repair-Location Preservation Audit", () => {
         });
 
         const result = await generateEngineeringRecommendation({ snapshot });
-        expect(result.repairLocation.type).toBe("NO_CODE_CHANGE");
+        expect(result.repairLocation?.type).toBe("NO_CODE_CHANGE");
         expect(result.recommendation.repairLocation?.type).toBe("NO_CODE_CHANGE");
         expect(result.recommendation.isCodeModification).toBe(false);
         // STRICT REQUIREMENT: changes must be EMPTY!
         expect(result.recommendation.changes).toHaveLength(0);
-        expect(result.recommendation.actionAnswer.toUpperCase()).toContain("NO APPLICATION CODE CHANGE");
+        expect(result.recommendation.actionAnswer?.toUpperCase()).toContain("NO APPLICATION CODE CHANGE");
     });
 });
 

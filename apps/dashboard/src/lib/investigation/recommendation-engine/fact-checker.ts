@@ -148,9 +148,9 @@ export function isFileSupportedInGraph(filePath: string, graph: Set<string>): bo
 }
 
 export function runDeterministicFactCheck(
-    rawOutput: StructuredLlmOutput,
+    rawOutput: Partial<StructuredLlmOutput> & Record<string, any>,
     snapshot: InvestigationSnapshot,
-    sufficiency?: EvidenceSufficiencyEvaluation,
+    sufficiency?: EvidenceSufficiencyEvaluation | null,
     sourceAst?: any,
     contractAnalysis?: any,
     repairLocation?: any

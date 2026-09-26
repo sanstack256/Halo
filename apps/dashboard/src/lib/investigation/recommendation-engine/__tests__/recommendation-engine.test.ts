@@ -108,7 +108,7 @@ describe("Halo Evidence-Bound Recommendation & Patch Engine Test Suite", () => {
     // SCENARIO A: Perfect evidence -> recommendation + valid patch generated
     it("Scenario A: Generates verified recommendation and valid patch with perfect evidence", async () => {
         const anchor = makeMockEvidence();
-        const requestEv: Evidence = {
+        const requestEv: Evidence = makeMockEvidence({
             id: "req-999",
             type: "TRACE",
             title: "POST /api/orders",
@@ -118,7 +118,7 @@ describe("Halo Evidence-Bound Recommendation & Patch Engine Test Suite", () => {
             release: "v4.2.0",
             status: "500",
             duration: 120,
-        };
+        });
 
         const rawEvidence = [anchor, requestEv];
         const investigation = makeMockInvestigation(rawEvidence);
@@ -695,7 +695,7 @@ describe("Halo Evidence-Bound Recommendation & Patch Engine Test Suite", () => {
             expect(result.claims.length).toBeGreaterThan(0);
 
             // Verify claims reference real evidence IDs
-            const citedIds = result.claims.flatMap((c) => c.evidenceIds);
+            const citedIds = result.claims.flatMap((c: any) => c.evidenceIds);
             for (const id of citedIds) {
                 expect(["anchor-err", "deploy-1"]).toContain(id);
             }

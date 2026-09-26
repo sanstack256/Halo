@@ -152,6 +152,8 @@ describe("Phase 33 & 59: Provider Tampering Defense & Parity Evaluation", () => 
             diagnosis: "Regression occurred",
             status: "SUFFICIENT_FOR_REPAIR",
             outcomeType: "CODE_CHANGE_RECOMMENDED",
+            isCodeModification: false,
+            completedSteps: [],
             repairLocation: {
                 type: "DEPLOYMENT",
                 targetFile: "src/users/service.ts",
@@ -280,6 +282,8 @@ describe("Phase 33 & 59: Provider Tampering Defense & Parity Evaluation", () => 
             diagnosis: "User was undefined",
             status: "SUFFICIENT_FOR_REPAIR",
             outcomeType: "CODE_CHANGE_RECOMMENDED",
+            isCodeModification: true,
+            completedSteps: [],
             repairLocation: {
                 type: "CALLEE",
                 targetFile: "src/users/service.ts",
@@ -293,6 +297,8 @@ describe("Phase 33 & 59: Provider Tampering Defense & Parity Evaluation", () => 
                     whyHere: "Target",
                     codeType: "PROPOSED_ONLY",
                     proposedCode: "if (!user) return null;",
+                    isExactSourceVerified: true,
+                    evidenceIds: [],
                 },
             ],
             alternatives: [],

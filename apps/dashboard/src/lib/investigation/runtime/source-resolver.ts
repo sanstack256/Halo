@@ -79,7 +79,7 @@ export async function resolveSourceContextAsync(
         return undefined;
     }
 
-    const filePath = frame.filePath || frame.rawFilePath;
+    const filePath = (frame.filePath || frame.rawFilePath)!;
     const result = await provider.resolveFile(filePath, opts);
 
     if (isSourceProviderError(result)) {

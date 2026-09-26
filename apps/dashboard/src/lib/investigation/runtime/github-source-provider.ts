@@ -341,7 +341,7 @@ function buildFailureContext(
     revision?: string,
 ): SourceContext {
     return {
-        filePath: frame.filePath || frame.rawFilePath,
+        filePath: frame.filePath || frame.rawFilePath || "",
         failingLineNumber: frame.lineNumber ?? 0,
         failingColumnNumber: frame.columnNumber,
         startLineNumber: frame.lineNumber ?? 0,

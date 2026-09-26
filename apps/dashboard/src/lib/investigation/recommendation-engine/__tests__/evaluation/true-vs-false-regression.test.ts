@@ -214,7 +214,7 @@ describe("Phase 31: True vs False Regression Evaluation Suite", () => {
         expect(reg.candidates[0]!.behavioralRelevance).toBe("NO_BEHAVIORAL_CHANGE");
         expect(reg.candidates[0]!.mechanismRelevance).toBe("CANNOT_PRODUCE_MECHANISM");
         expect(reg.candidates[0]!.causalSupport).toBe("UNPROVEN_ASSOCIATION");
-        expect(reg.candidates[0]!.rollbackAudit.auditPassed).toBe(false);
+        expect(reg.candidates[0]!.rollbackAudit?.auditPassed).toBe(false);
 
         const res = await generateEngineeringRecommendation({ snapshot });
         expect(res.repairLocation?.type).not.toBe("DEPLOYMENT");

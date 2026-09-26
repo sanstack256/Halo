@@ -421,7 +421,7 @@ describe("Steps 15 to 30: Adversarial Robustness & Epistemic Integrity", () => {
             expect(res.recommendation.repairLocation?.type).toBe("NO_CODE_CHANGE");
             expect(res.recommendation.isCodeModification).toBe(false);
             expect(res.recommendation.changes.length).toBe(0);
-            expect(res.recommendation.actionAnswer.toUpperCase()).toContain("NO APPLICATION CODE CHANGE");
+            expect(res.recommendation.actionAnswer?.toUpperCase()).toContain("NO APPLICATION CODE CHANGE");
         });
     });
 });

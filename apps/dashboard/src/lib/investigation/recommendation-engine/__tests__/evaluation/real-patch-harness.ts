@@ -23,6 +23,7 @@ import os from "node:os";
 import { execSync } from "node:child_process";
 import { generateEngineeringRecommendation } from "../../engine";
 import type { InvestigationSnapshot, RecommendedChange } from "../../types";
+export { MockRecommendationModel } from "../../provider";
 
 export interface RepoFile {
     relativePath: string;
@@ -140,6 +141,7 @@ export class RealPatchExecutionHarness {
             }
 
             const currentDiskContent = fs.readFileSync(fullPath, "utf8");
+            if (!change.proposedCode) continue;
 
             // 1. Symbol / Function declaration replacement (if proposedCode defines the symbol)
             if (change.symbol && (change.proposedCode.includes(`function ${change.symbol}`) || change.proposedCode.includes(`class ${change.symbol}`))) {
