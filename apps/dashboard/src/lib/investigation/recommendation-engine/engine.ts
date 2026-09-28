@@ -372,7 +372,7 @@ export async function generateEngineeringRecommendation(
             doNotChange: [],
             verification: selectedAction.validationPlan,
             validationSteps: selectedAction.validationPlan,
-            missingEvidence: sufficiency.minimumAdditionalEvidenceNeeded,
+            missingEvidence: sufficiency.minimumAdditionalEvidenceNeeded || [],
             nextActionBeforeRepair: selectedAction.description,
             uncertainty: selectedAction.uncertainty,
             confidence: "LOW",
@@ -388,7 +388,7 @@ export async function generateEngineeringRecommendation(
             isCodeModification: preciseRepair.isCodeModification,
             nonCodeRemediationDetails: preciseRepair.nonCodeRemediationDetails,
             activeInvestigationDetails: {
-                requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded,
+                requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded || [],
                 attemptedAcquisitions: completedSteps.map((s) => s.label),
                 remainingBlocker: sufficiency.blockingReason,
             },
@@ -679,7 +679,7 @@ export async function generateEngineeringRecommendation(
                 doNotChange: [],
                 verification: selectedAction.validationPlan,
                 validationSteps: selectedAction.validationPlan,
-                missingEvidence: sufficiency.minimumAdditionalEvidenceNeeded,
+                missingEvidence: sufficiency.minimumAdditionalEvidenceNeeded || [],
                 nextActionBeforeRepair: selectedAction.description,
                 uncertainty: selectedAction.uncertainty,
                 confidence: "LOW",
@@ -691,7 +691,7 @@ export async function generateEngineeringRecommendation(
                 isCodeModification: preciseRepair.isCodeModification,
                 nonCodeRemediationDetails: preciseRepair.nonCodeRemediationDetails,
                 activeInvestigationDetails: {
-                    requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded,
+                    requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded || [],
                     attemptedAcquisitions: completedSteps.map((s) => s.label),
                     remainingBlocker: sufficiency.blockingReason,
                 },
@@ -822,7 +822,7 @@ export async function generateEngineeringRecommendation(
                 doNotChange: [],
                 verification: selectedAction.validationPlan,
                 validationSteps: selectedAction.validationPlan,
-                missingEvidence: sufficiency.minimumAdditionalEvidenceNeeded,
+                missingEvidence: sufficiency.minimumAdditionalEvidenceNeeded || [],
                 nextActionBeforeRepair: selectedAction.description,
                 uncertainty: selectedAction.uncertainty,
                 confidence: "LOW",
@@ -834,7 +834,7 @@ export async function generateEngineeringRecommendation(
                 isCodeModification: preciseRepair.isCodeModification,
                 nonCodeRemediationDetails: preciseRepair.nonCodeRemediationDetails,
                 activeInvestigationDetails: {
-                    requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded,
+                    requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded || [],
                     attemptedAcquisitions: completedSteps.map((s) => s.label),
                     remainingBlocker: sufficiency.blockingReason,
                 },
@@ -984,11 +984,35 @@ export async function generateEngineeringRecommendation(
         decomposedConfidence: gateVerdict.calibratedConfidence,
     };
 
+    const isNonCodeRemediation = Boolean(preciseRepair && !preciseRepair.isCodeModification && preciseRepair.nonCodeRemediationDetails);
+    const shouldOverrideActionWithAuthoritative =
+        !gateVerdict.allowed ||
+        gateVerdict.calibratedState === "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE" ||
+        gateVerdict.calibratedState === "BLOCKED_BY_MISSING_SOURCE" ||
+        gateVerdict.calibratedState === "EVIDENCE_ACQUISITION_REQUIRED" ||
+        gateVerdict.calibratedState === "NO_CODE_CHANGE_JUSTIFIED" ||
+        (factCheck.verifiedRecommendation.changes.length === 0 && !isNonCodeRemediation);
+
+    const authoritativeActionAnswer = isNonCodeRemediation
+        ? preciseRepair.headline
+        : shouldOverrideActionWithAuthoritative
+        ? selectedAction.title
+        : factCheck.verifiedRecommendation.actionAnswer || selectedAction.title;
+
+    const authoritativeDirectAnswer = isNonCodeRemediation
+        ? preciseRepair.headline
+        : shouldOverrideActionWithAuthoritative
+        ? selectedAction.title
+        : factCheck.verifiedRecommendation.directAnswer || authoritativeActionAnswer;
+
     const finalRecommendation: FixRecommendation = {
         ...factCheck.verifiedRecommendation,
+        actionAnswer: authoritativeActionAnswer,
+        directAnswer: authoritativeDirectAnswer,
         status: gateVerdict.calibratedState,
         decomposedConfidence: gateVerdict.calibratedConfidence,
         confidence: (!factCheck.passed || !gateVerdict.allowed) ? "LOW" : factCheck.verifiedRecommendation.confidence,
+        missingEvidence: sufficiency.minimumAdditionalEvidenceNeeded || [],
         repairLocation: {
             type: repairLocation.type,
             targetFile: repairLocation.targetFile,
@@ -1011,7 +1035,7 @@ export async function generateEngineeringRecommendation(
         isCodeModification: preciseRepair.isCodeModification,
         nonCodeRemediationDetails: preciseRepair.nonCodeRemediationDetails,
         activeInvestigationDetails: {
-            requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded,
+            requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded || [],
             attemptedAcquisitions: completedSteps.map((s) => s.label),
             remainingBlocker: sufficiency.blockingReason,
         },

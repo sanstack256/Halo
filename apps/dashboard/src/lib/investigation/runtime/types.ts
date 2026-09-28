@@ -46,6 +46,30 @@ export interface StackFrame {
     generatedLocation?: { file: string; line?: number; column?: number };
 }
 
+export interface RepositoryIdentity {
+    repositoryId?: string;
+    provider: "github" | "local" | "gitlab" | "bitbucket";
+    owner?: string;
+    name?: string;
+    revision?: string;
+}
+
+export interface SourceIdentity {
+    repositoryId?: string;
+    revision?: string;
+    repositoryRelativePath: string;
+    absolutePath?: string;
+    sourceProvider: string;
+    contentHash?: string;
+}
+
+export interface FunctionIdentity {
+    sourceIdentity: SourceIdentity;
+    symbol: string;
+    declarationRange?: { startLine: number; endLine: number };
+    signature?: string;
+}
+
 export interface SourceContext {
     filePath: string;
     failingLineNumber: number;
@@ -55,6 +79,11 @@ export interface SourceContext {
     containingFunction?: string;
     failingExpression?: string;
     failingStatement?: string;
+    content?: string;
+    contentHash?: string;
+    repositoryRelativePath?: string;
+    absolutePath?: string;
+    sourceIdentity?: SourceIdentity;
     resolutionStatus?:
         | "exact_file"                  // Retrieved from disk or GitHub at exact commit
         | "source_revision_unavailable" // Commit SHA known but file could not be found at that revision

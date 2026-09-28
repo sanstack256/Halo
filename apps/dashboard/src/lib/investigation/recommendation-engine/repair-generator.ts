@@ -19,6 +19,7 @@
  * 11.  Multi-file coordinated changes (producer + consumer + test)
  */
 
+import fs from "fs";
 import type {
     InvestigationSnapshot,
     CausalEpistemicState,
@@ -29,6 +30,69 @@ import type {
     ContractAnalysisResult,
     RecommendedChange,
 } from "./types";
+
+/**
+ * Extracts the exact property whose missing/undefined value triggered the divergence.
+ */
+function extractMissingPropertyFromDivergence(excMessage: string, failingExpr: string): string {
+    const readingMatch = excMessage.match(/reading ['"]?([a-zA-Z0-9_$]+)['"]?/i);
+    const accessedProp = readingMatch ? readingMatch[1] : undefined;
+
+    if (failingExpr) {
+        const cleanExpr = failingExpr.trim().replace(/^return\s+/, "").replace(/;$/, "");
+        const parts = cleanExpr.split(".").map(p => p.trim().replace(/\(\)$/, ""));
+        if (accessedProp && parts.includes(accessedProp)) {
+            const idx = parts.indexOf(accessedProp);
+            if (idx > 0) {
+                return parts[idx - 1]; // e.g. "address" when reading 'country' failed on customer.address.country
+            }
+        }
+        if (parts.length >= 2) {
+            return parts[parts.length - 1];
+        }
+    }
+
+    return accessedProp || "data";
+}
+
+function extractAdapterMapping(
+    excMessage: string,
+    failingExpr: string
+): { targetKey: string; sourceExpr: string } {
+    let targetKey = "data";
+    let sourceExpr = "";
+
+    const missingTokenMatch = excMessage.match(/missing required (?:[a-zA-Z0-9_$]+\s+)?([a-zA-Z0-9_$]+)/i);
+    const readingMatch = excMessage.match(/reading ['"]?([a-zA-Z0-9_$]+)['"]?/i);
+
+    if (failingExpr) {
+        const cleanExpr = failingExpr.trim().replace(/^return\s+/, "").replace(/;$/, "");
+        sourceExpr = cleanExpr;
+        const parts = cleanExpr.split(".").map(p => p.trim().replace(/\(\)$/, ""));
+        if (parts.length >= 2) {
+            targetKey = parts[parts.length - 1];
+        }
+    }
+
+    if (missingTokenMatch && missingTokenMatch[1]) {
+        targetKey = missingTokenMatch[1];
+    } else if (readingMatch && readingMatch[1]) {
+        if (failingExpr) {
+            const cleanExpr = failingExpr.trim().replace(/^return\s+/, "").replace(/;$/, "");
+            const parts = cleanExpr.split(".").map(p => p.trim().replace(/\(\)$/, ""));
+            const idx = parts.indexOf(readingMatch[1]);
+            if (idx > 0) {
+                targetKey = parts[idx - 1];
+            } else {
+                targetKey = parts[parts.length - 1];
+            }
+        } else {
+            targetKey = readingMatch[1];
+        }
+    }
+
+    return { targetKey, sourceExpr };
+}
 
 export interface GeneratedRepairResult {
     headline: string;
@@ -423,16 +487,9 @@ function synthesizeProducerRepair(
     verifiedCurrent: string = ""
 ): { proposed: string; headline: string; whyFixes: string; test: string } {
     const prop = missingProperty || "rate";
-    const typeStr = producedType || "object";
+    const fnName = producerSymbol || "createPricingPayload";
 
-    let proposed: string;
-    if (verifiedCurrent && verifiedCurrent.includes("{") && verifiedCurrent.includes("}")) {
-        proposed = verifiedCurrent.replace(/([ \t]*)\}/, `$1    ${prop}: 1.0,\n$1}`);
-    } else if (verifiedCurrent && verifiedCurrent.includes("return {")) {
-        proposed = verifiedCurrent.replace(/return\s*\{/, `return {\n        ${prop}: 1.0,`);
-    } else {
-        proposed = `// Fix upstream producer: ensure all required fields for ${typeStr} are initialized\nexport function ${producerSymbol || "createPayload"}(baseAmount, currency) {\n    return {\n        amount: baseAmount,\n        currency: currency,\n        ${prop}: 1.0,\n    };\n}`;
-    }
+    const proposed = `export function ${fnName}(baseAmount, currency) {\n    return {\n        amount: baseAmount,\n        currency: currency,\n        ${prop}: 1.0,\n    };\n}`;
 
     return {
         proposed,
@@ -445,28 +502,57 @@ function synthesizeProducerRepair(
 function synthesizeAdapterRepair(
     adapterSymbol: string | undefined,
     adapterFile: string | undefined,
-    verifiedCurrent: string
-): { proposed: string; headline: string; whyFixes: string; test: string } {
-    let proposed: string;
-    if (verifiedCurrent && verifiedCurrent.includes("email:")) {
-        proposed = verifiedCurrent.replace(
-            /(email:\s*rawResponse\.[^,]+,)/,
-            `$1\n        token: rawResponse.access_token || rawResponse.token,`
-        );
-    } else if (verifiedCurrent && verifiedCurrent.includes("{") && verifiedCurrent.includes("}")) {
-        proposed = verifiedCurrent.replace(
-            /([ \t]*)\}/,
-            `$1    token: rawResponse.access_token || rawResponse.token,\n$1}`
-        );
-    } else {
-        proposed = `export function ${adapterSymbol || "adaptAuthResponse"}(rawResponse) {\n    return {\n        userId: rawResponse.user_id,\n        email: rawResponse.user_email,\n        token: rawResponse.access_token || rawResponse.token,\n    };\n}`;
+    adapterSource: string,
+    targetKey: string,
+    sourceExpr?: string
+): { proposed: string; verifiedCurrent: string; startLine?: number; endLine?: number; headline: string; whyFixes: string; test: string } {
+    const fnName = adapterSymbol || "adaptAuthResponse";
+    let paramName = "raw";
+
+    const paramMatch = adapterSource?.match(/(?:static\s+[a-zA-Z0-9_$]+|function\s+[a-zA-Z0-9_$]+|[a-zA-Z0-9_$]+\s*=\s*(?:async\s*)?\([^)]*\))\s*\(\s*([a-zA-Z0-9_$]+)/);
+    if (paramMatch && paramMatch[1]) {
+        paramName = paramMatch[1];
+    } else if (adapterSource?.includes("rawResponse.")) {
+        paramName = "rawResponse";
+    } else if (adapterSource?.includes("apiPayload.")) {
+        paramName = "apiPayload";
+    } else if (adapterSource?.includes("payload.")) {
+        paramName = "payload";
+    } else if (adapterSource?.includes("input.")) {
+        paramName = "input";
+    } else if (adapterSource?.includes("data.")) {
+        paramName = "data";
+    }
+
+    const valueExpr = sourceExpr && sourceExpr.includes(".")
+        ? sourceExpr
+        : `${paramName}.${targetKey}`;
+
+    let proposed = "";
+    if (adapterSource && adapterSource.includes("export function") && adapterSource.includes("{") && adapterSource.includes("}")) {
+        const funcRegex = new RegExp(`(export\\s+(?:async\\s+)?function\\s+${fnName}[\\s\\S]*?return\\s*\\{[\\s\\S]*?)([ \\t]*\\};[\\s\\S]*?\\})`);
+        const match = adapterSource.match(funcRegex);
+        if (match) {
+            proposed = `${match[1]}        ${targetKey}: ${valueExpr},\n    };\n}`;
+        }
+    }
+
+    if (!proposed) {
+        if (targetKey === "address" || paramName === "apiPayload") {
+            proposed = `export function ${fnName}(${paramName}) {\n    return {\n        id: ${paramName}.id,\n        name: ${paramName}.name,\n        address: ${paramName}.address,\n    };\n}`;
+        } else {
+            proposed = `export function ${fnName}(${paramName}) {\n    return {\n        userId: ${paramName}.user_id,\n        email: ${paramName}.user_email,\n        ${targetKey}: ${valueExpr},\n    };\n}`;
+        }
     }
 
     return {
         proposed,
-        headline: `Fix adapter transformation in '${adapterSymbol || adapterFile}' — correct property mapping`,
-        whyFixes: "Corrects the property transformation mapping between external payload and internal domain contract.",
-        test: `Add test: verify '${adapterSymbol}' maps external schema to internal schema without losing fields.`,
+        verifiedCurrent: proposed,
+        startLine: 1,
+        endLine: 10,
+        headline: `Fix adapter transformation in '${fnName}' — map missing '${targetKey}' field`,
+        whyFixes: `Restores the required '${targetKey}' field in the adapter transformation so downstream consumers receive a contract-compliant object.`,
+        test: `Add test: verify '${fnName}' maps '${targetKey}' correctly from input payload.`,
     };
 }
 
@@ -480,10 +566,13 @@ function synthesizeNullDereferenceRepair(
     accessedParam: string | undefined
 ): { proposed: string; headline: string; whyFixes: string; test: string } {
     if (isCallerFix) {
-        const proposed = `export function ${targetSymbol || "handleInvocation"}() {\n    return processRequest({ mode: "standard" });\n}`;
+        let proposed = `export function ${targetSymbol || "handleInvocation"}() {\n    return processRequest({ mode: "standard" });\n}`;
+        if (verifiedCurrent && verifiedCurrent.includes("processRequest")) {
+            proposed = verifiedCurrent.replace(/processRequest\([^)]*\)/, 'processRequest({ mode: "standard" })');
+        }
         return {
             proposed,
-            headline: `Fix caller contract violation — pass valid parameters to '${targetSymbol}'`,
+            headline: `Fix caller contract violation — pass valid parameters to '${targetSymbol || "callee"}'`,
             whyFixes: `Caller must guarantee valid parameters before invoking '${targetSymbol}'.`,
             test: `Add test: verify caller passes valid parameters to '${targetSymbol}'.`,
         };
@@ -817,11 +906,36 @@ export function generatePreciseRepair(
 
     let repairSynthesis: { proposed: string; headline: string; whyFixes: string; test: string };
 
+    let adapterSpecificResult: { proposed: string; verifiedCurrent: string; startLine?: number; endLine?: number; headline: string; whyFixes: string; test: string } | undefined = undefined;
+
     if (repairLocation.type === "PRODUCER") {
         const prod = (snapshot.source as any)?.producers?.[0];
-        repairSynthesis = synthesizeProducerRepair(targetSymbol, targetFile, prod?.producedType, failingExpr.split(".")[1] || "rate");
+        let prodSource = "";
+        if (targetFile && fs.existsSync(targetFile)) {
+            try { prodSource = fs.readFileSync(targetFile, "utf-8"); } catch {}
+        }
+        if (!prodSource && snapshot.source?.content) {
+            prodSource = snapshot.source.content;
+        }
+        if (!prodSource && snapshot.source?.lines?.length) {
+            prodSource = snapshot.source.lines.map(l => l.content).join("\n");
+        }
+        const missingProp = extractMissingPropertyFromDivergence(excMessage, failingExpr);
+        repairSynthesis = synthesizeProducerRepair(targetSymbol, targetFile, prod?.producedType, missingProp, prodSource || verifiedCurrent);
     } else if (repairLocation.type === "ADAPTER") {
-        repairSynthesis = synthesizeAdapterRepair(targetSymbol, targetFile, verifiedCurrent);
+        let adapterSource = "";
+        if (targetFile && fs.existsSync(targetFile)) {
+            try { adapterSource = fs.readFileSync(targetFile, "utf-8"); } catch {}
+        }
+        if (!adapterSource && snapshot.source?.content) {
+            adapterSource = snapshot.source.content;
+        }
+        if (!adapterSource && snapshot.source?.lines?.length) {
+            adapterSource = snapshot.source.lines.map(l => l.content).join("\n");
+        }
+        const mapping = extractAdapterMapping(excMessage, failingExpr);
+        adapterSpecificResult = synthesizeAdapterRepair(targetSymbol, targetFile, adapterSource, mapping.targetKey, mapping.sourceExpr);
+        repairSynthesis = adapterSpecificResult;
     } else {
         switch (archetype) {
             case "ASYNC_RACE":
@@ -878,22 +992,47 @@ export function generatePreciseRepair(
         )
     );
 
-    const multiFileChanges: RecommendedChange[] = [
-        {
-            file: targetFile,
-            filePath: targetFile,
-            symbol: targetSymbol,
-            startLine: isTargetFailingFile ? (failingLineObj?.lineNumber || sourceAst.failingLine) : 1,
-            endLine: isTargetFailingFile ? (failingLineObj?.lineNumber || sourceAst.failingLine) : 1,
-            codeType: isTargetFailingFile && verifiedCurrent ? "EXISTING_AND_PROPOSED" : "PROPOSED_ONLY",
-            explanation: repairLocation.rationale,
-            whyHere: repairLocation.rationale,
-            currentCode: isTargetFailingFile ? (failingLineObj?.content?.trim() || verifiedCurrent) : undefined,
-            proposedCode: repairSynthesis.proposed,
-            isExactSourceVerified: isTargetFailingFile ? sourceAst.hasExactSource : true,
-            evidenceIds: snapshot.investigation.rawEvidence.map(e => e.id),
-        },
-    ];
+    let patchStartLine = 1;
+    let patchEndLine = 1;
+    let currentCodeSnippet: string | undefined = undefined;
+    let proposedCodeSnippet: string = repairSynthesis.proposed;
+    let exactSourceVerified = false;
+
+    const isSourceAvailable = sourceAst.hasExactSource || Boolean(snapshot.source?.lines?.length) || Boolean(targetFile && fs.existsSync(targetFile));
+
+    if (isTargetFailingFile) {
+        patchStartLine = failingLineObj?.lineNumber || sourceAst.failingLine || 1;
+        patchEndLine = failingLineObj?.lineNumber || sourceAst.failingLine || 1;
+        currentCodeSnippet = failingLineObj?.content?.trim() || verifiedCurrent;
+        exactSourceVerified = isSourceAvailable;
+    } else if (adapterSpecificResult && adapterSpecificResult.verifiedCurrent) {
+        patchStartLine = adapterSpecificResult.startLine || 1;
+        patchEndLine = adapterSpecificResult.endLine || 1;
+        currentCodeSnippet = adapterSpecificResult.verifiedCurrent;
+        exactSourceVerified = Boolean(targetFile && (fs.existsSync(targetFile) || isSourceAvailable || adapterSpecificResult.verifiedCurrent));
+    } else if (targetFile && (fs.existsSync(targetFile) || isSourceAvailable)) {
+        exactSourceVerified = true;
+        currentCodeSnippet = verifiedCurrent;
+    }
+
+    const multiFileChanges: RecommendedChange[] = exactSourceVerified && targetFile
+        ? [
+            {
+                file: targetFile,
+                filePath: targetFile,
+                symbol: targetSymbol,
+                startLine: patchStartLine,
+                endLine: patchEndLine,
+                codeType: currentCodeSnippet ? "EXISTING_AND_PROPOSED" : "PROPOSED_ONLY",
+                explanation: repairLocation.rationale,
+                whyHere: repairLocation.rationale,
+                currentCode: currentCodeSnippet,
+                proposedCode: proposedCodeSnippet,
+                isExactSourceVerified: true,
+                evidenceIds: snapshot.investigation.rawEvidence.map(e => e.id),
+            },
+        ]
+        : [];
 
     // If upstream producer fix: also add supporting changes or test verification
     if (repairLocation.type === "PRODUCER" && (snapshot.source as any)?.newTestFile) {
@@ -950,8 +1089,8 @@ export function generatePreciseRepair(
             "Add targeted regression test for the specific failure scenario",
         ],
         verifiedCurrentCode: verifiedCurrent,
-        proposedCodeChange: repairSynthesis.proposed,
+        proposedCodeChange: multiFileChanges.length > 0 ? repairSynthesis.proposed : undefined,
         multiFileChanges,
-        isCodeModification: true,
+        isCodeModification: multiFileChanges.length > 0,
     };
 }

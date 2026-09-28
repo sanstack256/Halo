@@ -50,6 +50,17 @@ export interface CanonicalEvidenceRecord<T = unknown> {
         redacted: boolean;
     };
     content: T;
+    contentHash?: string;
+    sensitivity?: "PUBLIC" | "INTERNAL" | "SENSITIVE_REDACTED" | "SECRET_PROTECTED";
+    confidence?: "CONFIRMED" | "SUPPORTED" | "PLAUSIBLE";
+    repositoryIdentity?: {
+        repositoryId?: string;
+        owner?: string;
+        name?: string;
+        revision?: string;
+    };
+    acquisitionId?: string;
+    collectorId?: string;
 }
 
 export type EvidenceRelationType =
@@ -168,8 +179,12 @@ export class CanonicalEvidenceStore {
             return this.records.get(record.id) as CanonicalEvidenceRecord<T>;
         }
 
+        const contentHash = record.contentHash || crypto.createHash("sha256").update(JSON.stringify(record.content ?? "")).digest("hex");
         const canonical: CanonicalEvidenceRecord<T> = {
+            sensitivity: "INTERNAL",
+            confidence: "CONFIRMED",
             ...record,
+            contentHash,
             snapshotId: this.snapshotId,
         };
 
@@ -332,5 +347,71 @@ export class CanonicalEvidenceStore {
             store.relationships.push(...json.relationships);
         }
         return store;
+    }
+}
+
+/**
+ * Canonical Evidence Collector Interface (Rule 1 & Rule 2)
+ */
+export interface EvidenceCollector<TInput = any, TOutput = any> {
+    collectorId: string;
+    evidenceType: EvidenceKind;
+    collect(input: TInput, acquisitionId?: string): Promise<{
+        key: string;
+        source: string;
+        observedAt?: Date;
+        provenance: CanonicalEvidenceRecord["provenance"];
+        content: TOutput;
+        sensitivity?: CanonicalEvidenceRecord["sensitivity"];
+        confidence?: CanonicalEvidenceRecord["confidence"];
+        repositoryIdentity?: CanonicalEvidenceRecord["repositoryIdentity"];
+    }>;
+}
+
+/**
+ * Authoritative Evidence Collector Registry (Rule 1, Rule 2, Section 3)
+ * Guarantees that evidence is collected once, normalized, cached, and identified canonically.
+ */
+export class EvidenceCollectorRegistry {
+    private collectors: Map<string, EvidenceCollector> = new Map();
+    private executions: Map<string, string> = new Map(); // dedupeKey -> evidenceId
+
+    public registerCollector(collector: EvidenceCollector): void {
+        this.collectors.set(collector.collectorId, collector);
+    }
+
+    public hasCollector(collectorId: string): boolean {
+        return this.collectors.has(collectorId);
+    }
+
+    public async execute<TInput, TOutput>(
+        collectorId: string,
+        input: TInput,
+        store: CanonicalEvidenceStore,
+        acquisitionId?: string
+    ): Promise<CanonicalEvidenceRecord<TOutput>> {
+        const collector = this.collectors.get(collectorId);
+        if (!collector) {
+            throw new Error(`EvidenceCollector '${collectorId}' is not registered`);
+        }
+
+        const inputHash = crypto.createHash("sha256").update(JSON.stringify(input || "")).digest("hex").slice(0, 16);
+        const dedupeKey = `${store.snapshotId}:${collectorId}:${inputHash}`;
+
+        const existingId = this.executions.get(dedupeKey);
+        if (existingId && store.has(existingId)) {
+            return store.get<TOutput>(existingId)!;
+        }
+
+        const collected = await collector.collect(input, acquisitionId);
+        const record = await store.getOrCreate<TOutput>(collector.evidenceType, collected.key, async () => ({
+            source: collected.source,
+            observedAt: collected.observedAt,
+            provenance: collected.provenance,
+            content: collected.content,
+        }));
+
+        this.executions.set(dedupeKey, record.id);
+        return record;
     }
 }

@@ -18,9 +18,11 @@
  */
 
 import fs from "fs";
+import path from "path";
+import crypto from "crypto";
 import { prisma } from "@/lib/prisma";
 import { resolveAstFromSource } from "./ast-resolver";
-import type { SourceContext, StackFrame } from "./types";
+import type { SourceContext, StackFrame, SourceIdentity } from "./types";
 import {
     buildGitHubContentsUrl,
     classifyGitHubSourceStatus,
@@ -67,13 +69,32 @@ export async function resolveGitHubSourceContext(
     }
 
     // Check if the file exists directly on the local filesystem (e.g. local dev, test runs, lab harness)
-    let rawCandidate = frame.rawFilePath || frame.filePath;
-    if (rawCandidate && !fs.existsSync(rawCandidate) && fs.existsSync("/" + rawCandidate)) {
-        rawCandidate = "/" + rawCandidate;
+    const rawCandidateCandidates: string[] = [];
+    if (frame.rawFilePath) rawCandidateCandidates.push(frame.rawFilePath);
+    if (frame.filePath) rawCandidateCandidates.push(frame.filePath);
+
+    let resolvedLocalPath: string | undefined = undefined;
+    for (const cand of rawCandidateCandidates) {
+        if (!cand) continue;
+        if (fs.existsSync(cand) && fs.statSync(cand).isFile()) {
+            resolvedLocalPath = cand;
+            break;
+        }
+        if (!cand.startsWith("/") && fs.existsSync("/" + cand) && fs.statSync("/" + cand).isFile()) {
+            resolvedLocalPath = "/" + cand;
+            break;
+        }
+        const cwdResolved = path.resolve(process.cwd(), cand);
+        if (fs.existsSync(cwdResolved) && fs.statSync(cwdResolved).isFile()) {
+            resolvedLocalPath = cwdResolved;
+            break;
+        }
     }
-    if (rawCandidate && fs.existsSync(rawCandidate)) {
+
+    if (resolvedLocalPath && fs.existsSync(resolvedLocalPath)) {
         try {
-            const fileContent = fs.readFileSync(rawCandidate, "utf-8");
+            const fileContent = fs.readFileSync(resolvedLocalPath, "utf-8");
+            const contentHash = crypto.createHash("sha256").update(fileContent).digest("hex");
             const allLines = fileContent.split("\n");
             const totalLines = allLines.length;
             const targetLineIdx = frame.lineNumber - 1;
@@ -95,15 +116,29 @@ export async function resolveGitHubSourceContext(
                     fileContent,
                     frame.lineNumber,
                     frame.columnNumber,
-                    rawCandidate
+                    resolvedLocalPath
                 );
 
                 const failingStatement = astResult.failingStatement || allLines[targetLineIdx].trim();
                 const containingFunction = astResult.containingFunction ||
                     (frame.functionName && frame.functionName !== "<anonymous>" ? frame.functionName : undefined);
 
+                const sourceIdentity: SourceIdentity = {
+                    repositoryId: projectId,
+                    revision: "local",
+                    repositoryRelativePath: path.basename(resolvedLocalPath),
+                    absolutePath: resolvedLocalPath,
+                    sourceProvider: "local_filesystem",
+                    contentHash,
+                };
+
                 return {
-                    filePath: rawCandidate,
+                    filePath: resolvedLocalPath,
+                    absolutePath: resolvedLocalPath,
+                    repositoryRelativePath: path.basename(resolvedLocalPath),
+                    content: fileContent,
+                    contentHash,
+                    sourceIdentity,
                     failingLineNumber: frame.lineNumber,
                     failingColumnNumber: frame.columnNumber,
                     startLineNumber: startIdx + 1,
@@ -235,9 +270,21 @@ export async function resolveGitHubSourceContext(
     const containingFunction = astResult.containingFunction ||
         (frame.functionName && frame.functionName !== "<anonymous>" ? frame.functionName : undefined);
     const failingExpression = astResult.failingExpression;
+    const contentHash = crypto.createHash("sha256").update(fileContent).digest("hex");
+    const sourceIdentity: SourceIdentity = {
+        repositoryId: projectId,
+        revision: resolvedCommitSha ?? resolvedRef,
+        repositoryRelativePath: filePath,
+        sourceProvider: "github",
+        contentHash,
+    };
 
     return {
         filePath,
+        repositoryRelativePath: filePath,
+        content: fileContent,
+        contentHash,
+        sourceIdentity,
         failingLineNumber: frame.lineNumber,
         failingColumnNumber: frame.columnNumber,
         startLineNumber: startIdx + 1,

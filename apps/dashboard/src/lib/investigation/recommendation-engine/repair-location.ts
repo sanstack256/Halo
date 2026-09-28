@@ -7,6 +7,8 @@
  * external integration, dependency, and no-code-change.
  */
 
+import fs from "node:fs";
+import path from "node:path";
 import type {
     InvestigationSnapshot,
     CausalEpistemicState,
@@ -35,11 +37,18 @@ export function determineRepairLocation(
     const failingExpr = (sourceAst.failingExpression || causalState.failureLocation.expression || "").trim();
 
     // 0. External Vendor Outage with Resilient Application Behavior (No code change)
-    if (
-        snapshot.failure.exceptionType?.includes("ThirdPartyOutage") ||
+    const isExternalOutage = Boolean(
+        snapshot.failure.exceptionType?.toLowerCase().includes("thirdpartyoutage") ||
         excMessage.includes("stripe api is currently down") ||
-        (excMessage.includes("503") && (excMessage.includes("currently down") || excMessage.includes("outage")))
-    ) {
+        (excMessage.includes("503") && (excMessage.includes("currently down") || excMessage.includes("stripe api is down"))) ||
+        snapshot.investigation.hypotheses.some(h =>
+            isHypoConfirmed(h) && (
+                h.title?.toLowerCase().includes("third-party outage") ||
+                h.description?.toLowerCase().includes("provider outage")
+            )
+        )
+    );
+    if (isExternalOutage) {
         return {
             type: "NO_CODE_CHANGE",
             ownershipEstablished: true,
@@ -98,22 +107,75 @@ export function determineRepairLocation(
         }
     }
 
-    // 0d. Adapter Defect
+    // 0d. Adapter Defect (Section 11 & Section 81)
+    const stackFrames: any[] = (snapshot as any).stackFrames || (snapshot.investigation as any)?.stackFrames || [];
+    const earlyCallerFrame =
+        snapshot.failure.frames?.find(
+            (f) => f.isApplication && f.filePath && f.filePath !== failingFile
+        ) ||
+        snapshot.failure.frames?.[1];
+
+    let adapterFrame = stackFrames.find((f: any) =>
+        f.filePath?.toLowerCase().includes("adapter") ||
+        f.functionName?.toLowerCase().includes("adapt")
+    );
+    const adapterFromSnapshot = (snapshot.source as any)?.adapters?.[0] || (snapshot.source as any)?.adapter;
+    let adapterFile = adapterFromSnapshot?.filePath || adapterFromSnapshot?.adapterFile || adapterFrame?.filePath;
+    let adapterSymbol = adapterFromSnapshot?.symbol || adapterFromSnapshot?.adapterSymbol || adapterFrame?.functionName;
+
+    if (!adapterFile && earlyCallerFrame?.filePath) {
+        try {
+            const callerPaths = [
+                earlyCallerFrame.filePath,
+                path.resolve(process.cwd(), earlyCallerFrame.filePath),
+            ];
+            for (const p of callerPaths) {
+                if (fs.existsSync(p)) {
+                    const content = fs.readFileSync(p, "utf-8");
+                    const importMatch = content.match(/import\s+(?:\{[^}]*\}|[a-zA-Z0-9_$]+)\s+from\s+['"]([^'"]*adapter[^'"]*)['"]/i);
+                    const callMatch = content.match(/([a-zA-Z0-9_$]+Adapter|[a-zA-Z0-9_$]+)\.(adapt[a-zA-Z0-9_$]*)\(/i);
+                    if (importMatch && importMatch[1]) {
+                        let rel = importMatch[1];
+                        if (rel.startsWith("./") || rel.startsWith("../")) {
+                            const dir = path.dirname(earlyCallerFrame.filePath);
+                            rel = path.normalize(path.join(dir, rel));
+                        }
+                        if (!rel.endsWith(".js") && !rel.endsWith(".ts")) {
+                            if (fs.existsSync(rel + ".js")) rel += ".js";
+                            else if (fs.existsSync(rel + ".ts")) rel += ".ts";
+                        }
+                        adapterFile = rel;
+                        if (callMatch && callMatch[2]) {
+                            adapterSymbol = callMatch[2];
+                        }
+                        break;
+                    }
+                }
+            }
+        } catch {}
+    }
+
     const isAdapter = Boolean(
+        adapterFile ||
         snapshot.investigation.hypotheses.some(h =>
             h.title?.toLowerCase().includes("adapter") ||
             h.description?.toLowerCase().includes("adapter")
         ) ||
         (Boolean(failingSymbol?.toLowerCase().includes("adapt")) && Boolean(failingFile?.toLowerCase().includes("adapter")))
     );
-    if (isAdapter && failingFile) {
+    if (isAdapter) {
+        const targetAdapterFile = adapterFile || failingFile;
+        const targetAdapterSymbol = adapterSymbol || failingSymbol;
         return {
             type: "ADAPTER",
-            targetFile: failingFile,
-            targetSymbol: failingSymbol,
+            targetFile: targetAdapterFile,
+            targetSymbol: targetAdapterSymbol,
+            targetLineNumber: adapterFrame?.lineNumber,
             ownershipEstablished: true,
-            rationale: `Adapter boundary in '${failingFile}' incorrectly transformed payload fields between producer and consumer contracts.`,
-            whyNotFailingLine: `Producer and consumer contracts are sound; the transformation mapping inside adapter '${failingSymbol || failingFile}' is the root cause.`,
+            rationale: `Adapter boundary in '${targetAdapterFile}' incorrectly transformed payload fields between producer and consumer contracts.`,
+            whyNotFailingLine: targetAdapterFile !== failingFile
+                ? `The consumer in '${failingFile}' crashed because the adapter in '${targetAdapterFile}' omitted required fields from the transformation. Patching the consumer would mask the adapter defect.`
+                : `Producer and consumer contracts are sound; the transformation mapping inside adapter '${targetAdapterSymbol || targetAdapterFile}' is the root cause.`,
         };
     }
 
@@ -481,7 +543,7 @@ export function determineRepairLocation(
     }
 
     // Callee with existing validation guard: Function is explicitly designed as a validation boundary
-    const hasPriorGuard = sourceAst.guards.some((g) => g.isPriorToFailure);
+    const hasPriorGuard = (sourceAst.guards || []).some((g) => g.isPriorToFailure);
     if (hasPriorGuard && sourceAst.hasExactSource && failingFile) {
         return {
             type: "VALIDATION_BOUNDARY",

@@ -252,22 +252,27 @@ function extractModuleOrPackage(filePath: string): string | undefined {
 }
 
 /**
- * Clean up URLs, workspace prefixes, query strings, and hashes from file paths.
+ * Clean up URLs, workspace prefixes, query strings, and hashes from file paths
+ * while strictly preserving absolute paths (e.g. /Users/..., /home/..., /app/...).
  */
-function cleanFilePath(filePath: string): string {
-    let clean = filePath;
+export function cleanFilePath(filePath: string): string {
+    let clean = filePath.trim();
+
+    // Strip webpack internal prefixes
+    clean = clean.replace(/^webpack-internal:\/\/\/?/, "");
+    clean = clean.replace(/^webpack:\/\/\/?/, "");
 
     // Strip http(s)://host:port/
     clean = clean.replace(/^https?:\/\/[^/]+\//, "");
 
-    // Strip file:// prefix
+    // Strip file:// prefix (file:///Users/... -> /Users/...)
     clean = clean.replace(/^file:\/\//, "");
 
-    // Strip webpack query strings (e.g. ?ts=123)
+    // Strip webpack query strings (e.g. ?ts=123 or ?456)
     clean = clean.replace(/\?[^:]+/, "");
 
-    // Strip leading ./ or /
-    clean = clean.replace(/^\.?\/+/, "");
+    // Strip relative dot-slash prefixes only (./src/... -> src/...), never absolute slashes
+    clean = clean.replace(/^\.\//, "");
 
     return clean;
 }
