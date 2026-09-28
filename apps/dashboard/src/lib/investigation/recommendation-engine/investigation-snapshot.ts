@@ -9,6 +9,7 @@
 
 import crypto from "crypto";
 import type { Evidence, Investigation, Hypothesis, Finding, CausalChain } from "@halo/investigation-engine";
+import { parseCompilerDiagnostic, extractFailingExpressionFromDiagnostic } from "./compiler-diagnostic-parser";
 import type { StackFrame, SourceContext } from "../runtime/types";
 import type { InvestigationSnapshot, ReleaseRegressionContext } from "./types";
 import { CanonicalEvidenceStore, getCanonicalEvidenceId } from "./canonical-evidence-store";
@@ -108,6 +109,52 @@ export function buildInvestigationSnapshot(
             }
             if (!exceptionMessage) {
                 exceptionMessage = firstLine.slice(colonIdx + 1).trim();
+            }
+        }
+    }
+
+    // Phase 1 — Compiler Diagnostic Parser:
+    // When the stack or incident title contains compiler/build tool output
+    // (TypeScript, Python, ESLint, Rust, Go, etc.) that does NOT produce V8
+    // runtime frames, parse the structured diagnostic to extract real
+    // file/line/message for archetype detection and repair boundary resolution.
+    const compilerInputs = [stack, opts.incident?.title, opts.incident?.errorMessage, exceptionMessage].filter(Boolean).join("\n");
+    const compilerParsed = parseCompilerDiagnostic(compilerInputs);
+    if (compilerParsed && compilerParsed.primary) {
+        if (!exceptionType || exceptionType === "Error") {
+            exceptionType = compilerParsed.synthesizedExceptionType || exceptionType || "Error";
+        }
+        if (!exceptionMessage || exceptionMessage === opts.incident?.title) {
+            exceptionMessage = compilerParsed.synthesizedExceptionMessage || exceptionMessage || "";
+        }
+        // Merge synthetic frames from compiler diagnostics if no runtime frames exist
+        if (stackFrames.length === 0 && compilerParsed.syntheticFrames.length > 0) {
+            for (const sf of compilerParsed.syntheticFrames) {
+                stackFrames.push({
+                    rawFilePath: sf.filePath,
+                    filePath: sf.filePath,
+                    lineNumber: sf.lineNumber,
+                    columnNumber: sf.columnNumber,
+                    functionName: sf.functionName,
+                    isInternal: false,
+                    isApplication: sf.isApplication,
+                    order: sf.order,
+                    classification: "Application",
+                } as any);
+            }
+        }
+        // Enrich source with failing expression derived from compiler message
+        if (!opts.source?.failingExpression && compilerParsed.synthesizedExceptionMessage) {
+            const derivedExpr = extractFailingExpressionFromDiagnostic(compilerParsed.synthesizedExceptionMessage);
+            if (derivedExpr && opts.source) {
+                (opts.source as any).failingExpression = derivedExpr;
+            } else if (derivedExpr && !opts.source && compilerParsed.primary.filePath) {
+                opts.source = {
+                    filePath: compilerParsed.primary.filePath,
+                    failingLineNumber: compilerParsed.primary.lineNumber,
+                    failingExpression: derivedExpr,
+                    resolutionStatus: "compiler_diagnostic",
+                } as any;
             }
         }
     }

@@ -134,6 +134,42 @@ function detectArchetype(
     const type = excType.toLowerCase();
     const src = sourceLines.toLowerCase();
 
+    // ── Phase 1: Compiler Diagnostic Fast-Path ────────────────────────────────
+    // When the Phase 1 parser has enriched exceptionType with structured codes,
+    // map them to engineering archetypes before doing keyword heuristic matching.
+    if (type.startsWith("typescriptcompileerror")) {
+        // TS2345: Argument of type X not assignable → SCHEMA_CONTRACT (wrong type at boundary)
+        if (type.includes("ts2345") || type.includes("ts2322") || msg.includes("not assignable")) return "SCHEMA_CONTRACT";
+        // TS2339: Property X does not exist → NULL_DEREFERENCE (missing property)
+        if (type.includes("ts2339") || msg.includes("does not exist on type")) return "NULL_DEREFERENCE";
+        // TS2304, TS2307: Cannot find name/module → SCHEMA_CONTRACT (import contract)
+        if (type.includes("ts2304") || type.includes("ts2307") || msg.includes("cannot find")) return "SCHEMA_CONTRACT";
+        // TS2531: Object is possibly 'null' → NULL_DEREFERENCE
+        if (type.includes("ts2531") || type.includes("ts2532") || msg.includes("possibly") || msg.includes("possibly 'null'") || msg.includes("possibly 'undefined'")) return "NULL_DEREFERENCE";
+        // TS1005, TS1128: Expected token / Declaration or statement expected → LOGIC_DEFECT (syntax)
+        if (type.includes("ts1005") || type.includes("ts1128") || type.includes("ts1003")) return "LOGIC_DEFECT";
+        return "SCHEMA_CONTRACT"; // default for unrecognized TS errors
+    }
+    if (type.startsWith("python") || type === "attributeerror" || type === "nameerror" || type === "importerror") {
+        // Python AttributeError: has no attribute → NULL_DEREFERENCE
+        if (type === "attributeerror" || msg.includes("has no attribute")) return "NULL_DEREFERENCE";
+        // Python ImportError / ModuleNotFoundError → SCHEMA_CONTRACT (import/module)
+        if (type === "importerror" || type === "modulenotfounderror" || msg.includes("no module named")) return "SCHEMA_CONTRACT";
+        // Python TypeError involving None → NULL_DEREFERENCE
+        if (msg.includes("nonetype") || msg.includes("'nonetype' object")) return "NULL_DEREFERENCE";
+        return "LOGIC_DEFECT";
+    }
+    if (type === "eslinterror" || type.startsWith("eslint")) return "SCHEMA_CONTRACT";
+    if (type.startsWith("rustcompileerror")) return "SCHEMA_CONTRACT";
+    if (type.startsWith("gocompileerror")) return "SCHEMA_CONTRACT";
+    if (type.startsWith("javacompileerror")) return "SCHEMA_CONTRACT";
+    if (type === "webpackmodulenotfounderror") {
+        // Module not found is typically a SCHEMA_CONTRACT (import path wrong)
+        return "SCHEMA_CONTRACT";
+    }
+    if (type === "webpackbuilderror") return "LOGIC_DEFECT";
+    // ── End Compiler Diagnostic Fast-Path ─────────────────────────────────────
+
     const confirmedHypo = snapshot?.investigation?.hypotheses?.find(
         (h) => (h.status as any) === "CONFIRMED" || h.status === "VALIDATED"
     );

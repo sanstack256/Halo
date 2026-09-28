@@ -63,6 +63,7 @@ import { InvariantEngine } from "./invariant-engine";
 import { AdversarialChallenger } from "./adversarial-challenger";
 import { SystemicPreventionReasoner } from "./architectural-memory";
 import { EngineeringReasoningLoop } from "./engineering-reasoning-loop";
+import { executePatchValidation, resolveRepoDirFromSnapshot } from "./patch-validator-executor";
 import type { DecomposedConfidence } from "./types";
 
 function toFormalRecommendationState(state?: string): FormalRecommendationState {
@@ -985,33 +986,130 @@ export async function generateEngineeringRecommendation(
     };
 
     const isNonCodeRemediation = Boolean(preciseRepair && !preciseRepair.isCodeModification && preciseRepair.nonCodeRemediationDetails);
+
+    // ── Phase 2: Evidence-First Pipeline Inversion ────────────────────────────
+    // The deterministic repair from generatePreciseRepair() is the PRIMARY
+    // source of code changes — BUT only when evidence is sufficient and the
+    // recommendation gate has not blocked the repair. When evidence is
+    // insufficient or the gate blocks, we continue to produce empty changes[].
+    //
+    // Safety rule: deterministicChanges are canonical ONLY when:
+    //   1. sufficiency.state is not INSUFFICIENT or BLOCKED
+    //   2. gateVerdict.allowed is true
+    //   3. preciseRepair actually produced multiFileChanges[] (evidence-backed)
+    const isSufficientForRepair =
+        sufficiency.state === "SUFFICIENT_FOR_REPAIR" ||
+        sufficiency.state === "VERIFIED_REPAIR" ||
+        sufficiency.state === "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR";
+    const deterministicChanges =
+        isSufficientForRepair && gateVerdict.allowed
+            ? (preciseRepair.multiFileChanges || [])
+            : [];
+    const llmChanges = factCheck.verifiedRecommendation.changes || [];
+    // Deterministic patches win over LLM patches when present; LLM patches are
+    // used when deterministic pipeline produced nothing (e.g. non-code remediation).
+    const canonicalChanges = deterministicChanges.length > 0 ? deterministicChanges : llmChanges;
+
+    // Text formatting: use LLM output for human-readable fields when available
+    const llmSummary = factCheck.verifiedRecommendation.summary;
+    const llmDiagnosis = factCheck.verifiedRecommendation.diagnosis;
+    const llmWhy = factCheck.verifiedRecommendation.whyThisAction || factCheck.verifiedRecommendation.whyThisFixesIt;
+
     const shouldOverrideActionWithAuthoritative =
         !gateVerdict.allowed ||
         gateVerdict.calibratedState === "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE" ||
         gateVerdict.calibratedState === "BLOCKED_BY_MISSING_SOURCE" ||
         gateVerdict.calibratedState === "EVIDENCE_ACQUISITION_REQUIRED" ||
         gateVerdict.calibratedState === "NO_CODE_CHANGE_JUSTIFIED" ||
-        (factCheck.verifiedRecommendation.changes.length === 0 && !isNonCodeRemediation);
+        (canonicalChanges.length === 0 && !isNonCodeRemediation);
 
     const authoritativeActionAnswer = isNonCodeRemediation
         ? preciseRepair.headline
         : shouldOverrideActionWithAuthoritative
         ? selectedAction.title
-        : factCheck.verifiedRecommendation.actionAnswer || selectedAction.title;
+        : factCheck.verifiedRecommendation.actionAnswer || preciseRepair.headline || selectedAction.title;
 
     const authoritativeDirectAnswer = isNonCodeRemediation
         ? preciseRepair.headline
         : shouldOverrideActionWithAuthoritative
         ? selectedAction.title
         : factCheck.verifiedRecommendation.directAnswer || authoritativeActionAnswer;
+    // ── End Phase 2 ───────────────────────────────────────────────────────────
+
+    // ── Phase 3: Production Patch Validator Hook ──────────────────────────────
+    // When canonicalChanges is non-empty and a repoDir is resolvable from the
+    // snapshot, execute patch validation in an isolated workspace to obtain
+    // real behavioral proof. This is the production equivalent of
+    // RealPatchExecutionHarness in the test infrastructure.
+    let patchValidationResult: import("./patch-validator-executor").PatchValidationResult | undefined;
+    const repoDirForValidation = resolveRepoDirFromSnapshot(snapshot);
+
+    if (canonicalChanges.length > 0 && repoDirForValidation) {
+        try {
+            patchValidationResult = executePatchValidation({
+                changes: canonicalChanges,
+                repoDir: repoDirForValidation,
+                testCommand: (snapshot as any)?.testCommand,
+                expectedFailureSubstring: (snapshot as any)?.expectedFailureSubstring,
+                expectedSuccessSubstring: (snapshot as any)?.expectedSuccessSubstring,
+            });
+        } catch {
+            // Patch validation failure should never crash the pipeline
+            patchValidationResult = undefined;
+        }
+    }
+    // ── End Phase 3 ──────────────────────────────────────────────────────────
+
+    // Phase 3: compute behavioralProof from live validation result or existing authoritative proof
+    const liveBehavioralProof = patchValidationResult
+        ? {
+              status: patchValidationResult.isCleanPass ? "PASSED" : "TESTED",
+              validationMethod: "POST_PATCH_VALIDATION" as const,
+              summary: patchValidationResult.isCleanPass
+                  ? `Patch validated: ${patchValidationResult.changesAppliedCount} change(s) applied, all tests pass, original failure resolved.`
+                  : `Patch applied (${patchValidationResult.changesAppliedCount} changes) but validation did not achieve clean pass: ${patchValidationResult.afterOutput.slice(0, 200)}`,
+              isCleanPass: patchValidationResult.isCleanPass,
+              originalFailureResolved: patchValidationResult.originalFailureResolved,
+              intendedBehaviorRestored: patchValidationResult.expectedBehaviorRestored,
+              violatedInvariantRestored: patchValidationResult.originalFailureResolved && patchValidationResult.expectedBehaviorRestored,
+              executionLog: patchValidationResult.afterOutput.slice(0, 500),
+          }
+        : authoritativeDecision.behavioralProof
+        ? {
+              status: authoritativeDecision.behavioralProof.postPatchValidation?.isCleanPass ? "PASSED" : "TESTED",
+              validationMethod: "POST_PATCH_VALIDATION" as const,
+              summary: authoritativeDecision.behavioralProof.executionLogExcerpt || "Behavioral proof verified",
+              isCleanPass: Boolean(authoritativeDecision.behavioralProof.postPatchValidation?.isCleanPass),
+              originalFailureResolved: Boolean(authoritativeDecision.behavioralProof.postPatchValidation?.originalFailureResolved ?? true),
+              intendedBehaviorRestored: Boolean(authoritativeDecision.behavioralProof.postPatchValidation?.intendedBehaviorRestored ?? true),
+              violatedInvariantRestored: Boolean(authoritativeDecision.behavioralProof.postPatchValidation?.violatedInvariantRestored ?? true),
+              executionLog: authoritativeDecision.behavioralProof.executionLogExcerpt,
+          }
+        : undefined;
+
+    // Phase 3 + Phase 4: confidence and status upgrade from live patch validation
+    const patchProofClean = patchValidationResult?.isCleanPass === true;
+    const baseConfidence = (!factCheck.passed || !gateVerdict.allowed) ? "LOW" : factCheck.verifiedRecommendation.confidence;
+    const patchValidatedConfidence = patchProofClean ? "HIGH" : baseConfidence;
+    const patchValidatedStatus = patchProofClean
+        ? "VERIFIED_REPAIR"
+        : gateVerdict.calibratedState;
 
     const finalRecommendation: FixRecommendation = {
         ...factCheck.verifiedRecommendation,
+        // Phase 2: always use canonical (deterministic-first) changes
+        changes: canonicalChanges,
         actionAnswer: authoritativeActionAnswer,
         directAnswer: authoritativeDirectAnswer,
-        status: gateVerdict.calibratedState,
+        // Phase 2: prefer LLM text formatting but fall back to deterministic
+        summary: llmSummary || preciseRepair.whatShouldChange || factCheck.verifiedRecommendation.summary,
+        diagnosis: llmDiagnosis || preciseRepair.whyThere || factCheck.verifiedRecommendation.diagnosis,
+        whyThisAction: llmWhy || preciseRepair.whyThisFixesActualFailure || factCheck.verifiedRecommendation.whyThisAction,
+        whyThisFixesIt: llmWhy || preciseRepair.whyThisFixesActualFailure || factCheck.verifiedRecommendation.whyThisFixesIt,
+        // Phase 3: status and confidence from live patch validation
+        status: patchValidatedStatus,
         decomposedConfidence: gateVerdict.calibratedConfidence,
-        confidence: (!factCheck.passed || !gateVerdict.allowed) ? "LOW" : factCheck.verifiedRecommendation.confidence,
+        confidence: patchValidatedConfidence,
         missingEvidence: sufficiency.minimumAdditionalEvidenceNeeded || [],
         repairLocation: {
             type: repairLocation.type,
@@ -1021,18 +1119,10 @@ export async function generateEngineeringRecommendation(
         },
         separatedLocations: authoritativeDecision.separatedLocations,
         brokenInvariant: authoritativeDecision.brokenInvariant,
-        behavioralProof: authoritativeDecision.behavioralProof ? {
-            status: authoritativeDecision.behavioralProof.postPatchValidation?.isCleanPass ? "PASSED" : "TESTED",
-            validationMethod: "POST_PATCH_VALIDATION",
-            summary: authoritativeDecision.behavioralProof.executionLogExcerpt || "Behavioral proof verified",
-            isCleanPass: Boolean(authoritativeDecision.behavioralProof.postPatchValidation?.isCleanPass),
-            originalFailureResolved: Boolean(authoritativeDecision.behavioralProof.postPatchValidation?.originalFailureResolved ?? true),
-            intendedBehaviorRestored: Boolean(authoritativeDecision.behavioralProof.postPatchValidation?.intendedBehaviorRestored ?? true),
-            violatedInvariantRestored: Boolean(authoritativeDecision.behavioralProof.postPatchValidation?.violatedInvariantRestored ?? true),
-            executionLog: authoritativeDecision.behavioralProof.executionLogExcerpt,
-        } : undefined,
+        // Phase 3: real behavioral proof from live validation
+        behavioralProof: liveBehavioralProof,
         completedSteps,
-        isCodeModification: preciseRepair.isCodeModification,
+        isCodeModification: canonicalChanges.length > 0 || preciseRepair.isCodeModification,
         nonCodeRemediationDetails: preciseRepair.nonCodeRemediationDetails,
         activeInvestigationDetails: {
             requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded || [],
@@ -1043,7 +1133,7 @@ export async function generateEngineeringRecommendation(
     };
 
     return {
-        success: factCheck.passed,
+        success: factCheck.passed || patchProofClean,
         source: "LLM_SYNTHESIZED",
         confidence: finalRecommendation.confidence,
         recommendation: finalRecommendation,
@@ -1053,7 +1143,13 @@ export async function generateEngineeringRecommendation(
         authoritativeDecision,
         audit: {
             ...factCheck.audit,
-            warnings: [...factCheck.audit.warnings, ...gateVerdict.warnings],
+            warnings: [
+                ...factCheck.audit.warnings,
+                ...gateVerdict.warnings,
+                ...(patchValidationResult && !patchValidationResult.isCleanPass
+                    ? [`Patch validation: ${patchValidationResult.patchIntroducedFailures.length} new failure(s) introduced`]
+                    : []),
+            ],
         },
         modelInfo: {
             provider: model.id,
