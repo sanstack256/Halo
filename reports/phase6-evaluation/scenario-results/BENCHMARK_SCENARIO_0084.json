@@ -1,0 +1,66 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0084",
+  "observedFailure": "TimeoutError: Connection pool exhausted (max: 20)",
+  "confirmedMechanism": "TimeoutError",
+  "ownership": "src/subscription/db_processor.ts (CALLEE)",
+  "enumeratedBoundaries": [
+    "CALLEE",
+    "CALLEE",
+    "CALLER"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-BENCHMARK_SCENARIO_0084-1",
+      "scenarioId": "BENCHMARK_SCENARIO_0084",
+      "generationReason": "Wrap the acquired resource in 'executeQuery' with a try/finally block ensuring guaranteed release on all exceptional and early-return paths.",
+      "repairBoundary": "VERIFIED_BOUNDARY",
+      "targetFiles": [
+        "src/subscription/db_processor.ts"
+      ],
+      "targetSymbols": [
+        "executeQuery"
+      ],
+      "transformation": "export async function executeQuery(pool: any, sql: string) {\n    const client = await pool.connect()",
+      "prediction": {
+        "targetInvariant": "State consistency",
+        "expectedBehaviorChange": "Eliminate unhandled exception without error swallowing",
+        "blastRadius": 1,
+        "possibleMasking": false,
+        "requiresRegressionCheck": true
+      },
+      "sourceEvidence": [
+        "file:src/subscription/db_processor.ts"
+      ],
+      "mechanismEvidence": [
+        "error:TimeoutError"
+      ],
+      "ownershipEvidence": [
+        "owner:src/subscription/db_processor.ts"
+      ],
+      "candidateSemanticKey": "src/subscription/db_processor.ts:executeQuery",
+      "baselineStatus": "VERIFIED",
+      "patchApplicationStatus": "VERIFIED",
+      "executionStatus": "VERIFIED",
+      "behaviorStatus": "VERIFIED",
+      "invariantStatus": "VERIFIED",
+      "regressionStatus": "VERIFIED",
+      "counterexampleStatus": "VERIFIED",
+      "proofStatus": "VERIFIED_REPAIR"
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": true,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "SYSTEM",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": true,
+  "finalProofState": "VERIFIED_REPAIR",
+  "failureStage": "OTHER",
+  "failureClassification": "NONE",
+  "failureReason": "Repair fully verified by empirical proof chain"
+}

@@ -1,0 +1,28 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0068",
+  "observedFailure": "SchemaViolationError: Incompatible column format after release",
+  "confirmedMechanism": "SchemaViolationError",
+  "ownership": "src/order/schema_processor.ts (DEPLOYMENT)",
+  "enumeratedBoundaries": [
+    "DEPLOYMENT",
+    "CALLEE",
+    "CALLER"
+  ],
+  "candidates": [],
+  "correctRepairDiscovered": "NO",
+  "discoveryRecall": "NOT_APPLICABLE",
+  "candidateRank": 0,
+  "baselineReproduced": false,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": false,
+  "counterexamplesSurvived": false,
+  "finalProofState": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+  "failureStage": "ROLLBACK_REQUIRED",
+  "failureClassification": "VALID_REFUSAL",
+  "failureReason": "Recent deployment schema regression; deployment rollback superior to code patch",
+  "nextSearchAction": "Execute recommended operational rollback or await upstream recovery"
+}

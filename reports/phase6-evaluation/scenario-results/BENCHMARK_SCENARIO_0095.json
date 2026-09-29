@@ -1,0 +1,28 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0095",
+  "observedFailure": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+  "confirmedMechanism": "ExternalServiceError",
+  "ownership": "src/analytics/client_pipeline.ts (NO_CODE_CHANGE)",
+  "enumeratedBoundaries": [
+    "NO_CODE_CHANGE",
+    "CALLEE",
+    "CALLER"
+  ],
+  "candidates": [],
+  "correctRepairDiscovered": "NO",
+  "discoveryRecall": "NOT_APPLICABLE",
+  "candidateRank": 0,
+  "baselineReproduced": false,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "FAIL",
+  "counterexamplesGenerated": false,
+  "counterexamplesSurvived": false,
+  "finalProofState": "NO_CODE_CHANGE_JUSTIFIED",
+  "failureStage": "EXTERNAL_FAILURE",
+  "failureClassification": "VALID_REFUSAL",
+  "failureReason": "Failure originates in external service; NO_CODE_CHANGE_JUSTIFIED verified",
+  "nextSearchAction": "Execute recommended operational rollback or await upstream recovery"
+}

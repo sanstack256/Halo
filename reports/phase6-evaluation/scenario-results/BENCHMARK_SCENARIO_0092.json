@@ -1,0 +1,70 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0092",
+  "observedFailure": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+  "confirmedMechanism": "SyntaxError",
+  "ownership": "src/inventory/parser_processor.ts (CALLEE)",
+  "enumeratedBoundaries": [
+    "CALLEE",
+    "CALLEE",
+    "CALLER"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-BENCHMARK_SCENARIO_0092-1",
+      "scenarioId": "BENCHMARK_SCENARIO_0092",
+      "generationReason": "Defect in internal control flow or invariant inside 'parseIncoming'. Caller is not causal.",
+      "repairBoundary": "VERIFIED_BOUNDARY",
+      "targetFiles": [
+        "src/inventory/parser_processor.ts"
+      ],
+      "targetSymbols": [
+        "parseIncoming"
+      ],
+      "transformation": "let data;\n    try {\n        data = JSON.parse(rawInput);\n    } catch {\n        data = {};\n    }",
+      "prediction": {
+        "targetInvariant": "State consistency",
+        "expectedBehaviorChange": "Eliminate unhandled exception without error swallowing",
+        "blastRadius": 1,
+        "possibleMasking": false,
+        "requiresRegressionCheck": true
+      },
+      "sourceEvidence": [
+        "file:src/inventory/parser_processor.ts"
+      ],
+      "mechanismEvidence": [
+        "error:SyntaxError"
+      ],
+      "ownershipEvidence": [
+        "owner:src/inventory/parser_processor.ts"
+      ],
+      "candidateSemanticKey": "src/inventory/parser_processor.ts:parseIncoming",
+      "baselineStatus": "VERIFIED",
+      "patchApplicationStatus": "VERIFIED",
+      "executionStatus": "FAILED",
+      "behaviorStatus": "FAILED",
+      "invariantStatus": "FAILED",
+      "regressionStatus": "FAILED",
+      "counterexampleStatus": "VERIFIED",
+      "proofStatus": "BLOCKED_BY_UNAVAILABLE_EVIDENCE",
+      "rejectionReason": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)",
+      "failureStage": "ENVIRONMENT_UNAVAILABLE",
+      "failureEvidence": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)"
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": true,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": true,
+  "finalProofState": "BLOCKED_BY_UNAVAILABLE_EVIDENCE",
+  "failureStage": "ENVIRONMENT_UNAVAILABLE",
+  "failureClassification": "ENVIRONMENT_FAILURE",
+  "failureReason": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)",
+  "nextSearchAction": "Attach live repository container or test harness to execute and prove candidate"
+}

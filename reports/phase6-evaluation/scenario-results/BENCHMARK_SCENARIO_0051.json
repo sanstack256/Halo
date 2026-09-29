@@ -1,0 +1,70 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0051",
+  "observedFailure": "Error: Missing required parameter 'tenantId'",
+  "confirmedMechanism": "Error",
+  "ownership": "src/fulfillment/caller_pipeline.ts (CALLER)",
+  "enumeratedBoundaries": [
+    "CALLER",
+    "CALLEE",
+    "CALLER"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-BENCHMARK_SCENARIO_0051-1",
+      "scenarioId": "BENCHMARK_SCENARIO_0051",
+      "generationReason": "Upstream caller 'dispatchpipeline' in 'src/fulfillment/caller_pipeline.ts' passed invalid/undefined argument 'context' to 'requireTenant' which requires valid input.",
+      "repairBoundary": "VERIFIED_BOUNDARY",
+      "targetFiles": [
+        "src/fulfillment/caller_pipeline.ts"
+      ],
+      "targetSymbols": [
+        "dispatchpipeline"
+      ],
+      "transformation": "// Fix logic defect: correct conditional invariant\nthrow new Error(\"Missing required parameter 'tena",
+      "prediction": {
+        "targetInvariant": "State consistency",
+        "expectedBehaviorChange": "Eliminate unhandled exception without error swallowing",
+        "blastRadius": 1,
+        "possibleMasking": false,
+        "requiresRegressionCheck": true
+      },
+      "sourceEvidence": [
+        "file:src/fulfillment/caller_pipeline.ts"
+      ],
+      "mechanismEvidence": [
+        "error:Error"
+      ],
+      "ownershipEvidence": [
+        "owner:src/fulfillment/caller_pipeline.ts"
+      ],
+      "candidateSemanticKey": "src/fulfillment/caller_pipeline.ts:dispatchpipeline",
+      "baselineStatus": "VERIFIED",
+      "patchApplicationStatus": "VERIFIED",
+      "executionStatus": "FAILED",
+      "behaviorStatus": "FAILED",
+      "invariantStatus": "FAILED",
+      "regressionStatus": "FAILED",
+      "counterexampleStatus": "VERIFIED",
+      "proofStatus": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+      "rejectionReason": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)",
+      "failureStage": "ENVIRONMENT_UNAVAILABLE",
+      "failureEvidence": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)"
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": true,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": true,
+  "finalProofState": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+  "failureStage": "ENVIRONMENT_UNAVAILABLE",
+  "failureClassification": "ENVIRONMENT_FAILURE",
+  "failureReason": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)",
+  "nextSearchAction": "Attach live repository container or test harness to execute and prove candidate"
+}

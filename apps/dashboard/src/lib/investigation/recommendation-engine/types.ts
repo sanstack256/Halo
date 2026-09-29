@@ -2329,6 +2329,118 @@ export interface RepairSearchGraph {
     stoppingReason?: string;
 }
 
+// ============================================================================
+// PHASE 6 OBSERVABILITY & CANDIDATE LIFECYCLE LEDGER TYPES (§3, §4, §8, §10, §16, §64)
+// ============================================================================
+
+export type FailureStage =
+    | "NO_SOURCE"
+    | "NO_CANDIDATE"
+    | "WRONG_BOUNDARY"
+    | "WRONG_TRANSFORMATION"
+    | "PATCH_UNEXECUTABLE"
+    | "BASELINE_NOT_REPRODUCED"
+    | "PATCH_NO_EFFECT"
+    | "INVARIANT_NOT_RESTORED"
+    | "REGRESSION_FAILURE"
+    | "COUNTEREXAMPLE_FAILURE"
+    | "PROVENANCE_FAILURE"
+    | "STALE_CANDIDATE"
+    | "ENVIRONMENT_UNAVAILABLE"
+    | "NO_CODE_CHANGE"
+    | "EXTERNAL_FAILURE"
+    | "ROLLBACK_REQUIRED"
+    | "OTHER"
+    | "UNKNOWN";
+
+export type CandidateDiscoveryRecall =
+    | "DISCOVERED_EXACT"
+    | "DISCOVERED_EQUIVALENT"
+    | "NOT_DISCOVERED"
+    | "NOT_APPLICABLE"
+    | "UNKNOWN";
+
+export type CounterexampleTaxonomyCategory =
+    | "BOUNDARY_INPUT"
+    | "MISSING_STATE"
+    | "INVALID_STATE_TRANSITION"
+    | "CONCURRENCY_ORDER"
+    | "ASYNC_TIMING"
+    | "RESOURCE_LIFECYCLE"
+    | "ERROR_PATH"
+    | "PARTIAL_FAILURE"
+    | "NULLABILITY"
+    | "TYPE_VARIANCE"
+    | "SERIALIZATION"
+    | "DESERIALIZATION"
+    | "CONFIGURATION"
+    | "DEPENDENCY"
+    | "EXTERNAL_SERVICE"
+    | "DATABASE"
+    | "TRANSACTION"
+    | "CACHE"
+    | "QUEUE"
+    | "RETRY"
+    | "IDEMPOTENCY"
+    | "MULTI_CALLER"
+    | "MULTI_TENANT"
+    | "OTHER";
+
+export interface CandidateLifecycleRecord {
+    candidateId: string;
+    scenarioId: string;
+    parentCandidateId?: string;
+    generationReason: string;
+    repairBoundary: string;
+    targetFiles: string[];
+    targetSymbols: string[];
+    transformation: string;
+    prediction?: CandidatePrediction;
+    sourceEvidence: string[];
+    mechanismEvidence: string[];
+    ownershipEvidence: string[];
+    candidateSemanticKey: string;
+
+    baselineStatus: ProofStatus;
+    patchApplicationStatus: ProofStatus;
+    executionStatus: ProofStatus;
+    behaviorStatus: ProofStatus;
+    invariantStatus: ProofStatus;
+    regressionStatus: ProofStatus;
+    counterexampleStatus: ProofStatus;
+    proofStatus: RepairProofState;
+
+    rejectionReason?: string;
+    failureStage?: FailureStage;
+    failureEvidence?: string;
+    nextCandidateReason?: string;
+}
+
+export interface ScenarioCandidateLedger {
+    scenarioId: string;
+    observedFailure: string;
+    confirmedMechanism: string;
+    ownership: string;
+    enumeratedBoundaries: string[];
+    candidates: CandidateLifecycleRecord[];
+    correctRepairDiscovered: "YES" | "NO" | "UNKNOWN";
+    discoveryRecall: CandidateDiscoveryRecall;
+    candidateRank: number;
+    baselineReproduced: boolean;
+    patchApplied: boolean;
+    behaviorChanged: boolean;
+    invariantClassification: "LOCAL" | "BOUNDARY" | "SYSTEM";
+    invariantRestored: boolean;
+    regressionResult: "PASS" | "FAIL" | "UNKNOWN";
+    counterexamplesGenerated: boolean;
+    counterexamplesSurvived: boolean;
+    finalProofState: RepairProofState;
+    failureStage: FailureStage;
+    failureClassification: "SEARCH_FAILURE" | "PROOF_FAILURE" | "ENVIRONMENT_FAILURE" | "VALID_REFUSAL" | "NONE";
+    failureReason: string;
+    nextSearchAction?: string;
+}
+
 export * from "./canonical-evidence-store";
 
 

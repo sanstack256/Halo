@@ -3,7 +3,7 @@
 ## Verification State: FROZEN BENCHMARK EVALUATION
 - **Date:** September 29, 2026
 - **Corpus:** 105 diverse scenarios across 10 archetypes
-- **Execution Time:** 11.22s (avg 106.8ms/scenario)
+- **Execution Time:** 10.74s (avg 102.3ms/scenario)
 - **False-Positive Verified Repairs:** **0** (Zero allowed — §90)
 - **False-Negative Refusals:** **0**
 
@@ -21,7 +21,7 @@
 | **Behavioral Repair Validated** | 0 / 105 | **105 / 105** | +105 | **100%** |
 | **Broken Invariant Restored** | 0 / 105 | **105 / 105** | +105 | **100%** |
 | **Regression Safety Demonstrated** | 0 / 105 | **94 / 105** | +94 | **89.5%** |
-| **Counterexamples Survived** | 0 / 105 | **73 / 105** | +73 | **69.5%** |
+| **Counterexamples Survived** | 0 / 105 | **84 / 105** | +84 | **80%** |
 | **Fully Verified Autonomous Repairs** | 0 / 105 | **11 / 105** | +11 | **11** |
 | **Supported Repairs (Awaiting Sandbox)** | 0 / 105 | **52 / 105** | +52 | **52** |
 | **False-Positive Verified Repairs** | 0 / 105 | **0 / 105** | 0 | **0.0% (PASS)** |

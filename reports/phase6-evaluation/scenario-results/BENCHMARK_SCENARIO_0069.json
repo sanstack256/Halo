@@ -1,0 +1,70 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0069",
+  "observedFailure": "ConcurrentModificationError: Mutex unlocked while task was active",
+  "confirmedMechanism": "ConcurrentModificationError",
+  "ownership": "src/fulfillment/mutex_client.ts (CALLEE)",
+  "enumeratedBoundaries": [
+    "CALLEE",
+    "CALLEE",
+    "CALLER"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-BENCHMARK_SCENARIO_0069-1",
+      "scenarioId": "BENCHMARK_SCENARIO_0069",
+      "generationReason": "Defect in internal control flow or invariant inside 'acquireAndRun'. Caller is not causal.",
+      "repairBoundary": "VERIFIED_BOUNDARY",
+      "targetFiles": [
+        "src/fulfillment/mutex_client.ts"
+      ],
+      "targetSymbols": [
+        "acquireAndRun"
+      ],
+      "transformation": "try {\n        return await client.query(sql);\n    } finally {\n        client.release();\n    }",
+      "prediction": {
+        "targetInvariant": "State consistency",
+        "expectedBehaviorChange": "Eliminate unhandled exception without error swallowing",
+        "blastRadius": 1,
+        "possibleMasking": false,
+        "requiresRegressionCheck": true
+      },
+      "sourceEvidence": [
+        "file:src/fulfillment/mutex_client.ts"
+      ],
+      "mechanismEvidence": [
+        "error:ConcurrentModificationError"
+      ],
+      "ownershipEvidence": [
+        "owner:src/fulfillment/mutex_client.ts"
+      ],
+      "candidateSemanticKey": "src/fulfillment/mutex_client.ts:acquireAndRun",
+      "baselineStatus": "VERIFIED",
+      "patchApplicationStatus": "VERIFIED",
+      "executionStatus": "FAILED",
+      "behaviorStatus": "FAILED",
+      "invariantStatus": "FAILED",
+      "regressionStatus": "FAILED",
+      "counterexampleStatus": "VERIFIED",
+      "proofStatus": "BLOCKED_BY_UNAVAILABLE_EVIDENCE",
+      "rejectionReason": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)",
+      "failureStage": "ENVIRONMENT_UNAVAILABLE",
+      "failureEvidence": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)"
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": true,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": true,
+  "finalProofState": "BLOCKED_BY_UNAVAILABLE_EVIDENCE",
+  "failureStage": "ENVIRONMENT_UNAVAILABLE",
+  "failureClassification": "ENVIRONMENT_FAILURE",
+  "failureReason": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)",
+  "nextSearchAction": "Attach live repository container or test harness to execute and prove candidate"
+}

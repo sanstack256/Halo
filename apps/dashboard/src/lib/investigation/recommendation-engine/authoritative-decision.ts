@@ -46,6 +46,7 @@ import type {
     AdversarialChallengeRecord,
     PreventionRecommendation,
     SystemicDefectRecord,
+    VerifiedRepairProofChain,
 } from "./types";
 import type { CausalRegressionGateVerdict } from "./causal-regression-gate";
 import { toFormalRecommendationState } from "./types";
@@ -95,6 +96,7 @@ export interface BuildAuthoritativeDecisionParams {
     adversarialChallenge?: AdversarialChallengeRecord;
     preventionRecommendation?: PreventionRecommendation;
     systemicDefects?: SystemicDefectRecord[];
+    proofChain?: VerifiedRepairProofChain;
 }
 
 export function buildAuthoritativeEngineeringDecision(
@@ -132,6 +134,7 @@ export function buildAuthoritativeEngineeringDecision(
         adversarialChallenge,
         preventionRecommendation,
         systemicDefects,
+        proofChain,
     } = params;
 
     const cand =
@@ -406,5 +409,6 @@ export function buildAuthoritativeEngineeringDecision(
         adversarialChallenge,
         preventionRecommendation,
         systemicDefects,
+        proofChain,
     };
 }

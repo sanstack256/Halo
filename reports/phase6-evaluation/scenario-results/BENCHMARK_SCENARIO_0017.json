@@ -1,0 +1,70 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0017",
+  "observedFailure": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+  "confirmedMechanism": "ConfigError",
+  "ownership": "src/customer/config_client.ts (CONFIGURATION)",
+  "enumeratedBoundaries": [
+    "CONFIGURATION",
+    "CALLEE",
+    "CALLER"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-BENCHMARK_SCENARIO_0017-1",
+      "scenarioId": "BENCHMARK_SCENARIO_0017",
+      "generationReason": "Add default fallback value to configuration property",
+      "repairBoundary": "VERIFIED_BOUNDARY",
+      "targetFiles": [
+        "src/customer/config_client.ts"
+      ],
+      "targetSymbols": [
+        "getDbConfig"
+      ],
+      "transformation": "// Provide fallback default for missing environment configuration\nthrow new Error(\"Missing required ",
+      "prediction": {
+        "targetInvariant": "State consistency",
+        "expectedBehaviorChange": "Eliminate unhandled exception without error swallowing",
+        "blastRadius": 1,
+        "possibleMasking": false,
+        "requiresRegressionCheck": true
+      },
+      "sourceEvidence": [
+        "file:src/customer/config_client.ts"
+      ],
+      "mechanismEvidence": [
+        "error:ConfigError"
+      ],
+      "ownershipEvidence": [
+        "owner:src/customer/config_client.ts"
+      ],
+      "candidateSemanticKey": "src/customer/config_client.ts:getDbConfig",
+      "baselineStatus": "VERIFIED",
+      "patchApplicationStatus": "FAILED",
+      "executionStatus": "FAILED",
+      "behaviorStatus": "FAILED",
+      "invariantStatus": "FAILED",
+      "regressionStatus": "FAILED",
+      "counterexampleStatus": "VERIFIED",
+      "proofStatus": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+      "rejectionReason": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)",
+      "failureStage": "ENVIRONMENT_UNAVAILABLE",
+      "failureEvidence": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)"
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": true,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": true,
+  "finalProofState": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+  "failureStage": "ENVIRONMENT_UNAVAILABLE",
+  "failureClassification": "ENVIRONMENT_FAILURE",
+  "failureReason": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)",
+  "nextSearchAction": "Attach live repository container or test harness to execute and prove candidate"
+}

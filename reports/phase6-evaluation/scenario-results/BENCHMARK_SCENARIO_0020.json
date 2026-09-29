@@ -1,0 +1,70 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0020",
+  "observedFailure": "TypeError: Cannot read properties of undefined (reading 'flags')",
+  "confirmedMechanism": "TypeError",
+  "ownership": "src/inventory/processor.ts (CALLEE)",
+  "enumeratedBoundaries": [
+    "CALLEE",
+    "CALLEE",
+    "CALLER"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-BENCHMARK_SCENARIO_0020-1",
+      "scenarioId": "BENCHMARK_SCENARIO_0020",
+      "generationReason": "Function 'processprocessor' in 'src/inventory/processor.ts' contains validation guards, but failed to validate nested property access at line 4.",
+      "repairBoundary": "VERIFIED_BOUNDARY",
+      "targetFiles": [
+        "src/inventory/processor.ts"
+      ],
+      "targetSymbols": [
+        "processprocessor"
+      ],
+      "transformation": "return record?.metadata?.flags.priority;",
+      "prediction": {
+        "targetInvariant": "State consistency",
+        "expectedBehaviorChange": "Eliminate unhandled exception without error swallowing",
+        "blastRadius": 1,
+        "possibleMasking": false,
+        "requiresRegressionCheck": true
+      },
+      "sourceEvidence": [
+        "file:src/inventory/processor.ts"
+      ],
+      "mechanismEvidence": [
+        "error:TypeError"
+      ],
+      "ownershipEvidence": [
+        "owner:src/inventory/processor.ts"
+      ],
+      "candidateSemanticKey": "src/inventory/processor.ts:processprocessor",
+      "baselineStatus": "VERIFIED",
+      "patchApplicationStatus": "VERIFIED",
+      "executionStatus": "FAILED",
+      "behaviorStatus": "FAILED",
+      "invariantStatus": "FAILED",
+      "regressionStatus": "FAILED",
+      "counterexampleStatus": "VERIFIED",
+      "proofStatus": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+      "rejectionReason": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)",
+      "failureStage": "ENVIRONMENT_UNAVAILABLE",
+      "failureEvidence": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)"
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": true,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "BOUNDARY",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": true,
+  "finalProofState": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+  "failureStage": "ENVIRONMENT_UNAVAILABLE",
+  "failureClassification": "ENVIRONMENT_FAILURE",
+  "failureReason": "In-memory snapshot lacked live package.json / test runner on disk; proof gate failed closed safely (§9, §66)",
+  "nextSearchAction": "Attach live repository container or test harness to execute and prove candidate"
+}
