@@ -1,0 +1,69 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0073",
+  "observedFailure": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+  "confirmedMechanism": "IllegalStateError",
+  "ownership": "ESTABLISHED",
+  "enumeratedBoundaries": [
+    "CALLEE"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-phase7-BENCHMARK_SCENARIO_0073",
+      "scenarioId": "BENCHMARK_SCENARIO_0073",
+      "generationReason": "AST invariant restoration candidate",
+      "repairBoundary": "MATCHED",
+      "targetFiles": [
+        "src/auth/state_client.ts"
+      ],
+      "targetSymbols": [
+        "updateStatus"
+      ],
+      "transformation": "Defect in internal control flow or invariant inside 'updateStatus'. Caller is not causal.",
+      "prediction": {
+        "mechanismAffected": true,
+        "invariantRestored": true,
+        "executionPathAffected": true,
+        "ownershipRespected": true,
+        "blastRadius": "LOCAL",
+        "expectedBehavior": "Resolve unhandled failure without regression",
+        "possibleMasking": false,
+        "possibleNewFailure": false
+      },
+      "sourceEvidence": [
+        "src/auth/state_client.ts"
+      ],
+      "mechanismEvidence": [
+        "IllegalStateError"
+      ],
+      "ownershipEvidence": [
+        "VERIFIED_BOUNDARY"
+      ],
+      "candidateSemanticKey": "BENCHMARK_SCENARIO_0073::STATE_MACHINE_TRANSITION",
+      "baselineStatus": "VERIFIED",
+      "patchApplicationStatus": "VERIFIED",
+      "executionStatus": "VERIFIED",
+      "behaviorStatus": "VERIFIED",
+      "invariantStatus": "VERIFIED",
+      "regressionStatus": "VERIFIED",
+      "counterexampleStatus": "VERIFIED",
+      "proofStatus": "VERIFIED_REPAIR"
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": true,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "BOUNDARY",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": true,
+  "finalProofState": "VERIFIED_REPAIR",
+  "failureStage": "OTHER",
+  "failureClassification": "NONE",
+  "failureReason": "Repair fully verified in reconstructed hermetic execution environment",
+  "environmentReconstructionStatus": "ENVIRONMENT_RECONSTRUCTED",
+  "environmentHash": "7dd81fa364d92f8e74f66f65832ed45d07a0a4210e5c49bb6782b02779cec69a"
+}

@@ -1,0 +1,74 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0084",
+  "observedFailure": "TimeoutError: Connection pool exhausted (max: 20)",
+  "confirmedMechanism": "TimeoutError",
+  "ownership": "ESTABLISHED",
+  "enumeratedBoundaries": [
+    "CALLEE"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-phase7-BENCHMARK_SCENARIO_0084",
+      "scenarioId": "BENCHMARK_SCENARIO_0084",
+      "generationReason": "AST invariant restoration candidate",
+      "repairBoundary": "MATCHED",
+      "targetFiles": [
+        "src/subscription/db_processor.ts"
+      ],
+      "targetSymbols": [
+        "executeQuery"
+      ],
+      "transformation": "Wrap the acquired resource in 'executeQuery' with a try/finally block ensuring guaranteed release on all exceptional and early-return paths.",
+      "prediction": {
+        "mechanismAffected": true,
+        "invariantRestored": true,
+        "executionPathAffected": true,
+        "ownershipRespected": true,
+        "blastRadius": "LOCAL",
+        "expectedBehavior": "Resolve unhandled failure without regression",
+        "possibleMasking": false,
+        "possibleNewFailure": false
+      },
+      "sourceEvidence": [
+        "src/subscription/db_processor.ts"
+      ],
+      "mechanismEvidence": [
+        "TimeoutError"
+      ],
+      "ownershipEvidence": [
+        "VERIFIED_BOUNDARY"
+      ],
+      "candidateSemanticKey": "BENCHMARK_SCENARIO_0084::RESOURCE_LEAK",
+      "baselineStatus": "FAILED",
+      "patchApplicationStatus": "VERIFIED",
+      "executionStatus": "FAILED",
+      "behaviorStatus": "VERIFIED",
+      "invariantStatus": "VERIFIED",
+      "regressionStatus": "VERIFIED",
+      "counterexampleStatus": "FAILED",
+      "proofStatus": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+      "rejectionReason": "Reproducing connection pool exhaustion requires live PostgreSQL/Redis database instance; embedded mock would violate §17, §50.",
+      "failureStage": "ENVIRONMENT_UNAVAILABLE",
+      "failureEvidence": "Reproducing connection pool exhaustion requires live PostgreSQL/Redis database instance; embedded mock would violate §17, §50."
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": false,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": false,
+  "finalProofState": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+  "failureStage": "ENVIRONMENT_UNAVAILABLE",
+  "failureClassification": "ENVIRONMENT_FAILURE",
+  "failureReason": "Reproducing connection pool exhaustion requires live PostgreSQL/Redis database instance; embedded mock would violate §17, §50.",
+  "environmentReconstructionStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+  "blockingClassification": "DATABASE_UNAVAILABLE",
+  "missingArtifactDetails": "Reproducing connection pool exhaustion requires live PostgreSQL/Redis database instance; embedded mock would violate §17, §50.",
+  "environmentHash": "ffc85af7e45f20f82fc28be72f54e404f3e3825c897b909c5636a2dea1f977f6"
+}

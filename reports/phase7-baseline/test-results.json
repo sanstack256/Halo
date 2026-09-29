@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-09-29T17:47:07.000Z",
+  "testRunner": "vitest",
+  "scope": "apps/dashboard/src/lib/investigation/recommendation-engine",
+  "numTotalTestSuites": 37,
+  "numPassedTestSuites": 37,
+  "numFailedTestSuites": 0,
+  "numTotalTests": 287,
+  "numPassedTests": 287,
+  "numFailedTests": 0,
+  "reliabilityBenchmark2000ScenariosPassed": true,
+  "zeroFalseNegativeRefusals": true,
+  "durationMs": 45890
+}

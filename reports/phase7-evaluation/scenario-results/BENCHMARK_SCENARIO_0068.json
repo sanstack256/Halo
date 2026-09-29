@@ -1,0 +1,70 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0068",
+  "observedFailure": "SchemaViolationError: Incompatible column format after release",
+  "confirmedMechanism": "SchemaViolationError",
+  "ownership": "ESTABLISHED",
+  "enumeratedBoundaries": [
+    "CALLEE"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-phase7-BENCHMARK_SCENARIO_0068",
+      "scenarioId": "BENCHMARK_SCENARIO_0068",
+      "generationReason": "AST invariant restoration candidate",
+      "repairBoundary": "MATCHED",
+      "targetFiles": [],
+      "targetSymbols": [],
+      "transformation": "",
+      "prediction": {
+        "mechanismAffected": true,
+        "invariantRestored": true,
+        "executionPathAffected": true,
+        "ownershipRespected": true,
+        "blastRadius": "LOCAL",
+        "expectedBehavior": "Resolve unhandled failure without regression",
+        "possibleMasking": false,
+        "possibleNewFailure": false
+      },
+      "sourceEvidence": [
+        "src/order/schema_processor.ts"
+      ],
+      "mechanismEvidence": [
+        "SchemaViolationError"
+      ],
+      "ownershipEvidence": [
+        "VERIFIED_BOUNDARY"
+      ],
+      "candidateSemanticKey": "BENCHMARK_SCENARIO_0068::DEPLOYMENT_ROLLBACK_SUPERIOR",
+      "baselineStatus": "FAILED",
+      "patchApplicationStatus": "FAILED",
+      "executionStatus": "FAILED",
+      "behaviorStatus": "VERIFIED",
+      "invariantStatus": "VERIFIED",
+      "regressionStatus": "VERIFIED",
+      "counterexampleStatus": "FAILED",
+      "proofStatus": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+      "rejectionReason": "Recent deployment schema regression; deployment rollback superior to code patch",
+      "failureStage": "ROLLBACK_REQUIRED",
+      "failureEvidence": "Deployment schema regression is superiorly resolved by rollback; targeted patch without deployment state is unsafe (§26, §35)."
+    }
+  ],
+  "correctRepairDiscovered": "NO",
+  "discoveryRecall": "NOT_APPLICABLE",
+  "candidateRank": 1,
+  "baselineReproduced": false,
+  "patchApplied": false,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": false,
+  "finalProofState": "NO_CODE_CHANGE_JUSTIFIED",
+  "failureStage": "ROLLBACK_REQUIRED",
+  "failureClassification": "VALID_REFUSAL",
+  "failureReason": "Recent deployment schema regression; deployment rollback superior to code patch",
+  "environmentReconstructionStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+  "blockingClassification": "BUILD_ARTIFACT_UNAVAILABLE",
+  "missingArtifactDetails": "Deployment schema regression is superiorly resolved by rollback; targeted patch without deployment state is unsafe (§26, §35).",
+  "environmentHash": "572f6b9d06440f257a1ca8c2d5343473a4676c97056c226a573626cfbc724eb2"
+}

@@ -1,0 +1,71 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0101",
+  "observedFailure": "Error: Missing required parameter 'tenantId'",
+  "confirmedMechanism": "Error",
+  "ownership": "ESTABLISHED",
+  "enumeratedBoundaries": [
+    "CALLEE"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-phase7-BENCHMARK_SCENARIO_0101",
+      "scenarioId": "BENCHMARK_SCENARIO_0101",
+      "generationReason": "AST invariant restoration candidate",
+      "repairBoundary": "MATCHED",
+      "targetFiles": [
+        "src/identity/caller_client.ts"
+      ],
+      "targetSymbols": [
+        "dispatchclient"
+      ],
+      "transformation": "Upstream caller 'dispatchclient' in 'src/identity/caller_client.ts' passed invalid/undefined argument 'context' to 'requireTenant' which requires valid input.",
+      "prediction": {
+        "mechanismAffected": true,
+        "invariantRestored": true,
+        "executionPathAffected": true,
+        "ownershipRespected": true,
+        "blastRadius": "LOCAL",
+        "expectedBehavior": "Resolve unhandled failure without regression",
+        "possibleMasking": false,
+        "possibleNewFailure": false
+      },
+      "sourceEvidence": [
+        "src/identity/callee_client.ts"
+      ],
+      "mechanismEvidence": [
+        "Error"
+      ],
+      "ownershipEvidence": [
+        "VERIFIED_BOUNDARY"
+      ],
+      "candidateSemanticKey": "BENCHMARK_SCENARIO_0101::CALLER_CONTRACT_VIOLATION",
+      "baselineStatus": "FAILED",
+      "patchApplicationStatus": "VERIFIED",
+      "executionStatus": "VERIFIED",
+      "behaviorStatus": "VERIFIED",
+      "invariantStatus": "VERIFIED",
+      "regressionStatus": "VERIFIED",
+      "counterexampleStatus": "FAILED",
+      "proofStatus": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+      "rejectionReason": "Environment reconstruction incomplete for scenario requirements",
+      "failureStage": "ENVIRONMENT_UNAVAILABLE"
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": false,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": false,
+  "finalProofState": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+  "failureStage": "ENVIRONMENT_UNAVAILABLE",
+  "failureClassification": "ENVIRONMENT_FAILURE",
+  "failureReason": "Environment reconstruction incomplete for scenario requirements",
+  "environmentReconstructionStatus": "ENVIRONMENT_RECONSTRUCTED",
+  "environmentHash": "fb05cdc51bff9dc6dc1b4af5b4cb7d11afa78c3570d9bac78a824e6e18d4a24c"
+}

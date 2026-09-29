@@ -1747,6 +1747,8 @@ export interface VerifiedRepairProofChain {
     regressionProof?: RegressionProof;
     counterexampleProof?: CounterexampleProof;
     evaluatedAt: number;
+    environmentHash?: string;
+    executionId?: string;
     cryptographicHash?: string;
 }
 
@@ -2442,5 +2444,6 @@ export interface ScenarioCandidateLedger {
 }
 
 export * from "./canonical-evidence-store";
+export * from "./execution-context";
 
 

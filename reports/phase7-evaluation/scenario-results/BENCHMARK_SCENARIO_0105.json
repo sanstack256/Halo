@@ -1,0 +1,70 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0105",
+  "observedFailure": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+  "confirmedMechanism": "ExternalServiceError",
+  "ownership": "ESTABLISHED",
+  "enumeratedBoundaries": [
+    "CALLEE"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-phase7-BENCHMARK_SCENARIO_0105",
+      "scenarioId": "BENCHMARK_SCENARIO_0105",
+      "generationReason": "AST invariant restoration candidate",
+      "repairBoundary": "MATCHED",
+      "targetFiles": [],
+      "targetSymbols": [],
+      "transformation": "",
+      "prediction": {
+        "mechanismAffected": true,
+        "invariantRestored": true,
+        "executionPathAffected": true,
+        "ownershipRespected": true,
+        "blastRadius": "LOCAL",
+        "expectedBehavior": "Resolve unhandled failure without regression",
+        "possibleMasking": false,
+        "possibleNewFailure": false
+      },
+      "sourceEvidence": [
+        "src/fulfillment/client_client.ts"
+      ],
+      "mechanismEvidence": [
+        "ExternalServiceError"
+      ],
+      "ownershipEvidence": [
+        "VERIFIED_BOUNDARY"
+      ],
+      "candidateSemanticKey": "BENCHMARK_SCENARIO_0105::EXTERNAL_OUTAGE",
+      "baselineStatus": "FAILED",
+      "patchApplicationStatus": "FAILED",
+      "executionStatus": "FAILED",
+      "behaviorStatus": "VERIFIED",
+      "invariantStatus": "VERIFIED",
+      "regressionStatus": "FAILED",
+      "counterexampleStatus": "FAILED",
+      "proofStatus": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+      "rejectionReason": "Failure originates in third-party external service; NO_CODE_CHANGE_JUSTIFIED verified",
+      "failureStage": "EXTERNAL_FAILURE",
+      "failureEvidence": "Incident originates from third-party external service outage; no local repository execution can resolve service availability (§18, §36)."
+    }
+  ],
+  "correctRepairDiscovered": "NO",
+  "discoveryRecall": "NOT_APPLICABLE",
+  "candidateRank": 1,
+  "baselineReproduced": false,
+  "patchApplied": false,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "FAIL",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": false,
+  "finalProofState": "NO_CODE_CHANGE_JUSTIFIED",
+  "failureStage": "EXTERNAL_FAILURE",
+  "failureClassification": "VALID_REFUSAL",
+  "failureReason": "Failure originates in third-party external service; NO_CODE_CHANGE_JUSTIFIED verified",
+  "environmentReconstructionStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+  "blockingClassification": "EXTERNAL_SERVICE_UNAVAILABLE",
+  "missingArtifactDetails": "Incident originates from third-party external service outage; no local repository execution can resolve service availability (§18, §36).",
+  "environmentHash": "d1d16b0ca40204d9492af140947a5332391f70df43afc6b542fd628a42cbf199"
+}

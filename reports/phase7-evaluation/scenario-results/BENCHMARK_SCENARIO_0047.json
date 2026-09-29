@@ -1,0 +1,74 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0047",
+  "observedFailure": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+  "confirmedMechanism": "ConfigError",
+  "ownership": "ESTABLISHED",
+  "enumeratedBoundaries": [
+    "CALLEE"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-phase7-BENCHMARK_SCENARIO_0047",
+      "scenarioId": "BENCHMARK_SCENARIO_0047",
+      "generationReason": "AST invariant restoration candidate",
+      "repairBoundary": "MATCHED",
+      "targetFiles": [
+        "src/identity/config_pipeline.ts"
+      ],
+      "targetSymbols": [
+        "getDbConfig"
+      ],
+      "transformation": "Add default fallback value to configuration property",
+      "prediction": {
+        "mechanismAffected": true,
+        "invariantRestored": true,
+        "executionPathAffected": true,
+        "ownershipRespected": true,
+        "blastRadius": "LOCAL",
+        "expectedBehavior": "Resolve unhandled failure without regression",
+        "possibleMasking": false,
+        "possibleNewFailure": false
+      },
+      "sourceEvidence": [
+        "src/identity/config_pipeline.ts"
+      ],
+      "mechanismEvidence": [
+        "ConfigError"
+      ],
+      "ownershipEvidence": [
+        "VERIFIED_BOUNDARY"
+      ],
+      "candidateSemanticKey": "BENCHMARK_SCENARIO_0047::CONFIGURATION_ENV_MISSING",
+      "baselineStatus": "FAILED",
+      "patchApplicationStatus": "VERIFIED",
+      "executionStatus": "FAILED",
+      "behaviorStatus": "VERIFIED",
+      "invariantStatus": "VERIFIED",
+      "regressionStatus": "VERIFIED",
+      "counterexampleStatus": "FAILED",
+      "proofStatus": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+      "rejectionReason": "Missing secret environment variable DATABASE_URL; synthesizing production database credentials violates §20, §21.",
+      "failureStage": "ENVIRONMENT_UNAVAILABLE",
+      "failureEvidence": "Missing secret environment variable DATABASE_URL; synthesizing production database credentials violates §20, §21."
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": false,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": false,
+  "finalProofState": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+  "failureStage": "ENVIRONMENT_UNAVAILABLE",
+  "failureClassification": "ENVIRONMENT_FAILURE",
+  "failureReason": "Missing secret environment variable DATABASE_URL; synthesizing production database credentials violates §20, §21.",
+  "environmentReconstructionStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+  "blockingClassification": "CONFIGURATION_UNAVAILABLE",
+  "missingArtifactDetails": "Missing secret environment variable DATABASE_URL; synthesizing production database credentials violates §20, §21.",
+  "environmentHash": "e5a51ddee3dcd9c71e08f5cc8fa235f36a2db5708fd781d74baacfb9e325c595"
+}

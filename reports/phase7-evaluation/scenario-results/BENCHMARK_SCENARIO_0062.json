@@ -1,0 +1,69 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0062",
+  "observedFailure": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+  "confirmedMechanism": "SyntaxError",
+  "ownership": "ESTABLISHED",
+  "enumeratedBoundaries": [
+    "CALLEE"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-phase7-BENCHMARK_SCENARIO_0062",
+      "scenarioId": "BENCHMARK_SCENARIO_0062",
+      "generationReason": "AST invariant restoration candidate",
+      "repairBoundary": "MATCHED",
+      "targetFiles": [
+        "src/recommendation/parser_adapter.ts"
+      ],
+      "targetSymbols": [
+        "parseIncoming"
+      ],
+      "transformation": "Defect in internal control flow or invariant inside 'parseIncoming'. Caller is not causal.",
+      "prediction": {
+        "mechanismAffected": true,
+        "invariantRestored": true,
+        "executionPathAffected": true,
+        "ownershipRespected": true,
+        "blastRadius": "LOCAL",
+        "expectedBehavior": "Resolve unhandled failure without regression",
+        "possibleMasking": false,
+        "possibleNewFailure": false
+      },
+      "sourceEvidence": [
+        "src/recommendation/parser_adapter.ts"
+      ],
+      "mechanismEvidence": [
+        "SyntaxError"
+      ],
+      "ownershipEvidence": [
+        "VERIFIED_BOUNDARY"
+      ],
+      "candidateSemanticKey": "BENCHMARK_SCENARIO_0062::SERIALIZATION_DEFECT",
+      "baselineStatus": "VERIFIED",
+      "patchApplicationStatus": "VERIFIED",
+      "executionStatus": "VERIFIED",
+      "behaviorStatus": "VERIFIED",
+      "invariantStatus": "VERIFIED",
+      "regressionStatus": "VERIFIED",
+      "counterexampleStatus": "VERIFIED",
+      "proofStatus": "VERIFIED_REPAIR"
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": true,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": true,
+  "finalProofState": "VERIFIED_REPAIR",
+  "failureStage": "OTHER",
+  "failureClassification": "NONE",
+  "failureReason": "Repair fully verified in reconstructed hermetic execution environment",
+  "environmentReconstructionStatus": "ENVIRONMENT_RECONSTRUCTED",
+  "environmentHash": "c56379166a1a1be8c37fde226914d2a63981bd0c1256e69a55575b55f7ba9b0b"
+}

@@ -1,0 +1,69 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0096",
+  "observedFailure": "TypeError: Reduce of empty array with no initial value",
+  "confirmedMechanism": "TypeError",
+  "ownership": "ESTABLISHED",
+  "enumeratedBoundaries": [
+    "CALLEE"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-phase7-BENCHMARK_SCENARIO_0096",
+      "scenarioId": "BENCHMARK_SCENARIO_0096",
+      "generationReason": "AST invariant restoration candidate",
+      "repairBoundary": "MATCHED",
+      "targetFiles": [
+        "src/notification/aggregator_processor.ts"
+      ],
+      "targetSymbols": [
+        "sumScores"
+      ],
+      "transformation": "Defect in internal control flow or invariant inside 'sumScores'. Caller is not causal.",
+      "prediction": {
+        "mechanismAffected": true,
+        "invariantRestored": true,
+        "executionPathAffected": true,
+        "ownershipRespected": true,
+        "blastRadius": "LOCAL",
+        "expectedBehavior": "Resolve unhandled failure without regression",
+        "possibleMasking": false,
+        "possibleNewFailure": false
+      },
+      "sourceEvidence": [
+        "src/notification/aggregator_processor.ts"
+      ],
+      "mechanismEvidence": [
+        "TypeError"
+      ],
+      "ownershipEvidence": [
+        "VERIFIED_BOUNDARY"
+      ],
+      "candidateSemanticKey": "BENCHMARK_SCENARIO_0096::COLLECTION_BOUNDARY",
+      "baselineStatus": "VERIFIED",
+      "patchApplicationStatus": "VERIFIED",
+      "executionStatus": "VERIFIED",
+      "behaviorStatus": "VERIFIED",
+      "invariantStatus": "VERIFIED",
+      "regressionStatus": "VERIFIED",
+      "counterexampleStatus": "VERIFIED",
+      "proofStatus": "VERIFIED_REPAIR"
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": true,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": true,
+  "finalProofState": "VERIFIED_REPAIR",
+  "failureStage": "OTHER",
+  "failureClassification": "NONE",
+  "failureReason": "Repair fully verified in reconstructed hermetic execution environment",
+  "environmentReconstructionStatus": "ENVIRONMENT_RECONSTRUCTED",
+  "environmentHash": "ec5d26f5813f797b21f43b1becd18cad090a2b9f62aeb00f12db19d34f091903"
+}

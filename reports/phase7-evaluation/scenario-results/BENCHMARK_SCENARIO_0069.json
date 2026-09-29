@@ -1,0 +1,69 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0069",
+  "observedFailure": "ConcurrentModificationError: Mutex unlocked while task was active",
+  "confirmedMechanism": "ConcurrentModificationError",
+  "ownership": "ESTABLISHED",
+  "enumeratedBoundaries": [
+    "CALLEE"
+  ],
+  "candidates": [
+    {
+      "candidateId": "cand-phase7-BENCHMARK_SCENARIO_0069",
+      "scenarioId": "BENCHMARK_SCENARIO_0069",
+      "generationReason": "AST invariant restoration candidate",
+      "repairBoundary": "MATCHED",
+      "targetFiles": [
+        "src/fulfillment/mutex_client.ts"
+      ],
+      "targetSymbols": [
+        "acquireAndRun"
+      ],
+      "transformation": "Defect in internal control flow or invariant inside 'acquireAndRun'. Caller is not causal.",
+      "prediction": {
+        "mechanismAffected": true,
+        "invariantRestored": true,
+        "executionPathAffected": true,
+        "ownershipRespected": true,
+        "blastRadius": "LOCAL",
+        "expectedBehavior": "Resolve unhandled failure without regression",
+        "possibleMasking": false,
+        "possibleNewFailure": false
+      },
+      "sourceEvidence": [
+        "src/fulfillment/mutex_client.ts"
+      ],
+      "mechanismEvidence": [
+        "ConcurrentModificationError"
+      ],
+      "ownershipEvidence": [
+        "VERIFIED_BOUNDARY"
+      ],
+      "candidateSemanticKey": "BENCHMARK_SCENARIO_0069::ASYNC_RACE",
+      "baselineStatus": "VERIFIED",
+      "patchApplicationStatus": "VERIFIED",
+      "executionStatus": "VERIFIED",
+      "behaviorStatus": "VERIFIED",
+      "invariantStatus": "VERIFIED",
+      "regressionStatus": "VERIFIED",
+      "counterexampleStatus": "VERIFIED",
+      "proofStatus": "VERIFIED_REPAIR"
+    }
+  ],
+  "correctRepairDiscovered": "YES",
+  "discoveryRecall": "DISCOVERED_EXACT",
+  "candidateRank": 1,
+  "baselineReproduced": true,
+  "patchApplied": true,
+  "behaviorChanged": true,
+  "invariantClassification": "LOCAL",
+  "invariantRestored": true,
+  "regressionResult": "PASS",
+  "counterexamplesGenerated": true,
+  "counterexamplesSurvived": true,
+  "finalProofState": "VERIFIED_REPAIR",
+  "failureStage": "OTHER",
+  "failureClassification": "NONE",
+  "failureReason": "Repair fully verified in reconstructed hermetic execution environment",
+  "environmentReconstructionStatus": "ENVIRONMENT_RECONSTRUCTED",
+  "environmentHash": "265f126c0d22bda6ec363e06da9e362005940a9c397ce9ac394a2b7ff830c03e"
+}

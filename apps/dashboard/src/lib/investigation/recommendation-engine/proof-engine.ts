@@ -41,6 +41,7 @@ import type {
     RepairProofState,
 } from "./types";
 import { computeProofPayloadHash, evaluateVerifiedRepairGate } from "./verified-repair-gate";
+import { CompositeExecutionEnvironmentProvider } from "./execution-environment-builder";
 
 // ─────────────────────────────────────────────────────────────────────────────
 // Isolated Workspace Utilities (§6, §84)
@@ -893,30 +894,34 @@ export function buildCompleteVerifiedRepairProofChain(input: CompleteProofChainI
     const revision = (snapshot.source as any)?.gitCommitSha || "HEAD";
     const issueId = snapshot.incident?.issueId || "issue-unknown";
 
-    // If no repoDir is provided, create a synthetic sandbox with snapshot source files
+    // Resolve hermetic or local execution environment (§30, §59, §60)
     let sandboxDir: string | undefined;
     let shouldCleanup = false;
+    let effectiveReproductionCmd = reproductionCommand;
+    let environmentHash: string | undefined;
+    let executionId: string | undefined;
 
-    if (repoDir && fs.existsSync(repoDir)) {
-        sandboxDir = createIsolatedSandbox(repoDir, "proof-chain");
-        shouldCleanup = true;
-    } else {
-        // Build minimal temporary sandbox from snapshot source files
-        sandboxDir = fs.mkdtempSync(path.join(os.tmpdir(), `halo-snapshot-proof-${Date.now()}-`));
-        shouldCleanup = true;
-        if ((snapshot.source as any)?.files) {
-            for (const [relPath, content] of Object.entries((snapshot.source as any).files)) {
+    try {
+        const envProvider = new CompositeExecutionEnvironmentProvider();
+        const env = envProvider.buildEnvironmentSync(snapshot, { repoDir, testCommand: reproductionCommand });
+        sandboxDir = env.workspaceDir;
+        shouldCleanup = env.isEphemeral;
+        effectiveReproductionCmd = reproductionCommand || env.context.reproductionCommand?.value || "npm test --if-present 2>&1 || true";
+        environmentHash = env.context.environmentHash;
+        executionId = env.context.executionId;
+    } catch {
+        // Fallback to minimal isolated sandbox if environment builder throws
+        if (repoDir && fs.existsSync(repoDir)) {
+            sandboxDir = createIsolatedSandbox(repoDir, "proof-chain");
+            shouldCleanup = true;
+        } else {
+            sandboxDir = fs.mkdtempSync(path.join(os.tmpdir(), `halo-snapshot-proof-${Date.now()}-`));
+            shouldCleanup = true;
+            if (snapshot.source?.filePath && snapshot.source.lines) {
+                const relPath = snapshot.source.filePath;
                 const target = path.join(sandboxDir, relPath);
                 fs.mkdirSync(path.dirname(target), { recursive: true });
-                fs.writeFileSync(target, typeof content === "string" ? content : String(content), "utf8");
-            }
-        }
-        if (snapshot.source?.filePath && (snapshot.source.lines || (snapshot.source as any).content)) {
-            const relPath = snapshot.source.filePath;
-            const target = path.join(sandboxDir, relPath);
-            if (!fs.existsSync(target)) {
-                fs.mkdirSync(path.dirname(target), { recursive: true });
-                const code = (snapshot.source as any).content || snapshot.source.lines?.map((l: any) => typeof l === "string" ? l : l.content).join("\n") || "";
+                const code = snapshot.source.lines.map((l: any) => typeof l === "string" ? l : l.content).join("\n");
                 fs.writeFileSync(target, code, "utf8");
             }
         }
@@ -962,7 +967,7 @@ export function buildCompleteVerifiedRepairProofChain(input: CompleteProofChainI
         const baselineProof = generateBaselineProof({
             sandboxDir,
             snapshot,
-            reproductionCommand,
+            reproductionCommand: effectiveReproductionCmd,
             timeoutMs,
             trials,
         });
@@ -992,7 +997,7 @@ export function buildCompleteVerifiedRepairProofChain(input: CompleteProofChainI
             baselineProof,
             changes,
             candidateId,
-            reproductionCommand,
+            reproductionCommand: effectiveReproductionCmd,
             timeoutMs,
             repositoryRevision: revision,
         });
@@ -1038,6 +1043,8 @@ export function buildCompleteVerifiedRepairProofChain(input: CompleteProofChainI
             invariantProof,
             regressionProof,
             counterexampleProof,
+            environmentHash,
+            executionId,
             evaluatedAt: Date.now(),
         };
 
