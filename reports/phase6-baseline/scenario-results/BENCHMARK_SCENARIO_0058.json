@@ -1,0 +1,30 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0058",
+  "index": 58,
+  "title": "SchemaViolationError: Incompatible column format after release",
+  "durationMs": 1,
+  "boundaryMatched": true,
+  "mechanismMatched": true,
+  "ownershipEstablished": true,
+  "patchGenerated": false,
+  "patchApplied": true,
+  "baselineReproduced": false,
+  "behaviorValidated": true,
+  "invariantRestored": true,
+  "regressionSafe": true,
+  "counterexampleSurvived": false,
+  "finalDecision": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+  "confidence": "LOW",
+  "isVerifiedRepair": false,
+  "proofsSummary": {
+    "sourceProof": "UNTESTED",
+    "mechanismProof": "UNTESTED",
+    "ownershipProof": "UNTESTED",
+    "baselineProof": "UNTESTED",
+    "patchProof": "UNTESTED",
+    "behaviorProof": "UNTESTED",
+    "invariantProof": "UNTESTED",
+    "regressionProof": "UNTESTED",
+    "counterexampleProof": "UNTESTED"
+  }
+}

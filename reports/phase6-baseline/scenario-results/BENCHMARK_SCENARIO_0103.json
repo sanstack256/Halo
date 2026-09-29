@@ -1,0 +1,30 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0103",
+  "index": 103,
+  "title": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+  "durationMs": 152,
+  "boundaryMatched": true,
+  "mechanismMatched": true,
+  "ownershipEstablished": true,
+  "patchGenerated": true,
+  "patchApplied": true,
+  "baselineReproduced": true,
+  "behaviorValidated": true,
+  "invariantRestored": true,
+  "regressionSafe": true,
+  "counterexampleSurvived": true,
+  "finalDecision": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+  "confidence": "HIGH",
+  "isVerifiedRepair": false,
+  "proofsSummary": {
+    "sourceProof": "VERIFIED",
+    "mechanismProof": "VERIFIED",
+    "ownershipProof": "VERIFIED",
+    "baselineProof": "VERIFIED",
+    "patchProof": "VERIFIED",
+    "behaviorProof": "FAILED",
+    "invariantProof": "FAILED",
+    "regressionProof": "FAILED",
+    "counterexampleProof": "VERIFIED"
+  }
+}

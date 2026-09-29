@@ -1,0 +1,30 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0081",
+  "index": 81,
+  "title": "Error: Missing required parameter 'tenantId'",
+  "durationMs": 153,
+  "boundaryMatched": true,
+  "mechanismMatched": true,
+  "ownershipEstablished": true,
+  "patchGenerated": true,
+  "patchApplied": true,
+  "baselineReproduced": true,
+  "behaviorValidated": true,
+  "invariantRestored": true,
+  "regressionSafe": true,
+  "counterexampleSurvived": true,
+  "finalDecision": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+  "confidence": "HIGH",
+  "isVerifiedRepair": false,
+  "proofsSummary": {
+    "sourceProof": "VERIFIED",
+    "mechanismProof": "VERIFIED",
+    "ownershipProof": "VERIFIED",
+    "baselineProof": "VERIFIED",
+    "patchProof": "VERIFIED",
+    "behaviorProof": "FAILED",
+    "invariantProof": "FAILED",
+    "regressionProof": "FAILED",
+    "counterexampleProof": "VERIFIED"
+  }
+}

@@ -1,0 +1,11 @@
+{
+  "framework": "vitest",
+  "totalFiles": 53,
+  "passedFiles": 53,
+  "failedFiles": 0,
+  "totalTests": 469,
+  "passedTests": 469,
+  "failedTests": 0,
+  "durationMs": 46980,
+  "evaluatedAt": "2026-09-29T17:24:57.604Z"
+}

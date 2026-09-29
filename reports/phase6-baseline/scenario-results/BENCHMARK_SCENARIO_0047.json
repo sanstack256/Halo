@@ -1,0 +1,30 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0047",
+  "index": 47,
+  "title": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+  "durationMs": 153,
+  "boundaryMatched": true,
+  "mechanismMatched": true,
+  "ownershipEstablished": true,
+  "patchGenerated": true,
+  "patchApplied": true,
+  "baselineReproduced": true,
+  "behaviorValidated": true,
+  "invariantRestored": true,
+  "regressionSafe": true,
+  "counterexampleSurvived": true,
+  "finalDecision": "SUPPORTED_REPAIR_REQUIRES_VALIDATION",
+  "confidence": "HIGH",
+  "isVerifiedRepair": false,
+  "proofsSummary": {
+    "sourceProof": "VERIFIED",
+    "mechanismProof": "VERIFIED",
+    "ownershipProof": "VERIFIED",
+    "baselineProof": "VERIFIED",
+    "patchProof": "FAILED",
+    "behaviorProof": "FAILED",
+    "invariantProof": "FAILED",
+    "regressionProof": "FAILED",
+    "counterexampleProof": "VERIFIED"
+  }
+}

@@ -1,0 +1,37 @@
+{
+  "summaryScorecard": {
+    "totalScenarios": 105,
+    "executionDurationMs": 11217,
+    "averageLatencyMs": 107,
+    "metrics": {
+      "repairBoundaryCorrect": 105,
+      "repairBoundaryRate": 100,
+      "failureMechanismCorrect": 105,
+      "failureMechanismRate": 100,
+      "ownershipEstablished": 105,
+      "ownershipRate": 100,
+      "patchGenerated": 84,
+      "patchGeneratedRate": 80,
+      "patchApplied": 105,
+      "patchAppliedRate": 100,
+      "baselineReproduced": 73,
+      "baselineReproducedRate": 69.5,
+      "behaviorValidated": 105,
+      "behaviorValidatedRate": 100,
+      "invariantRestored": 105,
+      "invariantRestoredRate": 100,
+      "regressionSafe": 94,
+      "regressionSafeRate": 89.5,
+      "counterexampleSurvived": 73,
+      "counterexampleSurvivedRate": 69.5,
+      "verifiedRepairs": 11,
+      "supportedRepairsRequiringValidation": 52,
+      "diagnosisCompleteRepairUnresolved": 0,
+      "blockedOrAcquisitionRequired": 42,
+      "falsePositives": 0,
+      "falseNegatives": 0
+    }
+  },
+  "totalScenarios": 105,
+  "timestamp": "2026-09-29T17:24:50.652Z"
+}

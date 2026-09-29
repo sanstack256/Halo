@@ -1,0 +1,10 @@
+{
+  "framework": "next.js",
+  "version": "16.2.11",
+  "durationMs": 6100,
+  "typecheckDurationMs": 7800,
+  "exitCode": 0,
+  "status": "SUCCESS",
+  "staticPages": 16,
+  "evaluatedAt": "2026-09-29T17:24:57.605Z"
+}

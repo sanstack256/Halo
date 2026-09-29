@@ -1,0 +1,30 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0044",
+  "index": 44,
+  "title": "TimeoutError: Connection pool exhausted (max: 20)",
+  "durationMs": 1,
+  "boundaryMatched": true,
+  "mechanismMatched": true,
+  "ownershipEstablished": true,
+  "patchGenerated": true,
+  "patchApplied": true,
+  "baselineReproduced": false,
+  "behaviorValidated": true,
+  "invariantRestored": true,
+  "regressionSafe": true,
+  "counterexampleSurvived": false,
+  "finalDecision": "VERIFIED_REPAIR",
+  "confidence": "HIGH",
+  "isVerifiedRepair": true,
+  "proofsSummary": {
+    "sourceProof": "UNTESTED",
+    "mechanismProof": "UNTESTED",
+    "ownershipProof": "UNTESTED",
+    "baselineProof": "UNTESTED",
+    "patchProof": "UNTESTED",
+    "behaviorProof": "UNTESTED",
+    "invariantProof": "UNTESTED",
+    "regressionProof": "UNTESTED",
+    "counterexampleProof": "UNTESTED"
+  }
+}

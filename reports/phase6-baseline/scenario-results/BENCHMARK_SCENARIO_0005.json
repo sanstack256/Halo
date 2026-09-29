@@ -1,0 +1,30 @@
+{
+  "scenarioId": "BENCHMARK_SCENARIO_0005",
+  "index": 5,
+  "title": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+  "durationMs": 1,
+  "boundaryMatched": true,
+  "mechanismMatched": true,
+  "ownershipEstablished": true,
+  "patchGenerated": false,
+  "patchApplied": true,
+  "baselineReproduced": false,
+  "behaviorValidated": true,
+  "invariantRestored": true,
+  "regressionSafe": false,
+  "counterexampleSurvived": false,
+  "finalDecision": "NO_CODE_CHANGE_JUSTIFIED",
+  "confidence": "MEDIUM",
+  "isVerifiedRepair": false,
+  "proofsSummary": {
+    "sourceProof": "UNTESTED",
+    "mechanismProof": "UNTESTED",
+    "ownershipProof": "UNTESTED",
+    "baselineProof": "UNTESTED",
+    "patchProof": "UNTESTED",
+    "behaviorProof": "UNTESTED",
+    "invariantProof": "UNTESTED",
+    "regressionProof": "UNTESTED",
+    "counterexampleProof": "UNTESTED"
+  }
+}
