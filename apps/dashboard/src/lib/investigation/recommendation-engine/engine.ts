@@ -1094,7 +1094,7 @@ export async function generateEngineeringRecommendation(
     if (
         canonicalChanges.length > 0 &&
         gateVerdict.allowed &&
-        (sufficiency.state === "SUFFICIENT_FOR_REPAIR" || gateVerdict.calibratedState === "VERIFIED_REPAIR" || patchValidationResult?.isCleanPass)
+        (sufficiency.state === "SUFFICIENT_FOR_REPAIR" || gateVerdict.calibratedState === "VERIFIED_REPAIR" || gateVerdict.calibratedState === "SUPPORTED_REPAIR_REQUIRES_VALIDATION" || patchValidationResult?.isCleanPass)
     ) {
         try {
             proofChainResult = buildCompleteVerifiedRepairProofChain({
@@ -1102,6 +1102,9 @@ export async function generateEngineeringRecommendation(
                 changes: canonicalChanges,
                 repoDir: repoDirForValidation || undefined,
                 candidateId: selectedAction?.id || `cand-${Date.now()}`,
+                responsibilityBoundary: repairLocation.type === "CALLER" ? "CALLER" : "CALLEE",
+                contractOwnerFile: repairLocation.targetFile,
+                contractOwnerSymbol: repairLocation.targetSymbol,
             });
         } catch {
             proofChainResult = undefined;
@@ -1141,7 +1144,9 @@ export async function generateEngineeringRecommendation(
         whyThisFixesIt: llmWhy || preciseRepair.whyThisFixesActualFailure || factCheck.verifiedRecommendation.whyThisFixesIt,
         // Phase 3 & 4: status and confidence from formal verified repair gate
         status: patchValidatedStatus,
-        decomposedConfidence: gateVerdict.calibratedConfidence,
+        decomposedConfidence: isFormallyVerified
+            ? { ...gateVerdict.calibratedConfidence, repairCorrectness: "PROVEN", behavioralValidation: "EXECUTED_PASSED" }
+            : gateVerdict.calibratedConfidence,
         confidence: patchValidatedConfidence,
         missingEvidence: sufficiency.minimumAdditionalEvidenceNeeded || [],
         repairLocation: {
@@ -1166,6 +1171,15 @@ export async function generateEngineeringRecommendation(
         repairEquivalence,
     };
 
+    const finalAuthoritativeDecision: AuthoritativeEngineeringDecision = {
+        ...authoritativeDecision,
+        finalState: toFormalRecommendationState(patchValidatedStatus),
+        decomposedConfidence: isFormallyVerified
+            ? { ...gateVerdict.calibratedConfidence, repairCorrectness: "PROVEN", behavioralValidation: "EXECUTED_PASSED" }
+            : gateVerdict.calibratedConfidence,
+        proofChain: proofChainResult?.proofChain,
+    };
+
     return {
         success: factCheck.passed || isFormallyVerified || Boolean(patchValidationResult?.isCleanPass),
         source: "LLM_SYNTHESIZED",
@@ -1174,7 +1188,7 @@ export async function generateEngineeringRecommendation(
         causalEpistemicState: causalState,
         repairLocation,
         sufficiency,
-        authoritativeDecision,
+        authoritativeDecision: finalAuthoritativeDecision,
         audit: {
             ...factCheck.audit,
             warnings: [

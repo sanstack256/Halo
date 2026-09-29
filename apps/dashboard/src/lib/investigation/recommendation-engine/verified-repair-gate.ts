@@ -160,7 +160,12 @@ export function evaluateVerifiedRepairGate(
             return false;
         }
         if (proof.status !== "VERIFIED") {
-            const detail = proof.failureDetails?.message
+            const customErr = customCheck ? customCheck() : null;
+            const detail = customErr
+                ? ` (${customErr})`
+                : (proof as any).regressionAttribution
+                ? ` (${(proof as any).regressionAttribution})`
+                : proof.failureDetails?.message
                 ? `: ${proof.failureDetails.message}`
                 : ` (status: ${proof.status})`;
             failedProofs.push(`${name}${detail}`);

@@ -221,6 +221,54 @@ export function buildEngineeringWorldModel(
         }
     }
 
+    // 5. Index Infrastructure, Database, Queue & External Integrations
+    const excMessage = (snapshot.failure?.exceptionMessage || snapshot.incident?.title || "").toLowerCase();
+    const excType = (snapshot.failure?.exceptionType || "").toLowerCase();
+
+    if (excMessage.includes("pool") || excMessage.includes("connection") || excMessage.includes("database") || excType.includes("database")) {
+        const dbNodeId = "resource:database:primary_pool";
+        builder.addNode({
+            id: dbNodeId,
+            type: "DATABASE",
+            name: "PrimaryConnectionPool",
+            metadata: { category: "DATABASE_CONNECTION_POOL" },
+        });
+
+        // Link primary failing frame to resource acquisition
+        if (frames.length > 0) {
+            const frame = frames[0];
+            const symbolNodeId = `symbol:${frame.file}:${frame.method || `line_${frame.line}`}`;
+            builder.addEdge({
+                sourceId: symbolNodeId,
+                targetId: dbNodeId,
+                relation: "ACQUIRES",
+                metadata: { resourceRole: "CONNECTION" },
+            });
+        }
+    }
+
+    if (excMessage.includes("stripe") || excMessage.includes("http") || excMessage.includes("503") || excMessage.includes("504") || excMessage.includes("service unavailable")) {
+        const extApiNodeId = "external:api:service_endpoint";
+        builder.addNode({
+            id: extApiNodeId,
+            type: "EXTERNAL_API",
+            name: "ExternalServiceEndpoint",
+            metadata: { isExternal: true },
+        });
+    }
+
+    // 6. Index Configuration & Environment
+    const env = snapshot.incident?.environment || (snapshot as any).environment;
+    if (env) {
+        const envNodeId = `env:${env}`;
+        builder.addNode({
+            id: envNodeId,
+            type: "ENVIRONMENT",
+            name: env,
+            metadata: { tier: env },
+        });
+    }
+
     return builder.build();
 }
 

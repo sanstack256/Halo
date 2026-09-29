@@ -1915,6 +1915,9 @@ export interface AuthoritativeEngineeringDecision {
     adversarialChallenge?: AdversarialChallengeRecord;
     preventionRecommendation?: PreventionRecommendation;
     systemicDefects?: SystemicDefectRecord[];
+    proofChain?: VerifiedRepairProofChain;
+    repairProblem?: RepairProblem;
+    repairSearchGraph?: RepairSearchGraph;
 }
 
 // ============================================================================
@@ -1923,7 +1926,31 @@ export interface AuthoritativeEngineeringDecision {
 
 export interface EngineeringWorldNode {
     id: string; // Canonical evidence ID or stable entity key
-    type: "SERVICE" | "MODULE" | "FILE" | "FUNCTION" | "CLASS" | "VARIABLE" | "RESOURCE" | "TEST" | "COMMIT" | "DEPLOYMENT" | "CONFIGURATION";
+    type:
+        | "SERVICE"
+        | "MODULE"
+        | "FILE"
+        | "FUNCTION"
+        | "METHOD"
+        | "CLASS"
+        | "INTERFACE"
+        | "TYPE"
+        | "VARIABLE"
+        | "RESOURCE"
+        | "TRANSACTION"
+        | "STATE_MACHINE"
+        | "QUEUE"
+        | "DATABASE"
+        | "EXTERNAL_API"
+        | "CONFIGURATION"
+        | "ENVIRONMENT"
+        | "DEPENDENCY"
+        | "TEST"
+        | "FIXTURE"
+        | "MOCK"
+        | "COMMIT"
+        | "DEPLOYMENT"
+        | "RUNTIME_ENTRYPOINT";
     name: string;
     filePath?: string;
     lineNumber?: number;
@@ -1933,7 +1960,29 @@ export interface EngineeringWorldNode {
 export interface EngineeringWorldEdge {
     sourceId: string;
     targetId: string;
-    relation: "CALLS" | "PRODUCES" | "TRANSFORMS" | "CONSUMES" | "ACQUIRES" | "RELEASES" | "MODIFIES" | "VERIFIES" | "ENFORCES" | "DEPENDS_ON";
+    relation:
+        | "CALLS"
+        | "RETURNS"
+        | "PRODUCES"
+        | "TRANSFORMS"
+        | "CONSUMES"
+        | "ACQUIRES"
+        | "RELEASES"
+        | "MODIFIES"
+        | "MUTATES"
+        | "BRANCHES_ON"
+        | "THROWS"
+        | "CATCHES"
+        | "AWAITS"
+        | "BEGINS_TRANSACTION"
+        | "COMMITS_TRANSACTION"
+        | "ROLLS_BACK_TRANSACTION"
+        | "TRANSITIONS_STATE"
+        | "READS_CONFIG"
+        | "VERIFIES"
+        | "MOCKS"
+        | "ENFORCES"
+        | "DEPENDS_ON";
     evidenceId?: string;
     metadata?: Record<string, unknown>;
 }
@@ -2138,5 +2187,148 @@ export interface PreventionRecommendation {
     preventionMechanism: "SCHEMA_VALIDATION" | "TYPE_BOUND" | "GATEWAY_FILTER" | "RESOURCE_RAII" | "INVARIANT_ASSERTION";
 }
 
+// ─────────────────────────────────────────────────────────────────────────────
+// PHASE 5 — AUTONOMOUS REPAIR DISCOVERY, SEARCH & CANDIDATE EVALUATION (§3, §4)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type RepairBoundaryKind =
+    | "CALLER"
+    | "PRODUCER"
+    | "ADAPTER"
+    | "CONSUMER"
+    | "CONFIGURATION"
+    | "DEPENDENCY"
+    | "DEPLOYMENT"
+    | "DATABASE_SCHEMA"
+    | "TRANSACTION_BOUNDARY"
+    | "RESOURCE_OWNER"
+    | "STATE_TRANSITION"
+    | "QUEUE_PRODUCER"
+    | "QUEUE_CONSUMER"
+    | "EXTERNAL_INTEGRATION"
+    | "TEST_CONTRACT"
+    | "MULTI_FILE"
+    | "OTHER";
+
+export interface RepairBoundaryDescriptor {
+    id: string;
+    kind: RepairBoundaryKind;
+    customKindDescription?: string;
+    confidence: "CONFIRMED" | "SUPPORTED" | "PLAUSIBLE" | "LOW";
+    evidence: string[];
+    targetSymbols: string[];
+    targetFiles: string[];
+    ownershipEvidence: string[];
+    relationshipEvidence: string[];
+    rationale: string;
+}
+
+export interface RepairProblem {
+    problemId: string;
+    mechanism: string;
+    invariant: BrokenInvariant | ExplicitInvariant | string;
+    ownership: {
+        ownerSymbol?: string;
+        ownerFile?: string;
+        isConfirmed: boolean;
+        evidence: string[];
+    };
+    affectedExecutionPath: {
+        callChain: string[];
+        frames: string[];
+        entrypoint?: string;
+    };
+    affectedValuesResourcesState: {
+        targetValues: string[];
+        resources: string[];
+        states: string[];
+    };
+    candidateBoundaries: RepairBoundaryDescriptor[];
+    repositoryConstraints: string[];
+    observedEvidence: string[];
+    unresolvedQuestions: string[];
+}
+
+export interface RepairTransformation {
+    filePath: string;
+    startLine: number;
+    endLine: number;
+    originalCode: string;
+    proposedCode: string;
+    symbol?: string;
+    astAnchor?: string;
+    originalContentHash?: string;
+    replacementContentHash?: string;
+    explanation: string;
+}
+
+export interface CandidatePrediction {
+    mechanismAffected: boolean;
+    invariantRestored: boolean;
+    executionPathAffected: boolean;
+    ownershipRespected: boolean;
+    blastRadius: "MINIMAL" | "LOCAL" | "CROSS_MODULE" | "SYSTEMIC";
+    expectedBehavior: string;
+    possibleMasking: boolean;
+    possibleNewFailure: boolean;
+    maskingReason?: string;
+}
+
+export interface RepairCandidate {
+    candidateId: string;
+    boundary: RepairBoundaryDescriptor;
+    targetFiles: string[];
+    targetSymbols: string[];
+    transformations: RepairTransformation[];
+    expectedMechanismEffect: string;
+    expectedInvariantEffect: string;
+    expectedBehavioralEffect: string;
+    expectedRegressionSurface: string[];
+    provenance:
+        | "STATIC_AST"
+        | "DETERMINISTIC_ANALYSIS"
+        | "LLM_SYNTHESIZED"
+        | "HISTORICAL_PATTERN"
+        | "COUNTEREXAMPLE_FEEDBACK";
+    predictedEffect?: CandidatePrediction;
+}
+
+export interface CandidateEvaluation {
+    candidateId: string;
+    sourceValidity: boolean;
+    mechanismCoverage: boolean;
+    ownershipValidity: boolean;
+    patchApplicability: boolean;
+    baselineReproduction: boolean;
+    behaviorChange: boolean;
+    invariantRestoration: boolean;
+    regressionResult: boolean;
+    counterexampleResult: boolean;
+    proofState: RepairProofState;
+    evaluatedProofChain?: VerifiedRepairProofChain;
+    observedVsPredictedDelta?: string;
+    rejectionReason?: string;
+}
+
+export interface RepairSearchGraphNode {
+    id: string;
+    candidate: RepairCandidate;
+    evaluation?: CandidateEvaluation;
+    status: "PROPOSED" | "EVALUATING" | "FAILED" | "PARTIALLY_REPAIRED" | "REGRESSION" | "VERIFIED";
+    transitionRationale?: string;
+    childrenNodeIds: string[];
+    parentNodeId?: string;
+}
+
+export interface RepairSearchGraph {
+    problemId: string;
+    rootNodeIds: string[];
+    nodes: Map<string, RepairSearchGraphNode>;
+    selectedVerifiedNodeId?: string;
+    searchBudgetExhausted: boolean;
+    stoppingReason?: string;
+}
+
 export * from "./canonical-evidence-store";
+
 

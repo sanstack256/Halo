@@ -362,6 +362,7 @@ export function generateOwnershipProof(options: {
     const { contractOwnerFile, contractOwnerSymbol, responsibilityBoundary, rationale, boundaryEvidenceIds = [], repositoryRevision = "HEAD", expectedFailureFile } = options;
     const isFileMismatched = Boolean(
         expectedFailureFile &&
+        (responsibilityBoundary === "CALLEE" || !responsibilityBoundary) &&
         path.basename(contractOwnerFile).toLowerCase() !== path.basename(expectedFailureFile).toLowerCase() &&
         !contractOwnerFile.toLowerCase().includes(path.basename(expectedFailureFile, path.extname(expectedFailureFile)).toLowerCase())
     );
@@ -879,6 +880,9 @@ export interface CompleteProofChainInput {
     reproductionCommand?: string;
     trials?: number;
     timeoutMs?: number;
+    responsibilityBoundary?: "CALLER" | "CALLEE" | "SHARED_CONTRACT" | "FRAMEWORK";
+    contractOwnerFile?: string;
+    contractOwnerSymbol?: string;
 }
 
 export function buildCompleteVerifiedRepairProofChain(input: CompleteProofChainInput): {
@@ -907,6 +911,15 @@ export function buildCompleteVerifiedRepairProofChain(input: CompleteProofChainI
                 fs.writeFileSync(target, typeof content === "string" ? content : String(content), "utf8");
             }
         }
+        if (snapshot.source?.filePath && (snapshot.source.lines || (snapshot.source as any).content)) {
+            const relPath = snapshot.source.filePath;
+            const target = path.join(sandboxDir, relPath);
+            if (!fs.existsSync(target)) {
+                fs.mkdirSync(path.dirname(target), { recursive: true });
+                const code = (snapshot.source as any).content || snapshot.source.lines?.map((l: any) => typeof l === "string" ? l : l.content).join("\n") || "";
+                fs.writeFileSync(target, code, "utf8");
+            }
+        }
     }
 
     try {
@@ -929,11 +942,18 @@ export function buildCompleteVerifiedRepairProofChain(input: CompleteProofChainI
 
         // 3. Ownership Proof
         const expectedFile = snapshot.failure?.sourceLocation?.file || snapshot.failure?.primaryFrame?.filePath;
+        const callerFrame = snapshot.failure?.frames?.find(f => f.isApplication && f.filePath && f.filePath !== expectedFile);
+        const isCallerBoundary = input.responsibilityBoundary === "CALLER" ||
+            (primaryFile && callerFrame && primaryFile === callerFrame.filePath);
+        const respBoundary: "CALLER" | "CALLEE" | "SHARED_CONTRACT" | "FRAMEWORK" =
+            input.responsibilityBoundary || (isCallerBoundary ? "CALLER" : "CALLEE");
         const ownershipProof = generateOwnershipProof({
-            contractOwnerFile: primaryFile,
-            contractOwnerSymbol: primarySymbol,
-            responsibilityBoundary: "CALLEE",
-            rationale: "Contract owner is the executing module failing invariant assertion",
+            contractOwnerFile: input.contractOwnerFile || primaryFile,
+            contractOwnerSymbol: input.contractOwnerSymbol || primarySymbol,
+            responsibilityBoundary: respBoundary,
+            rationale: isCallerBoundary
+                ? `Contract owner is the caller module '${primaryFile}' responsible for callee pre-conditions`
+                : "Contract owner is the executing module failing invariant assertion",
             repositoryRevision: revision,
             expectedFailureFile: expectedFile,
         });

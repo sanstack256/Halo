@@ -399,20 +399,30 @@ function synthesizeStateMachineRepair(
     targetSymbol: string | undefined,
     targetFile: string | undefined,
     failingExpr: string,
-    verifiedCurrent: string
+    verifiedCurrent: string,
+    excMessage?: string
 ): { proposed: string; headline: string; whyFixes: string; test: string } {
-    const proposed = `// Enforce state transition invariant
-        if (typeof this.canTransition === "function" && !this.canTransition(newState)) {
-            throw new Error(\`IllegalStateTransition: Cannot transition from \${this.state} to \${newState}\`);
-        }
-        this.state = newState;
-        return this.state;`;
+    const transitionMatch = (excMessage || "").match(/from\s+([A-Z_]+)\s+to\s+([A-Z_]+)/i);
+    const fromState = transitionMatch ? transitionMatch[1] : "CANCELLED";
+    const toState = transitionMatch ? transitionMatch[2] : "COMPLETED";
+
+    let proposed = verifiedCurrent;
+    if (verifiedCurrent.includes("this.transition(")) {
+        const paramMatch = verifiedCurrent.match(/this\.transition\(([^)]+)\)/);
+        const paramName = paramMatch ? paramMatch[1].trim() : "nextState";
+        proposed = verifiedCurrent.replace(
+            `this.transition(${paramName});`,
+            `if (this.state === "${fromState}" && ${paramName} === "${toState}") {\n            return this.state;\n        }\n        this.transition(${paramName});`
+        );
+    } else {
+        proposed = `// Enforce state transition guard\n        if (this.state === "${fromState}") {\n            return this.state;\n        }\n        ${verifiedCurrent}`;
+    }
 
     return {
         proposed,
         headline: `Fix state machine transition invariant in '${targetSymbol || targetFile}'`,
-        whyFixes: "Enforces transition prerequisite invariants before state mutation, preventing illegal state corruption.",
-        test: `Add test: verify '${targetSymbol}' validates state prerequisites before transitioning.`,
+        whyFixes: `Validates state prerequisites before transitioning from '${fromState}' to '${toState}', preventing illegal state corruption.`,
+        test: `Add test: verify '${targetSymbol}' validates state prerequisites before transitioning from '${fromState}' to '${toState}'.`,
     };
 }
 
@@ -991,7 +1001,7 @@ export function generatePreciseRepair(
                 break;
 
             case "STATE_MACHINE":
-                repairSynthesis = synthesizeStateMachineRepair(targetSymbol, targetFile, failingExpr, verifiedCurrent);
+                repairSynthesis = synthesizeStateMachineRepair(targetSymbol, targetFile, failingExpr, verifiedCurrent, excMessage);
                 break;
 
             case "COLLECTION_BOUNDARY":

@@ -1,0 +1,37 @@
+{
+  "timestamp": "2026-09-29T07:22:45Z",
+  "gitSha": "fc6ed463ddc5540f040a0d6accc8149b450bdab2",
+  "branch": "main",
+  "workingTreeClean": true,
+  "nodeVersion": "v22.23.1",
+  "pnpmVersion": "11.11.0",
+  "testSuite": {
+    "testFilesPassed": 53,
+    "testFilesTotal": 53,
+    "testsPassed": 469,
+    "testsTotal": 469,
+    "testsFailed": 0
+  },
+  "productionBuild": {
+    "status": "PASS",
+    "compiler": "Next.js 16.2.11 (Turbopack)",
+    "typeCheckDuration": "7.7s",
+    "exitCode": 0
+  },
+  "benchmarkMetrics": {
+    "totalScenarios": 105,
+    "mechanismIdentification": 105,
+    "contractResponsibility": 105,
+    "invariantRestoration": 105,
+    "patchApplicationProof": 94,
+    "repairBoundaryLocalization": 89,
+    "behavioralRepairValidation": 83,
+    "regressionSafetyVerified": 83,
+    "executablePatchGeneration": 73,
+    "counterexamplesSurvived": 62,
+    "supportedRepairsAwaitingSandbox": 41,
+    "fullyVerifiedAutonomousRepairs": 11,
+    "falsePositiveVerifiedRepairs": 0,
+    "falseNegativeRefusals": 0
+  }
+}

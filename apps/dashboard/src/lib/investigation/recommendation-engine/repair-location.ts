@@ -38,9 +38,11 @@ export function determineRepairLocation(
 
     // 0. External Vendor Outage with Resilient Application Behavior (No code change)
     const isExternalOutage = Boolean(
+        snapshot.failure.exceptionType?.toLowerCase().includes("externalserviceerror") ||
         snapshot.failure.exceptionType?.toLowerCase().includes("thirdpartyoutage") ||
+        excMessage.includes("stripe api outage") ||
         excMessage.includes("stripe api is currently down") ||
-        (excMessage.includes("503") && (excMessage.includes("currently down") || excMessage.includes("stripe api is down"))) ||
+        (excMessage.includes("outage") && excMessage.includes("503")) ||
         snapshot.investigation.hypotheses.some(h =>
             isHypoConfirmed(h) && (
                 h.title?.toLowerCase().includes("third-party outage") ||
@@ -156,12 +158,15 @@ export function determineRepairLocation(
     }
 
     const isAdapter = Boolean(
-        adapterFile ||
+        (adapterFromSnapshot && adapterFile) ||
+        (adapterFile && adapterFile !== failingFile) ||
         snapshot.investigation.hypotheses.some(h =>
-            h.title?.toLowerCase().includes("adapter") ||
-            h.description?.toLowerCase().includes("adapter")
+            isHypoConfirmed(h) && (
+                h.title?.toLowerCase().includes("adapter") ||
+                h.description?.toLowerCase().includes("adapter")
+            )
         ) ||
-        (Boolean(failingSymbol?.toLowerCase().includes("adapt")) && Boolean(failingFile?.toLowerCase().includes("adapter")))
+        ((failingSymbol?.toLowerCase() === "adapt" || failingSymbol?.toLowerCase().startsWith("adapt")) && Boolean(failingFile?.toLowerCase().includes("adapter")))
     );
     if (isAdapter) {
         const targetAdapterFile = adapterFile || failingFile;

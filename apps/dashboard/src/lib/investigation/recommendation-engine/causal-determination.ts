@@ -77,6 +77,14 @@ export function determineCausalEpistemicState(
             mechanismRuntimeConfirmed = true;
             mechanismDesc = `Runtime invocation or property evaluation of '${failingExpr}' threw: ${excMessage}.`;
         } else if (
+            excType === "IllegalStateError" ||
+            excMessage.toLowerCase().includes("cannot transition from") ||
+            excMessage.toLowerCase().includes("invalid state transition")
+        ) {
+            mechanismStatus = "CONFIRMED";
+            mechanismRuntimeConfirmed = true;
+            mechanismDesc = `Illegal state machine transition: ${excMessage}.`;
+        } else if (
             excMessage.toLowerCase().includes("504") ||
             excMessage.toLowerCase().includes("502") ||
             excMessage.toLowerCase().includes("econnrefused") ||
