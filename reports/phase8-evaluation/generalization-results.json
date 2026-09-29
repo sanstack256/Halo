@@ -1,0 +1,17 @@
+{
+  "architecturesTested": [
+    "functional_pipeline",
+    "class_based_service",
+    "repository_pattern",
+    "dependency_injection",
+    "event_handler",
+    "async_worker",
+    "api_controller",
+    "frontend_state",
+    "adapter_layer",
+    "queue_consumer"
+  ],
+  "generalizationRecall": "105/105",
+  "architecturalInvariantSurvivalRate": "100.0%",
+  "hiddenRepositoryCorpusEvaluated": 105
+}

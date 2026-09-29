@@ -1,0 +1,737 @@
+[
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0001",
+    "baselineReproduced": true,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0002",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0003",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0004",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0005",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0006",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0007",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0008",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0009",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0010",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0011",
+    "baselineReproduced": true,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0012",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0013",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0014",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0015",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0016",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0017",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0018",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0019",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0020",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0021",
+    "baselineReproduced": true,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0022",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0023",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0024",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0025",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0026",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0027",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0028",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0029",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0030",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0031",
+    "baselineReproduced": true,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0032",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0033",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0034",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0035",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0036",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0037",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0038",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0039",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0040",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0041",
+    "baselineReproduced": true,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0042",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0043",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0044",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0045",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0046",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0047",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0048",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0049",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0050",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0051",
+    "baselineReproduced": true,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0052",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0053",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0054",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0055",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0056",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0057",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0058",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0059",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0060",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0061",
+    "baselineReproduced": true,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0062",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0063",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0064",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0065",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0066",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0067",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0068",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0069",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0070",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0071",
+    "baselineReproduced": true,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0072",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0073",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0074",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0075",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0076",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0077",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0078",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0079",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0080",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0081",
+    "baselineReproduced": true,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0082",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0083",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0084",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0085",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0086",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0087",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0088",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0089",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0090",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0091",
+    "baselineReproduced": true,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0092",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0093",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0094",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0095",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0096",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0097",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0098",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0099",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0100",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0101",
+    "baselineReproduced": true,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0102",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0103",
+    "baselineReproduced": true,
+    "failureRemoved": true,
+    "behaviorValidated": true,
+    "invariantValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0104",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0105",
+    "baselineReproduced": false,
+    "failureRemoved": false,
+    "behaviorValidated": false,
+    "invariantValidated": false
+  }
+]

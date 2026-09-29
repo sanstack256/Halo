@@ -2443,7 +2443,99 @@ export interface ScenarioCandidateLedger {
     nextSearchAction?: string;
 }
 
+/* ─────────────────────────────────────────────────────────────────────────────
+ * Phase 8 Formal Epistemic Models: Candidate Accounting & Repair Equivalence
+ * ───────────────────────────────────────────────────────────────────────────── */
+
+export type CandidatePrecisionStatus =
+    | "GENERATED"
+    | "STRUCTURALLY_INVALID"
+    | "EVIDENCE_UNSUPPORTED"
+    | "WRONG_BOUNDARY"
+    | "WRONG_OWNER"
+    | "SYMPTOM_MASKING"
+    | "MECHANISM_MISMATCH"
+    | "PATCH_FAILED"
+    | "BEHAVIOR_FAILED"
+    | "INVARIANT_FAILED"
+    | "REGRESSION_FAILED"
+    | "COUNTEREXAMPLE_FAILED"
+    | "VERIFIED"
+    | "VALID_EQUIVALENT";
+
+export interface CandidateLedgerEntry {
+    candidateId: string;
+    scenarioId: string;
+    repairBoundary: string;
+    targetFiles: string[];
+    targetSymbols: string[];
+    mechanismAddressed: string;
+    ownershipClaim: string;
+    candidateSource: string;
+    generationMethod: string;
+    status: CandidatePrecisionStatus;
+    rejectionReason?: string;
+    proofState: RepairProofState;
+
+    whyCandidateExists: string;
+    evidenceSupporting: string[];
+    evidenceAgainst: string[];
+    claimedMechanism: string;
+    claimedOwnership: string;
+    claimedRepairBoundary: string;
+    filesChanged: string[];
+    symbolsChanged: string[];
+    invariantRestored: boolean;
+    expectedBehavior: string;
+    semanticKey?: string;
+}
+
+export interface ProofFunnelRecord {
+    candidateGenerated: boolean;
+    candidateAcceptedForExecution: boolean;
+    patchGenerated: boolean;
+    patchApplied: boolean;
+    patchCompiles: boolean;
+    baselineReproduced: boolean;
+    failureRemoved: boolean;
+    behaviorValidated: boolean;
+    invariantValidated: boolean;
+    regressionValidated: boolean;
+    counterexamplesValidated: boolean;
+    fullyVerified: boolean;
+}
+
+export type DefectEpistemicRole =
+    | "DEFECT_EXISTS"
+    | "DEFECT_PARTICIPATED"
+    | "DEFECT_REQUIRED_FOR_FAILURE"
+    | "DEFECT_CAUSED_FAILURE";
+
+export type RepairEquivalenceClassification =
+    | "EXACT_REFERENCE_REPAIR"
+    | "VALID_EQUIVALENT_REPAIR"
+    | "VALID_ALTERNATIVE_REPAIR"
+    | "INCORRECT_REPAIR"
+    | "SYMPTOM_MASK";
+
+export type Phase8NonVerificationReason =
+    | "NO_CODE_CHANGE_JUSTIFIED"
+    | "EVIDENCE_REQUIRED"
+    | "ENVIRONMENT_UNAVAILABLE"
+    | "UNSUPPORTED_LANGUAGE"
+    | "NON_DETERMINISTIC_PROOF_REQUIRED"
+    | "PATCH_INVALID"
+    | "BASELINE_NOT_REPRODUCED"
+    | "BEHAVIORAL_PROOF_FAILED"
+    | "INVARIANT_PROOF_FAILED"
+    | "REGRESSION_PROOF_FAILED"
+    | "COUNTEREXAMPLE_PROOF_FAILED"
+    | "CAUSALITY_UNRESOLVED"
+    | "OWNERSHIP_UNRESOLVED"
+    | "REPAIR_BOUNDARY_UNRESOLVED";
+
 export * from "./canonical-evidence-store";
 export * from "./execution-context";
+
 
 

@@ -1,0 +1,15 @@
+{
+  "totalGenerated": 378,
+  "statuses": {
+    "VERIFIED": 52,
+    "VALID_EQUIVALENT": 84,
+    "SYMPTOM_MASKING": 105,
+    "WRONG_BOUNDARY": 105,
+    "WRONG_OWNER": 0,
+    "STRUCTURALLY_INVALID": 0,
+    "EVIDENCE_UNSUPPORTED": 0,
+    "GENERATED": 32
+  },
+  "candidatePrecision": "136 / 378 (36.0%)",
+  "candidateRecall": "84 / 84 (100.0%)"
+}

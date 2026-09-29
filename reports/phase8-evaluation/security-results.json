@@ -1,0 +1,7 @@
+{
+  "promptInjectionResistance": "100.0% neutralized",
+  "secretsInLogsDetected": 0,
+  "arbitraryShellExecutionBlocked": true,
+  "destructiveDatabaseOperationsBlocked": true,
+  "probesEvaluated": 6
+}

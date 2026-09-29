@@ -1,0 +1,8 @@
+{
+  "totalProbes": 6,
+  "deterministicFallbackMatchesLLM": true,
+  "hallucinatedFilesRejected": 2,
+  "promptInjectionsNeutralized": 3,
+  "parityPassCount": 6,
+  "parityTotalCount": 6
+}

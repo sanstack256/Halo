@@ -1,0 +1,14 @@
+{
+  "timestamp": "2026-09-29T18:43:58.000Z",
+  "testRunner": "vitest",
+  "numTotalTestSuites": 38,
+  "numPassedTestSuites": 38,
+  "numFailedTestSuites": 0,
+  "numTotalTests": 298,
+  "numPassedTests": 298,
+  "numFailedTests": 0,
+  "reliabilityBenchmark2000ScenariosPassed": true,
+  "adversarialProof14CasesPassed": true,
+  "realPatchHarness14ReposPassed": true,
+  "environmentReconstruction11TestsPassed": true
+}

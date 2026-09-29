@@ -163,18 +163,63 @@ export function isWhitespaceOnlyTransformation(original: string, patched: string
     return origNoWs === patchNoWs && original !== patched;
 }
 
-export function detectErrorSuppressionMasking(proposedCode: string): { isMasked: boolean; reason?: string } {
+export function detectErrorSuppressionMasking(
+    proposedCode: string,
+    context?: {
+        mechanism?: string;
+        invariantType?: string;
+        isIdempotent?: boolean;
+    }
+): { isMasked: boolean; reason?: string } {
     const clean = stripComments(proposedCode);
+
     // 1. Empty catch block: catch (...) {} or catch {}
     if (/catch\s*(\([^)]*\))?\s*\{\s*\}/.test(clean)) {
-        return { isMasked: true, reason: "Empty catch block silently swallows exceptions (§17, §47)" };
+        return { isMasked: true, reason: "Empty catch block silently swallows exceptions (§18, §47)" };
     }
+
     // 2. Catch block that returns default or null without handling
     if (/catch\s*(\([^)]*\))?\s*\{\s*return\s*(null|undefined|false|0|""|\[\]|\{\})?\s*;?\s*\}/.test(clean)) {
-        return { isMasked: true, reason: "Catch block returns default value suppressing failure without contract recovery (§17, §47)" };
+        return { isMasked: true, reason: "Catch block returns default value suppressing failure without contract recovery (§18, §47)" };
     }
+
+    // 3. Silent return or error swallow comment (§18)
+    if (
+        (/if\s*\(\s*!?[a-zA-Z0-9_.]+\s*\)\s*return\s*(null|undefined|false|0|""|\[\]|\{\})?\s*;/.test(clean) ||
+         /catch\s*(\([^)]*\))?\s*\{\s*\/\*\s*(ignore|silent|swallow)/i.test(clean)) &&
+        !clean.includes("throw") && !clean.includes("assert") && !clean.includes("validate") &&
+        (clean.includes("/* ignore */") || clean.includes("/* silent */") || clean.includes("/* swallow */") || clean.includes("silent return"))
+    ) {
+        return { isMasked: true, reason: "Silent return or catch-and-ignore without contract guard masks broken invariant (§18)" };
+    }
+
+    // 4. Naked optional chaining on required invariants (§18)
+    if (context?.invariantType === "NON_NULL_FIELD" || context?.invariantType === "REQUIRED_CONTRACT") {
+        if (clean.includes("?.") && !clean.includes("throw") && !clean.includes("validate") && !clean.includes("assert")) {
+            return { isMasked: true, reason: "Optional chaining on required contract field suppresses null dereference without repairing invariant (§18)" };
+        }
+    }
+
+    // 5. Merely increasing capacity / timeout without resource release (§18, §49)
+    const isExhaustionMechanism = context?.mechanism
+        ? /exhaust|pool|leak|held/i.test(context.mechanism)
+        : false;
+    if (isExhaustionMechanism || /poolSize\s*:\s*\d+/i.test(clean)) {
+        const increasesCapacity = /(poolSize|connectionLimit|max|timeout)\s*:\s*\d+/i.test(clean);
+        const hasRelease = clean.includes(".release(") || clean.includes("finally") || clean.includes("returnLease") || clean.includes("dispose");
+        if (increasesCapacity && !hasRelease) {
+            return { isMasked: true, reason: "Increasing pool/timeout capacity without releasing resource merely raises failure threshold (§18, §49)" };
+        }
+    }
+
+    // 6. Unbounded retries on non-idempotent operations (§18)
+    if (context?.isIdempotent === false && /(for\s*\(\s*let\s+attempt|while\s*\(\s*attempt|retry\s*\()/i.test(clean)) {
+        return { isMasked: true, reason: "Unbounded retries on non-idempotent operation creates duplicate execution failure mode (§18)" };
+    }
+
     return { isMasked: false };
 }
+
 
 // ─────────────────────────────────────────────────────────────────────────────
 // 1. Baseline Proof & Failure Identity (§6, §7, §8, §9)

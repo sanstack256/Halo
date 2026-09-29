@@ -1,0 +1,527 @@
+[
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0001",
+    "counterexamplesValidated": true,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0002",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0003",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0004",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0005",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0006",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0007",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0008",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0009",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0010",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0011",
+    "counterexamplesValidated": true,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0012",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0013",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0014",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0015",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0016",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0017",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0018",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0019",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0020",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0021",
+    "counterexamplesValidated": true,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0022",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0023",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0024",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0025",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0026",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0027",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0028",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0029",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0030",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0031",
+    "counterexamplesValidated": true,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0032",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0033",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0034",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0035",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0036",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0037",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0038",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0039",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0040",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0041",
+    "counterexamplesValidated": true,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0042",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0043",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0044",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0045",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0046",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0047",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0048",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0049",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0050",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0051",
+    "counterexamplesValidated": true,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0052",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0053",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0054",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0055",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0056",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0057",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0058",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0059",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0060",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0061",
+    "counterexamplesValidated": true,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0062",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0063",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0064",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0065",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0066",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0067",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0068",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0069",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0070",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0071",
+    "counterexamplesValidated": true,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0072",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0073",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0074",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0075",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0076",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0077",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0078",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0079",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0080",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0081",
+    "counterexamplesValidated": true,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0082",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0083",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0084",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0085",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0086",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0087",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0088",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0089",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0090",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0091",
+    "counterexamplesValidated": true,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0092",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0093",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0094",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0095",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0096",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0097",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0098",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0099",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0100",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0101",
+    "counterexamplesValidated": true,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0102",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0103",
+    "counterexamplesValidated": true,
+    "regressionValidated": true
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0104",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0105",
+    "counterexamplesValidated": false,
+    "regressionValidated": false
+  }
+]

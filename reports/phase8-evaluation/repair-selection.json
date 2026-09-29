@@ -1,0 +1,611 @@
+[
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0001",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0001"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0002",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0002"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0003",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0003"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0004",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0004"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0005",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0006",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0006"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0007",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0007"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0008",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0009",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0009"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0010",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0010"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0011",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0011"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0012",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0012"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0013",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0013"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0014",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0014"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0015",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0016",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0016"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0017",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0017"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0018",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0019",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0019"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0020",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0020"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0021",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0021"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0022",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0022"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0023",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0023"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0024",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0024"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0025",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0026",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0026"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0027",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0027"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0028",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0029",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0029"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0030",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0030"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0031",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0031"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0032",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0032"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0033",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0033"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0034",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0034"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0035",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0036",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0036"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0037",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0037"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0038",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0039",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0039"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0040",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0040"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0041",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0041"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0042",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0042"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0043",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0043"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0044",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0044"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0045",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0046",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0046"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0047",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0047"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0048",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0049",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0049"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0050",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0050"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0051",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0051"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0052",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0052"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0053",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0053"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0054",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0054"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0055",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0056",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0056"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0057",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0057"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0058",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0059",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0059"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0060",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0060"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0061",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0061"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0062",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0062"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0063",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0063"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0064",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0064"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0065",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0066",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0066"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0067",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0067"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0068",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0069",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0069"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0070",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0070"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0071",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0071"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0072",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0072"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0073",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0073"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0074",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0074"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0075",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0076",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0076"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0077",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0077"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0078",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0079",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0079"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0080",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0080"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0081",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0081"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0082",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0082"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0083",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0083"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0084",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0084"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0085",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0086",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0086"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0087",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0087"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0088",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0089",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0089"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0090",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0090"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0091",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0091"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0092",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0092"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0093",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0093"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0094",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0094"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0095",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0096",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0096"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0097",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0097"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0098",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0099",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0099"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0100",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0100"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0101",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0101"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0102",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0102"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0103",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0103"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0104",
+    "candidatesGenerated": 4,
+    "candidatesEliminated": 2,
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0104"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0105",
+    "candidatesGenerated": 2,
+    "candidatesEliminated": 2
+  }
+]

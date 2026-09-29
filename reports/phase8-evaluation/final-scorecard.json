@@ -1,0 +1,49 @@
+{
+  "timestamp": "2026-09-29T18:59:00.323Z",
+  "totalScenarios": 105,
+  "evaluatorMetrics": {
+    "knownRepairEffectiveness": "105 / 105 (100.0%)",
+    "codeIncidents": "84 / 105 (80.0%)",
+    "nonCodeIncidents": "21 / 105 (20.0%)"
+  },
+  "haloProofFunnel": {
+    "candidateGenerated": "378 / 378 (100.0%)",
+    "candidateAcceptedForExecution": "84 / 84 (100.0%)",
+    "patchGenerated": "84 / 84 (100.0%)",
+    "patchApplied": "63 / 63 (100.0%)",
+    "patchCompiles": "63 / 63 (100.0%)",
+    "baselineReproduced": "63 / 63 (100.0%)",
+    "failureRemoved": "52 / 63 (82.5%)",
+    "behaviorValidated": "52 / 63 (82.5%)",
+    "invariantValidated": "52 / 63 (82.5%)",
+    "regressionValidated": "52 / 63 (82.5%)",
+    "counterexamplesValidated": "63 / 63 (100.0%)",
+    "fullyVerified": "52 / 105 (49.5%)"
+  },
+  "table": {
+    "Scenario discovery recall": "84 / 84",
+    "Candidate precision": "136 / 378",
+    "Candidate recall": "84 / 84",
+    "Causal mechanism accuracy": "105 / 105",
+    "Ownership accuracy": "105 / 105",
+    "Repair-boundary accuracy": "105 / 105",
+    "Repair-selection accuracy": "84 / 84",
+    "Baseline reproduction": "63 / 63",
+    "Patch application": "63 / 63",
+    "Behavioral validation": "52 / 63",
+    "Invariant validation": "52 / 63",
+    "Regression validation": "52 / 63",
+    "Counterexample survival": "63 / 63",
+    "Equivalent repairs accepted": "84 / 84",
+    "Symptom masks rejected": "105 / 105",
+    "Fully verified repairs": "52 / 105",
+    "Unjustified refusals": "0 / 105",
+    "Fabricated evidence": "0 / 105",
+    "Unsupported certainty": "0 / 105",
+    "Environment reconstruction": "63 / 105",
+    "Proof conversion": "52 / 63",
+    "Provider parity": "6 / 6",
+    "Proof replay consistency": "52 / 52",
+    "Cross-issue contamination": "0 / 105"
+  }
+}

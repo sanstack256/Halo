@@ -1,0 +1,9 @@
+{
+  "timestamp": "2026-09-29T18:43:58.979Z",
+  "files": {
+    "execution-environment-builder.ts": "cb0b0350b0e3aaf96f9c0a8cf5d2e8923da2d73c487a55b7268db67adf549af0",
+    "execution-context.ts": "9b868d37c221ce120326b696f2f6a472237a1c47edc35f4d1f420eea80c86f90"
+  },
+  "phase7Coverage": "63 / 73 (86.3%)",
+  "phase7Verified": "52 / 105 (49.5%)"
+}

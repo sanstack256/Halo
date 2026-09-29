@@ -1,0 +1,527 @@
+[
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0001",
+    "observedFailure": "Error",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0002",
+    "observedFailure": "SyntaxError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0003",
+    "observedFailure": "IllegalStateError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0004",
+    "observedFailure": "TimeoutError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0005",
+    "observedFailure": "ExternalServiceError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0006",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0007",
+    "observedFailure": "ConfigError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0008",
+    "observedFailure": "SchemaViolationError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0009",
+    "observedFailure": "ConcurrentModificationError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0010",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0011",
+    "observedFailure": "Error",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0012",
+    "observedFailure": "SyntaxError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0013",
+    "observedFailure": "IllegalStateError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0014",
+    "observedFailure": "TimeoutError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0015",
+    "observedFailure": "ExternalServiceError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0016",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0017",
+    "observedFailure": "ConfigError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0018",
+    "observedFailure": "SchemaViolationError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0019",
+    "observedFailure": "ConcurrentModificationError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0020",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0021",
+    "observedFailure": "Error",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0022",
+    "observedFailure": "SyntaxError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0023",
+    "observedFailure": "IllegalStateError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0024",
+    "observedFailure": "TimeoutError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0025",
+    "observedFailure": "ExternalServiceError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0026",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0027",
+    "observedFailure": "ConfigError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0028",
+    "observedFailure": "SchemaViolationError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0029",
+    "observedFailure": "ConcurrentModificationError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0030",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0031",
+    "observedFailure": "Error",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0032",
+    "observedFailure": "SyntaxError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0033",
+    "observedFailure": "IllegalStateError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0034",
+    "observedFailure": "TimeoutError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0035",
+    "observedFailure": "ExternalServiceError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0036",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0037",
+    "observedFailure": "ConfigError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0038",
+    "observedFailure": "SchemaViolationError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0039",
+    "observedFailure": "ConcurrentModificationError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0040",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0041",
+    "observedFailure": "Error",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0042",
+    "observedFailure": "SyntaxError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0043",
+    "observedFailure": "IllegalStateError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0044",
+    "observedFailure": "TimeoutError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0045",
+    "observedFailure": "ExternalServiceError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0046",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0047",
+    "observedFailure": "ConfigError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0048",
+    "observedFailure": "SchemaViolationError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0049",
+    "observedFailure": "ConcurrentModificationError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0050",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0051",
+    "observedFailure": "Error",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0052",
+    "observedFailure": "SyntaxError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0053",
+    "observedFailure": "IllegalStateError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0054",
+    "observedFailure": "TimeoutError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0055",
+    "observedFailure": "ExternalServiceError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0056",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0057",
+    "observedFailure": "ConfigError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0058",
+    "observedFailure": "SchemaViolationError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0059",
+    "observedFailure": "ConcurrentModificationError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0060",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0061",
+    "observedFailure": "Error",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0062",
+    "observedFailure": "SyntaxError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0063",
+    "observedFailure": "IllegalStateError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0064",
+    "observedFailure": "TimeoutError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0065",
+    "observedFailure": "ExternalServiceError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0066",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0067",
+    "observedFailure": "ConfigError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0068",
+    "observedFailure": "SchemaViolationError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0069",
+    "observedFailure": "ConcurrentModificationError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0070",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0071",
+    "observedFailure": "Error",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0072",
+    "observedFailure": "SyntaxError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0073",
+    "observedFailure": "IllegalStateError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0074",
+    "observedFailure": "TimeoutError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0075",
+    "observedFailure": "ExternalServiceError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0076",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0077",
+    "observedFailure": "ConfigError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0078",
+    "observedFailure": "SchemaViolationError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0079",
+    "observedFailure": "ConcurrentModificationError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0080",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0081",
+    "observedFailure": "Error",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0082",
+    "observedFailure": "SyntaxError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0083",
+    "observedFailure": "IllegalStateError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0084",
+    "observedFailure": "TimeoutError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0085",
+    "observedFailure": "ExternalServiceError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0086",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0087",
+    "observedFailure": "ConfigError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0088",
+    "observedFailure": "SchemaViolationError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0089",
+    "observedFailure": "ConcurrentModificationError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0090",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0091",
+    "observedFailure": "Error",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0092",
+    "observedFailure": "SyntaxError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0093",
+    "observedFailure": "IllegalStateError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0094",
+    "observedFailure": "TimeoutError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0095",
+    "observedFailure": "ExternalServiceError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0096",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0097",
+    "observedFailure": "ConfigError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0098",
+    "observedFailure": "SchemaViolationError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0099",
+    "observedFailure": "ConcurrentModificationError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0100",
+    "observedFailure": "TypeError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0101",
+    "observedFailure": "Error",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0102",
+    "observedFailure": "SyntaxError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0103",
+    "observedFailure": "IllegalStateError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0104",
+    "observedFailure": "TimeoutError",
+    "defectEpistemicRole": "DEFECT_CAUSED_FAILURE"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0105",
+    "observedFailure": "ExternalServiceError",
+    "defectEpistemicRole": "DEFECT_EXISTS"
+  }
+]

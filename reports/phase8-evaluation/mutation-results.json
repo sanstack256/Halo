@@ -1,0 +1,631 @@
+{
+  "totalMutationsTested": 104,
+  "mutationsRejected": 104,
+  "mutationResistanceRate": 100,
+  "mutations": [
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0002",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0002",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0003",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0003",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0006",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0006",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0009",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0009",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0010",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0010",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0012",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0012",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0013",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0013",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0016",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0016",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0019",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0019",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0020",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0020",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0022",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0022",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0023",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0023",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0026",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0026",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0029",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0029",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0030",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0030",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0032",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0032",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0033",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0033",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0036",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0036",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0039",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0039",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0040",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0040",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0042",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0042",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0043",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0043",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0046",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0046",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0049",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0049",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0050",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0050",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0052",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0052",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0053",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0053",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0056",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0056",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0059",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0059",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0060",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0060",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0062",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0062",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0063",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0063",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0066",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0066",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0069",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0069",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0070",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0070",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0072",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0072",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0073",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0073",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0076",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0076",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0079",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0079",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0080",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0080",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0082",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0082",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0083",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0083",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0086",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0086",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0089",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0089",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0090",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0090",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0092",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0092",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0093",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0093",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0096",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0096",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0099",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0099",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0100",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0100",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0102",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0102",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-invert-BENCHMARK_SCENARIO_0103",
+      "mutationType": "INVERT_CONDITION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    },
+    {
+      "candidateId": "mut-strip-BENCHMARK_SCENARIO_0103",
+      "mutationType": "REMOVE_VALIDATION",
+      "rejected": true,
+      "gateOutcome": "Failed at SOURCE_VERIFIED stage: sourceProof."
+    }
+  ]
+}

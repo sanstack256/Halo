@@ -1,0 +1,7 @@
+{
+  "totalReplayed": 52,
+  "consistentReplays": 52,
+  "replayConsistencyRate": 100,
+  "crossIssueContaminationDetected": 0,
+  "isolationTestedCount": 105
+}
