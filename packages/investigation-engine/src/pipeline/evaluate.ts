@@ -61,7 +61,7 @@ function evaluateHypothesis(
     const relevantFindings =
         findings.filter(
             finding =>
-                hypothesis.findingIds.includes(
+                (hypothesis.findingIds || []).includes(
                     finding.id,
                 ),
         );
@@ -89,13 +89,13 @@ function evaluateHypothesis(
      */
     const supportingReasons =
         deduplicateReasons([
-            ...hypothesis.supportingReasons,
+            ...(hypothesis.supportingReasons || []),
             ...findingSupportingReasons,
         ]);
 
     const contradictingReasons =
         deduplicateReasons([
-            ...hypothesis.contradictingReasons,
+            ...(hypothesis.contradictingReasons || []),
             ...findingContradictingReasons,
             ...collectContextContradictions(
                 hypothesis,
@@ -105,7 +105,7 @@ function evaluateHypothesis(
 
     const missingReasons =
         deduplicateReasons([
-            ...hypothesis.missingReasons,
+            ...(hypothesis.missingReasons || []),
             ...findMissingEvidence(
                 hypothesis,
                 context,
@@ -161,7 +161,7 @@ function evaluateHypothesis(
 
         evidenceIds: Array.from(
             new Set([
-                ...hypothesis.evidenceIds,
+                ...(hypothesis.evidenceIds || []),
                 ...supportingReasons.flatMap((r) => r.evidenceIds),
             ])
         ),
@@ -863,7 +863,7 @@ function hasRelatedRecoveryEvidence(
 ): boolean {
     const hypothesisEvidence =
         new Set(
-            hypothesis.evidenceIds,
+            hypothesis.evidenceIds || [],
         );
 
     const deploymentTime =
@@ -978,7 +978,7 @@ function findDependencyMissingEvidence(
     const hypothesisEvidence =
         context.evidence.filter(
             evidence =>
-                hypothesis.evidenceIds.includes(
+                (hypothesis.evidenceIds || []).includes(
                     evidence.id,
                 ),
         );
@@ -1132,7 +1132,7 @@ function findInfrastructureMissingEvidence(
     const relatedInfrastructure =
         context.infrastructure.filter(
             infrastructure =>
-                hypothesis.evidenceIds.includes(
+                (hypothesis.evidenceIds || []).includes(
                     infrastructure.id,
                 ),
         );
@@ -1154,7 +1154,7 @@ function findInfrastructureMissingEvidence(
     const relatedErrors =
         context.errors.filter(
             error =>
-                hypothesis.evidenceIds.includes(
+                (hypothesis.evidenceIds || []).includes(
                     error.id,
                 ),
         );

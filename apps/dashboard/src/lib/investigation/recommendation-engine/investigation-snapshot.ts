@@ -32,7 +32,7 @@ export interface BuildInvestigationSnapshotOptions {
     rawEvidence: Array<
         Omit<Partial<Evidence>, "timestamp" | "type"> & {
             id: string;
-            type?: EvidenceType | string;
+            type?: string;
             timestamp?: Date | string;
             [key: string]: any;
         }
@@ -80,12 +80,13 @@ export interface BuildInvestigationSnapshotOptions {
 export function buildInvestigationSnapshot(
     opts: BuildInvestigationSnapshotOptions
 ): InvestigationSnapshot {
-    const rawEvidenceList = (opts.rawEvidence || []).map((e) => ({
+    const rawEvidence: readonly Evidence[] = (opts.rawEvidence || []).map((e) => ({
         ...e,
+        type: (e.type || "UNKNOWN") as any,
         timestamp: typeof e.timestamp === "string" ? new Date(e.timestamp) : (e.timestamp || new Date()),
     })) as Evidence[];
 
-    const { incident = { issueId: "issue-unknown", title: "Incident", firstSeen: new Date(), lastSeen: new Date() }, rawEvidence = rawEvidenceList, investigation, stackFrames = [], source, release, replay } = opts;
+    const { incident = { issueId: "issue-unknown", title: "Incident", firstSeen: new Date(), lastSeen: new Date() }, investigation, stackFrames = [], source, release, replay } = opts;
 
     // Identify primary anchor error
     const anchorError =
@@ -205,7 +206,7 @@ export function buildInvestigationSnapshot(
     // Fast indexed evidence map
     const evidenceMap: Record<string, Evidence> = {};
     for (const ev of rawEvidence) {
-        evidenceMap[ev.id] = ev;
+        evidenceMap[ev.id] = ev as any;
     }
 
     // Deterministic snapshot ID
@@ -389,8 +390,24 @@ export function buildInvestigationSnapshot(
             exceptionType,
             exceptionMessage,
             stack,
-            frames: Object.freeze([...stackFrames]),
-            primaryFrame,
+            frames: Object.freeze(
+                stackFrames.map((f, idx) => ({
+                    ...f,
+                    raw: f.raw || `${f.filePath}:${f.lineNumber || 1}`,
+                    order: typeof f.order === "number" ? f.order : idx,
+                    isAppCode: f.isAppCode ?? true,
+                    isBoundary: f.isBoundary ?? false,
+                }))
+            ) as readonly StackFrame[],
+            primaryFrame: primaryFrame
+                ? ({
+                      ...primaryFrame,
+                      raw: primaryFrame.raw || `${primaryFrame.filePath}:${primaryFrame.lineNumber || 1}`,
+                      order: typeof primaryFrame.order === "number" ? primaryFrame.order : 0,
+                      isAppCode: primaryFrame.isAppCode ?? true,
+                      isBoundary: primaryFrame.isBoundary ?? false,
+                  } as StackFrame)
+                : undefined,
             sourceLocation: primaryFrame?.filePath
                 ? { file: primaryFrame.filePath, line: primaryFrame.lineNumber }
                 : source?.filePath
@@ -411,7 +428,13 @@ export function buildInvestigationSnapshot(
             precedingEvents: rawEvidence.filter((e) => e.id !== anchorError?.id),
             runtimeOrigin: (anchorError?.source as any) || "node",
         }),
-        replay: replay ? Object.freeze(replay) : undefined,
+        replay: replay
+            ? Object.freeze({
+                  isAvailable: Boolean(replay.isAvailable),
+                  sessionId: replay.sessionId,
+                  eventsSummary: Object.freeze(replay.eventsSummary || []),
+              })
+            : undefined,
         investigation: Object.freeze({
             hypotheses: Object.freeze([...(investigation?.hypotheses || [])]),
             findings: Object.freeze([...(investigation?.findings || [])]),
@@ -421,13 +444,22 @@ export function buildInvestigationSnapshot(
             evidenceMap: Object.freeze(evidenceMap),
         }),
         source: source
-            ? Object.freeze({
+            ? (Object.freeze({
+                  filePath: source.filePath || "",
+                  failingLineNumber: source.failingLineNumber || 1,
+                  lines: source.lines || [],
                   ...source,
                   resolutionStatus: source.resolutionStatus || (source.lines && source.lines.length > 0 ? "exact_file" : "missing"),
-              })
+              }) as unknown as SourceContext)
             : undefined,
         release: Object.freeze(releaseContext),
-        tests: opts.tests ? Object.freeze(opts.tests) : undefined,
+        tests: opts.tests
+            ? {
+                  hasRelevantTests: Boolean(opts.tests.hasRelevantTests),
+                  testFiles: Array.from(opts.tests.testFiles || []),
+                  reproductionPossibleInDev: Boolean(opts.tests.reproductionPossibleInDev),
+              }
+            : undefined,
         sourceDistMapping: opts.sourceDistMapping ? Object.freeze(opts.sourceDistMapping) : undefined,
         evidenceStore,
     });

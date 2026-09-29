@@ -945,20 +945,20 @@ function mergeHypotheses(
 ): Hypothesis {
     const supportingReasons =
         deduplicateReasons([
-            ...left.supportingReasons,
-            ...right.supportingReasons,
+            ...(left.supportingReasons || []),
+            ...(right.supportingReasons || []),
         ]);
 
     const contradictingReasons =
         deduplicateReasons([
-            ...left.contradictingReasons,
-            ...right.contradictingReasons,
+            ...(left.contradictingReasons || []),
+            ...(right.contradictingReasons || []),
         ]);
 
     const missingReasons =
         deduplicateReasons([
-            ...left.missingReasons,
-            ...right.missingReasons,
+            ...(left.missingReasons || []),
+            ...(right.missingReasons || []),
         ]);
 
     return {
@@ -983,8 +983,8 @@ function mergeHypotheses(
 
             unknown:
                 Math.max(
-                    left.score.unknown,
-                    right.score.unknown,
+                    left.score?.unknown || 0,
+                    right.score?.unknown || 0,
                 ),
         },
 
@@ -1000,14 +1000,14 @@ function mergeHypotheses(
 
         findingIds:
             uniqueStrings([
-                ...left.findingIds,
-                ...right.findingIds,
+                ...(left.findingIds || []),
+                ...(right.findingIds || []),
             ]),
 
         evidenceIds:
             uniqueStrings([
-                ...left.evidenceIds,
-                ...right.evidenceIds,
+                ...(left.evidenceIds || []),
+                ...(right.evidenceIds || []),
             ]),
 
         alternativeIds: [],

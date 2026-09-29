@@ -339,7 +339,7 @@ export function buildRecommendationContext(snapshot: EvidenceSnapshot): Recommen
             filePath: source?.filePath,
             failingLine: source?.failingLineNumber,
             startLine: source?.startLineNumber,
-            lines: source?.lines,
+            lines: source?.lines?.map(l => ({ ...l, isFailingLine: Boolean(l.isFailingLine) })),
             resolutionStatus: source?.resolutionStatus || "source_unavailable",
             isExactSourceVerified,
             isHistorical: Boolean(snapshot.scope.release && snapshot.scope.release !== "latest"),

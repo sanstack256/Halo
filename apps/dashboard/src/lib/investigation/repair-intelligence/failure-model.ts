@@ -187,7 +187,7 @@ export function buildFailureModel(snapshot: EvidenceSnapshot): FailureModel {
     }
 
     snapshot.investigation.hypotheses.forEach(h => {
-        if (h.id !== rootCause?.id && h.confidence >= 0.7 && h.evidenceIds.length > 0) {
+        if (h.id !== rootCause?.id && h.confidence >= 0.7 && h.evidenceIds && h.evidenceIds.length > 0) {
             supportedFacts.push({
                 id: `fact-supported-hypothesis-${h.id}`,
                 category: "SUPPORTED",

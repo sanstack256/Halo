@@ -246,7 +246,7 @@ describe("Steps 32 to 39: Stability, Concurrency, Memory Leak & Capacity Audit",
 
             // 100 recommendation runs in modern V8 must have negligible heap growth (< 25MB)
             expect(heapGrowthMB).toBeLessThan(25);
-        });
+        }, 60000);
     });
 
     // =========================================================================

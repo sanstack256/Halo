@@ -126,7 +126,7 @@ export class EngineeringReasoningLoop {
             statement: `Failure observed at ${failingFile}:${failingLine} in '${failingSymbol}' (${excType}: ${excMessage})`,
             type: "FACT",
             status: "SUPPORTED",
-            evidenceRefs: snapshot.rawEvidence?.slice(0, 3).map((e) => e.id) || [],
+            evidenceRefs: (snapshot as any).rawEvidence?.slice(0, 3).map((e: any) => e.id) || [],
             reasoningRefs: [],
         });
 
@@ -232,7 +232,7 @@ export class EngineeringReasoningLoop {
             // Repair belongs in caller (if delegating) or callee (if direct pool manager)
             const leakLifecycle = resourceLifecycles.find((l) => l.hasResourceLeakRisk);
             const targetLine = leakLifecycle?.unreleasedExitPaths[0]?.exitLine || failingLine;
-            const appFrames = (snapshot.failure.frames || snapshot.stackFrames || []).filter((f) => f.isApplication);
+            const appFrames = (snapshot.failure.frames || (snapshot as any).stackFrames || []).filter((f: any) => f.isApplication);
             const isDirectCallee = failingFile.includes("pool") || failingFile.includes("db-") || appFrames.length <= 1;
             repairLocation = {
                 type: isDirectCallee ? "CALLEE" : "CALLER",
@@ -411,7 +411,7 @@ export class EngineeringReasoningLoop {
             : "EVIDENCE_ACQUISITION_REQUIRED";
 
         if (isDynamicDispatch && !regressionContext.causallyProvenCandidate && !isResourceIncident) {
-            finalState = "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE";
+            finalState = "BLOCKED_BY_UNAVAILABLE_EVIDENCE";
         }
 
         const decomposedConfidence: DecomposedConfidence = {
@@ -600,6 +600,9 @@ export class EngineeringReasoningLoop {
                       rationale: primaryCandidate.justification,
                       explanation: primaryCandidate.description || primaryCandidate.justification || "Wrap resource acquisition in try/finally block to guarantee disposal",
                       whyHere: repairLocation.rationale || "Location where resource is acquired without guaranteed release",
+                      codeType: "PROPOSED_ONLY" as const,
+                      isExactSourceVerified: true,
+                      evidenceIds: [snapshot.incident?.issueId || "incident"],
                   }]
                 : [],
             alternatives: candidates.slice(1).map((c) => ({
@@ -615,12 +618,13 @@ export class EngineeringReasoningLoop {
             ],
             validationSteps: primaryCandidate?.validationPlan || [],
             missingEvidence: [],
+            completedSteps: [],
             nextActionBeforeRepair: isRepairProven
                 ? "Review diff and merge candidate repair"
                 : "Validate repair behavior against production load replica",
             uncertainty: primaryCandidate?.uncertainty || [],
             confidence: isRepairProven ? "HIGH" : "MEDIUM",
-            evidenceReferences: snapshot.rawEvidence?.slice(0, 3).map((e) => e.id) || [],
+            evidenceReferences: (snapshot as any).rawEvidence?.slice(0, 3).map((e: any) => e.id) || [],
             hasInsufficientEvidence: false,
             isStale: false,
             informationFrontier,
@@ -815,7 +819,7 @@ export class EngineeringReasoningLoop {
             Boolean(
                 snapshot.investigation?.hypotheses?.some(
                     (h) =>
-                        (h.status === "CONFIRMED" || (h as any).likelihood === "HIGH") &&
+                        ((h.status as string) === "CONFIRMED" || (h as any).likelihood === "HIGH") &&
                         (h.title?.toLowerCase().includes("leak") || h.description?.toLowerCase().includes("leak"))
                 )
             );

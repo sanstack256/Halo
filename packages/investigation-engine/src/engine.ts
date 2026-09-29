@@ -63,10 +63,11 @@ export function investigate(
 
     // Link reconstructed causal chains to hypotheses where applicable
     const candidatesWithChains = candidates.map(hypothesis => {
+        const evIds = hypothesis.evidenceIds || [];
         const matchingChain = causalChains.find(
             chain =>
-                hypothesis.evidenceIds.includes(chain.rootEvidenceId) ||
-                chain.steps.some(step => hypothesis.evidenceIds.includes(step.evidenceId))
+                evIds.includes(chain.rootEvidenceId) ||
+                chain.steps.some(step => evIds.includes(step.evidenceId))
         );
         if (matchingChain) {
             return {

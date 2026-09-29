@@ -64,6 +64,8 @@ import { AdversarialChallenger } from "./adversarial-challenger";
 import { SystemicPreventionReasoner } from "./architectural-memory";
 import { EngineeringReasoningLoop } from "./engineering-reasoning-loop";
 import { executePatchValidation, resolveRepoDirFromSnapshot } from "./patch-validator-executor";
+import { buildCompleteVerifiedRepairProofChain } from "./proof-engine";
+import { evaluateVerifiedRepairGate } from "./verified-repair-gate";
 import type { DecomposedConfidence } from "./types";
 
 function toFormalRecommendationState(state?: string): FormalRecommendationState {
@@ -284,7 +286,7 @@ export async function generateEngineeringRecommendation(
         statement: explicitInvariant.statement,
         type: "INVARIANT",
         status: "SUPPORTED",
-        evidenceRefs: explicitInvariant.evidenceRefs,
+        evidenceRefs: explicitInvariant.evidenceRefs || [],
         reasoningRefs: ["claim-first-divergence"],
     });
 
@@ -1087,13 +1089,44 @@ export async function generateEngineeringRecommendation(
           }
         : undefined;
 
-    // Phase 3 + Phase 4: confidence and status upgrade from live patch validation
-    const patchProofClean = patchValidationResult?.isCleanPass === true;
+    // Phase 4+: Build Complete Proof Chain and Evaluate Formal Gate (§3, §36, §75)
+    let proofChainResult: ReturnType<typeof buildCompleteVerifiedRepairProofChain> | undefined;
+    if (
+        canonicalChanges.length > 0 &&
+        gateVerdict.allowed &&
+        (sufficiency.state === "SUFFICIENT_FOR_REPAIR" || gateVerdict.calibratedState === "VERIFIED_REPAIR" || patchValidationResult?.isCleanPass)
+    ) {
+        try {
+            proofChainResult = buildCompleteVerifiedRepairProofChain({
+                snapshot,
+                changes: canonicalChanges,
+                repoDir: repoDirForValidation || undefined,
+                candidateId: selectedAction?.id || `cand-${Date.now()}`,
+            });
+        } catch {
+            proofChainResult = undefined;
+        }
+    }
+
+    const isFormallyVerified = proofChainResult?.gateResult.isVerified === true;
     const baseConfidence = (!factCheck.passed || !gateVerdict.allowed) ? "LOW" : factCheck.verifiedRecommendation.confidence;
-    const patchValidatedConfidence = patchProofClean ? "HIGH" : baseConfidence;
-    const patchValidatedStatus = patchProofClean
-        ? "VERIFIED_REPAIR"
-        : gateVerdict.calibratedState;
+    const patchValidatedConfidence = isFormallyVerified
+        ? "HIGH"
+        : (patchValidationResult?.isCleanPass ? "MEDIUM" : baseConfidence);
+
+    // BREAK THE SHORTCUT (§3): isCleanPass is never by itself VERIFIED_REPAIR.
+    // VERIFIED_REPAIR requires all 9 empirical proofs to be valid via evaluateVerifiedRepairGate (§36, §75).
+    let patchValidatedStatus: FixRecommendation["status"];
+    if (isFormallyVerified) {
+        patchValidatedStatus = "VERIFIED_REPAIR";
+    } else if (patchValidationResult?.isCleanPass) {
+        patchValidatedStatus = "SUPPORTED_REPAIR_REQUIRES_VALIDATION";
+    } else if (gateVerdict.calibratedState === "VERIFIED_REPAIR") {
+        // Fail closed (§37): requires full verified proof chain
+        patchValidatedStatus = "SUPPORTED_REPAIR_REQUIRES_VALIDATION";
+    } else {
+        patchValidatedStatus = gateVerdict.calibratedState;
+    }
 
     const finalRecommendation: FixRecommendation = {
         ...factCheck.verifiedRecommendation,
@@ -1106,7 +1139,7 @@ export async function generateEngineeringRecommendation(
         diagnosis: llmDiagnosis || preciseRepair.whyThere || factCheck.verifiedRecommendation.diagnosis,
         whyThisAction: llmWhy || preciseRepair.whyThisFixesActualFailure || factCheck.verifiedRecommendation.whyThisAction,
         whyThisFixesIt: llmWhy || preciseRepair.whyThisFixesActualFailure || factCheck.verifiedRecommendation.whyThisFixesIt,
-        // Phase 3: status and confidence from live patch validation
+        // Phase 3 & 4: status and confidence from formal verified repair gate
         status: patchValidatedStatus,
         decomposedConfidence: gateVerdict.calibratedConfidence,
         confidence: patchValidatedConfidence,
@@ -1119,8 +1152,9 @@ export async function generateEngineeringRecommendation(
         },
         separatedLocations: authoritativeDecision.separatedLocations,
         brokenInvariant: authoritativeDecision.brokenInvariant,
-        // Phase 3: real behavioral proof from live validation
+        // Phase 3 & 4: real behavioral proof and full proof chain
         behavioralProof: liveBehavioralProof,
+        proofChain: proofChainResult?.proofChain,
         completedSteps,
         isCodeModification: canonicalChanges.length > 0 || preciseRepair.isCodeModification,
         nonCodeRemediationDetails: preciseRepair.nonCodeRemediationDetails,
@@ -1133,7 +1167,7 @@ export async function generateEngineeringRecommendation(
     };
 
     return {
-        success: factCheck.passed || patchProofClean,
+        success: factCheck.passed || isFormallyVerified || Boolean(patchValidationResult?.isCleanPass),
         source: "LLM_SYNTHESIZED",
         confidence: finalRecommendation.confidence,
         recommendation: finalRecommendation,
@@ -1388,8 +1422,14 @@ export function determineFormalRecommendationState(
         allInvestigationPathsExhausted,
     } = opts;
 
-    // 1. VERIFIED_REPAIR: All 3 proofs valid and verified on physical execution
+    // 1. VERIFIED_REPAIR: All proofs valid and verified on physical execution
     if (proof && proof.diagnosisProof && proof.repairProof && proof.behavioralProof) {
+        if (proof.proofChain) {
+            const gate = evaluateVerifiedRepairGate(proof.proofChain);
+            if (!gate.isVerified) {
+                return "SUPPORTED_REPAIR_REQUIRES_VALIDATION";
+            }
+        }
         return "VERIFIED_REPAIR";
     }
 
@@ -1455,7 +1495,7 @@ export function buildAdaptiveRecommendationContract(
             });
             adaptiveSections.push({
                 title: "Validation Proof",
-                contentMarkdown: `Physical execution in isolated git worktree succeeded: 100% tests passed, baseline failures partitioned, regressions checked (hash: \`${opts.proof?.behavioralProof.cryptographicHash.slice(0, 16)}\`).`,
+                contentMarkdown: `Physical execution in isolated git worktree succeeded: 100% tests passed, baseline failures partitioned, regressions checked (hash: \`${(opts.proof?.behavioralProof?.cryptographicHash || "verified").slice(0, 16)}\`).`,
                 prominenceOrder: 4,
             });
             break;

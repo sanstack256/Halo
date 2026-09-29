@@ -38,7 +38,7 @@ export interface Hypothesis {
 
     description: string;
 
-    score?: EvidenceScore;
+    score: EvidenceScore;
 
     confidence: number;
 
@@ -58,11 +58,11 @@ export interface Hypothesis {
 
     status: HypothesisStatus;
 
-    supportingReasons?: Reason[];
+    supportingReasons: Reason[];
 
-    contradictingReasons?: Reason[];
+    contradictingReasons: Reason[];
 
-    missingReasons?: Reason[];
+    missingReasons: Reason[];
 
     detailedSupportingEvidence?: HypothesisSupportingEvidence[];
 
@@ -70,11 +70,11 @@ export interface Hypothesis {
 
     detailedMissingEvidence?: HypothesisMissingEvidence[];
 
-    findingIds?: string[];
+    findingIds: string[];
 
-    evidenceIds?: string[];
+    evidenceIds: string[];
 
-    alternativeIds?: string[];
+    alternativeIds: string[];
 
     likelihood?: string;
 

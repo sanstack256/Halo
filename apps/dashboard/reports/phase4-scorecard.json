@@ -1,0 +1,33 @@
+{
+  "totalScenarios": 105,
+  "executionDurationMs": 8901,
+  "averageLatencyMs": 85,
+  "metrics": {
+    "repairBoundaryCorrect": 89,
+    "repairBoundaryRate": 84.8,
+    "failureMechanismCorrect": 105,
+    "failureMechanismRate": 100,
+    "ownershipEstablished": 105,
+    "ownershipRate": 100,
+    "patchGenerated": 73,
+    "patchGeneratedRate": 69.5,
+    "patchApplied": 94,
+    "patchAppliedRate": 89.5,
+    "baselineReproduced": 62,
+    "baselineReproducedRate": 59,
+    "behaviorValidated": 83,
+    "behaviorValidatedRate": 79,
+    "invariantRestored": 105,
+    "invariantRestoredRate": 100,
+    "regressionSafe": 83,
+    "regressionSafeRate": 79,
+    "counterexampleSurvived": 62,
+    "counterexampleSurvivedRate": 59,
+    "verifiedRepairs": 11,
+    "supportedRepairsRequiringValidation": 41,
+    "diagnosisCompleteRepairUnresolved": 0,
+    "blockedOrAcquisitionRequired": 53,
+    "falsePositives": 0,
+    "falseNegatives": 0
+  }
+}

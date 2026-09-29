@@ -518,76 +518,83 @@ export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges =
                                                 </div>
                                             )}
 
-                                            <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
-                                                {/* Supporting Evidence */}
-                                                <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 space-y-2">
-                                                    <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold uppercase">
-                                                        <CheckCircle2 size={13} />
-                                                        <span>Supporting ({hyp.supportingReasons.length})</span>
-                                                    </div>
-                                                    {hyp.supportingReasons.length === 0 ? (
-                                                        <p className="text-[11px] text-muted italic">No direct supporting signals.</p>
-                                                    ) : (
-                                                        <ul className="space-y-1.5 text-xs text-zinc-300">
-                                                            {hyp.supportingReasons.map((r, i) => (
-                                                                <li key={i} className="flex items-start gap-1.5 leading-relaxed">
-                                                                    <span className="text-emerald-400 font-bold">&bull;</span>
-                                                                    <div>
-                                                                        <span className="font-semibold text-zinc-200">{r.title}:</span>{" "}
-                                                                        <span>{r.description}</span>
-                                                                    </div>
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    )}
-                                                </div>
+                                            {(() => {
+                                                const supporting = hyp.supportingReasons || [];
+                                                const contradicting = hyp.contradictingReasons || [];
+                                                const missing = hyp.missingReasons || [];
+                                                return (
+                                                    <div className="grid grid-cols-1 md:grid-cols-3 gap-3 pt-2">
+                                                        {/* Supporting Evidence */}
+                                                        <div className="p-3 rounded-lg bg-emerald-500/5 border border-emerald-500/20 space-y-2">
+                                                            <div className="flex items-center gap-1.5 text-emerald-400 text-xs font-bold uppercase">
+                                                                <CheckCircle2 size={13} />
+                                                                <span>Supporting ({supporting.length})</span>
+                                                            </div>
+                                                            {supporting.length === 0 ? (
+                                                                <p className="text-[11px] text-muted italic">No direct supporting signals.</p>
+                                                            ) : (
+                                                                <ul className="space-y-1.5 text-xs text-zinc-300">
+                                                                    {supporting.map((r, i) => (
+                                                                        <li key={i} className="flex items-start gap-1.5 leading-relaxed">
+                                                                            <span className="text-emerald-400 font-bold">&bull;</span>
+                                                                            <div>
+                                                                                <span className="font-semibold text-zinc-200">{r.title}:</span>{" "}
+                                                                                <span>{r.description}</span>
+                                                                            </div>
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            )}
+                                                        </div>
 
-                                                {/* Contradicting Evidence */}
-                                                <div className="p-3 rounded-lg bg-red-500/5 border border-red-500/20 space-y-2">
-                                                    <div className="flex items-center gap-1.5 text-red-400 text-xs font-bold uppercase">
-                                                        <XCircle size={13} />
-                                                        <span>Contradicting ({hyp.contradictingReasons.length})</span>
-                                                    </div>
-                                                    {hyp.contradictingReasons.length === 0 ? (
-                                                        <p className="text-[11px] text-zinc-400 italic">No contradictory evidence found.</p>
-                                                    ) : (
-                                                        <ul className="space-y-1.5 text-xs text-zinc-300">
-                                                            {hyp.contradictingReasons.map((r, i) => (
-                                                                <li key={i} className="flex items-start gap-1.5 leading-relaxed">
-                                                                    <span className="text-red-400 font-bold">&bull;</span>
-                                                                    <div>
-                                                                        <span className="font-semibold text-red-300">{r.title}:</span>{" "}
-                                                                        <span>{r.description}</span>
-                                                                    </div>
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    )}
-                                                </div>
+                                                        {/* Contradicting Evidence */}
+                                                        <div className="p-3 rounded-lg bg-red-500/5 border border-red-500/20 space-y-2">
+                                                            <div className="flex items-center gap-1.5 text-red-400 text-xs font-bold uppercase">
+                                                                <XCircle size={13} />
+                                                                <span>Contradicting ({contradicting.length})</span>
+                                                            </div>
+                                                            {contradicting.length === 0 ? (
+                                                                <p className="text-[11px] text-zinc-400 italic">No contradictory evidence found.</p>
+                                                            ) : (
+                                                                <ul className="space-y-1.5 text-xs text-zinc-300">
+                                                                    {contradicting.map((r, i) => (
+                                                                        <li key={i} className="flex items-start gap-1.5 leading-relaxed">
+                                                                            <span className="text-red-400 font-bold">&bull;</span>
+                                                                            <div>
+                                                                                <span className="font-semibold text-red-300">{r.title}:</span>{" "}
+                                                                                <span>{r.description}</span>
+                                                                            </div>
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            )}
+                                                        </div>
 
-                                                {/* Missing Critical Telemetry */}
-                                                <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 space-y-2">
-                                                    <div className="flex items-center gap-1.5 text-amber-400 text-xs font-bold uppercase">
-                                                        <HelpCircle size={13} />
-                                                        <span>Missing Telemetry ({hyp.missingReasons.length})</span>
+                                                        {/* Missing Critical Telemetry */}
+                                                        <div className="p-3 rounded-lg bg-amber-500/5 border border-amber-500/20 space-y-2">
+                                                            <div className="flex items-center gap-1.5 text-amber-400 text-xs font-bold uppercase">
+                                                                <HelpCircle size={13} />
+                                                                <span>Missing Telemetry ({missing.length})</span>
+                                                            </div>
+                                                            {missing.length === 0 ? (
+                                                                <p className="text-[11px] text-zinc-400 italic">No critical telemetry gaps identified.</p>
+                                                            ) : (
+                                                                <ul className="space-y-1.5 text-xs text-zinc-300">
+                                                                    {missing.map((r, i) => (
+                                                                        <li key={i} className="flex items-start gap-1.5 leading-relaxed">
+                                                                            <span className="text-amber-400 font-bold">&bull;</span>
+                                                                            <div>
+                                                                                <span className="font-semibold text-amber-300">{r.title}:</span>{" "}
+                                                                                <span>{r.description}</span>
+                                                                            </div>
+                                                                        </li>
+                                                                    ))}
+                                                                </ul>
+                                                            )}
+                                                        </div>
                                                     </div>
-                                                    {hyp.missingReasons.length === 0 ? (
-                                                        <p className="text-[11px] text-zinc-400 italic">No critical telemetry gaps identified.</p>
-                                                    ) : (
-                                                        <ul className="space-y-1.5 text-xs text-zinc-300">
-                                                            {hyp.missingReasons.map((r, i) => (
-                                                                <li key={i} className="flex items-start gap-1.5 leading-relaxed">
-                                                                    <span className="text-amber-400 font-bold">&bull;</span>
-                                                                    <div>
-                                                                        <span className="font-semibold text-amber-300">{r.title}:</span>{" "}
-                                                                        <span>{r.description}</span>
-                                                                    </div>
-                                                                </li>
-                                                            ))}
-                                                        </ul>
-                                                    )}
-                                                </div>
-                                            </div>
+                                                );
+                                            })()}
                                         </div>
                                     )}
                                 </div>

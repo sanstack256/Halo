@@ -341,7 +341,7 @@ export function FixRecommendationView({
                             <div className="flex items-center justify-between">
                                 <span className="text-[10px] uppercase font-mono text-purple-400 font-bold tracking-wider flex items-center gap-1.5">
                                     <Layers className="w-3.5 h-3.5" />
-                                    Broken Invariant: {recommendation.brokenInvariant.classification.replace(/_/g, " ").toUpperCase()}
+                                    Broken Invariant: {(recommendation.brokenInvariant.classification || "state_invariant").replace(/_/g, " ").toUpperCase()}
                                 </span>
                                 <span className="text-[10px] font-mono text-purple-300/70">Contract Restoration</span>
                             </div>

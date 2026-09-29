@@ -1,0 +1,25 @@
+{
+  "repositorySha": "ca0fdf0bb626a54bf0ae43ccf38632dbf4426dd9",
+  "baselineTimestamp": "2026-09-29T00:45:00+05:30",
+  "nodeVersion": "v22.23.1",
+  "pnpmVersion": "11.11.0",
+  "testSuite": {
+    "totalFiles": 50,
+    "totalTests": 442,
+    "passed": 442,
+    "failed": 0,
+    "recommendationEngineTests": 260,
+    "dashboardOtherTests": 182
+  },
+  "database": {
+    "status": "HEALTHY",
+    "migrationsApplied": 17,
+    "engine": "postgresql"
+  },
+  "shortcutIdentified": {
+    "sourceFile": "apps/dashboard/src/lib/investigation/recommendation-engine/engine.ts",
+    "lines": "1091-1096",
+    "mechanism": "isCleanPass === true => status = VERIFIED_REPAIR",
+    "requiredRemediation": "Replace with formal 9-proof gate: BaselineProof, CausalProof, PatchProof, BehaviorProof, InvariantProof, RegressionProof, CounterexampleProof, SourceProof, OwnershipProof"
+  }
+}

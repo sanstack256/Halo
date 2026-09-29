@@ -42,7 +42,7 @@ export function evaluateCandidateConsequences(
 ): CandidateEvaluationResult {
     const { candidate, confirmedMechanism, violatedInvariant, isIdempotentOperation, repositoryContext } = opts;
 
-    const modifications = candidate.modifications;
+    const modifications = candidate.modifications || [];
     const allReplacementCode = modifications.map((m) => m.replacementCode).join("\n");
     const allOriginalCode = modifications.map((m) => m.originalCode).join("\n");
 

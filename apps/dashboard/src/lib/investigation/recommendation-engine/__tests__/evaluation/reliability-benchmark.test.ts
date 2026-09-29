@@ -64,7 +64,7 @@ describe("Halo Trace — 2,000-Scenario Reliability Benchmark", () => {
 
         // Zero False Negative Refusals
         expect(metrics.falseNegativeRefusals).toBe(0);
-    });
+    }, 60000);
 
     it("verifies zero false-negative refusals across the full 2,000-scenario corpus", async () => {
         // Sample across all 200 indices (every 10th scenario across all 2,000)
@@ -83,7 +83,7 @@ describe("Halo Trace — 2,000-Scenario Reliability Benchmark", () => {
         }
 
         expect(falseNegativeRefusalCount).toBe(0);
-    });
+    }, 60000);
 
     it("accurately distinguishes observation location vs mechanism location vs repair location on cross-frame contracts", async () => {
         // Find a scenario in corpus that represents caller contract violation

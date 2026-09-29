@@ -340,9 +340,9 @@ export function runActiveInvestigationLoop(
     const acquisitionPlan: EvidenceAcquisitionPlan = {
         planId: `plan-${currentSnapshot.snapshotId.slice(0, 8)}`,
         createdAt: new Date(),
-        requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded,
-        alreadyKnownFacts: sufficiency.establishedFacts,
-        missingFacts: sufficiency.inferredFacts,
+        requiredFacts: sufficiency.minimumAdditionalEvidenceNeeded || [],
+        alreadyKnownFacts: sufficiency.establishedFacts || [],
+        missingFacts: sufficiency.inferredFacts || [],
         acquisitionOptions: runtimePlan.actions,
         selectedActions: runtimePlan.actions.filter((a) => a.isAutomated),
         blockedActions: runtimePlan.forbiddenFieldsEncountered.map((f) => ({

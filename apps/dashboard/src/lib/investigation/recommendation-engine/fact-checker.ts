@@ -296,7 +296,7 @@ export function runDeterministicFactCheck(
                 startLine: typeof parsedLine === "number" && !isNaN(parsedLine) ? parsedLine : undefined,
                 endLine: typeof parsedLine === "number" && !isNaN(parsedLine) ? parsedLine : undefined,
                 codeType: change.existingCode ? "EXISTING_AND_PROPOSED" : "PROPOSED_ONLY",
-                explanation: change.rationale,
+                explanation: change.rationale || "Apply verified transformation",
                 whyHere: rawOutput.repairLocationRationale || "Identified repair boundary",
                 currentCode: change.existingCode,
                 proposedCode: change.proposedCode,
@@ -396,10 +396,10 @@ export function runDeterministicFactCheck(
             ? (rawOutput.status as any)
             : sufficiency?.state || "SUFFICIENT_FOR_REPAIR"),
         outcomeType: rawOutput.outcomeType || (sufficiency && sufficiency.state !== "SUFFICIENT_FOR_REPAIR" ? "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR" : verifiedChanges.length > 0 ? "CODE_CHANGE_RECOMMENDED" : "OBSERVABILITY_STEP_REQUIRED_BEFORE_REPAIR"),
-        summary: rawOutput.summary,
-        diagnosis: rawOutput.why,
-        whyThisAction: rawOutput.why,
-        whyThisFixesIt: rawOutput.why,
+        summary: rawOutput.summary || rawOutput.action || "Investigation recommendation",
+        diagnosis: rawOutput.why || rawOutput.summary || "Identified root cause defect",
+        whyThisAction: rawOutput.why || "Addresses root mechanism",
+        whyThisFixesIt: rawOutput.why || "Restores system invariant",
         whyNotSymptomFix: rawOutput.whyNotSymptomFix,
         changes: verifiedChanges,
         alternatives: (rawOutput.alternatives || []).map((a) => ({

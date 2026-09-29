@@ -93,7 +93,7 @@ export function analyzeContractsAndValueFlow(
     }
 
     // 3. Inspect if source code has runtime parameter validation
-    if (sourceAst.guards.length > 0) {
+    if (sourceAst.guards && sourceAst.guards.length > 0) {
         hasStaticContractDifference = true;
         const priorGuards = sourceAst.guards.filter((g) => g.isPriorToFailure);
         if (priorGuards.length > 0) {

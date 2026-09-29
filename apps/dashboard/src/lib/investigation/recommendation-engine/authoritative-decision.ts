@@ -48,6 +48,7 @@ import type {
     SystemicDefectRecord,
 } from "./types";
 import type { CausalRegressionGateVerdict } from "./causal-regression-gate";
+import { toFormalRecommendationState } from "./types";
 
 export interface BuildAuthoritativeDecisionParams {
     snapshot: InvestigationSnapshot;
@@ -299,7 +300,7 @@ export function buildAuthoritativeEngineeringDecision(
         validation,
         consequences,
         uncertainty: Array.from(new Set(combinedUncertainties)),
-        finalState,
+        finalState: toFormalRecommendationState(finalState),
         decomposedConfidence,
         repairEquivalence,
         provenance: consolidatedProvenance,

@@ -165,17 +165,26 @@ export type InvariantClassification =
     | "custom_invariant";
 
 export interface BrokenInvariant {
-    id: string;
-    classification: InvariantClassification;
+    id?: string;
+    classification?: InvariantClassification;
     description: string;
-    expectedCondition: string;
-    actualViolation: string;
+    expectedCondition?: string;
+    actualViolation?: string;
     governingEntity?: string;
-    evidenceIds: string[];
-    isConfirmed: boolean;
+    evidenceIds?: string[];
+    isConfirmed?: boolean;
     formalStatement?: string;
     violatedState?: string;
     restoredState?: string;
+    invariantLocation?: {
+        filePath: string;
+        lineNumber?: number;
+        symbol?: string;
+        status?: string;
+        provenance?: string;
+        [key: string]: any;
+    };
+    [key: string]: any;
 }
 
 export type DynamicDispatchState =
@@ -450,6 +459,12 @@ export interface SourceAstAnalysis {
         testFiles: string[];
         reproductionPossibleInDev: boolean;
     };
+    dynamicDispatch?: {
+        isDynamicDispatch?: boolean;
+        dispatchType?: string;
+        targetCandidates?: string[];
+    };
+    [key: string]: any;
 }
 
 export type CalleeOpacity =
@@ -617,6 +632,8 @@ export interface CandidateAction {
     score: number; // Internal ranking score
     changes?: Array<{ file?: string; original?: string; replacement?: string; line?: number }>;
     confidence?: string;
+    proposedDiff?: string;
+    [key: string]: any;
 }
 
 /* -------------------------------------------------------------------------- */
@@ -632,6 +649,31 @@ export const FormalRecommendationStateSchema = z.enum([
     "BLOCKED_BY_UNAVAILABLE_EVIDENCE",
 ]);
 export type FormalRecommendationState = z.infer<typeof FormalRecommendationStateSchema>;
+
+export function toFormalRecommendationState(state?: string): FormalRecommendationState {
+    switch (state) {
+        case "VERIFIED_REPAIR":
+            return "VERIFIED_REPAIR";
+        case "SUPPORTED_REPAIR_REQUIRES_VALIDATION":
+        case "SUFFICIENT_FOR_REPAIR":
+            return "SUPPORTED_REPAIR_REQUIRES_VALIDATION";
+        case "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED":
+        case "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR":
+            return "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED";
+        case "NO_CODE_CHANGE_JUSTIFIED":
+            return "NO_CODE_CHANGE_JUSTIFIED";
+        case "EVIDENCE_ACQUISITION_REQUIRED":
+            return "EVIDENCE_ACQUISITION_REQUIRED";
+        case "BLOCKED_BY_UNAVAILABLE_EVIDENCE":
+        case "BLOCKED_BY_AMBIGUITY":
+        case "BLOCKED_BY_MISSING_SOURCE":
+        case "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE":
+        case "INSUFFICIENT":
+            return "BLOCKED_BY_UNAVAILABLE_EVIDENCE";
+        default:
+            return "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED";
+    }
+}
 
 export const EvidenceSufficiencyStateSchema = z.enum([
     // Six formal recommendation states
@@ -841,16 +883,19 @@ export const FixRecommendationSchema = z.object({
         }).optional(),
     }).optional(),
     brokenInvariant: z.object({
-        classification: z.string(),
+        id: z.string().optional(),
+        classification: z.string().optional(),
         description: z.string(),
-        expectedCondition: z.string().default("Invariant satisfied on all valid execution paths"),
-        actualViolation: z.string().default("Invariant violated at runtime execution"),
+        expectedCondition: z.string().optional(),
+        actualViolation: z.string().optional(),
         governingEntity: z.string().optional(),
-        evidenceIds: z.array(z.string()).default([]),
+        evidenceIds: z.array(z.string()).optional(),
+        isConfirmed: z.boolean().optional(),
         formalStatement: z.string().optional(),
         violatedState: z.string().optional(),
         restoredState: z.string().optional(),
-    }).optional(),
+        invariantLocation: z.any().optional(),
+    }).passthrough().optional(),
     behavioralProof: z.object({
         status: z.string().optional(),
         validationMethod: z.string().optional(),
@@ -861,6 +906,7 @@ export const FixRecommendationSchema = z.object({
         violatedInvariantRestored: z.boolean().optional(),
         executionLog: z.string().optional(),
     }).optional(),
+    proofChain: z.any().optional(),
     changes: z.array(RecommendedChangeSchema).default([]),
     alternatives: z.array(CompetingAlternativeSchema).default([]),
     doNotChange: z.array(
@@ -904,7 +950,7 @@ export const FixRecommendationSchema = z.object({
         label: z.string(),
         detail: z.string(),
         status: z.string(),
-    })).optional().default([]),
+    })).default([]).optional(),
     isCodeModification: z.boolean().optional().default(true),
     nonCodeRemediationDetails: z.object({
         type: z.string(),
@@ -919,8 +965,13 @@ export const FixRecommendationSchema = z.object({
     decomposedConfidence: DecomposedConfidenceSchema.optional(),
     rollbackAudit: z.any().optional(),
     repairEquivalence: z.any().optional(),
-});
-export type FixRecommendation = z.infer<typeof FixRecommendationSchema>;
+    seniorEngineerAnalysis: z.any().optional(),
+    firstDivergence: z.any().optional(),
+    adversarialChallenge: z.any().optional(),
+    preventionRecommendation: z.any().optional(),
+    authoritativeDecision: z.any().optional(),
+}).passthrough();
+export type FixRecommendation = z.infer<typeof FixRecommendationSchema> & { [key: string]: any };
 
 /* -------------------------------------------------------------------------- */
 /* 12. Structured LLM Generation Contract                                     */
@@ -1392,11 +1443,11 @@ export interface OpenRepairBoundary {
 
 export interface CandidateRepair {
     id: string;
-    boundaryId: string;
-    targetedMechanism: string;
-    restoredInvariant: string;
-    evidenceSupportingRelationship: string[];
-    modifications: {
+    boundaryId?: string;
+    targetedMechanism?: string;
+    restoredInvariant?: string;
+    evidenceSupportingRelationship?: string[];
+    modifications?: {
         filePath: string;
         symbol: string;
         startLine: number;
@@ -1404,11 +1455,20 @@ export interface CandidateRepair {
         originalCode: string;
         replacementCode: string;
     }[];
-    reusedExistingAbstractions: {
+    reusedExistingAbstractions?: {
         abstractionName: string;
         sourcePath: string;
         roleInRepair: string;
     }[];
+    diff?: string;
+    patchedFiles?: Array<{
+        filePath: string;
+        patchDiff: string;
+        astChanges?: string[];
+    }>;
+    targetHypothesisId?: string;
+    rationale?: string;
+    [key: string]: any;
 }
 
 // --- MECHANISM-COVERAGE & CONSEQUENCE ANALYSIS ---
@@ -1476,18 +1536,228 @@ export interface RepairProof {
 }
 
 export interface BehavioralProof {
-    candidateId: string;
-    postPatchValidation: PostPatchValidationRecord;
-    reproductionRecord: ReproductionRecord;
-    executionLogExcerpt: string;
-    cryptographicHash: string;
+    candidateId?: string;
+    postPatchValidation?: PostPatchValidationRecord;
+    reproductionRecord?: ReproductionRecord;
+    executionLogExcerpt?: string;
+    cryptographicHash?: string;
+    status?: string;
+    summary?: string;
+    isCleanPass?: boolean;
+    validationMethod?: string;
+    originalFailureResolved?: boolean;
+    intendedBehaviorRestored?: boolean;
+    executionLog?: string;
+    [key: string]: any;
 }
 
 export interface ComprehensiveProofRecord {
     diagnosisProof: DiagnosisProof;
     repairProof: RepairProof;
     behavioralProof: BehavioralProof;
+    proofChain?: VerifiedRepairProofChain;
     verifiedAt: number;
+}
+
+// ─────────────────────────────────────────────────────────────────────────────
+// PHASE 4+ — VERIFIED REPAIR PROOF ENGINE TYPES (§4, §5, §36, §75)
+// ─────────────────────────────────────────────────────────────────────────────
+
+export type ProofStatus =
+    | "PENDING"
+    | "VERIFIED"
+    | "FAILED"
+    | "UNKNOWN"
+    | "UNAVAILABLE"
+    | "CONTRADICTED"
+    | "STALE";
+
+export type RepairProofState =
+    | "GENERATED"
+    | "SOURCE_VERIFIED"
+    | "PATCH_APPLIED"
+    | "BASELINE_REPRODUCED"
+    | "PATCH_EXECUTED"
+    | "FAILURE_BEHAVIOR_CHANGED"
+    | "INVARIANT_VALIDATED"
+    | "REGRESSION_VALIDATED"
+    | "COUNTEREXAMPLES_VALIDATED"
+    | "VERIFIED_REPAIR";
+
+export interface BaseProofRecord {
+    proofId: string;
+    proofType: string;
+    status: ProofStatus;
+    timestamp: string; // ISO 8601
+    repositoryRevision?: string;
+    sourceRevision?: string;
+    evidenceReferences: string[];
+    executionArtifactReferences: string[];
+    failureDetails?: {
+        message?: string;
+        code?: string;
+        stackSnippet?: string;
+        exitCode?: number;
+    };
+    validationDetails: Record<string, unknown>;
+    cryptographicHash: string;
+}
+
+export interface BaselineFailureIdentity {
+    exceptionType: string;
+    normalizedMessage: string;
+    sourceFile: string;
+    lineNumber?: number;
+    symbolName?: string;
+    stackDigest: string;
+    failurePhase: "COMPILATION" | "RUNTIME" | "TEST_EXECUTION" | "ASSERTION";
+    expectedInvariant?: string;
+}
+
+export interface BaselineProof extends BaseProofRecord {
+    proofType: "BASELINE_PROOF";
+    failureIdentity: BaselineFailureIdentity;
+    reproductionCommand: string;
+    exitCode: number;
+    stdoutExcerpt: string;
+    stderrExcerpt: string;
+    durationMs: number;
+    trialsExecuted: number;
+    failureRate: number; // 1.0 = deterministic reproduction
+    isProbabilistic: boolean;
+    matchesIncidentFailure: boolean;
+}
+
+export interface SourceProof extends BaseProofRecord {
+    proofType: "SOURCE_PROOF";
+    targetFile: string;
+    targetSymbol?: string;
+    sourceHash: string;
+    astNodeType?: string;
+    astNodeRange?: [number, number];
+    symbolResolved: boolean;
+    canonicalRevisionVerified: boolean;
+}
+
+export interface MechanismProof extends BaseProofRecord {
+    proofType: "MECHANISM_PROOF";
+    confirmedMechanism: string;
+    violatedInvariant: string;
+    causalEdges: Array<{ from: string; to: string; relation: string }>;
+    epistemicConfidence: "CONFIRMED" | "SUPPORTED" | "PLAUSIBLE";
+}
+
+export interface OwnershipProof extends BaseProofRecord {
+    proofType: "OWNERSHIP_PROOF";
+    contractOwnerFile: string;
+    contractOwnerSymbol?: string;
+    responsibilityBoundary: "CALLER" | "CALLEE" | "SHARED_CONTRACT" | "FRAMEWORK";
+    rationale: string;
+    boundaryEvidenceIds: string[];
+}
+
+export interface CausalProof extends BaseProofRecord {
+    proofType: "CAUSAL_PROOF";
+    candidateId: string;
+    observedFailureId: string;
+    failureMechanism: string;
+    violatedInvariant: string;
+    sourceBehaviorDescription: string;
+    candidateChangeHypothesis: string;
+    experimentalCausalityConfirmed?: boolean;
+}
+
+export interface PatchProof extends BaseProofRecord {
+    proofType: "PATCH_PROOF";
+    candidateId: string;
+    targetFile: string;
+    originalSourceHash: string;
+    patchedSourceHash: string;
+    astTransformationOccurred: boolean;
+    astDiffSummary: string;
+    isCommentOnly: boolean;
+    isWhitespaceOnly: boolean;
+    syntaxValid: boolean;
+    changesAppliedCount: number;
+}
+
+export interface BehaviorProof extends BaseProofRecord {
+    proofType: "BEHAVIOR_PROOF";
+    candidateId: string;
+    baselineFailureEliminated: boolean;
+    expectedBehaviorAchieved: boolean;
+    unexpectedBehaviorIntroduced: boolean;
+    notSimplySwallowedException: boolean;
+    notSimplyDefaultFallback: boolean;
+    executionLogExcerpt: string;
+}
+
+export interface InvariantProof extends BaseProofRecord {
+    proofType: "INVARIANT_PROOF";
+    invariantStatement: string;
+    invariantCategory: "RESOURCE_LIFECYCLE" | "STATE_CONSISTENCY" | "TEMPORAL_ORDERING" | "CONTRACT_INTEGRITY" | "NULL_SAFETY";
+    observedBefore: { satisfied: boolean; details: string };
+    observedAfter: { satisfied: boolean; details: string };
+    temporallyAware: boolean;
+    typeAware: boolean;
+    restorationConfirmed: boolean;
+}
+
+export interface RegressionProof extends BaseProofRecord {
+    proofType: "REGRESSION_PROOF";
+    candidateId: string;
+    testsExecutedCount: number;
+    testsPassedCount: number;
+    preexistingFailures: string[];
+    newlyIntroducedFailures: string[];
+    regressionAttribution: "CLEAN_NO_REGRESSIONS" | "PATCH_REGRESSION" | "PREEXISTING_ONLY";
+}
+
+export interface ProofCounterexampleCase {
+    caseId: string;
+    category: "BOUNDARY_PAYLOAD" | "CONCURRENCY_INTERLEAVING" | "RESOURCE_LIFECYCLE_ABORT" | "MALFORMED_INPUT" | "UNEXPECTED_STATE";
+    description: string;
+    inputPayloadOrCondition: string;
+    survived: boolean;
+    observedBehavior: string;
+}
+
+export interface CounterexampleProof extends BaseProofRecord {
+    proofType: "COUNTEREXAMPLE_PROOF";
+    candidateId: string;
+    casesTested: ProofCounterexampleCase[];
+    allCasesSurvived: boolean;
+    failedCaseCount: number;
+}
+
+export interface VerifiedRepairProofChain {
+    chainVersion: "1.0.0";
+    issueId: string;
+    repositoryRevision: string;
+    candidateId: string;
+    currentState: RepairProofState;
+    sourceProof?: SourceProof;
+    mechanismProof?: MechanismProof;
+    ownershipProof?: OwnershipProof;
+    baselineProof?: BaselineProof;
+    causalProof?: CausalProof;
+    patchProof?: PatchProof;
+    behaviorProof?: BehaviorProof;
+    invariantProof?: InvariantProof;
+    regressionProof?: RegressionProof;
+    counterexampleProof?: CounterexampleProof;
+    evaluatedAt: number;
+    cryptographicHash?: string;
+}
+
+export interface ProofGateEvaluationResult {
+    isVerified: boolean;
+    achievedState: RepairProofState;
+    failedAt?: RepairProofState;
+    missingProofs: string[];
+    failedProofs: string[];
+    reason: string;
+    proofChain: VerifiedRepairProofChain;
 }
 
 // --- CLAIM-LEVEL PROVENANCE ---
@@ -1779,15 +2049,22 @@ export interface IntentConflict {
 export interface ExplicitInvariant {
     invariantId: string;
     statement: string;
-    scope: string;
-    preconditions: string[];
-    expectedState: Record<string, unknown>;
-    violatedState: Record<string, unknown>;
-    evidenceRefs: string[];
-    ownerCandidates: string[];
-    enforcementPoints: string[];
-    violationPoint: string;
-    restorationCandidates: string[];
+    scope?: string;
+    preconditions?: string[];
+    expectedState?: Record<string, unknown>;
+    violatedState?: Record<string, unknown>;
+    evidenceRefs?: string[];
+    ownerCandidates?: string[];
+    enforcementPoints?: string[];
+    violationPoint?: string;
+    restorationCandidates?: string[];
+    classification?: string;
+    enforcementBoundary?: string;
+    ownerSymbol?: string;
+    description?: string;
+    formalPredicate?: string;
+    violatedInIncident?: boolean;
+    [key: string]: any;
 }
 
 export interface ResourceLifecycleRecord {

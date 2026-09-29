@@ -924,9 +924,9 @@ export function interpretInvestigation(
                 status: alt.status === "VALIDATED" ? "SUPPORTED" : "EVALUATED",
                 confidenceLevel: getConfidenceLevel(alt.confidence * 100),
                 causalRelationship: "Alternative considered during evaluation.",
-                supportingEvidence: alt.supportingReasons.map((r) => r.title || r.description),
-                contradictingEvidence: alt.contradictingReasons.map((r) => r.title || r.description),
-                missingEvidence: alt.missingReasons.map((r) => r.title || r.description),
+                supportingEvidence: (alt.supportingReasons || []).map((r) => r.title || r.description),
+                contradictingEvidence: (alt.contradictingReasons || []).map((r) => r.title || r.description),
+                missingEvidence: (alt.missingReasons || []).map((r) => r.title || r.description),
                 outrankReason: "Insufficient signal density or contradicted by active telemetry.",
                 uncertainties: [],
             });

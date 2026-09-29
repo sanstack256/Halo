@@ -414,7 +414,7 @@ export function generateAndEvaluateCandidateActions(
             repairLocation: repairLoc,
             evidenceSupport: [
                 `Commit ${regressionCand.shortSha} authored by ${regressionCand.author}`,
-                regressionCand.classificationReason,
+                regressionCand.classificationReason || "Regression candidate identified",
                 `Incident first seen at ${snapshot.incident.firstSeen.toISOString()}`,
             ],
             justification: isCausallyProven

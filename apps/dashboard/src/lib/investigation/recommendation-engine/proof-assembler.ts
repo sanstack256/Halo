@@ -78,7 +78,7 @@ export function assembleComprehensiveProof(
         return null; // Cannot issue repair proof without DIRECT coverage and consequence approval
     }
 
-    const repairPayload = `${candidate.id}:${boundary.id}:${mechanismCoverage.coverageType}:${candidate.modifications.map((m) => m.filePath).sort().join(",")}`;
+    const repairPayload = `${candidate.id}:${boundary.id}:${mechanismCoverage.coverageType}:${(candidate.modifications || []).map((m) => m.filePath).sort().join(",")}`;
     const repairHash = crypto.createHash("sha256").update(repairPayload).digest("hex");
 
     const repairProof: RepairProof = {
@@ -86,7 +86,7 @@ export function assembleComprehensiveProof(
         targetBoundary: boundary,
         mechanismCoverage,
         consequenceApproval,
-        architecturalReuseEvidenceIds: candidate.reusedExistingAbstractions.map((a) => a.sourcePath),
+        architecturalReuseEvidenceIds: (candidate.reusedExistingAbstractions || []).map((a) => a.sourcePath),
         cryptographicHash: repairHash,
     };
 

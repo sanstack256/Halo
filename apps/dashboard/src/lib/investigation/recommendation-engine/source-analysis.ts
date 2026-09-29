@@ -30,7 +30,11 @@ export function analyzeSourceAst(snapshot: InvestigationSnapshot): SourceAstAnal
 
     const fullCode = source.lines.map((l) => l.content).join("\n");
     const failingLine = source.failingLineNumber;
-    const surroundingLines = source.lines;
+    const surroundingLines = source.lines.map((l) => ({
+        lineNumber: l.lineNumber,
+        content: l.content,
+        isFailingLine: Boolean(l.isFailingLine || l.lineNumber === failingLine),
+    }));
 
     // Parse AST
     const sourceFile = ts.createSourceFile(
@@ -40,7 +44,7 @@ export function analyzeSourceAst(snapshot: InvestigationSnapshot): SourceAstAnal
         true
     );
 
-    const guards: SourceAstAnalysis["guards"] = [];
+    const guards: NonNullable<SourceAstAnalysis["guards"]> = [];
     const declaredFunctionNames: string[] = [];
 
     const sourceLines = source.lines;
