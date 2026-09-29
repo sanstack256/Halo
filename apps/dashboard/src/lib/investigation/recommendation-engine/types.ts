@@ -825,16 +825,16 @@ export const RecommendedChangeSchema = z.object({
     lines: z.string().optional(),
     startLine: z.number().optional(),
     endLine: z.number().optional(),
-    codeType: CodeTypeSchema.default("EXISTING_AND_PROPOSED"),
-    explanation: z.string().default("Apply code repair to restore invariant"),
-    whyHere: z.string().default("Target boundary where defect occurs"),
+    codeType: CodeTypeSchema.default("EXISTING_AND_PROPOSED").optional(),
+    explanation: z.string().default("Apply code repair to restore invariant").optional(),
+    whyHere: z.string().default("Target boundary where defect occurs").optional(),
     rationale: z.string().optional(),
     currentCode: z.string().optional(),
     proposedCode: z.string().optional(),
     unifiedDiff: z.string().optional(),
-    isExactSourceVerified: z.boolean().default(false),
-    evidenceIds: z.array(z.string()).default([]),
-});
+    isExactSourceVerified: z.boolean().default(false).optional(),
+    evidenceIds: z.array(z.string()).default([]).optional(),
+}).passthrough();
 export type RecommendedChange = z.infer<typeof RecommendedChangeSchema>;
 
 export const CompetingAlternativeSchema = z.object({

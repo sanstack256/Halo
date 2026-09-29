@@ -873,7 +873,7 @@ export function generateCounterexampleProof(options: {
 
 export interface CompleteProofChainInput {
     snapshot: InvestigationSnapshot;
-    changes: RecommendedChange[];
+    changes: Array<Partial<RecommendedChange> & { [key: string]: any }>;
     candidateId?: string;
     repoDir?: string;
     reproductionCommand?: string;
