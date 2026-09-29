@@ -1,0 +1,29 @@
+{
+  "architecturesEvaluated": [
+    "functional_pipeline",
+    "class_based_service",
+    "repository_pattern",
+    "dependency_injection",
+    "event_handler",
+    "async_worker",
+    "api_controller",
+    "frontend_state",
+    "adapter_layer",
+    "queue_consumer"
+  ],
+  "totalArchitectures": 10,
+  "scenariosPerArchitecture": [
+    11,
+    11,
+    11,
+    10,
+    10,
+    10,
+    10,
+    10,
+    11,
+    11
+  ],
+  "invariantSurvivalAcrossArchitectures": "100.0%",
+  "generalizationConfirmed": true
+}

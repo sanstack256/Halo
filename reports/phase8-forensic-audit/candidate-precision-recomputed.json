@@ -1,0 +1,20 @@
+{
+  "totalCandidateCount": 378,
+  "statuses": {
+    "GENERATED": 32,
+    "SYMPTOM_MASKING": 105,
+    "WRONG_BOUNDARY": 105,
+    "VALID_EQUIVALENT": 84,
+    "VERIFIED": 52
+  },
+  "sumOfCategories": 378,
+  "isExhaustivePartition": true,
+  "empiricallyVerifiedCandidates": 52,
+  "validEquivalentCandidates": 84,
+  "candidatePrecisionNumerator": 136,
+  "candidatePrecisionDenominator": 378,
+  "candidatePrecisionRate": "136 / 378 (36.0%)",
+  "candidateRecallNumerator": 84,
+  "candidateRecallDenominator": 84,
+  "candidateRecallRate": "84 / 84 (100.0%)"
+}

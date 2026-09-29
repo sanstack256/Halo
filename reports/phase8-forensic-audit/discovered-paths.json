@@ -1,0 +1,24 @@
+{
+  "repositoryRoot": "/Users/nssanjeev/Development/Halo",
+  "packageManifest": "/Users/nssanjeev/Development/Halo/package.json",
+  "phase8EvaluationDirectory": "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation",
+  "phase8MasterReport": "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/phase8-master-report.md",
+  "finalScorecard": "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/final-scorecard.json",
+  "candidateLedger": "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/candidate-ledger.json",
+  "scenarioLedger": "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/scenario-ledger.json",
+  "verifiedRepairGate": "/Users/nssanjeev/Development/Halo/apps/dashboard/src/lib/investigation/recommendation-engine/verified-repair-gate.ts",
+  "executionArtifacts": [
+    "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/behavioral-validation.json",
+    "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/counterexample-results.json",
+    "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/mutation-results.json",
+    "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/proof-replay-results.json"
+  ],
+  "proofArtifacts": [
+    "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/causal-analysis.json",
+    "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/repair-selection.json",
+    "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/equivalence-results.json",
+    "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/provider-parity.json",
+    "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/security-results.json",
+    "/Users/nssanjeev/Development/Halo/reports/phase8-evaluation/generalization-results.json"
+  ]
+}

@@ -1,0 +1,1262 @@
+[
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0001",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0001",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0001",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0001",
+    "patchId": "patch-BENCHMARK_SCENARIO_0001",
+    "proofId": "NONE",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0002",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0002",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0002",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0002",
+    "patchId": "patch-BENCHMARK_SCENARIO_0002",
+    "proofId": "proof-BENCHMARK_SCENARIO_0002",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0003",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0003",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0003",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0003",
+    "patchId": "patch-BENCHMARK_SCENARIO_0003",
+    "proofId": "proof-BENCHMARK_SCENARIO_0003",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0004",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0004",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0006",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0006",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0006",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0006",
+    "patchId": "patch-BENCHMARK_SCENARIO_0006",
+    "proofId": "proof-BENCHMARK_SCENARIO_0006",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0007",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0007",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0009",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0009",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0009",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0009",
+    "patchId": "patch-BENCHMARK_SCENARIO_0009",
+    "proofId": "proof-BENCHMARK_SCENARIO_0009",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0010",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0010",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0010",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0010",
+    "patchId": "patch-BENCHMARK_SCENARIO_0010",
+    "proofId": "proof-BENCHMARK_SCENARIO_0010",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0011",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0011",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0011",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0011",
+    "patchId": "patch-BENCHMARK_SCENARIO_0011",
+    "proofId": "NONE",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0012",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0012",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0012",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0012",
+    "patchId": "patch-BENCHMARK_SCENARIO_0012",
+    "proofId": "proof-BENCHMARK_SCENARIO_0012",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0013",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0013",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0013",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0013",
+    "patchId": "patch-BENCHMARK_SCENARIO_0013",
+    "proofId": "proof-BENCHMARK_SCENARIO_0013",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0014",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0014",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0016",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0016",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0016",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0016",
+    "patchId": "patch-BENCHMARK_SCENARIO_0016",
+    "proofId": "proof-BENCHMARK_SCENARIO_0016",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0017",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0017",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0019",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0019",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0019",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0019",
+    "patchId": "patch-BENCHMARK_SCENARIO_0019",
+    "proofId": "proof-BENCHMARK_SCENARIO_0019",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0020",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0020",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0020",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0020",
+    "patchId": "patch-BENCHMARK_SCENARIO_0020",
+    "proofId": "proof-BENCHMARK_SCENARIO_0020",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0021",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0021",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0021",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0021",
+    "patchId": "patch-BENCHMARK_SCENARIO_0021",
+    "proofId": "NONE",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0022",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0022",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0022",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0022",
+    "patchId": "patch-BENCHMARK_SCENARIO_0022",
+    "proofId": "proof-BENCHMARK_SCENARIO_0022",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0023",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0023",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0023",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0023",
+    "patchId": "patch-BENCHMARK_SCENARIO_0023",
+    "proofId": "proof-BENCHMARK_SCENARIO_0023",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0024",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0024",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0026",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0026",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0026",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0026",
+    "patchId": "patch-BENCHMARK_SCENARIO_0026",
+    "proofId": "proof-BENCHMARK_SCENARIO_0026",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0027",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0027",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0029",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0029",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0029",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0029",
+    "patchId": "patch-BENCHMARK_SCENARIO_0029",
+    "proofId": "proof-BENCHMARK_SCENARIO_0029",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0030",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0030",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0030",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0030",
+    "patchId": "patch-BENCHMARK_SCENARIO_0030",
+    "proofId": "proof-BENCHMARK_SCENARIO_0030",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0031",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0031",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0031",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0031",
+    "patchId": "patch-BENCHMARK_SCENARIO_0031",
+    "proofId": "NONE",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0032",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0032",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0032",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0032",
+    "patchId": "patch-BENCHMARK_SCENARIO_0032",
+    "proofId": "proof-BENCHMARK_SCENARIO_0032",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0033",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0033",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0033",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0033",
+    "patchId": "patch-BENCHMARK_SCENARIO_0033",
+    "proofId": "proof-BENCHMARK_SCENARIO_0033",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0034",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0034",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0036",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0036",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0036",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0036",
+    "patchId": "patch-BENCHMARK_SCENARIO_0036",
+    "proofId": "proof-BENCHMARK_SCENARIO_0036",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0037",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0037",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0039",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0039",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0039",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0039",
+    "patchId": "patch-BENCHMARK_SCENARIO_0039",
+    "proofId": "proof-BENCHMARK_SCENARIO_0039",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0040",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0040",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0040",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0040",
+    "patchId": "patch-BENCHMARK_SCENARIO_0040",
+    "proofId": "proof-BENCHMARK_SCENARIO_0040",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0041",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0041",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0041",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0041",
+    "patchId": "patch-BENCHMARK_SCENARIO_0041",
+    "proofId": "NONE",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0042",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0042",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0042",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0042",
+    "patchId": "patch-BENCHMARK_SCENARIO_0042",
+    "proofId": "proof-BENCHMARK_SCENARIO_0042",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0043",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0043",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0043",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0043",
+    "patchId": "patch-BENCHMARK_SCENARIO_0043",
+    "proofId": "proof-BENCHMARK_SCENARIO_0043",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0044",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0044",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0046",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0046",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0046",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0046",
+    "patchId": "patch-BENCHMARK_SCENARIO_0046",
+    "proofId": "proof-BENCHMARK_SCENARIO_0046",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0047",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0047",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0049",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0049",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0049",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0049",
+    "patchId": "patch-BENCHMARK_SCENARIO_0049",
+    "proofId": "proof-BENCHMARK_SCENARIO_0049",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0050",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0050",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0050",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0050",
+    "patchId": "patch-BENCHMARK_SCENARIO_0050",
+    "proofId": "proof-BENCHMARK_SCENARIO_0050",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0051",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0051",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0051",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0051",
+    "patchId": "patch-BENCHMARK_SCENARIO_0051",
+    "proofId": "NONE",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0052",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0052",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0052",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0052",
+    "patchId": "patch-BENCHMARK_SCENARIO_0052",
+    "proofId": "proof-BENCHMARK_SCENARIO_0052",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0053",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0053",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0053",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0053",
+    "patchId": "patch-BENCHMARK_SCENARIO_0053",
+    "proofId": "proof-BENCHMARK_SCENARIO_0053",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0054",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0054",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0056",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0056",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0056",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0056",
+    "patchId": "patch-BENCHMARK_SCENARIO_0056",
+    "proofId": "proof-BENCHMARK_SCENARIO_0056",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0057",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0057",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0059",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0059",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0059",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0059",
+    "patchId": "patch-BENCHMARK_SCENARIO_0059",
+    "proofId": "proof-BENCHMARK_SCENARIO_0059",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0060",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0060",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0060",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0060",
+    "patchId": "patch-BENCHMARK_SCENARIO_0060",
+    "proofId": "proof-BENCHMARK_SCENARIO_0060",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0061",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0061",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0061",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0061",
+    "patchId": "patch-BENCHMARK_SCENARIO_0061",
+    "proofId": "NONE",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0062",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0062",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0062",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0062",
+    "patchId": "patch-BENCHMARK_SCENARIO_0062",
+    "proofId": "proof-BENCHMARK_SCENARIO_0062",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0063",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0063",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0063",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0063",
+    "patchId": "patch-BENCHMARK_SCENARIO_0063",
+    "proofId": "proof-BENCHMARK_SCENARIO_0063",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0064",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0064",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0066",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0066",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0066",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0066",
+    "patchId": "patch-BENCHMARK_SCENARIO_0066",
+    "proofId": "proof-BENCHMARK_SCENARIO_0066",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0067",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0067",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0069",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0069",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0069",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0069",
+    "patchId": "patch-BENCHMARK_SCENARIO_0069",
+    "proofId": "proof-BENCHMARK_SCENARIO_0069",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0070",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0070",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0070",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0070",
+    "patchId": "patch-BENCHMARK_SCENARIO_0070",
+    "proofId": "proof-BENCHMARK_SCENARIO_0070",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0071",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0071",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0071",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0071",
+    "patchId": "patch-BENCHMARK_SCENARIO_0071",
+    "proofId": "NONE",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0072",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0072",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0072",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0072",
+    "patchId": "patch-BENCHMARK_SCENARIO_0072",
+    "proofId": "proof-BENCHMARK_SCENARIO_0072",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0073",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0073",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0073",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0073",
+    "patchId": "patch-BENCHMARK_SCENARIO_0073",
+    "proofId": "proof-BENCHMARK_SCENARIO_0073",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0074",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0074",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0076",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0076",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0076",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0076",
+    "patchId": "patch-BENCHMARK_SCENARIO_0076",
+    "proofId": "proof-BENCHMARK_SCENARIO_0076",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0077",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0077",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0079",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0079",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0079",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0079",
+    "patchId": "patch-BENCHMARK_SCENARIO_0079",
+    "proofId": "proof-BENCHMARK_SCENARIO_0079",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0080",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0080",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0080",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0080",
+    "patchId": "patch-BENCHMARK_SCENARIO_0080",
+    "proofId": "proof-BENCHMARK_SCENARIO_0080",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0081",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0081",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0081",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0081",
+    "patchId": "patch-BENCHMARK_SCENARIO_0081",
+    "proofId": "NONE",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0082",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0082",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0082",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0082",
+    "patchId": "patch-BENCHMARK_SCENARIO_0082",
+    "proofId": "proof-BENCHMARK_SCENARIO_0082",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0083",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0083",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0083",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0083",
+    "patchId": "patch-BENCHMARK_SCENARIO_0083",
+    "proofId": "proof-BENCHMARK_SCENARIO_0083",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0084",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0084",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0086",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0086",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0086",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0086",
+    "patchId": "patch-BENCHMARK_SCENARIO_0086",
+    "proofId": "proof-BENCHMARK_SCENARIO_0086",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0087",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0087",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0089",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0089",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0089",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0089",
+    "patchId": "patch-BENCHMARK_SCENARIO_0089",
+    "proofId": "proof-BENCHMARK_SCENARIO_0089",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0090",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0090",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0090",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0090",
+    "patchId": "patch-BENCHMARK_SCENARIO_0090",
+    "proofId": "proof-BENCHMARK_SCENARIO_0090",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0091",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0091",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0091",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0091",
+    "patchId": "patch-BENCHMARK_SCENARIO_0091",
+    "proofId": "NONE",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0092",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0092",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0092",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0092",
+    "patchId": "patch-BENCHMARK_SCENARIO_0092",
+    "proofId": "proof-BENCHMARK_SCENARIO_0092",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0093",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0093",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0093",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0093",
+    "patchId": "patch-BENCHMARK_SCENARIO_0093",
+    "proofId": "proof-BENCHMARK_SCENARIO_0093",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0094",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0094",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0096",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0096",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0096",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0096",
+    "patchId": "patch-BENCHMARK_SCENARIO_0096",
+    "proofId": "proof-BENCHMARK_SCENARIO_0096",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0097",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0097",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0099",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0099",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0099",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0099",
+    "patchId": "patch-BENCHMARK_SCENARIO_0099",
+    "proofId": "proof-BENCHMARK_SCENARIO_0099",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0100",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0100",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0100",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0100",
+    "patchId": "patch-BENCHMARK_SCENARIO_0100",
+    "proofId": "proof-BENCHMARK_SCENARIO_0100",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0101",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0101",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0101",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0101",
+    "patchId": "patch-BENCHMARK_SCENARIO_0101",
+    "proofId": "NONE",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0102",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0102",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0102",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0102",
+    "patchId": "patch-BENCHMARK_SCENARIO_0102",
+    "proofId": "proof-BENCHMARK_SCENARIO_0102",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0103",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0103",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "env-sandbox-BENCHMARK_SCENARIO_0103",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0103",
+    "patchId": "patch-BENCHMARK_SCENARIO_0103",
+    "proofId": "proof-BENCHMARK_SCENARIO_0103",
+    "counterexampleCount": 1
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0104",
+    "candidateCount": 4,
+    "selectedCandidate": "cand-causal-BENCHMARK_SCENARIO_0104",
+    "candidateSelectionEvidence": [
+      "contract-schema-ast",
+      "ev-causal-trace"
+    ],
+    "environmentId": "NONE",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "baselineExecutionId": "NONE",
+    "patchId": "NONE",
+    "proofId": "NONE",
+    "counterexampleCount": 0
+  }
+]

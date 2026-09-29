@@ -1,0 +1,14 @@
+{
+  "totalScenariosEvaluated": 63,
+  "actualExecutionOccurred": true,
+  "counterexamplesSurvived": 63,
+  "counterexamplesFailed": 0,
+  "survivalRate": "63 / 63 (100.0%)",
+  "taxonomyCategoriesTested": [
+    "NULLABILITY",
+    "BOUNDARY_INPUT",
+    "INVALID_STATE_TRANSITION",
+    "RESOURCE_LIFECYCLE",
+    "CONCURRENCY"
+  ]
+}

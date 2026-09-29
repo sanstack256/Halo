@@ -1,0 +1,1052 @@
+[
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0001",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0002",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0003",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0004",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0005",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0006",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0007",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0008",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0009",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0010",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0011",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0012",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0013",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0014",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0015",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0016",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0017",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0018",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0019",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0020",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0021",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0022",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0023",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0024",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0025",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0026",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0027",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0028",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0029",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0030",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0031",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0032",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0033",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0034",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0035",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0036",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0037",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0038",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0039",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0040",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0041",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0042",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0043",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0044",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0045",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0046",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0047",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0048",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0049",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0050",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0051",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0052",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0053",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0054",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0055",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0056",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0057",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0058",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0059",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0060",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0061",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0062",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0063",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0064",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0065",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0066",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0067",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0068",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0069",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0070",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0071",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0072",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0073",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0074",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0075",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0076",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0077",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0078",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0079",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0080",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0081",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0082",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0083",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0084",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0085",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0086",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0087",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0088",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0089",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0090",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0091",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0092",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0093",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0094",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0095",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0096",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0097",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0098",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0099",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0100",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0101",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0102",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0103",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0104",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0105",
+    "alternativeBoundariesEvaluated": [
+      "CONSUMER",
+      "CALLER"
+    ],
+    "alternativeBoundariesRejected": true,
+    "empiricalProofInSandbox": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  }
+]

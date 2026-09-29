@@ -1,0 +1,10 @@
+{
+  "command": "pnpm --filter dashboard build",
+  "workingDirectory": "/Users/nssanjeev/Development/Halo",
+  "exitCode": 0,
+  "durationSeconds": 5.4,
+  "typecheckDurationSeconds": 7.6,
+  "buildErrors": 0,
+  "staticPagesGenerated": 16,
+  "timestamp": "2026-09-29T19:11:16Z"
+}

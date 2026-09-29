@@ -1,0 +1,14 @@
+{
+  "totalCorpus": 105,
+  "codeModification": 84,
+  "nonCodeRemediation": {
+    "total": 21,
+    "databasePoolAndResourceLeaks": 10,
+    "externalServiceOutages": 0,
+    "configurationMissingEnv": 10,
+    "releaseRollbacks": 1,
+    "other": 0
+  },
+  "sumPartitions": 105,
+  "partitionCoversCorpus": true
+}

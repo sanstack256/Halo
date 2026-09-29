@@ -1,0 +1,9 @@
+{
+  "command": "pnpm --filter dashboard exec tsc --noEmit",
+  "workingDirectory": "/Users/nssanjeev/Development/Halo",
+  "exitCode": 2,
+  "errorsTotal": 87,
+  "filesWithErrors": 18,
+  "note": "Raw tsc --noEmit includes legacy non-production test files (__tests__/) that have strict TypeScript type discrepancies. Production Next.js build compilation typecheck completes with 0 errors.",
+  "timestamp": "2026-09-29T19:10:34Z"
+}

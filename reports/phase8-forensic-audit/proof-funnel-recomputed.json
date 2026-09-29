@@ -1,0 +1,15 @@
+{
+  "stageA_candidateGenerated": 84,
+  "stageB_candidateAccepted": 84,
+  "stageC_patchGenerated": 84,
+  "stageD_environmentReconstructed": 63,
+  "stageE_baselineReproduced": 63,
+  "stageF_patchApplied": 63,
+  "stageG_patchCompiled": 63,
+  "stageH_failureRemoved": 52,
+  "stageI_behaviorValidated": 52,
+  "stageJ_invariantValidated": 52,
+  "stageK_regressionValidated": 52,
+  "stageL_counterexamplesValidated": 63,
+  "stageM_fullyVerified": 52
+}

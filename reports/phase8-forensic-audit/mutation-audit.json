@@ -1,0 +1,11 @@
+{
+  "totalMutationsGenerated": 104,
+  "totalMutationsExecuted": 104,
+  "mutationsRejected": 104,
+  "mutationsAccepted": 0,
+  "empiricalRejectionRate": "104 / 104 (100.0%)",
+  "mutationCategories": [
+    "INVERT_CONDITION",
+    "REMOVE_VALIDATION"
+  ]
+}

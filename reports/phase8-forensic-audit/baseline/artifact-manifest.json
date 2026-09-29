@@ -1,0 +1,146 @@
+[
+  {
+    "relativePath": "baseline/build-results.json",
+    "sizeBytes": 178,
+    "sha256": "66f163790ecaade76f63e533d953993c1c7d10f81e72d276841f0de79cc4ab7b",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "baseline/environment-results.json",
+    "sizeBytes": 345,
+    "sha256": "49b0bb72bca188134397492300050efbd70d9156a36798d2a5ff75e46c2f2aac",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "baseline/git-state.json",
+    "sizeBytes": 196,
+    "sha256": "3e70c8bc8d8d04071c56a17a58319759a0ac2e56e17271fdae66749f8e7720d5",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "baseline/phase7-frozen-benchmark.json",
+    "sizeBytes": 310098,
+    "sha256": "228542a6c6cf757838abe37b4ecb5cd04c72037a870e7eef1727bc122c1b8ee0",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "baseline/proof-engine-hash.json",
+    "sizeBytes": 252,
+    "sha256": "17971ded2c97ed55b75473f2b5534312ebc4d8f69aadd1acdd5b2a5c492e5318",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "baseline/recommendation-pipeline-hash.json",
+    "sizeBytes": 353,
+    "sha256": "26a6c9c20dc6e2a9283350116239aea838c0eed1c83c52327c9f39f216e290af",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "baseline/test-results.json",
+    "sizeBytes": 412,
+    "sha256": "a4f89e8a70f6dff785c4b1087701f7aabd2d2f49c4e236656178401a61ab528e",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "baseline/typecheck-results.json",
+    "sizeBytes": 150,
+    "sha256": "014923dbdb7f74be4a1ca414ca817f52771be04ffdb1e77fc481506aa44d1fcf",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "behavioral-validation.json",
+    "sizeBytes": 18683,
+    "sha256": "318c587f487c9f588669bca36ad20f33f58ed4589bb3e8816f1105738274d36b",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "candidate-ledger.json",
+    "sizeBytes": 446342,
+    "sha256": "e338b563dcad61cb2eeb820242d44fef345fc42096ee8c495ffd9ce04549588b",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "candidate-precision.json",
+    "sizeBytes": 341,
+    "sha256": "f5582e76a57193a2b4b6e9d361b4cda66301c919a6fb0482249d09d00a1e7b7e",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "causal-analysis.json",
+    "sizeBytes": 15169,
+    "sha256": "5933991c856dd5f442d31cdf7c598107b2bc3e6e3fb0e617ff18fb48523ab58c",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "counterexample-results.json",
+    "sizeBytes": 13117,
+    "sha256": "8d12e59abd217a33131c9ed170da06e1852a0756461887be9006118cacbd1b50",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "equivalence-results.json",
+    "sizeBytes": 123,
+    "sha256": "4b3f06844b86f0030c594d757f84b583a60c6ae1aeec16629a0cb7bf3277cacb",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "final-scorecard.json",
+    "sizeBytes": 1802,
+    "sha256": "7a4e35d34415a41e175538983c2cf60b5712886b006dc83d6b786763bf3ddb6f",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "generalization-results.json",
+    "sizeBytes": 398,
+    "sha256": "0883b22682bbb460392f138f88dca385ccd77b73f9edf24e3e2875094450e5da",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "metric-integrity-audit.md",
+    "sizeBytes": 5071,
+    "sha256": "17c08c6275b7a1e20accea6a423582f06f3e6fee73c4911edab7263b866e536d",
+    "fileType": "md"
+  },
+  {
+    "relativePath": "mutation-results.json",
+    "sizeBytes": 21643,
+    "sha256": "910c6eef9c87bfce374167cbb16bd512aaf0224ec648d1e81cb8355630523bd9",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "phase8-master-report.md",
+    "sizeBytes": 5416,
+    "sha256": "1a214564020dad32a97065f2dbc0ae251f6ad0009d6a4180e98fe81a46c666e6",
+    "fileType": "md"
+  },
+  {
+    "relativePath": "proof-replay-results.json",
+    "sizeBytes": 155,
+    "sha256": "815adecaf2a3d961b8da079d89dc0e6d5554fcfc27cd0cdb54c53d595f4339da",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "provider-parity.json",
+    "sizeBytes": 184,
+    "sha256": "0f18ebb1426ca43a2c591bf6a47d818b6ccafa648cb19097680b7fe44d724690",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "repair-selection.json",
+    "sizeBytes": 17516,
+    "sha256": "e3029fe218e1ce6d5bae7d0ae8551f6474e90529098966f31e3fd53ea2ee9542",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "scenario-ledger.json",
+    "sizeBytes": 98979,
+    "sha256": "76561c77a293744681f66ed68d8a75c763e8401e4af0b07ed1c6108ff7a49272",
+    "fileType": "json"
+  },
+  {
+    "relativePath": "security-results.json",
+    "sizeBytes": 199,
+    "sha256": "0f8c9e97af7572b11bff4f2283de7870111be61037ac5c0fd9b875246fca091b",
+    "fileType": "json"
+  }
+]

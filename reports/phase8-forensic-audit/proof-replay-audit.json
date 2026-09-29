@@ -1,0 +1,8 @@
+{
+  "totalReplaysAttempted": 52,
+  "replaysConsistent": 52,
+  "replaysInconsistent": 0,
+  "cachedPassSatisfiedNewProof": false,
+  "freshSandboxConstructedPerReplay": true,
+  "replayConsistencyRate": "52 / 52 (100.0%)"
+}

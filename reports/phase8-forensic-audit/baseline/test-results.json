@@ -1,0 +1,15 @@
+{
+  "command": "./node_modules/.bin/vitest run --config apps/dashboard/vitest.config.mjs",
+  "workingDirectory": "/Users/nssanjeev/Development/Halo",
+  "exitCode": 0,
+  "durationSeconds": 31.26,
+  "stdoutLocation": "/Users/nssanjeev/.gemini/antigravity-ide/brain/19dbd840-f555-4a0e-88ef-0f97f9d9a200/.system_generated/tasks/task-3827.log",
+  "stderrLocation": "/Users/nssanjeev/.gemini/antigravity-ide/brain/19dbd840-f555-4a0e-88ef-0f97f9d9a200/.system_generated/tasks/task-3827.log",
+  "testFilesTotal": 66,
+  "testFilesPassed": 66,
+  "testFilesFailed": 0,
+  "testsTotal": 614,
+  "testsPassed": 614,
+  "testsFailed": 0,
+  "timestamp": "2026-09-29T19:10:05Z"
+}

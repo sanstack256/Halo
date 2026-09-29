@@ -1,0 +1,12 @@
+{
+  "totalScenarios": 105,
+  "codeScenarios": 84,
+  "nonCodeScenarios": 21,
+  "codeEnvironmentReconstructed": 63,
+  "codeEnvironmentBlocked": 21,
+  "nonCodeEnvironmentBlocked": 21,
+  "totalEnvironmentsBlocked": 42,
+  "reconstructionMethod": "CompositeExecutionEnvironmentProvider (hermetic ephemeral sandbox)",
+  "syntheticArtifactsDetected": 0,
+  "fakeExecutionPassesDetected": 0
+}

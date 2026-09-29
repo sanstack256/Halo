@@ -1,0 +1,1052 @@
+[
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0001",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0002",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0003",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0004",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0005",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0006",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0007",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0008",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0009",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0010",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0011",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0012",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0013",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0014",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0015",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0016",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0017",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0018",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0019",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0020",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0021",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0022",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0023",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0024",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0025",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0026",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0027",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0028",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0029",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0030",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0031",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0032",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0033",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0034",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0035",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0036",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0037",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0038",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0039",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0040",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0041",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0042",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0043",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0044",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0045",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0046",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0047",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0048",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0049",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0050",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0051",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0052",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0053",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0054",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0055",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0056",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0057",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0058",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0059",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0060",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0061",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0062",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0063",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0064",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0065",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0066",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0067",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0068",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0069",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0070",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0071",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0072",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0073",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0074",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0075",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0076",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0077",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0078",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0079",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0080",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0081",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0082",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0083",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0084",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0085",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0086",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0087",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0088",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0089",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0090",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0091",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0092",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0093",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0094",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0095",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0096",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0097",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0098",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0099",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0100",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0101",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0102",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0103",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0104",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0105",
+    "sourceEvidence": [
+      "contract-ast",
+      "caller-callee-relationship"
+    ],
+    "contractOwnerDetermined": true,
+    "empiricallyValidated": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  }
+]

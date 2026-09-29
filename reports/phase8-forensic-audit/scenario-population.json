@@ -1,0 +1,2438 @@
+[
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0001",
+    "scenarioName": "Error: Missing required parameter 'tenantId'",
+    "scenarioClass": "ARCHETYPE_0",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "functional_pipeline",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0001",
+      "cand-mask-BENCHMARK_SCENARIO_0001",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0001",
+      "cand-equiv-BENCHMARK_SCENARIO_0001"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0001",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0001",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0001",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0001"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0002",
+    "scenarioName": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "scenarioClass": "ARCHETYPE_1",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "class_based_service",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0002",
+      "cand-mask-BENCHMARK_SCENARIO_0002",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0002",
+      "cand-equiv-BENCHMARK_SCENARIO_0002"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0002",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0002",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0002",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0002",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0002",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0002",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0002"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0003",
+    "scenarioName": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+    "scenarioClass": "ARCHETYPE_2",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "repository_pattern",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0003",
+      "cand-mask-BENCHMARK_SCENARIO_0003",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0003",
+      "cand-equiv-BENCHMARK_SCENARIO_0003"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0003",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0003",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0003",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0003",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0003",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0003",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0003"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0004",
+    "scenarioName": "TimeoutError: Connection pool exhausted (max: 20)",
+    "scenarioClass": "ARCHETYPE_3",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "dependency_injection",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0004",
+      "cand-mask-BENCHMARK_SCENARIO_0004",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0004",
+      "cand-equiv-BENCHMARK_SCENARIO_0004"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0004",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0005",
+    "scenarioName": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+    "scenarioClass": "ARCHETYPE_4",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "event_handler",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0005",
+      "cand-mask-BENCHMARK_SCENARIO_0005",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0005",
+      "cand-equiv-BENCHMARK_SCENARIO_0005"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0006",
+    "scenarioName": "TypeError: Reduce of empty array with no initial value",
+    "scenarioClass": "ARCHETYPE_5",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "async_worker",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0006",
+      "cand-mask-BENCHMARK_SCENARIO_0006",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0006",
+      "cand-equiv-BENCHMARK_SCENARIO_0006"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0006",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0006",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0006",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0006",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0006",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0006",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0006"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0007",
+    "scenarioName": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+    "scenarioClass": "ARCHETYPE_6",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "api_controller",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0007",
+      "cand-mask-BENCHMARK_SCENARIO_0007",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0007",
+      "cand-equiv-BENCHMARK_SCENARIO_0007"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0007",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0008",
+    "scenarioName": "SchemaViolationError: Incompatible column format after release",
+    "scenarioClass": "ARCHETYPE_7",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "frontend_state",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0008",
+      "cand-mask-BENCHMARK_SCENARIO_0008",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0008",
+      "cand-equiv-BENCHMARK_SCENARIO_0008"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0009",
+    "scenarioName": "ConcurrentModificationError: Mutex unlocked while task was active",
+    "scenarioClass": "ARCHETYPE_8",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "adapter_layer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0009",
+      "cand-mask-BENCHMARK_SCENARIO_0009",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0009",
+      "cand-equiv-BENCHMARK_SCENARIO_0009"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0009",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0009",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0009",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0009",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0009",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0009",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0009"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0010",
+    "scenarioName": "TypeError: Cannot read properties of undefined (reading 'flags')",
+    "scenarioClass": "ARCHETYPE_9",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "queue_consumer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0010",
+      "cand-mask-BENCHMARK_SCENARIO_0010",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0010",
+      "cand-equiv-BENCHMARK_SCENARIO_0010"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0010",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0010",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0010",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0010",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0010",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0010",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0010"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0011",
+    "scenarioName": "Error: Missing required parameter 'tenantId'",
+    "scenarioClass": "ARCHETYPE_0",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "functional_pipeline",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0011",
+      "cand-mask-BENCHMARK_SCENARIO_0011",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0011",
+      "cand-equiv-BENCHMARK_SCENARIO_0011"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0011",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0011",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0011",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0011"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0012",
+    "scenarioName": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "scenarioClass": "ARCHETYPE_1",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "class_based_service",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0012",
+      "cand-mask-BENCHMARK_SCENARIO_0012",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0012",
+      "cand-equiv-BENCHMARK_SCENARIO_0012"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0012",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0012",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0012",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0012",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0012",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0012",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0012"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0013",
+    "scenarioName": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+    "scenarioClass": "ARCHETYPE_2",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "repository_pattern",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0013",
+      "cand-mask-BENCHMARK_SCENARIO_0013",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0013",
+      "cand-equiv-BENCHMARK_SCENARIO_0013"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0013",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0013",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0013",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0013",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0013",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0013",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0013"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0014",
+    "scenarioName": "TimeoutError: Connection pool exhausted (max: 20)",
+    "scenarioClass": "ARCHETYPE_3",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "dependency_injection",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0014",
+      "cand-mask-BENCHMARK_SCENARIO_0014",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0014",
+      "cand-equiv-BENCHMARK_SCENARIO_0014"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0014",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0015",
+    "scenarioName": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+    "scenarioClass": "ARCHETYPE_4",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "event_handler",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0015",
+      "cand-mask-BENCHMARK_SCENARIO_0015",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0015",
+      "cand-equiv-BENCHMARK_SCENARIO_0015"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0016",
+    "scenarioName": "TypeError: Reduce of empty array with no initial value",
+    "scenarioClass": "ARCHETYPE_5",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "async_worker",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0016",
+      "cand-mask-BENCHMARK_SCENARIO_0016",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0016",
+      "cand-equiv-BENCHMARK_SCENARIO_0016"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0016",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0016",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0016",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0016",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0016",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0016",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0016"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0017",
+    "scenarioName": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+    "scenarioClass": "ARCHETYPE_6",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "api_controller",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0017",
+      "cand-mask-BENCHMARK_SCENARIO_0017",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0017",
+      "cand-equiv-BENCHMARK_SCENARIO_0017"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0017",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0018",
+    "scenarioName": "SchemaViolationError: Incompatible column format after release",
+    "scenarioClass": "ARCHETYPE_7",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "frontend_state",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0018",
+      "cand-mask-BENCHMARK_SCENARIO_0018",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0018",
+      "cand-equiv-BENCHMARK_SCENARIO_0018"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0019",
+    "scenarioName": "ConcurrentModificationError: Mutex unlocked while task was active",
+    "scenarioClass": "ARCHETYPE_8",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "adapter_layer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0019",
+      "cand-mask-BENCHMARK_SCENARIO_0019",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0019",
+      "cand-equiv-BENCHMARK_SCENARIO_0019"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0019",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0019",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0019",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0019",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0019",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0019",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0019"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0020",
+    "scenarioName": "TypeError: Cannot read properties of undefined (reading 'flags')",
+    "scenarioClass": "ARCHETYPE_9",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "queue_consumer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0020",
+      "cand-mask-BENCHMARK_SCENARIO_0020",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0020",
+      "cand-equiv-BENCHMARK_SCENARIO_0020"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0020",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0020",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0020",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0020",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0020",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0020",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0020"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0021",
+    "scenarioName": "Error: Missing required parameter 'tenantId'",
+    "scenarioClass": "ARCHETYPE_0",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "functional_pipeline",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0021",
+      "cand-mask-BENCHMARK_SCENARIO_0021",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0021",
+      "cand-equiv-BENCHMARK_SCENARIO_0021"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0021",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0021",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0021",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0021"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0022",
+    "scenarioName": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "scenarioClass": "ARCHETYPE_1",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "class_based_service",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0022",
+      "cand-mask-BENCHMARK_SCENARIO_0022",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0022",
+      "cand-equiv-BENCHMARK_SCENARIO_0022"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0022",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0022",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0022",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0022",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0022",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0022",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0022"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0023",
+    "scenarioName": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+    "scenarioClass": "ARCHETYPE_2",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "repository_pattern",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0023",
+      "cand-mask-BENCHMARK_SCENARIO_0023",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0023",
+      "cand-equiv-BENCHMARK_SCENARIO_0023"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0023",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0023",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0023",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0023",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0023",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0023",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0023"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0024",
+    "scenarioName": "TimeoutError: Connection pool exhausted (max: 20)",
+    "scenarioClass": "ARCHETYPE_3",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "dependency_injection",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0024",
+      "cand-mask-BENCHMARK_SCENARIO_0024",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0024",
+      "cand-equiv-BENCHMARK_SCENARIO_0024"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0024",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0025",
+    "scenarioName": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+    "scenarioClass": "ARCHETYPE_4",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "event_handler",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0025",
+      "cand-mask-BENCHMARK_SCENARIO_0025",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0025",
+      "cand-equiv-BENCHMARK_SCENARIO_0025"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0026",
+    "scenarioName": "TypeError: Reduce of empty array with no initial value",
+    "scenarioClass": "ARCHETYPE_5",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "async_worker",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0026",
+      "cand-mask-BENCHMARK_SCENARIO_0026",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0026",
+      "cand-equiv-BENCHMARK_SCENARIO_0026"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0026",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0026",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0026",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0026",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0026",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0026",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0026"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0027",
+    "scenarioName": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+    "scenarioClass": "ARCHETYPE_6",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "api_controller",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0027",
+      "cand-mask-BENCHMARK_SCENARIO_0027",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0027",
+      "cand-equiv-BENCHMARK_SCENARIO_0027"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0027",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0028",
+    "scenarioName": "SchemaViolationError: Incompatible column format after release",
+    "scenarioClass": "ARCHETYPE_7",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "frontend_state",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0028",
+      "cand-mask-BENCHMARK_SCENARIO_0028",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0028",
+      "cand-equiv-BENCHMARK_SCENARIO_0028"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0029",
+    "scenarioName": "ConcurrentModificationError: Mutex unlocked while task was active",
+    "scenarioClass": "ARCHETYPE_8",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "adapter_layer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0029",
+      "cand-mask-BENCHMARK_SCENARIO_0029",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0029",
+      "cand-equiv-BENCHMARK_SCENARIO_0029"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0029",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0029",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0029",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0029",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0029",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0029",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0029"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0030",
+    "scenarioName": "TypeError: Cannot read properties of undefined (reading 'flags')",
+    "scenarioClass": "ARCHETYPE_9",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "queue_consumer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0030",
+      "cand-mask-BENCHMARK_SCENARIO_0030",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0030",
+      "cand-equiv-BENCHMARK_SCENARIO_0030"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0030",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0030",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0030",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0030",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0030",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0030",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0030"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0031",
+    "scenarioName": "Error: Missing required parameter 'tenantId'",
+    "scenarioClass": "ARCHETYPE_0",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "functional_pipeline",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0031",
+      "cand-mask-BENCHMARK_SCENARIO_0031",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0031",
+      "cand-equiv-BENCHMARK_SCENARIO_0031"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0031",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0031",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0031",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0031"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0032",
+    "scenarioName": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "scenarioClass": "ARCHETYPE_1",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "class_based_service",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0032",
+      "cand-mask-BENCHMARK_SCENARIO_0032",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0032",
+      "cand-equiv-BENCHMARK_SCENARIO_0032"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0032",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0032",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0032",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0032",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0032",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0032",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0032"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0033",
+    "scenarioName": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+    "scenarioClass": "ARCHETYPE_2",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "repository_pattern",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0033",
+      "cand-mask-BENCHMARK_SCENARIO_0033",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0033",
+      "cand-equiv-BENCHMARK_SCENARIO_0033"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0033",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0033",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0033",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0033",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0033",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0033",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0033"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0034",
+    "scenarioName": "TimeoutError: Connection pool exhausted (max: 20)",
+    "scenarioClass": "ARCHETYPE_3",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "dependency_injection",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0034",
+      "cand-mask-BENCHMARK_SCENARIO_0034",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0034",
+      "cand-equiv-BENCHMARK_SCENARIO_0034"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0034",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0035",
+    "scenarioName": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+    "scenarioClass": "ARCHETYPE_4",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "event_handler",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0035",
+      "cand-mask-BENCHMARK_SCENARIO_0035",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0035",
+      "cand-equiv-BENCHMARK_SCENARIO_0035"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0036",
+    "scenarioName": "TypeError: Reduce of empty array with no initial value",
+    "scenarioClass": "ARCHETYPE_5",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "async_worker",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0036",
+      "cand-mask-BENCHMARK_SCENARIO_0036",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0036",
+      "cand-equiv-BENCHMARK_SCENARIO_0036"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0036",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0036",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0036",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0036",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0036",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0036",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0036"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0037",
+    "scenarioName": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+    "scenarioClass": "ARCHETYPE_6",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "api_controller",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0037",
+      "cand-mask-BENCHMARK_SCENARIO_0037",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0037",
+      "cand-equiv-BENCHMARK_SCENARIO_0037"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0037",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0038",
+    "scenarioName": "SchemaViolationError: Incompatible column format after release",
+    "scenarioClass": "ARCHETYPE_7",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "frontend_state",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0038",
+      "cand-mask-BENCHMARK_SCENARIO_0038",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0038",
+      "cand-equiv-BENCHMARK_SCENARIO_0038"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0039",
+    "scenarioName": "ConcurrentModificationError: Mutex unlocked while task was active",
+    "scenarioClass": "ARCHETYPE_8",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "adapter_layer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0039",
+      "cand-mask-BENCHMARK_SCENARIO_0039",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0039",
+      "cand-equiv-BENCHMARK_SCENARIO_0039"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0039",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0039",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0039",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0039",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0039",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0039",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0039"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0040",
+    "scenarioName": "TypeError: Cannot read properties of undefined (reading 'flags')",
+    "scenarioClass": "ARCHETYPE_9",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "queue_consumer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0040",
+      "cand-mask-BENCHMARK_SCENARIO_0040",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0040",
+      "cand-equiv-BENCHMARK_SCENARIO_0040"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0040",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0040",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0040",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0040",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0040",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0040",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0040"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0041",
+    "scenarioName": "Error: Missing required parameter 'tenantId'",
+    "scenarioClass": "ARCHETYPE_0",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "functional_pipeline",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0041",
+      "cand-mask-BENCHMARK_SCENARIO_0041",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0041",
+      "cand-equiv-BENCHMARK_SCENARIO_0041"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0041",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0041",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0041",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0041"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0042",
+    "scenarioName": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "scenarioClass": "ARCHETYPE_1",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "class_based_service",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0042",
+      "cand-mask-BENCHMARK_SCENARIO_0042",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0042",
+      "cand-equiv-BENCHMARK_SCENARIO_0042"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0042",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0042",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0042",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0042",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0042",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0042",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0042"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0043",
+    "scenarioName": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+    "scenarioClass": "ARCHETYPE_2",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "repository_pattern",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0043",
+      "cand-mask-BENCHMARK_SCENARIO_0043",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0043",
+      "cand-equiv-BENCHMARK_SCENARIO_0043"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0043",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0043",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0043",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0043",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0043",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0043",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0043"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0044",
+    "scenarioName": "TimeoutError: Connection pool exhausted (max: 20)",
+    "scenarioClass": "ARCHETYPE_3",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "dependency_injection",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0044",
+      "cand-mask-BENCHMARK_SCENARIO_0044",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0044",
+      "cand-equiv-BENCHMARK_SCENARIO_0044"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0044",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0045",
+    "scenarioName": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+    "scenarioClass": "ARCHETYPE_4",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "event_handler",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0045",
+      "cand-mask-BENCHMARK_SCENARIO_0045",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0045",
+      "cand-equiv-BENCHMARK_SCENARIO_0045"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0046",
+    "scenarioName": "TypeError: Reduce of empty array with no initial value",
+    "scenarioClass": "ARCHETYPE_5",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "async_worker",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0046",
+      "cand-mask-BENCHMARK_SCENARIO_0046",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0046",
+      "cand-equiv-BENCHMARK_SCENARIO_0046"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0046",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0046",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0046",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0046",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0046",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0046",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0046"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0047",
+    "scenarioName": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+    "scenarioClass": "ARCHETYPE_6",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "api_controller",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0047",
+      "cand-mask-BENCHMARK_SCENARIO_0047",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0047",
+      "cand-equiv-BENCHMARK_SCENARIO_0047"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0047",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0048",
+    "scenarioName": "SchemaViolationError: Incompatible column format after release",
+    "scenarioClass": "ARCHETYPE_7",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "frontend_state",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0048",
+      "cand-mask-BENCHMARK_SCENARIO_0048",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0048",
+      "cand-equiv-BENCHMARK_SCENARIO_0048"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0049",
+    "scenarioName": "ConcurrentModificationError: Mutex unlocked while task was active",
+    "scenarioClass": "ARCHETYPE_8",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "adapter_layer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0049",
+      "cand-mask-BENCHMARK_SCENARIO_0049",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0049",
+      "cand-equiv-BENCHMARK_SCENARIO_0049"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0049",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0049",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0049",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0049",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0049",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0049",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0049"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0050",
+    "scenarioName": "TypeError: Cannot read properties of undefined (reading 'flags')",
+    "scenarioClass": "ARCHETYPE_9",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "queue_consumer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0050",
+      "cand-mask-BENCHMARK_SCENARIO_0050",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0050",
+      "cand-equiv-BENCHMARK_SCENARIO_0050"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0050",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0050",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0050",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0050",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0050",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0050",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0050"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0051",
+    "scenarioName": "Error: Missing required parameter 'tenantId'",
+    "scenarioClass": "ARCHETYPE_0",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "functional_pipeline",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0051",
+      "cand-mask-BENCHMARK_SCENARIO_0051",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0051",
+      "cand-equiv-BENCHMARK_SCENARIO_0051"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0051",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0051",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0051",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0051"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0052",
+    "scenarioName": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "scenarioClass": "ARCHETYPE_1",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "class_based_service",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0052",
+      "cand-mask-BENCHMARK_SCENARIO_0052",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0052",
+      "cand-equiv-BENCHMARK_SCENARIO_0052"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0052",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0052",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0052",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0052",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0052",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0052",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0052"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0053",
+    "scenarioName": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+    "scenarioClass": "ARCHETYPE_2",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "repository_pattern",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0053",
+      "cand-mask-BENCHMARK_SCENARIO_0053",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0053",
+      "cand-equiv-BENCHMARK_SCENARIO_0053"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0053",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0053",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0053",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0053",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0053",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0053",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0053"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0054",
+    "scenarioName": "TimeoutError: Connection pool exhausted (max: 20)",
+    "scenarioClass": "ARCHETYPE_3",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "dependency_injection",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0054",
+      "cand-mask-BENCHMARK_SCENARIO_0054",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0054",
+      "cand-equiv-BENCHMARK_SCENARIO_0054"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0054",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0055",
+    "scenarioName": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+    "scenarioClass": "ARCHETYPE_4",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "event_handler",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0055",
+      "cand-mask-BENCHMARK_SCENARIO_0055",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0055",
+      "cand-equiv-BENCHMARK_SCENARIO_0055"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0056",
+    "scenarioName": "TypeError: Reduce of empty array with no initial value",
+    "scenarioClass": "ARCHETYPE_5",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "async_worker",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0056",
+      "cand-mask-BENCHMARK_SCENARIO_0056",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0056",
+      "cand-equiv-BENCHMARK_SCENARIO_0056"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0056",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0056",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0056",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0056",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0056",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0056",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0056"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0057",
+    "scenarioName": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+    "scenarioClass": "ARCHETYPE_6",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "api_controller",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0057",
+      "cand-mask-BENCHMARK_SCENARIO_0057",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0057",
+      "cand-equiv-BENCHMARK_SCENARIO_0057"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0057",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0058",
+    "scenarioName": "SchemaViolationError: Incompatible column format after release",
+    "scenarioClass": "ARCHETYPE_7",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "frontend_state",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0058",
+      "cand-mask-BENCHMARK_SCENARIO_0058",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0058",
+      "cand-equiv-BENCHMARK_SCENARIO_0058"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0059",
+    "scenarioName": "ConcurrentModificationError: Mutex unlocked while task was active",
+    "scenarioClass": "ARCHETYPE_8",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "adapter_layer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0059",
+      "cand-mask-BENCHMARK_SCENARIO_0059",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0059",
+      "cand-equiv-BENCHMARK_SCENARIO_0059"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0059",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0059",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0059",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0059",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0059",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0059",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0059"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0060",
+    "scenarioName": "TypeError: Cannot read properties of undefined (reading 'flags')",
+    "scenarioClass": "ARCHETYPE_9",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "queue_consumer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0060",
+      "cand-mask-BENCHMARK_SCENARIO_0060",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0060",
+      "cand-equiv-BENCHMARK_SCENARIO_0060"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0060",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0060",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0060",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0060",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0060",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0060",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0060"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0061",
+    "scenarioName": "Error: Missing required parameter 'tenantId'",
+    "scenarioClass": "ARCHETYPE_0",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "functional_pipeline",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0061",
+      "cand-mask-BENCHMARK_SCENARIO_0061",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0061",
+      "cand-equiv-BENCHMARK_SCENARIO_0061"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0061",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0061",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0061",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0061"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0062",
+    "scenarioName": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "scenarioClass": "ARCHETYPE_1",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "class_based_service",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0062",
+      "cand-mask-BENCHMARK_SCENARIO_0062",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0062",
+      "cand-equiv-BENCHMARK_SCENARIO_0062"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0062",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0062",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0062",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0062",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0062",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0062",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0062"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0063",
+    "scenarioName": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+    "scenarioClass": "ARCHETYPE_2",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "repository_pattern",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0063",
+      "cand-mask-BENCHMARK_SCENARIO_0063",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0063",
+      "cand-equiv-BENCHMARK_SCENARIO_0063"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0063",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0063",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0063",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0063",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0063",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0063",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0063"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0064",
+    "scenarioName": "TimeoutError: Connection pool exhausted (max: 20)",
+    "scenarioClass": "ARCHETYPE_3",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "dependency_injection",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0064",
+      "cand-mask-BENCHMARK_SCENARIO_0064",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0064",
+      "cand-equiv-BENCHMARK_SCENARIO_0064"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0064",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0065",
+    "scenarioName": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+    "scenarioClass": "ARCHETYPE_4",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "event_handler",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0065",
+      "cand-mask-BENCHMARK_SCENARIO_0065",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0065",
+      "cand-equiv-BENCHMARK_SCENARIO_0065"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0066",
+    "scenarioName": "TypeError: Reduce of empty array with no initial value",
+    "scenarioClass": "ARCHETYPE_5",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "async_worker",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0066",
+      "cand-mask-BENCHMARK_SCENARIO_0066",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0066",
+      "cand-equiv-BENCHMARK_SCENARIO_0066"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0066",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0066",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0066",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0066",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0066",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0066",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0066"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0067",
+    "scenarioName": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+    "scenarioClass": "ARCHETYPE_6",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "api_controller",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0067",
+      "cand-mask-BENCHMARK_SCENARIO_0067",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0067",
+      "cand-equiv-BENCHMARK_SCENARIO_0067"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0067",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0068",
+    "scenarioName": "SchemaViolationError: Incompatible column format after release",
+    "scenarioClass": "ARCHETYPE_7",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "frontend_state",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0068",
+      "cand-mask-BENCHMARK_SCENARIO_0068",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0068",
+      "cand-equiv-BENCHMARK_SCENARIO_0068"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0069",
+    "scenarioName": "ConcurrentModificationError: Mutex unlocked while task was active",
+    "scenarioClass": "ARCHETYPE_8",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "adapter_layer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0069",
+      "cand-mask-BENCHMARK_SCENARIO_0069",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0069",
+      "cand-equiv-BENCHMARK_SCENARIO_0069"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0069",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0069",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0069",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0069",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0069",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0069",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0069"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0070",
+    "scenarioName": "TypeError: Cannot read properties of undefined (reading 'flags')",
+    "scenarioClass": "ARCHETYPE_9",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "queue_consumer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0070",
+      "cand-mask-BENCHMARK_SCENARIO_0070",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0070",
+      "cand-equiv-BENCHMARK_SCENARIO_0070"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0070",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0070",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0070",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0070",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0070",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0070",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0070"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0071",
+    "scenarioName": "Error: Missing required parameter 'tenantId'",
+    "scenarioClass": "ARCHETYPE_0",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "functional_pipeline",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0071",
+      "cand-mask-BENCHMARK_SCENARIO_0071",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0071",
+      "cand-equiv-BENCHMARK_SCENARIO_0071"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0071",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0071",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0071",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0071"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0072",
+    "scenarioName": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "scenarioClass": "ARCHETYPE_1",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "class_based_service",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0072",
+      "cand-mask-BENCHMARK_SCENARIO_0072",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0072",
+      "cand-equiv-BENCHMARK_SCENARIO_0072"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0072",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0072",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0072",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0072",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0072",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0072",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0072"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0073",
+    "scenarioName": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+    "scenarioClass": "ARCHETYPE_2",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "repository_pattern",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0073",
+      "cand-mask-BENCHMARK_SCENARIO_0073",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0073",
+      "cand-equiv-BENCHMARK_SCENARIO_0073"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0073",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0073",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0073",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0073",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0073",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0073",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0073"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0074",
+    "scenarioName": "TimeoutError: Connection pool exhausted (max: 20)",
+    "scenarioClass": "ARCHETYPE_3",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "dependency_injection",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0074",
+      "cand-mask-BENCHMARK_SCENARIO_0074",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0074",
+      "cand-equiv-BENCHMARK_SCENARIO_0074"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0074",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0075",
+    "scenarioName": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+    "scenarioClass": "ARCHETYPE_4",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "event_handler",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0075",
+      "cand-mask-BENCHMARK_SCENARIO_0075",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0075",
+      "cand-equiv-BENCHMARK_SCENARIO_0075"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0076",
+    "scenarioName": "TypeError: Reduce of empty array with no initial value",
+    "scenarioClass": "ARCHETYPE_5",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "async_worker",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0076",
+      "cand-mask-BENCHMARK_SCENARIO_0076",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0076",
+      "cand-equiv-BENCHMARK_SCENARIO_0076"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0076",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0076",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0076",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0076",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0076",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0076",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0076"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0077",
+    "scenarioName": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+    "scenarioClass": "ARCHETYPE_6",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "api_controller",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0077",
+      "cand-mask-BENCHMARK_SCENARIO_0077",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0077",
+      "cand-equiv-BENCHMARK_SCENARIO_0077"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0077",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0078",
+    "scenarioName": "SchemaViolationError: Incompatible column format after release",
+    "scenarioClass": "ARCHETYPE_7",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "frontend_state",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0078",
+      "cand-mask-BENCHMARK_SCENARIO_0078",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0078",
+      "cand-equiv-BENCHMARK_SCENARIO_0078"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0079",
+    "scenarioName": "ConcurrentModificationError: Mutex unlocked while task was active",
+    "scenarioClass": "ARCHETYPE_8",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "adapter_layer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0079",
+      "cand-mask-BENCHMARK_SCENARIO_0079",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0079",
+      "cand-equiv-BENCHMARK_SCENARIO_0079"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0079",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0079",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0079",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0079",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0079",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0079",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0079"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0080",
+    "scenarioName": "TypeError: Cannot read properties of undefined (reading 'flags')",
+    "scenarioClass": "ARCHETYPE_9",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "queue_consumer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0080",
+      "cand-mask-BENCHMARK_SCENARIO_0080",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0080",
+      "cand-equiv-BENCHMARK_SCENARIO_0080"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0080",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0080",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0080",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0080",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0080",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0080",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0080"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0081",
+    "scenarioName": "Error: Missing required parameter 'tenantId'",
+    "scenarioClass": "ARCHETYPE_0",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "functional_pipeline",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0081",
+      "cand-mask-BENCHMARK_SCENARIO_0081",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0081",
+      "cand-equiv-BENCHMARK_SCENARIO_0081"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0081",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0081",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0081",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0081"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0082",
+    "scenarioName": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "scenarioClass": "ARCHETYPE_1",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "class_based_service",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0082",
+      "cand-mask-BENCHMARK_SCENARIO_0082",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0082",
+      "cand-equiv-BENCHMARK_SCENARIO_0082"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0082",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0082",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0082",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0082",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0082",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0082",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0082"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0083",
+    "scenarioName": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+    "scenarioClass": "ARCHETYPE_2",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "repository_pattern",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0083",
+      "cand-mask-BENCHMARK_SCENARIO_0083",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0083",
+      "cand-equiv-BENCHMARK_SCENARIO_0083"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0083",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0083",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0083",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0083",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0083",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0083",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0083"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0084",
+    "scenarioName": "TimeoutError: Connection pool exhausted (max: 20)",
+    "scenarioClass": "ARCHETYPE_3",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "dependency_injection",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0084",
+      "cand-mask-BENCHMARK_SCENARIO_0084",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0084",
+      "cand-equiv-BENCHMARK_SCENARIO_0084"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0084",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0085",
+    "scenarioName": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+    "scenarioClass": "ARCHETYPE_4",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "event_handler",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0085",
+      "cand-mask-BENCHMARK_SCENARIO_0085",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0085",
+      "cand-equiv-BENCHMARK_SCENARIO_0085"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0086",
+    "scenarioName": "TypeError: Reduce of empty array with no initial value",
+    "scenarioClass": "ARCHETYPE_5",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "async_worker",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0086",
+      "cand-mask-BENCHMARK_SCENARIO_0086",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0086",
+      "cand-equiv-BENCHMARK_SCENARIO_0086"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0086",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0086",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0086",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0086",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0086",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0086",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0086"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0087",
+    "scenarioName": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+    "scenarioClass": "ARCHETYPE_6",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "api_controller",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0087",
+      "cand-mask-BENCHMARK_SCENARIO_0087",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0087",
+      "cand-equiv-BENCHMARK_SCENARIO_0087"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0087",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0088",
+    "scenarioName": "SchemaViolationError: Incompatible column format after release",
+    "scenarioClass": "ARCHETYPE_7",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "frontend_state",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0088",
+      "cand-mask-BENCHMARK_SCENARIO_0088",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0088",
+      "cand-equiv-BENCHMARK_SCENARIO_0088"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0089",
+    "scenarioName": "ConcurrentModificationError: Mutex unlocked while task was active",
+    "scenarioClass": "ARCHETYPE_8",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "adapter_layer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0089",
+      "cand-mask-BENCHMARK_SCENARIO_0089",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0089",
+      "cand-equiv-BENCHMARK_SCENARIO_0089"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0089",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0089",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0089",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0089",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0089",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0089",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0089"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0090",
+    "scenarioName": "TypeError: Cannot read properties of undefined (reading 'flags')",
+    "scenarioClass": "ARCHETYPE_9",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "queue_consumer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0090",
+      "cand-mask-BENCHMARK_SCENARIO_0090",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0090",
+      "cand-equiv-BENCHMARK_SCENARIO_0090"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0090",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0090",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0090",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0090",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0090",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0090",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0090"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0091",
+    "scenarioName": "Error: Missing required parameter 'tenantId'",
+    "scenarioClass": "ARCHETYPE_0",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "functional_pipeline",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0091",
+      "cand-mask-BENCHMARK_SCENARIO_0091",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0091",
+      "cand-equiv-BENCHMARK_SCENARIO_0091"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0091",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0091",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0091",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0091"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0092",
+    "scenarioName": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "scenarioClass": "ARCHETYPE_1",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "class_based_service",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0092",
+      "cand-mask-BENCHMARK_SCENARIO_0092",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0092",
+      "cand-equiv-BENCHMARK_SCENARIO_0092"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0092",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0092",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0092",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0092",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0092",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0092",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0092"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0093",
+    "scenarioName": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+    "scenarioClass": "ARCHETYPE_2",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "repository_pattern",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0093",
+      "cand-mask-BENCHMARK_SCENARIO_0093",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0093",
+      "cand-equiv-BENCHMARK_SCENARIO_0093"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0093",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0093",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0093",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0093",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0093",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0093",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0093"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0094",
+    "scenarioName": "TimeoutError: Connection pool exhausted (max: 20)",
+    "scenarioClass": "ARCHETYPE_3",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "dependency_injection",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0094",
+      "cand-mask-BENCHMARK_SCENARIO_0094",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0094",
+      "cand-equiv-BENCHMARK_SCENARIO_0094"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0094",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0095",
+    "scenarioName": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+    "scenarioClass": "ARCHETYPE_4",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "event_handler",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0095",
+      "cand-mask-BENCHMARK_SCENARIO_0095",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0095",
+      "cand-equiv-BENCHMARK_SCENARIO_0095"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0096",
+    "scenarioName": "TypeError: Reduce of empty array with no initial value",
+    "scenarioClass": "ARCHETYPE_5",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "async_worker",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0096",
+      "cand-mask-BENCHMARK_SCENARIO_0096",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0096",
+      "cand-equiv-BENCHMARK_SCENARIO_0096"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0096",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0096",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0096",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0096",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0096",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0096",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0096"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0097",
+    "scenarioName": "ConfigError: Missing required environment variable 'DATABASE_URL'",
+    "scenarioClass": "ARCHETYPE_6",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "api_controller",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0097",
+      "cand-mask-BENCHMARK_SCENARIO_0097",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0097",
+      "cand-equiv-BENCHMARK_SCENARIO_0097"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0097",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0098",
+    "scenarioName": "SchemaViolationError: Incompatible column format after release",
+    "scenarioClass": "ARCHETYPE_7",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "frontend_state",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0098",
+      "cand-mask-BENCHMARK_SCENARIO_0098",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0098",
+      "cand-equiv-BENCHMARK_SCENARIO_0098"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0099",
+    "scenarioName": "ConcurrentModificationError: Mutex unlocked while task was active",
+    "scenarioClass": "ARCHETYPE_8",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "adapter_layer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0099",
+      "cand-mask-BENCHMARK_SCENARIO_0099",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0099",
+      "cand-equiv-BENCHMARK_SCENARIO_0099"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0099",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0099",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0099",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0099",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0099",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0099",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0099"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0100",
+    "scenarioName": "TypeError: Cannot read properties of undefined (reading 'flags')",
+    "scenarioClass": "ARCHETYPE_9",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "queue_consumer",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0100",
+      "cand-mask-BENCHMARK_SCENARIO_0100",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0100",
+      "cand-equiv-BENCHMARK_SCENARIO_0100"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0100",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0100",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0100",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0100",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0100",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0100",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0100"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0101",
+    "scenarioName": "Error: Missing required parameter 'tenantId'",
+    "scenarioClass": "ARCHETYPE_0",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "functional_pipeline",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0101",
+      "cand-mask-BENCHMARK_SCENARIO_0101",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0101",
+      "cand-equiv-BENCHMARK_SCENARIO_0101"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0101",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0101",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0101",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0101"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0102",
+    "scenarioName": "SyntaxError: Unexpected token '<', \"<!DOCTYPE \"... is not valid JSON",
+    "scenarioClass": "ARCHETYPE_1",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "class_based_service",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0102",
+      "cand-mask-BENCHMARK_SCENARIO_0102",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0102",
+      "cand-equiv-BENCHMARK_SCENARIO_0102"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0102",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0102",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0102",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0102",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0102",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0102",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0102"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0103",
+    "scenarioName": "IllegalStateError: Cannot transition from CANCELLED to COMPLETED",
+    "scenarioClass": "ARCHETYPE_2",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "repository_pattern",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0103",
+      "cand-mask-BENCHMARK_SCENARIO_0103",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0103",
+      "cand-equiv-BENCHMARK_SCENARIO_0103"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0103",
+    "baselineExecutionId": "exec-baseline-BENCHMARK_SCENARIO_0103",
+    "patchExecutionId": "exec-patch-BENCHMARK_SCENARIO_0103",
+    "behaviorExecutionId": "exec-behavior-BENCHMARK_SCENARIO_0103",
+    "invariantExecutionId": "exec-invariant-BENCHMARK_SCENARIO_0103",
+    "regressionExecutionId": "exec-regression-BENCHMARK_SCENARIO_0103",
+    "counterexampleExecutionIds": [
+      "exec-counter-BENCHMARK_SCENARIO_0103"
+    ]
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0104",
+    "scenarioName": "TimeoutError: Connection pool exhausted (max: 20)",
+    "scenarioClass": "ARCHETYPE_3",
+    "codeOrNonCode": "CODE",
+    "language": "TypeScript",
+    "architecture": "dependency_injection",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0104",
+      "cand-mask-BENCHMARK_SCENARIO_0104",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0104",
+      "cand-equiv-BENCHMARK_SCENARIO_0104"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0104",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0105",
+    "scenarioName": "ExternalServiceError: 503 Service Unavailable (Stripe API Outage)",
+    "scenarioClass": "ARCHETYPE_4",
+    "codeOrNonCode": "NON_CODE",
+    "language": "TypeScript",
+    "architecture": "event_handler",
+    "environmentStatus": "ENVIRONMENT_RECONSTRUCTION_BLOCKED",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0105",
+      "cand-mask-BENCHMARK_SCENARIO_0105",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0105",
+      "cand-equiv-BENCHMARK_SCENARIO_0105"
+    ],
+    "selectedCandidateId": "NONE",
+    "baselineExecutionId": "NONE",
+    "patchExecutionId": "NONE",
+    "behaviorExecutionId": "NONE",
+    "invariantExecutionId": "NONE",
+    "regressionExecutionId": "NONE",
+    "counterexampleExecutionIds": []
+  }
+]

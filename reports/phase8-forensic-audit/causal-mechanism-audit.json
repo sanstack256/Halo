@@ -1,0 +1,1052 @@
+[
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0001",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0002",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0003",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0004",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0005",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0006",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0007",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0008",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0009",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0010",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0011",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0012",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0013",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0014",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0015",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0016",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0017",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0018",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0019",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0020",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0021",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0022",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0023",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0024",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0025",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0026",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0027",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0028",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0029",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0030",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0031",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0032",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0033",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0034",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0035",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0036",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0037",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0038",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0039",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0040",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0041",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0042",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0043",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0044",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0045",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0046",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0047",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0048",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0049",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0050",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0051",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0052",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0053",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0054",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0055",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0056",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0057",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0058",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0059",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0060",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0061",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0062",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0063",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0064",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0065",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0066",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0067",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0068",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0069",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0070",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0071",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0072",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0073",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0074",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0075",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0076",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0077",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0078",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0079",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0080",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0081",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0082",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0083",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0084",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0085",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0086",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0087",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0088",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0089",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0090",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0091",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0092",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0093",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0094",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0095",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0096",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0097",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0098",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0099",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0100",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0101",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0102",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0103",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": true,
+    "classification": "EMPIRICALLY_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0104",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0105",
+    "evidenceSupporting": [
+      "ev-stack-trace",
+      "ev-exception-signature"
+    ],
+    "empiricalEvidenceExistedBeforeEvaluator": true,
+    "empiricallyEstablished": false,
+    "classification": "EVIDENCE_SUPPORTED"
+  }
+]

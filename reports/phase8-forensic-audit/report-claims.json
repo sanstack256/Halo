@@ -1,0 +1,302 @@
+[
+  {
+    "claimId": "CLM-001",
+    "metricName": "Total Scenarios Evaluated",
+    "reportedNumerator": 105,
+    "reportedDenominator": 105,
+    "reportedValue": "105",
+    "reportLocation": "Header line 5",
+    "populationDescription": "Complete benchmark corpus",
+    "claimedEvidenceType": "SCENARIO_CORPUS"
+  },
+  {
+    "claimId": "CLM-002",
+    "metricName": "Evaluator Known Effectiveness",
+    "reportedNumerator": 105,
+    "reportedDenominator": 105,
+    "reportedValue": "105 / 105 (100.0%)",
+    "reportLocation": "Section 1, item 1",
+    "populationDescription": "Benchmark oracle known solutions across all incidents",
+    "claimedEvidenceType": "EVALUATOR_ORACLE_TRUTH"
+  },
+  {
+    "claimId": "CLM-003",
+    "metricName": "Halo Sandbox Verified Repairs",
+    "reportedNumerator": 52,
+    "reportedDenominator": 105,
+    "reportedValue": "52 / 105 (49.5%)",
+    "reportLocation": "Section 1, item 1",
+    "populationDescription": "All incidents with hermetic sandbox verified proof",
+    "claimedEvidenceType": "EMPIRICAL_EXECUTION_PROOF"
+  },
+  {
+    "claimId": "CLM-004",
+    "metricName": "Environment Blocked Valid Refusals",
+    "reportedNumerator": 42,
+    "reportedDenominator": 105,
+    "reportedValue": "42 / 105 (40.0%)",
+    "reportLocation": "Section 1, item 1",
+    "populationDescription": "Incidents where proof environment was unavailable or unsafe",
+    "claimedEvidenceType": "ENVIRONMENT_EVIDENCE"
+  },
+  {
+    "claimId": "CLM-005",
+    "metricName": "False Positive Verified Repairs",
+    "reportedNumerator": 0,
+    "reportedDenominator": 105,
+    "reportedValue": "0 / 105",
+    "reportLocation": "Section 1, item 1",
+    "populationDescription": "All incidents",
+    "claimedEvidenceType": "GATE_AUDIT"
+  },
+  {
+    "claimId": "CLM-006",
+    "metricName": "False Negative Refusals",
+    "reportedNumerator": 0,
+    "reportedDenominator": 105,
+    "reportedValue": "0 / 105",
+    "reportLocation": "Section 1, item 1",
+    "populationDescription": "All incidents",
+    "claimedEvidenceType": "GATE_AUDIT"
+  },
+  {
+    "claimId": "CLM-007",
+    "metricName": "Candidates Generated Total",
+    "reportedNumerator": 378,
+    "reportedDenominator": 378,
+    "reportedValue": "378",
+    "reportLocation": "Section 1, item 2",
+    "populationDescription": "All candidates across all incidents",
+    "claimedEvidenceType": "CANDIDATE_LEDGER"
+  },
+  {
+    "claimId": "CLM-008",
+    "metricName": "Candidate Precision Rate",
+    "reportedNumerator": 136,
+    "reportedDenominator": 378,
+    "reportedValue": "136 / 378 (36.0%)",
+    "reportLocation": "Section 1, item 2",
+    "populationDescription": "Valid candidates (verified + valid equivalent) / total generated",
+    "claimedEvidenceType": "CANDIDATE_ACCOUNTING"
+  },
+  {
+    "claimId": "CLM-009",
+    "metricName": "Symptom-Mask Rejection",
+    "reportedNumerator": 105,
+    "reportedDenominator": 105,
+    "reportedValue": "105 / 105 (100.0%)",
+    "reportLocation": "Section 1, item 3",
+    "populationDescription": "All generated symptom-masking alternatives",
+    "claimedEvidenceType": "SEMANTIC_CONSEQUENCE_ANALYSIS"
+  },
+  {
+    "claimId": "CLM-010",
+    "metricName": "Mutation Resistance",
+    "reportedNumerator": 104,
+    "reportedDenominator": 104,
+    "reportedValue": "104 / 104 (100.0%)",
+    "reportLocation": "Section 1, item 4",
+    "populationDescription": "Controlled code mutations on verified repairs",
+    "claimedEvidenceType": "EMPIRICAL_MUTATION_TESTING"
+  },
+  {
+    "claimId": "CLM-011",
+    "metricName": "Scenario Discovery Recall",
+    "reportedNumerator": 84,
+    "reportedDenominator": 84,
+    "reportedValue": "84 / 84",
+    "reportLocation": "Section 2, Scorecard row 1",
+    "populationDescription": "Code-modification incidents",
+    "claimedEvidenceType": "BOUNDARY_SEARCH"
+  },
+  {
+    "claimId": "CLM-012",
+    "metricName": "Candidate Recall",
+    "reportedNumerator": 84,
+    "reportedDenominator": 84,
+    "reportedValue": "84 / 84",
+    "reportLocation": "Section 2, Scorecard row 3",
+    "populationDescription": "Code-modification incidents",
+    "claimedEvidenceType": "CANDIDATE_GENERATION"
+  },
+  {
+    "claimId": "CLM-013",
+    "metricName": "Causal Mechanism Accuracy",
+    "reportedNumerator": 105,
+    "reportedDenominator": 105,
+    "reportedValue": "105 / 105",
+    "reportLocation": "Section 2, Scorecard row 4",
+    "populationDescription": "Complete benchmark corpus",
+    "claimedEvidenceType": "CAUSAL_ANALYSIS"
+  },
+  {
+    "claimId": "CLM-014",
+    "metricName": "Ownership Accuracy",
+    "reportedNumerator": 105,
+    "reportedDenominator": 105,
+    "reportedValue": "105 / 105",
+    "reportLocation": "Section 2, Scorecard row 5",
+    "populationDescription": "Complete benchmark corpus",
+    "claimedEvidenceType": "CONTRACT_OWNERSHIP"
+  },
+  {
+    "claimId": "CLM-015",
+    "metricName": "Repair-Boundary Accuracy",
+    "reportedNumerator": 105,
+    "reportedDenominator": 105,
+    "reportedValue": "105 / 105",
+    "reportLocation": "Section 2, Scorecard row 6",
+    "populationDescription": "Complete benchmark corpus",
+    "claimedEvidenceType": "BOUNDARY_ANALYSIS"
+  },
+  {
+    "claimId": "CLM-016",
+    "metricName": "Repair-Selection Accuracy",
+    "reportedNumerator": 84,
+    "reportedDenominator": 84,
+    "reportedValue": "84 / 84",
+    "reportLocation": "Section 2, Scorecard row 7",
+    "populationDescription": "Code-modification incidents",
+    "claimedEvidenceType": "CANDIDATE_SELECTION"
+  },
+  {
+    "claimId": "CLM-017",
+    "metricName": "Scorecard Baseline Reproduction",
+    "reportedNumerator": 63,
+    "reportedDenominator": 63,
+    "reportedValue": "63 / 63",
+    "reportLocation": "Section 2, Scorecard row 8",
+    "populationDescription": "Reconstructed environments",
+    "claimedEvidenceType": "EXECUTION_REPRO"
+  },
+  {
+    "claimId": "CLM-018",
+    "metricName": "Scorecard Patch Application",
+    "reportedNumerator": 63,
+    "reportedDenominator": 63,
+    "reportedValue": "63 / 63",
+    "reportLocation": "Section 2, Scorecard row 9",
+    "populationDescription": "Reconstructed environments",
+    "claimedEvidenceType": "SANDBOX_PATCH"
+  },
+  {
+    "claimId": "CLM-019",
+    "metricName": "Scorecard Behavioral Validation",
+    "reportedNumerator": 52,
+    "reportedDenominator": 63,
+    "reportedValue": "52 / 63",
+    "reportLocation": "Section 2, Scorecard row 10",
+    "populationDescription": "Reconstructed environments",
+    "claimedEvidenceType": "SANDBOX_EXECUTION"
+  },
+  {
+    "claimId": "CLM-020",
+    "metricName": "Scorecard Invariant Validation",
+    "reportedNumerator": 52,
+    "reportedDenominator": 63,
+    "reportedValue": "52 / 63",
+    "reportLocation": "Section 2, Scorecard row 11",
+    "populationDescription": "Reconstructed environments",
+    "claimedEvidenceType": "INVARIANT_CHECK"
+  },
+  {
+    "claimId": "CLM-021",
+    "metricName": "Scorecard Regression Validation",
+    "reportedNumerator": 52,
+    "reportedDenominator": 63,
+    "reportedValue": "52 / 63",
+    "reportLocation": "Section 2, Scorecard row 12",
+    "populationDescription": "Reconstructed environments",
+    "claimedEvidenceType": "REGRESSION_SUITE"
+  },
+  {
+    "claimId": "CLM-022",
+    "metricName": "Scorecard Counterexample Survival",
+    "reportedNumerator": 63,
+    "reportedDenominator": 63,
+    "reportedValue": "63 / 63",
+    "reportLocation": "Section 2, Scorecard row 13",
+    "populationDescription": "Reconstructed environments",
+    "claimedEvidenceType": "COUNTEREXAMPLE_SUITE"
+  },
+  {
+    "claimId": "CLM-023",
+    "metricName": "Equivalent Repairs Accepted",
+    "reportedNumerator": 84,
+    "reportedDenominator": 84,
+    "reportedValue": "84 / 84",
+    "reportLocation": "Section 2, Scorecard row 14",
+    "populationDescription": "Code-modification incidents",
+    "claimedEvidenceType": "SEMANTIC_EQUIVALENCE"
+  },
+  {
+    "claimId": "CLM-024",
+    "metricName": "Environment Reconstruction",
+    "reportedNumerator": 63,
+    "reportedDenominator": 105,
+    "reportedValue": "63 / 105",
+    "reportLocation": "Section 2, Scorecard row 20",
+    "populationDescription": "Complete benchmark corpus",
+    "claimedEvidenceType": "ENVIRONMENT_BUILDER"
+  },
+  {
+    "claimId": "CLM-025",
+    "metricName": "Proof Conversion Rate",
+    "reportedNumerator": 52,
+    "reportedDenominator": 63,
+    "reportedValue": "52 / 63",
+    "reportLocation": "Section 2, Scorecard row 21",
+    "populationDescription": "Reconstructed environments",
+    "claimedEvidenceType": "PROOF_GATE"
+  },
+  {
+    "claimId": "CLM-026",
+    "metricName": "Provider Parity Probes",
+    "reportedNumerator": 6,
+    "reportedDenominator": 6,
+    "reportedValue": "6 / 6",
+    "reportLocation": "Section 2, Scorecard row 22",
+    "populationDescription": "Adversarial provider tampering probes",
+    "claimedEvidenceType": "PARITY_PROBE"
+  },
+  {
+    "claimId": "CLM-027",
+    "metricName": "Proof Replay Consistency",
+    "reportedNumerator": 52,
+    "reportedDenominator": 52,
+    "reportedValue": "52 / 52",
+    "reportLocation": "Section 2, Scorecard row 23",
+    "populationDescription": "Verified repairs replayed from clean state",
+    "claimedEvidenceType": "REPLAY_EXECUTION"
+  },
+  {
+    "claimId": "CLM-028",
+    "metricName": "Cross-Issue Contamination",
+    "reportedNumerator": 0,
+    "reportedDenominator": 105,
+    "reportedValue": "0 / 105",
+    "reportLocation": "Section 2, Scorecard row 24",
+    "populationDescription": "Interleaved scenario runs",
+    "claimedEvidenceType": "ISOLATION_CHECK"
+  },
+  {
+    "claimId": "CLM-029",
+    "metricName": "Proof Funnel Environment Reconstructed",
+    "reportedNumerator": 52,
+    "reportedDenominator": 84,
+    "reportedValue": "52 / 84 (61.9%)",
+    "reportLocation": "Section 3, Proof Funnel line 70",
+    "populationDescription": "Code-modification scenarios",
+    "claimedEvidenceType": "ENVIRONMENT_BUILDER"
+  },
+  {
+    "claimId": "CLM-030",
+    "metricName": "Proof Funnel Baseline Reproduced",
+    "reportedNumerator": 52,
+    "reportedDenominator": 52,
+    "reportedValue": "52 / 52 (100.0%)",
+    "reportLocation": "Section 3, Proof Funnel line 71",
+    "populationDescription": "Reconstructed code scenarios",
+    "claimedEvidenceType": "EXECUTION_REPRO"
+  }
+]

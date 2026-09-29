@@ -1,0 +1,152 @@
+{
+  "timestamp": "2026-09-29T19:14:50.052Z",
+  "auditSha": "b9549e322cc4061af7579b2382766d5401616ac3",
+  "mathematicalIntegrityVerified": true,
+  "scorecardTable": [
+    {
+      "metric": "Correct repair exists",
+      "haloEmpiricalProof": "52 / 63",
+      "evaluatorGroundTruth": "84 / 84",
+      "population": "Code incidents",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    {
+      "metric": "Causal mechanism",
+      "haloEmpiricalProof": "63 / 63",
+      "evaluatorGroundTruth": "105 / 105",
+      "population": "Evaluated incidents",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    {
+      "metric": "Ownership",
+      "haloEmpiricalProof": "63 / 63",
+      "evaluatorGroundTruth": "105 / 105",
+      "population": "Evaluated incidents",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    {
+      "metric": "Repair boundary",
+      "haloEmpiricalProof": "63 / 63",
+      "evaluatorGroundTruth": "105 / 105",
+      "population": "Evaluated incidents",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    {
+      "metric": "Candidate recall",
+      "haloEmpiricalProof": "84 / 84",
+      "evaluatorGroundTruth": "84 / 84",
+      "population": "Code incidents",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    {
+      "metric": "Repair selection",
+      "haloEmpiricalProof": "84 / 84",
+      "evaluatorGroundTruth": "84 / 84",
+      "population": "Code incidents",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    {
+      "metric": "Baseline reproduction",
+      "haloEmpiricalProof": "63 / 63",
+      "evaluatorGroundTruth": "N/A",
+      "population": "Reconstructed environments",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    {
+      "metric": "Patch application",
+      "haloEmpiricalProof": "63 / 63",
+      "evaluatorGroundTruth": "84 / 84",
+      "population": "Reconstructed environments",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    {
+      "metric": "Behavioral validation",
+      "haloEmpiricalProof": "52 / 63",
+      "evaluatorGroundTruth": "84 / 84",
+      "population": "Reconstructed environments",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    {
+      "metric": "Invariant validation",
+      "haloEmpiricalProof": "52 / 63",
+      "evaluatorGroundTruth": "84 / 84",
+      "population": "Reconstructed environments",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    {
+      "metric": "Regression validation",
+      "haloEmpiricalProof": "52 / 63",
+      "evaluatorGroundTruth": "84 / 84",
+      "population": "Reconstructed environments",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    {
+      "metric": "Counterexample survival",
+      "haloEmpiricalProof": "63 / 63",
+      "evaluatorGroundTruth": "84 / 84",
+      "population": "Reconstructed environments",
+      "status": "VERIFIED_EMPIRICAL"
+    },
+    {
+      "metric": "Verified repair",
+      "haloEmpiricalProof": "52 / 105",
+      "evaluatorGroundTruth": "105 / 105",
+      "population": "Complete benchmark corpus",
+      "status": "VERIFIED_EMPIRICAL"
+    }
+  ],
+  "assertions": [
+    {
+      "name": "totalScenarios === 105",
+      "passed": true
+    },
+    {
+      "name": "codeScenarios === 84",
+      "passed": true
+    },
+    {
+      "name": "nonCodeScenarios === 21",
+      "passed": true
+    },
+    {
+      "name": "codeScenarios + nonCodeScenarios === 105",
+      "passed": true
+    },
+    {
+      "name": "codeReconstructed (63) + codeBlocked (21) === 84",
+      "passed": true
+    },
+    {
+      "name": "candidateTotal === sum(candidateCategories)",
+      "passed": true
+    },
+    {
+      "name": "verified (52) <= behaviorValidated (52)",
+      "passed": true
+    },
+    {
+      "name": "behaviorValidated (52) <= baselineReproduced (63)",
+      "passed": true
+    },
+    {
+      "name": "invariantValidated (52) <= behaviorValidated (52)",
+      "passed": true
+    },
+    {
+      "name": "regressionValidated (52) <= behaviorValidated (52)",
+      "passed": true
+    },
+    {
+      "name": "counterexampleValidated (63) <= counterexampleExecuted (63)",
+      "passed": true
+    },
+    {
+      "name": "fullyVerified (52) <= everyRequiredProofStage (52)",
+      "passed": true
+    },
+    {
+      "name": "proofConversionNumerator (52) <= proofConversionDenominator (63)",
+      "passed": true
+    }
+  ]
+}

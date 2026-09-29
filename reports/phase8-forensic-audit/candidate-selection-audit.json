@@ -1,0 +1,1682 @@
+[
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0001",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0001",
+      "cand-mask-BENCHMARK_SCENARIO_0001",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0001",
+      "cand-equiv-BENCHMARK_SCENARIO_0001"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0001",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0002",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0002",
+      "cand-mask-BENCHMARK_SCENARIO_0002",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0002",
+      "cand-equiv-BENCHMARK_SCENARIO_0002"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0002",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0003",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0003",
+      "cand-mask-BENCHMARK_SCENARIO_0003",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0003",
+      "cand-equiv-BENCHMARK_SCENARIO_0003"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0003",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0004",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0004",
+      "cand-mask-BENCHMARK_SCENARIO_0004",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0004",
+      "cand-equiv-BENCHMARK_SCENARIO_0004"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0004",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0006",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0006",
+      "cand-mask-BENCHMARK_SCENARIO_0006",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0006",
+      "cand-equiv-BENCHMARK_SCENARIO_0006"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0006",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0007",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0007",
+      "cand-mask-BENCHMARK_SCENARIO_0007",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0007",
+      "cand-equiv-BENCHMARK_SCENARIO_0007"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0007",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0009",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0009",
+      "cand-mask-BENCHMARK_SCENARIO_0009",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0009",
+      "cand-equiv-BENCHMARK_SCENARIO_0009"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0009",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0010",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0010",
+      "cand-mask-BENCHMARK_SCENARIO_0010",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0010",
+      "cand-equiv-BENCHMARK_SCENARIO_0010"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0010",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0011",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0011",
+      "cand-mask-BENCHMARK_SCENARIO_0011",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0011",
+      "cand-equiv-BENCHMARK_SCENARIO_0011"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0011",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0012",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0012",
+      "cand-mask-BENCHMARK_SCENARIO_0012",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0012",
+      "cand-equiv-BENCHMARK_SCENARIO_0012"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0012",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0013",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0013",
+      "cand-mask-BENCHMARK_SCENARIO_0013",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0013",
+      "cand-equiv-BENCHMARK_SCENARIO_0013"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0013",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0014",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0014",
+      "cand-mask-BENCHMARK_SCENARIO_0014",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0014",
+      "cand-equiv-BENCHMARK_SCENARIO_0014"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0014",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0016",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0016",
+      "cand-mask-BENCHMARK_SCENARIO_0016",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0016",
+      "cand-equiv-BENCHMARK_SCENARIO_0016"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0016",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0017",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0017",
+      "cand-mask-BENCHMARK_SCENARIO_0017",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0017",
+      "cand-equiv-BENCHMARK_SCENARIO_0017"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0017",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0019",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0019",
+      "cand-mask-BENCHMARK_SCENARIO_0019",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0019",
+      "cand-equiv-BENCHMARK_SCENARIO_0019"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0019",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0020",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0020",
+      "cand-mask-BENCHMARK_SCENARIO_0020",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0020",
+      "cand-equiv-BENCHMARK_SCENARIO_0020"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0020",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0021",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0021",
+      "cand-mask-BENCHMARK_SCENARIO_0021",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0021",
+      "cand-equiv-BENCHMARK_SCENARIO_0021"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0021",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0022",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0022",
+      "cand-mask-BENCHMARK_SCENARIO_0022",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0022",
+      "cand-equiv-BENCHMARK_SCENARIO_0022"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0022",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0023",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0023",
+      "cand-mask-BENCHMARK_SCENARIO_0023",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0023",
+      "cand-equiv-BENCHMARK_SCENARIO_0023"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0023",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0024",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0024",
+      "cand-mask-BENCHMARK_SCENARIO_0024",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0024",
+      "cand-equiv-BENCHMARK_SCENARIO_0024"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0024",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0026",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0026",
+      "cand-mask-BENCHMARK_SCENARIO_0026",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0026",
+      "cand-equiv-BENCHMARK_SCENARIO_0026"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0026",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0027",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0027",
+      "cand-mask-BENCHMARK_SCENARIO_0027",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0027",
+      "cand-equiv-BENCHMARK_SCENARIO_0027"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0027",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0029",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0029",
+      "cand-mask-BENCHMARK_SCENARIO_0029",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0029",
+      "cand-equiv-BENCHMARK_SCENARIO_0029"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0029",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0030",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0030",
+      "cand-mask-BENCHMARK_SCENARIO_0030",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0030",
+      "cand-equiv-BENCHMARK_SCENARIO_0030"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0030",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0031",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0031",
+      "cand-mask-BENCHMARK_SCENARIO_0031",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0031",
+      "cand-equiv-BENCHMARK_SCENARIO_0031"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0031",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0032",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0032",
+      "cand-mask-BENCHMARK_SCENARIO_0032",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0032",
+      "cand-equiv-BENCHMARK_SCENARIO_0032"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0032",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0033",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0033",
+      "cand-mask-BENCHMARK_SCENARIO_0033",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0033",
+      "cand-equiv-BENCHMARK_SCENARIO_0033"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0033",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0034",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0034",
+      "cand-mask-BENCHMARK_SCENARIO_0034",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0034",
+      "cand-equiv-BENCHMARK_SCENARIO_0034"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0034",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0036",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0036",
+      "cand-mask-BENCHMARK_SCENARIO_0036",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0036",
+      "cand-equiv-BENCHMARK_SCENARIO_0036"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0036",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0037",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0037",
+      "cand-mask-BENCHMARK_SCENARIO_0037",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0037",
+      "cand-equiv-BENCHMARK_SCENARIO_0037"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0037",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0039",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0039",
+      "cand-mask-BENCHMARK_SCENARIO_0039",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0039",
+      "cand-equiv-BENCHMARK_SCENARIO_0039"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0039",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0040",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0040",
+      "cand-mask-BENCHMARK_SCENARIO_0040",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0040",
+      "cand-equiv-BENCHMARK_SCENARIO_0040"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0040",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0041",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0041",
+      "cand-mask-BENCHMARK_SCENARIO_0041",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0041",
+      "cand-equiv-BENCHMARK_SCENARIO_0041"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0041",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0042",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0042",
+      "cand-mask-BENCHMARK_SCENARIO_0042",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0042",
+      "cand-equiv-BENCHMARK_SCENARIO_0042"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0042",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0043",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0043",
+      "cand-mask-BENCHMARK_SCENARIO_0043",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0043",
+      "cand-equiv-BENCHMARK_SCENARIO_0043"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0043",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0044",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0044",
+      "cand-mask-BENCHMARK_SCENARIO_0044",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0044",
+      "cand-equiv-BENCHMARK_SCENARIO_0044"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0044",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0046",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0046",
+      "cand-mask-BENCHMARK_SCENARIO_0046",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0046",
+      "cand-equiv-BENCHMARK_SCENARIO_0046"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0046",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0047",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0047",
+      "cand-mask-BENCHMARK_SCENARIO_0047",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0047",
+      "cand-equiv-BENCHMARK_SCENARIO_0047"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0047",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0049",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0049",
+      "cand-mask-BENCHMARK_SCENARIO_0049",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0049",
+      "cand-equiv-BENCHMARK_SCENARIO_0049"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0049",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0050",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0050",
+      "cand-mask-BENCHMARK_SCENARIO_0050",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0050",
+      "cand-equiv-BENCHMARK_SCENARIO_0050"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0050",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0051",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0051",
+      "cand-mask-BENCHMARK_SCENARIO_0051",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0051",
+      "cand-equiv-BENCHMARK_SCENARIO_0051"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0051",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0052",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0052",
+      "cand-mask-BENCHMARK_SCENARIO_0052",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0052",
+      "cand-equiv-BENCHMARK_SCENARIO_0052"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0052",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0053",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0053",
+      "cand-mask-BENCHMARK_SCENARIO_0053",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0053",
+      "cand-equiv-BENCHMARK_SCENARIO_0053"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0053",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0054",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0054",
+      "cand-mask-BENCHMARK_SCENARIO_0054",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0054",
+      "cand-equiv-BENCHMARK_SCENARIO_0054"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0054",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0056",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0056",
+      "cand-mask-BENCHMARK_SCENARIO_0056",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0056",
+      "cand-equiv-BENCHMARK_SCENARIO_0056"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0056",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0057",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0057",
+      "cand-mask-BENCHMARK_SCENARIO_0057",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0057",
+      "cand-equiv-BENCHMARK_SCENARIO_0057"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0057",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0059",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0059",
+      "cand-mask-BENCHMARK_SCENARIO_0059",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0059",
+      "cand-equiv-BENCHMARK_SCENARIO_0059"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0059",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0060",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0060",
+      "cand-mask-BENCHMARK_SCENARIO_0060",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0060",
+      "cand-equiv-BENCHMARK_SCENARIO_0060"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0060",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0061",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0061",
+      "cand-mask-BENCHMARK_SCENARIO_0061",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0061",
+      "cand-equiv-BENCHMARK_SCENARIO_0061"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0061",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0062",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0062",
+      "cand-mask-BENCHMARK_SCENARIO_0062",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0062",
+      "cand-equiv-BENCHMARK_SCENARIO_0062"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0062",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0063",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0063",
+      "cand-mask-BENCHMARK_SCENARIO_0063",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0063",
+      "cand-equiv-BENCHMARK_SCENARIO_0063"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0063",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0064",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0064",
+      "cand-mask-BENCHMARK_SCENARIO_0064",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0064",
+      "cand-equiv-BENCHMARK_SCENARIO_0064"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0064",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0066",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0066",
+      "cand-mask-BENCHMARK_SCENARIO_0066",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0066",
+      "cand-equiv-BENCHMARK_SCENARIO_0066"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0066",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0067",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0067",
+      "cand-mask-BENCHMARK_SCENARIO_0067",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0067",
+      "cand-equiv-BENCHMARK_SCENARIO_0067"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0067",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0069",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0069",
+      "cand-mask-BENCHMARK_SCENARIO_0069",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0069",
+      "cand-equiv-BENCHMARK_SCENARIO_0069"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0069",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0070",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0070",
+      "cand-mask-BENCHMARK_SCENARIO_0070",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0070",
+      "cand-equiv-BENCHMARK_SCENARIO_0070"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0070",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0071",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0071",
+      "cand-mask-BENCHMARK_SCENARIO_0071",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0071",
+      "cand-equiv-BENCHMARK_SCENARIO_0071"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0071",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0072",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0072",
+      "cand-mask-BENCHMARK_SCENARIO_0072",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0072",
+      "cand-equiv-BENCHMARK_SCENARIO_0072"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0072",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0073",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0073",
+      "cand-mask-BENCHMARK_SCENARIO_0073",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0073",
+      "cand-equiv-BENCHMARK_SCENARIO_0073"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0073",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0074",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0074",
+      "cand-mask-BENCHMARK_SCENARIO_0074",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0074",
+      "cand-equiv-BENCHMARK_SCENARIO_0074"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0074",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0076",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0076",
+      "cand-mask-BENCHMARK_SCENARIO_0076",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0076",
+      "cand-equiv-BENCHMARK_SCENARIO_0076"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0076",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0077",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0077",
+      "cand-mask-BENCHMARK_SCENARIO_0077",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0077",
+      "cand-equiv-BENCHMARK_SCENARIO_0077"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0077",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0079",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0079",
+      "cand-mask-BENCHMARK_SCENARIO_0079",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0079",
+      "cand-equiv-BENCHMARK_SCENARIO_0079"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0079",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0080",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0080",
+      "cand-mask-BENCHMARK_SCENARIO_0080",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0080",
+      "cand-equiv-BENCHMARK_SCENARIO_0080"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0080",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0081",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0081",
+      "cand-mask-BENCHMARK_SCENARIO_0081",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0081",
+      "cand-equiv-BENCHMARK_SCENARIO_0081"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0081",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0082",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0082",
+      "cand-mask-BENCHMARK_SCENARIO_0082",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0082",
+      "cand-equiv-BENCHMARK_SCENARIO_0082"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0082",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0083",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0083",
+      "cand-mask-BENCHMARK_SCENARIO_0083",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0083",
+      "cand-equiv-BENCHMARK_SCENARIO_0083"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0083",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0084",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0084",
+      "cand-mask-BENCHMARK_SCENARIO_0084",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0084",
+      "cand-equiv-BENCHMARK_SCENARIO_0084"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0084",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0086",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0086",
+      "cand-mask-BENCHMARK_SCENARIO_0086",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0086",
+      "cand-equiv-BENCHMARK_SCENARIO_0086"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0086",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0087",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0087",
+      "cand-mask-BENCHMARK_SCENARIO_0087",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0087",
+      "cand-equiv-BENCHMARK_SCENARIO_0087"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0087",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0089",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0089",
+      "cand-mask-BENCHMARK_SCENARIO_0089",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0089",
+      "cand-equiv-BENCHMARK_SCENARIO_0089"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0089",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0090",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0090",
+      "cand-mask-BENCHMARK_SCENARIO_0090",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0090",
+      "cand-equiv-BENCHMARK_SCENARIO_0090"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0090",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0091",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0091",
+      "cand-mask-BENCHMARK_SCENARIO_0091",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0091",
+      "cand-equiv-BENCHMARK_SCENARIO_0091"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0091",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0092",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0092",
+      "cand-mask-BENCHMARK_SCENARIO_0092",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0092",
+      "cand-equiv-BENCHMARK_SCENARIO_0092"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0092",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0093",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0093",
+      "cand-mask-BENCHMARK_SCENARIO_0093",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0093",
+      "cand-equiv-BENCHMARK_SCENARIO_0093"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0093",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0094",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0094",
+      "cand-mask-BENCHMARK_SCENARIO_0094",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0094",
+      "cand-equiv-BENCHMARK_SCENARIO_0094"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0094",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0096",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0096",
+      "cand-mask-BENCHMARK_SCENARIO_0096",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0096",
+      "cand-equiv-BENCHMARK_SCENARIO_0096"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0096",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0097",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0097",
+      "cand-mask-BENCHMARK_SCENARIO_0097",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0097",
+      "cand-equiv-BENCHMARK_SCENARIO_0097"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0097",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0099",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0099",
+      "cand-mask-BENCHMARK_SCENARIO_0099",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0099",
+      "cand-equiv-BENCHMARK_SCENARIO_0099"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0099",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0100",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0100",
+      "cand-mask-BENCHMARK_SCENARIO_0100",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0100",
+      "cand-equiv-BENCHMARK_SCENARIO_0100"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0100",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0101",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0101",
+      "cand-mask-BENCHMARK_SCENARIO_0101",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0101",
+      "cand-equiv-BENCHMARK_SCENARIO_0101"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0101",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0102",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0102",
+      "cand-mask-BENCHMARK_SCENARIO_0102",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0102",
+      "cand-equiv-BENCHMARK_SCENARIO_0102"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0102",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0103",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0103",
+      "cand-mask-BENCHMARK_SCENARIO_0103",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0103",
+      "cand-equiv-BENCHMARK_SCENARIO_0103"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0103",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": true,
+    "behaviorallyValidated": true,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": true,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_AND_PROVEN"
+  },
+  {
+    "scenarioId": "BENCHMARK_SCENARIO_0104",
+    "candidateIds": [
+      "cand-causal-BENCHMARK_SCENARIO_0104",
+      "cand-mask-BENCHMARK_SCENARIO_0104",
+      "cand-wrong-bound-BENCHMARK_SCENARIO_0104",
+      "cand-equiv-BENCHMARK_SCENARIO_0104"
+    ],
+    "selectedCandidateId": "cand-causal-BENCHMARK_SCENARIO_0104",
+    "selectionReason": "Highest causal and contract ownership score; eliminates broken invariant at root boundary",
+    "selectionEvidenceIds": [
+      "ev-causal-trace",
+      "contract-schema-ast"
+    ],
+    "candidateActuallyExecuted": false,
+    "behaviorallyValidated": false,
+    "evaluatorCorrect": true,
+    "haloProvenCorrect": false,
+    "classification": "CAUSAL_CANDIDATE_SELECTED_BUT_UNPROVEN"
+  }
+]

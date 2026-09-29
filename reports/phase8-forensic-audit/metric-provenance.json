@@ -1,0 +1,165 @@
+[
+  {
+    "metric": "Total Scenarios",
+    "reportClaim": "105",
+    "producerFile": "scripts/evaluate-phase8-engine.ts",
+    "producerFunction": "runPhase8Evaluation",
+    "inputFiles": [
+      "apps/dashboard/src/lib/investigation/recommendation-engine/__tests__/evaluation/unseen-benchmark-corpus.ts"
+    ],
+    "inputFields": [
+      "corpus.length"
+    ],
+    "populationField": "All incidents",
+    "numeratorExpression": "corpus.length",
+    "denominatorExpression": "corpus.length",
+    "usesEvaluatorTruth": false,
+    "usesExecutionEvidence": true,
+    "classification": "VERIFIED_EMPIRICAL"
+  },
+  {
+    "metric": "Evaluator Known Effectiveness",
+    "reportClaim": "105 / 105 (100.0%)",
+    "producerFile": "scripts/evaluate-phase8-engine.ts",
+    "producerFunction": "scorecard.evaluatorMetrics",
+    "inputFiles": [
+      "unseen-benchmark-corpus.ts"
+    ],
+    "inputFields": [
+      "hiddenTruth.shouldModifyCode",
+      "hiddenTruth.repairLocationType"
+    ],
+    "populationField": "All incidents",
+    "numeratorExpression": "corpus.length",
+    "denominatorExpression": "corpus.length",
+    "usesEvaluatorTruth": true,
+    "usesExecutionEvidence": false,
+    "classification": "VERIFIED_EVALUATOR_GROUND_TRUTH"
+  },
+  {
+    "metric": "Scenario Discovery Recall",
+    "reportClaim": "84 / 84",
+    "producerFile": "scripts/evaluate-phase8-engine.ts",
+    "producerFunction": "scorecard.table",
+    "inputFiles": [
+      "scenario-ledger.json"
+    ],
+    "inputFields": [
+      "score.repairBoundaryMatched"
+    ],
+    "populationField": "Code-modification incidents (84)",
+    "numeratorExpression": "codeIncidents.filter(s => s.repairBoundaryMatched).length",
+    "denominatorExpression": "codeIncidents.length",
+    "usesEvaluatorTruth": false,
+    "usesExecutionEvidence": true,
+    "classification": "VERIFIED_EMPIRICAL"
+  },
+  {
+    "metric": "Candidate Precision",
+    "reportClaim": "136 / 378",
+    "producerFile": "scripts/evaluate-phase8-engine.ts",
+    "producerFunction": "candidatePrecisionData",
+    "inputFiles": [
+      "candidate-ledger.json"
+    ],
+    "inputFields": [
+      "candidate.status"
+    ],
+    "populationField": "All generated candidates (378)",
+    "numeratorExpression": "candidates.filter(c => c.status === 'VERIFIED' || c.status === 'VALID_EQUIVALENT').length",
+    "denominatorExpression": "candidates.length",
+    "usesEvaluatorTruth": false,
+    "usesExecutionEvidence": true,
+    "classification": "VERIFIED_EMPIRICAL"
+  },
+  {
+    "metric": "Baseline Reproduction",
+    "reportClaim": "63 / 63",
+    "producerFile": "scripts/evaluate-phase8-engine.ts",
+    "producerFunction": "scorecard.table",
+    "inputFiles": [
+      "scenario-ledger.json"
+    ],
+    "inputFields": [
+      "proofFunnel.baselineReproduced"
+    ],
+    "populationField": "Reconstructed code environments (63)",
+    "numeratorExpression": "countBaselineReproduced",
+    "denominatorExpression": "countEnvReconstructed",
+    "usesEvaluatorTruth": false,
+    "usesExecutionEvidence": true,
+    "classification": "VERIFIED_EMPIRICAL"
+  },
+  {
+    "metric": "Patch Application",
+    "reportClaim": "63 / 63",
+    "producerFile": "scripts/evaluate-phase8-engine.ts",
+    "producerFunction": "scorecard.table",
+    "inputFiles": [
+      "scenario-ledger.json"
+    ],
+    "inputFields": [
+      "proofFunnel.patchApplied"
+    ],
+    "populationField": "Reconstructed code environments (63)",
+    "numeratorExpression": "countPatchApplied",
+    "denominatorExpression": "countEnvReconstructed",
+    "usesEvaluatorTruth": false,
+    "usesExecutionEvidence": true,
+    "classification": "VERIFIED_EMPIRICAL"
+  },
+  {
+    "metric": "Behavioral Validation",
+    "reportClaim": "52 / 63",
+    "producerFile": "scripts/evaluate-phase8-engine.ts",
+    "producerFunction": "scorecard.table",
+    "inputFiles": [
+      "scenario-ledger.json"
+    ],
+    "inputFields": [
+      "proofFunnel.behaviorValidated"
+    ],
+    "populationField": "Reconstructed code environments (63)",
+    "numeratorExpression": "countBehaviorValidated",
+    "denominatorExpression": "countEnvReconstructed",
+    "usesEvaluatorTruth": false,
+    "usesExecutionEvidence": true,
+    "classification": "VERIFIED_EMPIRICAL"
+  },
+  {
+    "metric": "Fully Verified Repairs",
+    "reportClaim": "52 / 105",
+    "producerFile": "scripts/evaluate-phase8-engine.ts",
+    "producerFunction": "scorecard.table",
+    "inputFiles": [
+      "scenario-ledger.json"
+    ],
+    "inputFields": [
+      "proofFunnel.fullyVerified"
+    ],
+    "populationField": "All incidents (105)",
+    "numeratorExpression": "countFullyVerified",
+    "denominatorExpression": "corpus.length",
+    "usesEvaluatorTruth": false,
+    "usesExecutionEvidence": true,
+    "classification": "VERIFIED_EMPIRICAL"
+  },
+  {
+    "metric": "Proof Funnel Ascii Block",
+    "reportClaim": "52 / 84 env recon, 52 / 52 everywhere",
+    "producerFile": "scripts/evaluate-phase8-engine.ts",
+    "producerFunction": "generatePhase8MasterReportMarkdown",
+    "inputFiles": [
+      "Static markdown string template"
+    ],
+    "inputFields": [
+      "Hardcoded 52 / 84 and 52 / 52"
+    ],
+    "populationField": "Code incidents",
+    "numeratorExpression": "Hardcoded 52",
+    "denominatorExpression": "Hardcoded 84 and 52",
+    "usesEvaluatorTruth": false,
+    "usesExecutionEvidence": false,
+    "classification": "INCORRECT_REPORT_TYPO"
+  }
+]
