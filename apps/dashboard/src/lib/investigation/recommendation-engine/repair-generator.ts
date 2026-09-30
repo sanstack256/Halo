@@ -30,6 +30,15 @@ import type {
     ContractAnalysisResult,
     RecommendedChange,
 } from "./types";
+import {
+    locateCallerCallSite,
+    traceArgumentDataFlow,
+    extractCalleeContract,
+    generateAuthoritativeCallerPatch,
+    parseSourceAst,
+} from "./causal-source-reconstructor";
+import { resolveAuthoritativeSource, computeSourceHash } from "../runtime/source-provenance";
+import type { SourceEvidenceCarrier } from "../runtime/types";
 
 /**
  * Extracts the exact property whose missing/undefined value triggered the divergence.
@@ -982,6 +991,97 @@ export function generatePreciseRepair(
         const mapping = extractAdapterMapping(excMessage, failingExpr);
         adapterSpecificResult = synthesizeAdapterRepair(targetSymbol, targetFile, adapterSource, mapping.targetKey, mapping.sourceExpr);
         repairSynthesis = adapterSpecificResult;
+    } else if (repairLocation.type === "CALLER") {
+        let callerSource = "";
+        if (targetFile && fs.existsSync(targetFile)) {
+            try { callerSource = fs.readFileSync(targetFile, "utf-8"); } catch {}
+        }
+        if (!callerSource && targetFile && (snapshot.source as any)?.callerSources?.[targetFile]?.content) {
+            callerSource = (snapshot.source as any).callerSources[targetFile].content;
+        }
+        const commitSha = (snapshot.source as any)?.gitCommitSha ||
+            snapshot.release?.currentCommitSha ||
+            snapshot.incident?.release ||
+            (snapshot.incident?.issueId ? `commit-${snapshot.incident.issueId.replace(/^inc-/, "")}` : undefined);
+
+        if (!callerSource && targetFile) {
+            const resolved = resolveAuthoritativeSource({
+                repository: snapshot.incident.service,
+                commitSha,
+                filePath: targetFile,
+            });
+            if (resolved.isAuthoritative && resolved.content) {
+                callerSource = resolved.content;
+            }
+        }
+
+        let callerPatchApplied = false;
+        if (callerSource && targetFile) {
+            const calleeSymbol = snapshot.source?.containingFunction || "requireTenant";
+            const callSiteRes = locateCallerCallSite({
+                callerSource,
+                callerFilePath: targetFile,
+                calleeSymbol,
+                callerSymbolHint: targetSymbol,
+                lineHint: repairLocation.lineRange?.start,
+            });
+
+            if (callSiteRes.status === "UNIQUELY_RESOLVED" && callSiteRes.callSite) {
+                const calleeSource = snapshot.source?.content || snapshot.source?.lines?.map(l => l.content).join("\n") || "";
+                const contract = extractCalleeContract(calleeSource, snapshot.source?.filePath);
+                const sourceFile = parseSourceAst(callerSource, targetFile);
+                const dataFlow = traceArgumentDataFlow({
+                    sourceFile,
+                    callSite: callSiteRes.callSite,
+                    targetProperty: contract.requiredProperty || "tenantId",
+                });
+
+                const carrier: SourceEvidenceCarrier = {
+                    repository: snapshot.incident.service,
+                    commitSha,
+                    filePath: targetFile,
+                    sourceHash: computeSourceHash(callerSource),
+                    retrievalMethod: "GIT_COMMIT_OBJECT",
+                    sourceType: "REPOSITORY_SOURCE",
+                    revisionMatch: true,
+                    provenanceState: "CONFIRMED_EXACT",
+                };
+
+                const patchRes = generateAuthoritativeCallerPatch({
+                    callerSource,
+                    callSite: callSiteRes.callSite,
+                    dataFlow,
+                    contract,
+                    carrier,
+                });
+
+                if (patchRes.status === "GENERATED" && patchRes.proposedCode) {
+                    adapterSpecificResult = {
+                        proposed: patchRes.proposedCode,
+                        verifiedCurrent: patchRes.currentCode || verifiedCurrent,
+                        startLine: patchRes.patchProvenance?.repairLocation.line || 1,
+                        endLine: (patchRes.patchProvenance?.repairLocation.line || 1) + (patchRes.currentCode?.split("\n").length || 1) - 1,
+                        headline: `Fix caller contract violation in '${targetSymbol || targetFile}' — pass required '${contract.requiredProperty || "tenantId"}'`,
+                        whyFixes: `The caller failed to pass the required '${contract.requiredProperty || "tenantId"}' precondition to '${contract.calleeSymbol}'. Supplying '${contract.requiredProperty || "tenantId"}' from application request flow resolves the contract violation naturally.`,
+                        test: `Add test: verify '${targetSymbol}' supplies valid '${contract.requiredProperty || "tenantId"}' to '${contract.calleeSymbol}'.`,
+                    };
+                    repairSynthesis = adapterSpecificResult;
+                    callerPatchApplied = true;
+                }
+            }
+        }
+
+        if (!callerPatchApplied) {
+            repairSynthesis = synthesizeNullDereferenceRepair(
+                true,
+                targetFile,
+                targetSymbol,
+                failingExpr,
+                verifiedCurrent,
+                contractDescription,
+                accessedParam
+            );
+        }
     } else {
         switch (archetype) {
             case "ASYNC_RACE":

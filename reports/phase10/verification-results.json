@@ -1,0 +1,184 @@
+{
+  "timestamp": "2026-09-30T09:46:11.495Z",
+  "acceptanceCorpusCount": 11,
+  "verifiedCount": 11,
+  "failedCount": 0,
+  "scenarios": {
+    "BENCHMARK_SCENARIO_0001": {
+      "id": "BENCHMARK_SCENARIO_0001",
+      "service": "auth-client-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0001",
+      "callerFile": "src/auth/caller_client.ts",
+      "calleeFile": "src/auth/callee_client.ts",
+      "isVerified": true,
+      "proofs": {
+        "baseline": "VERIFIED",
+        "patch": "VERIFIED",
+        "behavior": "VERIFIED",
+        "invariant": "VERIFIED",
+        "regression": "VERIFIED",
+        "counterexample": "VERIFIED"
+      }
+    },
+    "BENCHMARK_SCENARIO_0011": {
+      "id": "BENCHMARK_SCENARIO_0011",
+      "service": "identity-pipeline-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0011",
+      "callerFile": "src/identity/caller_pipeline.ts",
+      "calleeFile": "src/identity/callee_pipeline.ts",
+      "isVerified": true,
+      "proofs": {
+        "baseline": "VERIFIED",
+        "patch": "VERIFIED",
+        "behavior": "VERIFIED",
+        "invariant": "VERIFIED",
+        "regression": "VERIFIED",
+        "counterexample": "VERIFIED"
+      }
+    },
+    "BENCHMARK_SCENARIO_0021": {
+      "id": "BENCHMARK_SCENARIO_0021",
+      "service": "checkout-client-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0021",
+      "callerFile": "src/checkout/caller_client.ts",
+      "calleeFile": "src/checkout/callee_client.ts",
+      "isVerified": true,
+      "proofs": {
+        "baseline": "VERIFIED",
+        "patch": "VERIFIED",
+        "behavior": "VERIFIED",
+        "invariant": "VERIFIED",
+        "regression": "VERIFIED",
+        "counterexample": "VERIFIED"
+      }
+    },
+    "BENCHMARK_SCENARIO_0031": {
+      "id": "BENCHMARK_SCENARIO_0031",
+      "service": "catalog-pipeline-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0031",
+      "callerFile": "src/catalog/caller_pipeline.ts",
+      "calleeFile": "src/catalog/callee_pipeline.ts",
+      "isVerified": true,
+      "proofs": {
+        "baseline": "VERIFIED",
+        "patch": "VERIFIED",
+        "behavior": "VERIFIED",
+        "invariant": "VERIFIED",
+        "regression": "VERIFIED",
+        "counterexample": "VERIFIED"
+      }
+    },
+    "BENCHMARK_SCENARIO_0041": {
+      "id": "BENCHMARK_SCENARIO_0041",
+      "service": "analytics-client-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0041",
+      "callerFile": "src/analytics/caller_client.ts",
+      "calleeFile": "src/analytics/callee_client.ts",
+      "isVerified": true,
+      "proofs": {
+        "baseline": "VERIFIED",
+        "patch": "VERIFIED",
+        "behavior": "VERIFIED",
+        "invariant": "VERIFIED",
+        "regression": "VERIFIED",
+        "counterexample": "VERIFIED"
+      }
+    },
+    "BENCHMARK_SCENARIO_0051": {
+      "id": "BENCHMARK_SCENARIO_0051",
+      "service": "fulfillment-pipeline-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0051",
+      "callerFile": "src/fulfillment/caller_pipeline.ts",
+      "calleeFile": "src/fulfillment/callee_pipeline.ts",
+      "isVerified": true,
+      "proofs": {
+        "baseline": "VERIFIED",
+        "patch": "VERIFIED",
+        "behavior": "VERIFIED",
+        "invariant": "VERIFIED",
+        "regression": "VERIFIED",
+        "counterexample": "VERIFIED"
+      }
+    },
+    "BENCHMARK_SCENARIO_0061": {
+      "id": "BENCHMARK_SCENARIO_0061",
+      "service": "search-client-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0061",
+      "callerFile": "src/search/caller_client.ts",
+      "calleeFile": "src/search/callee_client.ts",
+      "isVerified": true,
+      "proofs": {
+        "baseline": "VERIFIED",
+        "patch": "VERIFIED",
+        "behavior": "VERIFIED",
+        "invariant": "VERIFIED",
+        "regression": "VERIFIED",
+        "counterexample": "VERIFIED"
+      }
+    },
+    "BENCHMARK_SCENARIO_0071": {
+      "id": "BENCHMARK_SCENARIO_0071",
+      "service": "customer-pipeline-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0071",
+      "callerFile": "src/customer/caller_pipeline.ts",
+      "calleeFile": "src/customer/callee_pipeline.ts",
+      "isVerified": true,
+      "proofs": {
+        "baseline": "VERIFIED",
+        "patch": "VERIFIED",
+        "behavior": "VERIFIED",
+        "invariant": "VERIFIED",
+        "regression": "VERIFIED",
+        "counterexample": "VERIFIED"
+      }
+    },
+    "BENCHMARK_SCENARIO_0081": {
+      "id": "BENCHMARK_SCENARIO_0081",
+      "service": "payment-client-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0081",
+      "callerFile": "src/payment/caller_client.ts",
+      "calleeFile": "src/payment/callee_client.ts",
+      "isVerified": true,
+      "proofs": {
+        "baseline": "VERIFIED",
+        "patch": "VERIFIED",
+        "behavior": "VERIFIED",
+        "invariant": "VERIFIED",
+        "regression": "VERIFIED",
+        "counterexample": "VERIFIED"
+      }
+    },
+    "BENCHMARK_SCENARIO_0091": {
+      "id": "BENCHMARK_SCENARIO_0091",
+      "service": "auth-pipeline-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0091",
+      "callerFile": "src/auth/caller_pipeline.ts",
+      "calleeFile": "src/auth/callee_pipeline.ts",
+      "isVerified": true,
+      "proofs": {
+        "baseline": "VERIFIED",
+        "patch": "VERIFIED",
+        "behavior": "VERIFIED",
+        "invariant": "VERIFIED",
+        "regression": "VERIFIED",
+        "counterexample": "VERIFIED"
+      }
+    },
+    "BENCHMARK_SCENARIO_0101": {
+      "id": "BENCHMARK_SCENARIO_0101",
+      "service": "identity-client-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0101",
+      "callerFile": "src/identity/caller_client.ts",
+      "calleeFile": "src/identity/callee_client.ts",
+      "isVerified": true,
+      "proofs": {
+        "baseline": "VERIFIED",
+        "patch": "VERIFIED",
+        "behavior": "VERIFIED",
+        "invariant": "VERIFIED",
+        "regression": "VERIFIED",
+        "counterexample": "VERIFIED"
+      }
+    }
+  }
+}

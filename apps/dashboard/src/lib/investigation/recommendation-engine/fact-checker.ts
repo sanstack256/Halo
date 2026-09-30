@@ -265,17 +265,23 @@ export function runDeterministicFactCheck(
 
         // Check for symptom masking in proposed code
         if (change.proposedCode) {
-            const isCallerContractViolated = repairLocation?.type === "CALLER" || (
-                repairLocation?.type !== "CALLEE" &&
-                Boolean(
-                    snapshot.investigation.hypotheses.some(
-                        (h) =>
-                            (h.title?.toLowerCase().includes("caller") && h.title?.toLowerCase().includes("violate")) ||
-                            (h.description?.toLowerCase().includes("caller") && h.description?.toLowerCase().includes("without"))
+            const isTargetCallee = Boolean(
+                resolvedPath && changeFile &&
+                (resolvedPath.endsWith(changeFile) || changeFile.endsWith(resolvedPath))
+            );
+            const isCallerContractViolatedAtCallee = isTargetCallee && (
+                repairLocation?.type === "CALLER" || (
+                    repairLocation?.type !== "CALLEE" &&
+                    Boolean(
+                        snapshot.investigation.hypotheses.some(
+                            (h) =>
+                                (h.title?.toLowerCase().includes("caller") && h.title?.toLowerCase().includes("violate")) ||
+                                (h.description?.toLowerCase().includes("caller") && h.description?.toLowerCase().includes("without"))
+                        )
                     )
                 )
             );
-            const maskingCheck = detectSymptomMasking(change.proposedCode, isCallerContractViolated);
+            const maskingCheck = detectSymptomMasking(change.proposedCode, isCallerContractViolatedAtCallee);
             if (maskingCheck.isSymptomMasking) {
                 symptomMaskingDetected = true;
                 symptomMaskingDetails = maskingCheck.explanation;

@@ -30,6 +30,48 @@ export type CorrelationBasis =
  */
 export type FrameClassification = "Application" | "Framework" | "Runtime" | "Vendor" | "Native" | "Unknown";
 
+export type FrameRole = "THROW_SITE" | "CALLER" | "CALLEE" | "UNKNOWN";
+
+export type SourceProvenanceState =
+    | "CONFIRMED_EXACT"
+    | "REVISION_VERIFIED"
+    | "REVISION_MISMATCH"
+    | "UNVERIFIED"
+    | "NOT_FOUND";
+
+export type SourceRetrievalMethod =
+    | "GIT_COMMIT_OBJECT"
+    | "GIT_ARCHIVE"
+    | "VERIFIED_SNAPSHOT"
+    | "TELEMETRY_CAPTURED"
+    | "FILE_SYSTEM_EXACT"
+    | "LOCAL_CACHE"
+    | "UNKNOWN";
+
+export type SourceTypeClassification =
+    | "REPOSITORY_SOURCE"
+    | "IMMUTABLE_GIT_OBJECT"
+    | "INCIDENT_SNAPSHOT"
+    | "TELEMETRY_CAPTURED"
+    | "GENERATED"
+    | "UNKNOWN";
+
+export interface SourceEvidenceCarrier {
+    repository?: string;
+    commitSha?: string;
+    filePath: string;
+    lineStart?: number;
+    lineEnd?: number;
+    symbol?: string;
+    sourceHash: string;
+    retrievalMethod: SourceRetrievalMethod;
+    sourceType: SourceTypeClassification;
+    revisionMatch: boolean;
+    provenanceState: SourceProvenanceState;
+    rawContent?: string;
+    unavailabilityReason?: string;
+}
+
 export interface StackFrame {
     order: number;
     functionName: string;
@@ -44,6 +86,11 @@ export interface StackFrame {
     classification: FrameClassification;
     sourceMapStatus?: "exact" | "not_needed" | "missing_map" | "failed";
     generatedLocation?: { file: string; line?: number; column?: number };
+    frameRole?: FrameRole;
+    service?: string;
+    repository?: string;
+    commitSha?: string;
+    sourceMapIdentity?: string;
 }
 
 export interface RepositoryIdentity {

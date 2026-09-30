@@ -79,6 +79,7 @@ export interface EnvironmentCapabilityMatrix {
 
 export type EnvironmentFailureClassification =
     | "SOURCE_UNAVAILABLE"
+    | "CALLER_SOURCE_UNAVAILABLE"
     | "MANIFEST_UNAVAILABLE"
     | "RUNTIME_UNAVAILABLE"
     | "DEPENDENCY_UNAVAILABLE"

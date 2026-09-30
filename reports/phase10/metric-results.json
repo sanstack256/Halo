@@ -1,0 +1,14 @@
+{
+  "phase": 10,
+  "baselineCommit": "41d94ca48f6dd392c0689c0b1578d5341cf9e05b",
+  "phase9VerifiedRepairs": 52,
+  "phase10Archetype0Verified": 11,
+  "totalCodeVerifiedRepairs": 63,
+  "totalCodeCandidates": 84,
+  "totalCorpusScenarios": 105,
+  "remainingBlockedEnvironments": 21,
+  "falseVerifiedRepairs": 0,
+  "provenanceIntegrity": "100%",
+  "testPassCount": 687,
+  "verdict": "PHASE_10_EMPIRICALLY_CONFIRMED"
+}
