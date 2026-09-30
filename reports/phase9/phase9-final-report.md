@@ -3,16 +3,27 @@
 **Execution Date:** September 30, 2026  
 **Auditor / Engineering Agent:** Antigravity (Advanced Agentic Coding)  
 **Corpus Evaluated:** 105 Diverse Incident Scenarios (84 Code, 21 Non-Code) across 10 Architectural Archetypes  
+**Repository SHA:** `d538832397c8701ddc28ea95ef85d474ab624a12`  
 **Final Formal Verdict:** `PHASE_9_EMPIRICALLY_CONFIRMED`
+
+---
+
+## Executive Summary
+
+Phase 9 successfully resolved the forensic cause of the 11 behavioral mismatches, but did not verify the corresponding caller repairs because the benchmark snapshot lacks the caller source required for execution. The system therefore remained fail-closed. The 52 existing fully verified repairs remain fully verified. The 21 unreconstructed environments remain legitimately blocked. No false verified repairs were introduced. No fabricated evidence was introduced. No unjustified refusals were introduced.
+
+Phase 9 resolved the forensic causes of all 11 behavioral-harness mismatches. These cases remain unverified at the repair-execution level because the benchmark snapshot does not contain the caller source required to execute the identified caller repairs. Halo correctly failed closed rather than fabricating caller code or weakening the behavioral proof gate.
+
+52 code incidents currently have fully execution-verified repairs. The remaining 32 code incidents consist of 11 caller-source-blocked cases and 21 environment-blocked cases.
 
 ---
 
 ## 1. Repository State
 
 - **Repository Root:** `/Users/nssanjeev/Development/Halo`
-- **Git Commit SHA:** `3a688f22bd36c3473948aed348be0095144a0415`
+- **Git Commit SHA:** `d538832397c8701ddc28ea95ef85d474ab624a12`
 - **Branch:** `main`
-- **Working Tree Status:** Clean (all prior Phase 8 forensic audit artifacts committed and pushed to `origin/main`)
+- **Working Tree Status:** Clean (Phase 9 audit artifacts committed)
 - **Runtime Environment:** Node.js v22.23.1, pnpm 11.11.0, TypeScript 7.0.2 / 5.x, Vitest v4.1.10, Next.js 16.2.11
 - **Authoritative Baseline Reference:** [`reports/phase9/phase9-baseline.md`](file:///Users/nssanjeev/Development/Halo/reports/phase9/phase9-baseline.md)
 
@@ -82,42 +93,47 @@ All 11 mismatch cases belong exclusively to **Architectural Archetype 0** (Calle
 
 ---
 
-## 5. Case-by-Case Classifications
+## 5. Case-by-Case Classifications & Fail-Closed Audit
 
-Detailed audit records are archived in [`reports/phase9/11-harness-mismatch-cases.md`](file:///Users/nssanjeev/Development/Halo/reports/phase9/11-harness-mismatch-cases.md).
+Detailed audit records are archived in [`reports/phase9/11-harness-mismatch-cases.md`](file:///Users/nssanjeev/Development/Halo/reports/phase9/11-harness-mismatch-cases.md) and [`reports/phase9/harness-classification.md`](file:///Users/nssanjeev/Development/Halo/reports/phase9/harness-classification.md).
 
-| Scenario | Mismatch Parameter | Expected Parameter | Observed Parameter | Primary Classification | Secondary Classification | Final Status |
-| :--- | :--- | :--- | :--- | :--- | :--- | :--- |
-| `BENCHMARK_SCENARIO_0001` | `tenantId` | Valid non-null string from caller | `undefined` passed by harness | `HARNESS_DEFECT` | `INSUFFICIENT_EVIDENCE` | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0011` | `tenantId` | Valid non-null string from caller | `undefined` passed by harness | `HARNESS_DEFECT` | `INSUFFICIENT_EVIDENCE` | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0021` | `tenantId` | Valid non-null string from caller | `undefined` passed by harness | `HARNESS_DEFECT` | `INSUFFICIENT_EVIDENCE` | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0031` | `tenantId` | Valid non-null string from caller | `undefined` passed by harness | `HARNESS_DEFECT` | `INSUFFICIENT_EVIDENCE` | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0041` | `tenantId` | Valid non-null string from caller | `undefined` passed by harness | `HARNESS_DEFECT` | `INSUFFICIENT_EVIDENCE` | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0051` | `tenantId` | Valid non-null string from caller | `undefined` passed by harness | `HARNESS_DEFECT` | `INSUFFICIENT_EVIDENCE` | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0061` | `tenantId` | Valid non-null string from caller | `undefined` passed by harness | `HARNESS_DEFECT` | `INSUFFICIENT_EVIDENCE` | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0071` | `tenantId` | Valid non-null string from caller | `undefined` passed by harness | `HARNESS_DEFECT` | `INSUFFICIENT_EVIDENCE` | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0081` | `tenantId` | Valid non-null string from caller | `undefined` passed by harness | `HARNESS_DEFECT` | `INSUFFICIENT_EVIDENCE` | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0091` | `tenantId` | Valid non-null string from caller | `undefined` passed by harness | `HARNESS_DEFECT` | `INSUFFICIENT_EVIDENCE` | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0101` | `tenantId` | Valid non-null string from caller | `undefined` passed by harness | `HARNESS_DEFECT` | `INSUFFICIENT_EVIDENCE` | `FAIL_CLOSED_SOUND` |
+### Diagnostic Resolution vs Repair Verification Status (§11)
+
+| Scenario | Mismatch Resolved | Repair Executed | Repair Verified | Final State |
+| :--- | :---: | :---: | :---: | :--- |
+| `BENCHMARK_SCENARIO_0001` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0011` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0021` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0031` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0041` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0051` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0061` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0071` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0081` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0091` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0101` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
 
 ---
 
-## 6. Harness Corrections
+## 6. Harness Corrections & The Diagnostic Distinction
 
-The forensic autopsy revealed two interrelated structural causes:
-1. **Harness Invocation Contradiction:**
-   In `execution-environment-builder.ts` line 395:
-   ```ts
-   inputCode = "{ tenantId: undefined }";
-   ```
-   The synthetic test runner `repro_*.mjs` imported `requireTenant` directly and executed `requireTenant({ tenantId: undefined })`, asserting that it should exit with code 0 (`PASS`). But `requireTenant`'s contract requires `tenantId`, so passing `undefined` is guaranteed to throw and exit with 1.
-2. **Missing Caller Source in Snapshot Fixture:**
-   In `unseen-benchmark-corpus.ts`, the incident snapshot only provided source lines for `callee_*.ts`. The caller file `caller_*.ts` was listed in `callers: [callerFile]`, but its function body (`dispatch*`) was omitted.
-   Consequently, `SnapshotReconstructionEnvironmentProvider` wrote an empty stub for `caller_*.ts`, and `repair-generator.ts` had no caller AST to patch.
+The forensic autopsy established that **diagnostic resolution is not the same thing as repair verification**.
 
-### Why the Harness Was Not "Forced" to Pass
-Per **Rule 3** and **Section 12**, modifying the harness to pass `{ tenantId: "tenant-default" }` would destroy baseline reproduction (because `requireTenant` would succeed in baseline without throwing), creating synthetic success.
-Because the caller source code is genuinely absent from the benchmark snapshot, the proof engine cannot execute the caller. Failing closed with `exit code 1` and refusing to verify an unexecuted caller patch is the **provably correct behavior of a zero-false-positive verification engine**.
+What **IS** established for the 11 cases:
+- The mismatch cause is forensically explained and proven.
+- The harness invocation was contradictory (passing `{ tenantId: undefined }` directly to `requireTenant` while expecting exit 0).
+- The missing caller source is identified (omitted from the benchmark snapshot).
+- Halo accurately identified the caller repair boundary without error-masking.
+- The proof engine correctly refused to verify an unexecuted repair, maintaining zero false verified repairs.
+
+What is **NOT** established for the 11 cases:
+- Execution of the real caller function (`dispatch*`).
+- Application of a real caller patch.
+- Behavioral validation of the real caller patch.
+- Invariant and regression validation of the real caller patch.
+- Full repair verification.
+
+Therefore, these 11 cases are **forensically resolved mismatches**, but **unverified repairs**.
 
 ---
 
@@ -134,7 +150,8 @@ Because the caller source code is genuinely absent from the benchmark snapshot, 
 ## 8. Environment Defects Found
 
 - **Environment Reconstruction Defects:** **0**.
-- The environment builder built 63 hermetic sandboxes with valid Node.js runtimes, package configurations, and syntax-checked modules.
+- The hermetic Node.js sandbox construction was completely valid.
+- **Benchmark Fixture / Source Snapshot Defects:** **11**.
 - The failure to execute caller code stemmed entirely from missing caller source lines in the benchmark item snapshot.
 
 ---
@@ -274,8 +291,10 @@ Full regression verification completed with 100% pass rate:
 ## 17. Generalization Results
 
 Archived in [`reports/phase9/generalization-results.md`](file:///Users/nssanjeev/Development/Halo/reports/phase9/generalization-results.md).
-- Evaluated across 10 distinct architectural archetypes (null dereferences, caller contract violations, JSON parsers, state machines, connection pools, external outages, array aggregations, missing configs, schema migrations, and mutex concurrency).
-- 100% of archetypes demonstrated deterministic, evidence-grounded behavior without domain overfitting.
+
+All 10 evaluated architectural archetypes demonstrated deterministic, evidence-grounded behavior within the Phase 9 evaluation corpus. No benchmark-specific behavior was identified during the recorded generalization evaluation.
+
+The corpus spans null dereferences, syntax/serialization errors, state machine transitions, collection aggregation boundaries, mutex concurrency races, connection pooling exhaustion, configuration variables, third-party outages, and schema migrations without archetype-specific or domain-specific hardcoding.
 
 ---
 
@@ -290,7 +309,11 @@ Archived in [`reports/phase9/generalization-results.md`](file:///Users/nssanjeev
 ## 19. Modified Files
 
 - `scripts/run-phase9-engine.ts` (Phase 9 master audit & execution engine)
-- `reports/phase9/*` (14 authoritative audit files and machine-readable datasets)
+- `reports/phase9/phase9-final-report.md` (Corrected master report)
+- `reports/phase9/phase10-readiness.md` (Phase 10 engineering specification)
+- `reports/phase9/harness-classification.md` (Corrected classification table)
+- `reports/phase9/generalization-results.md` (Corpus-bounded generalization summary)
+- `reports/phase9/environment-gap-analysis.md` (Boundary classification)
 - **Production Repair Engine Logic Modified:** **0 lines** (Preserved 100% integrity per Rule 1 and Rule 2).
 
 ---
@@ -323,12 +346,15 @@ Archived in [`reports/phase9/generalization-results.md`](file:///Users/nssanjeev
    **11** (The harness hardcoded `{ tenantId: undefined }` directly into the callee invocation).
 3. **How many were actual repair defects?**
    **0** (Halo's recommendation engine correctly identified the caller boundary).
-4. **How many were environment/fixture/dependency defects?**
-   **11** (Benchmark snapshot omitted caller source lines).
+4. **How many were environment / fixture / dependency defects?**
+   - **Environment Reconstruction Defects:** **0** (Hermetic Node.js environment was completely valid).
+   - **Benchmark Fixture / Source Snapshot Defects:** **11** (Caller source lines missing from benchmark item snapshot).
+   - **Dependency / Runtime Mismatches:** **0**.
 5. **How many represented legitimate behavior variation?**
    **0**.
 6. **How many remained genuinely unresolved?**
-   **0** (All 11 are forensically explained and verified).
+   - **Mismatch causes unresolved:** **0 / 11** (All 11 mismatch causes were forensically explained and classified).
+   - **Caller repairs fully verified:** **0 / 11** (None of the 11 caller repairs could be execution-verified because the required caller source was absent from the benchmark snapshot).
 7. **How many of the 21 blocked code environments became reconstructable?**
    **0** (All 21 are legitimately blocked by external databases or secret boundaries; bypassing them would require fabricating credentials or mock infrastructure).
 8. **How many additional repairs became fully verified?**
@@ -356,14 +382,53 @@ Archived in [`reports/phase9/generalization-results.md`](file:///Users/nssanjeev
 19. **What exact limitations remain?**
     Caller source omission in Archetype 0, external database requirements in Archetype 3, and secret environment boundaries in Archetype 6.
 20. **What is the highest-information next engineering action?**
-    Extend the telemetry/source resolver in the investigation pipeline to capture upstream caller frames into `snapshot.source.callers` with actual source lines, enabling hermetic verification of caller contract repairs.
+    Complete causal source reconstruction: extend the telemetry and source resolution pipeline to retrieve caller source code from repository commits/worktrees, enabling hermetic verification of caller contract repairs.
 
 ---
 
-## 23. Final Verdict
+## 23. Required Final Scorecard (§32)
+
+```text
+Metric                                      Result
+---------------------------------------------------------------
+Total scenarios                             105
+Code scenarios                               84
+Non-code scenarios                           21
+Candidates                                  378
+Valid candidates                            136
+Candidate precision                        36.0%
+Candidate recall                          100.0%
+Environments reconstructed                   63 / 84
+Baseline reproduced                          63 / 63
+Patches executed                             63 / 63
+Counterexamples executed                     63 / 63
+Behavioral proof passed                      52 / 63
+Invariant proof passed                       52 / 63
+Regression proof passed                      52 / 63
+Fully verified repairs                       52 / 84
+Caller mismatch causes resolved               11 / 11
+Caller repairs fully verified                  0 / 11
+Environment-blocked code                     21 / 84
+False verified repairs                        0
+Fabricated evidence                           0
+Unjustified refusals                          0
+```
+
+---
+
+## 24. Final Verdict
 
 ```text
 PHASE_9_EMPIRICALLY_CONFIRMED
 ```
 
-Halo Trace Phase 9 has completed an exhaustive, forensic, source-level and execution-level resolution of the Phase 8 behavioral proof gap. The 11 mismatch cases are proven to stem from a direct harness parameter contradiction combined with caller source omission. The 21 blocked environments are proven to be legitimate security and infrastructure boundaries. The entire proof pipeline remains mathematically consistent, sound, and zero-false-positive.
+### What This Verdict Formally Means (§16)
+Phase 9's forensic audit and resolution process was empirically confirmed against the evaluated corpus and its proof artifacts.
+- It does **NOT** mean every identified repair was verified.
+- It does **NOT** mean every benchmark environment was reconstructable.
+- It does **NOT** mean the system has universal causal repair verification.
+- It **DOES** mean:
+  1. The forensic causes of all 11 behavioral mismatches are empirically established.
+  2. The 52 fully verified repairs are independently proven across all six proof stages.
+  3. The 21 unreconstructed environments are legitimately blocked by security and infrastructure boundaries.
+  4. The system operates with zero false verified repairs, zero fabricated evidence, and zero unjustified refusals.

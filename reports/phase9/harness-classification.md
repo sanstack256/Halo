@@ -1,28 +1,51 @@
 # PHASE 9 — HARNESS MISMATCH CLASSIFICATION TABLE
 
-| Scenario | Mismatch | Primary Cause | Evidence | Action | Result |
+## 1. Mismatch vs Repair Execution Status (§11)
+
+| Scenario | Mismatch Resolved | Repair Executed | Repair Verified | Final State |
+| :--- | :---: | :---: | :---: | :--- |
+| `BENCHMARK_SCENARIO_0001` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0011` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0021` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0031` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0041` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0051` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0061` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0071` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0081` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0091` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0101` | YES | NO | NO | `FAIL_CLOSED_SOUND` |
+
+---
+
+## 2. Case-by-Case Forensic Classification
+
+| Scenario | Observed Mismatch | Primary Defect | Underlying Defect | Evidence & Operational Action | Final Classification |
 | :--- | :--- | :--- | :--- | :--- | :--- |
-| `BENCHMARK_SCENARIO_0001` | Parameter `tenantId` undefined passed directly to callee | `HARNESS_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` in direct callee runner; snapshot omitted caller source | Retain fail-closed gate; reject artificial pass | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0011` | Parameter `tenantId` undefined passed directly to callee | `HARNESS_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` in direct callee runner; snapshot omitted caller source | Retain fail-closed gate; reject artificial pass | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0021` | Parameter `tenantId` undefined passed directly to callee | `HARNESS_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` in direct callee runner; snapshot omitted caller source | Retain fail-closed gate; reject artificial pass | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0031` | Parameter `tenantId` undefined passed directly to callee | `HARNESS_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` in direct callee runner; snapshot omitted caller source | Retain fail-closed gate; reject artificial pass | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0041` | Parameter `tenantId` undefined passed directly to callee | `HARNESS_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` in direct callee runner; snapshot omitted caller source | Retain fail-closed gate; reject artificial pass | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0051` | Parameter `tenantId` undefined passed directly to callee | `HARNESS_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` in direct callee runner; snapshot omitted caller source | Retain fail-closed gate; reject artificial pass | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0061` | Parameter `tenantId` undefined passed directly to callee | `HARNESS_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` in direct callee runner; snapshot omitted caller source | Retain fail-closed gate; reject artificial pass | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0071` | Parameter `tenantId` undefined passed directly to callee | `HARNESS_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` in direct callee runner; snapshot omitted caller source | Retain fail-closed gate; reject artificial pass | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0081` | Parameter `tenantId` undefined passed directly to callee | `HARNESS_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` in direct callee runner; snapshot omitted caller source | Retain fail-closed gate; reject artificial pass | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0091` | Parameter `tenantId` undefined passed directly to callee | `HARNESS_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` in direct callee runner; snapshot omitted caller source | Retain fail-closed gate; reject artificial pass | `FAIL_CLOSED_SOUND` |
-| `BENCHMARK_SCENARIO_0101` | Parameter `tenantId` undefined passed directly to callee | `HARNESS_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` in direct callee runner; snapshot omitted caller source | Retain fail-closed gate; reject artificial pass | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0001` | Parameter `tenantId: undefined` passed to `requireTenant` | `HARNESS_DEFECT` | `BENCHMARK_FIXTURE_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` directly calling callee; benchmark snapshot omitted caller source. Fails closed. | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0011` | Parameter `tenantId: undefined` passed to `requireTenant` | `HARNESS_DEFECT` | `BENCHMARK_FIXTURE_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` directly calling callee; benchmark snapshot omitted caller source. Fails closed. | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0021` | Parameter `tenantId: undefined` passed to `requireTenant` | `HARNESS_DEFECT` | `BENCHMARK_FIXTURE_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` directly calling callee; benchmark snapshot omitted caller source. Fails closed. | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0031` | Parameter `tenantId: undefined` passed to `requireTenant` | `HARNESS_DEFECT` | `BENCHMARK_FIXTURE_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` directly calling callee; benchmark snapshot omitted caller source. Fails closed. | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0041` | Parameter `tenantId: undefined` passed to `requireTenant` | `HARNESS_DEFECT` | `BENCHMARK_FIXTURE_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` directly calling callee; benchmark snapshot omitted caller source. Fails closed. | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0051` | Parameter `tenantId: undefined` passed to `requireTenant` | `HARNESS_DEFECT` | `BENCHMARK_FIXTURE_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` directly calling callee; benchmark snapshot omitted caller source. Fails closed. | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0061` | Parameter `tenantId: undefined` passed to `requireTenant` | `HARNESS_DEFECT` | `BENCHMARK_FIXTURE_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` directly calling callee; benchmark snapshot omitted caller source. Fails closed. | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0071` | Parameter `tenantId: undefined` passed to `requireTenant` | `HARNESS_DEFECT` | `BENCHMARK_FIXTURE_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` directly calling callee; benchmark snapshot omitted caller source. Fails closed. | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0081` | Parameter `tenantId: undefined` passed to `requireTenant` | `HARNESS_DEFECT` | `BENCHMARK_FIXTURE_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` directly calling callee; benchmark snapshot omitted caller source. Fails closed. | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0091` | Parameter `tenantId: undefined` passed to `requireTenant` | `HARNESS_DEFECT` | `BENCHMARK_FIXTURE_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` directly calling callee; benchmark snapshot omitted caller source. Fails closed. | `FAIL_CLOSED_SOUND` |
+| `BENCHMARK_SCENARIO_0101` | Parameter `tenantId: undefined` passed to `requireTenant` | `HARNESS_DEFECT` | `BENCHMARK_FIXTURE_DEFECT` | Harness line 395 hardcoded `{ tenantId: undefined }` directly calling callee; benchmark snapshot omitted caller source. Fails closed. | `FAIL_CLOSED_SOUND` |
 
-## Aggregate Classification Breakdown
+---
 
-- **Total Mismatch Cases:** 11
-- **HARNESS_DEFECT (Primary):** 11 (100.0%)
-- **INSUFFICIENT_EVIDENCE (Secondary / Contributing):** 11 (100.0%)
-- **REPAIR_DEFECT:** 0
-- **ENVIRONMENT_DEFECT:** 0
-- **FIXTURE_DEFECT:** 11 (Caller source lines missing from benchmark item snapshot)
-- **EXPECTED_BEHAVIOR_DEFECT:** 0
-- **DEPENDENCY_RUNTIME_MISMATCH:** 0
-- **SCENARIO_CLASSIFICATION_DEFECT:** 0
-- **LEGITIMATE_VARIATION:** 0
+## 3. Aggregate Classification Breakdown
+
+- **Total Mismatch Cases Evaluated:** 11
+- **Mismatch Causes Unresolved:** 0 / 11 (100% forensically explained and classified)
+- **Caller Repairs Fully Verified:** 0 / 11 (0% verified; caller source code was unavailable in snapshot)
+- **Primary Harness Defect:** 11 (Test runner directly invoked callee with invalid parameter while expecting success)
+- **Underlying Benchmark Fixture / Source Snapshot Defect:** 11 (Caller implementation missing from benchmark item snapshot)
+- **Environment Reconstruction Defects:** **0** (Hermetic Node.js sandbox construction was completely valid)
+- **Repair Engine Logic Defects:** **0** (Halo correctly assigned ownership to caller boundary)
+- **Expected Behavior Defects:** **0**
+- **Dependency / Runtime Mismatches:** **0**
+- **Scenario Classification Defects:** **0**
+- **Legitimate Variations:** **0**
