@@ -63,8 +63,8 @@ const CATEGORIES: CategoryNavItem[] = [
     {
         id: "actions",
         label: "Actions",
-        targetSectionId: "section-recommendations",
-        sectionIds: ["section-recommendations"],
+        targetSectionId: "section-fix-recommendation",
+        sectionIds: ["section-fix-recommendation", "section-recommendations"],
         icon: Wrench,
     },
 ];

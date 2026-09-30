@@ -1439,16 +1439,37 @@ function InvestigationView({
                         <div className="flex items-center gap-2 text-amber-400">
                             <Activity size={15} />
                             <h3 className="text-xs font-bold uppercase tracking-wider">
-                                Unknown (Missing Telemetry)
+                                ROOT CAUSE UNKNOWN
                             </h3>
                         </div>
                         <ul className="space-y-2 text-xs text-zinc-300">
-                            {interpreted.evidenceIntegrity.unknowns.map((item, idx) => (
-                                <li key={idx} className="flex items-start gap-2">
-                                    <span className="text-amber-400 font-bold">&bull;</span>
-                                    <span>{item.statement}</span>
-                                </li>
-                            ))}
+                            {interpreted.evidenceIntegrity.unknowns.map((item, idx) => {
+                                const isDefaultUnknown =
+                                    item.statement === "The exact root cause could not be determined from available telemetry." ||
+                                    item.statement?.toLowerCase().includes("could not be determined from available telemetry");
+                                const hasVerifiedRepairOrMechanism =
+                                    persistedRecommendation?.recommendation?.status === "VERIFIED_REPAIR" ||
+                                    persistedRecommendation?.recommendation?.decomposedConfidence?.repairBoundary === "VERIFIED" ||
+                                    persistedRecommendation?.recommendation?.decomposedConfidence?.failureMechanism === "CONFIRMED";
+
+                                return (
+                                    <li key={idx} className="flex flex-col gap-1">
+                                        <div className="flex items-start gap-2">
+                                            <span className="text-amber-400 font-bold">&bull;</span>
+                                            <span>
+                                                {isDefaultUnknown
+                                                    ? "Available telemetry does not establish the upstream cause."
+                                                    : item.statement}
+                                            </span>
+                                        </div>
+                                        {isDefaultUnknown && hasVerifiedRepairOrMechanism && (
+                                            <p className="text-[11px] text-emerald-400/90 pl-4 font-mono">
+                                                The failure mechanism and repair are independently verified.
+                                            </p>
+                                        )}
+                                    </li>
+                                );
+                            })}
                         </ul>
                         <p className="text-[11px] text-amber-300/80 italic pt-1 border-t border-amber-500/20">
                             Halo does not guess missing backend causes without correlated telemetry.

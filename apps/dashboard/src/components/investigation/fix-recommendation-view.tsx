@@ -103,6 +103,21 @@ export function FixRecommendationView({
         }
     };
 
+    const formatConfidence = (conf?: string) => {
+        switch (conf?.toUpperCase()) {
+            case "VERY_HIGH":
+                return "Very High";
+            case "HIGH":
+                return "High";
+            case "MEDIUM":
+                return "Medium";
+            case "LOW":
+                return "Low";
+            default:
+                return conf || "Unknown";
+        }
+    };
+
     const getConfidenceBadgeClass = (conf: string) => {
         switch (conf?.toUpperCase()) {
             case "VERY_HIGH":
@@ -118,21 +133,21 @@ export function FixRecommendationView({
     const getOutcomePill = (type?: string, status?: string) => {
         switch (status) {
             case "VERIFIED_REPAIR":
-                return { label: "Verified Repair (Validated)", className: "halo-fix-outcome-code" };
+                return { label: "Fix Verified", className: "halo-fix-outcome-code" };
             case "SUPPORTED_REPAIR_REQUIRES_VALIDATION":
-                return { label: "Supported Repair (Validation Required)", className: "halo-fix-outcome-code" };
+                return { label: "Supported Repair · Requires Validation", className: "halo-fix-outcome-code" };
             case "DIAGNOSIS_COMPLETE_REPAIR_UNRESOLVED":
-                return { label: "Diagnosis Established (Repair Withheld)", className: "halo-fix-outcome-observability" };
+                return { label: "Mechanism Verified · Repair Unresolved", className: "halo-fix-outcome-observability" };
             case "NO_CODE_CHANGE_JUSTIFIED":
                 return { label: "No Code Change Required", className: "halo-fix-outcome-fixed" };
             case "EVIDENCE_ACQUISITION_REQUIRED":
                 return { label: "Evidence Acquisition Required", className: "halo-fix-outcome-observability" };
             case "BLOCKED_BY_UNAVAILABLE_EVIDENCE":
-                return { label: "Blocked by Unavailable Evidence", className: "halo-fix-outcome-observability" };
+                return { label: "Telemetry Unavailable", className: "halo-fix-outcome-observability" };
             case "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR":
-                return { label: "Diagnosis Established (Repair Withheld)", className: "halo-fix-outcome-observability" };
+                return { label: "Mechanism Verified · Repair Withheld", className: "halo-fix-outcome-observability" };
             case "BLOCKED_BY_AMBIGUITY":
-                return { label: "Contract Ambiguity (Repair Withheld)", className: "halo-fix-outcome-observability" };
+                return { label: "Contract Ambiguity · Repair Withheld", className: "halo-fix-outcome-observability" };
         }
         switch (type) {
             case "CODE_CHANGE_RECOMMENDED":
@@ -165,72 +180,101 @@ export function FixRecommendationView({
         <section id="section-fix-recommendation" className="halo-fix-container space-y-6 scroll-mt-24">
             {/* Header */}
             <div className="halo-fix-header">
-                <div className="space-y-1">
-                    <div className="flex items-center gap-2">
-                        <HaloLogo size={16} className="w-4 h-4" />
-                        <h2 className="text-sm font-bold uppercase tracking-wider text-white">
-                            WHAT SHOULD I DO TO FIX THIS ISSUE?
-                        </h2>
+                <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3 w-full">
+                    <div className="space-y-1 min-w-0">
+                        <div className="flex items-center gap-2">
+                            <HaloLogo size={16} className="w-4 h-4 shrink-0" />
+                            <h2 className="text-sm font-bold uppercase tracking-wider text-white">
+                                RECOMMENDED FIX
+                            </h2>
+                        </div>
+                        <p className="text-xs text-secondary">
+                            Authoritative engineering decision synthesized directly from verified telemetry, repository AST, and contract analysis.
+                        </p>
                     </div>
-                    <p className="text-xs text-secondary">
-                        Authoritative engineering decision synthesized directly from verified telemetry, repository AST, and contract analysis.
-                    </p>
-                </div>
 
-                <div className="flex items-center gap-2 flex-wrap">
-                    {recommendation && (
-                        <>
-                            <span className={`halo-fix-badge ${getConfidenceBadgeClass(recommendation.confidence)}`}>
-                                Confidence: {recommendation.confidence}
-                            </span>
-                            <span className="halo-fix-badge">
-                                Version {version}
-                            </span>
-                        </>
-                    )}
-                    <span className="halo-fix-badge">
-                        {modelName}
-                    </span>
-                    {recommendation && (
-                        <button
-                            type="button"
-                            onClick={() => handleGenerate(true)}
-                            disabled={isGenerating}
-                            className="halo-btn halo-btn-xs halo-btn-secondary flex items-center gap-1.5"
-                            title="Regenerate recommendation with latest telemetry"
-                        >
-                            <RotateCw size={12} className={isGenerating ? "animate-spin" : ""} />
-                            <span>Regenerate</span>
-                        </button>
-                    )}
+                    <div className="flex items-center gap-2 flex-wrap shrink-0">
+                        {recommendation && (
+                            <>
+                                <span className={`halo-fix-badge ${getConfidenceBadgeClass(recommendation.confidence)}`}>
+                                    Confidence · {formatConfidence(recommendation.confidence)}
+                                </span>
+                                <span className="halo-fix-badge">
+                                    Version {version}
+                                </span>
+                            </>
+                        )}
+                        <span className="halo-fix-badge">
+                            {modelName}
+                        </span>
+                        {recommendation && (
+                            <button
+                                type="button"
+                                onClick={() => handleGenerate(true)}
+                                disabled={isGenerating}
+                                className="halo-btn halo-btn-xs halo-btn-secondary flex items-center gap-1.5 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
+                                title="Regenerate recommendation with latest telemetry"
+                            >
+                                <RotateCw size={12} className={isGenerating ? "animate-spin" : ""} />
+                                <span>Regenerate</span>
+                            </button>
+                        )}
+                    </div>
                 </div>
 
                 {recommendation?.decomposedConfidence && (
-                    <div className="w-full grid grid-cols-2 sm:grid-cols-4 gap-2 pt-2.5 border-t border-white/5 text-[11px] font-mono mt-3">
-                        <div className="p-2 rounded bg-black/40 border border-white/5 flex items-center justify-between">
-                            <span className="text-zinc-400">Mechanism Proof:</span>
-                            <span className={recommendation.decomposedConfidence.failureMechanism === "CONFIRMED" ? "text-emerald-400 font-bold" : recommendation.decomposedConfidence.failureMechanism === "PLAUSIBLE" ? "text-blue-400 font-bold" : "text-amber-400 font-bold"}>
-                                {recommendation.decomposedConfidence.failureMechanism}
+                    <div className="w-full flex items-center gap-2 flex-wrap pt-3 border-t border-border-subtle text-[11px] font-mono">
+                        <span
+                            className={`halo-fix-badge ${
+                                recommendation.decomposedConfidence.failureMechanism === "CONFIRMED"
+                                    ? "halo-fix-badge-proposed"
+                                    : recommendation.decomposedConfidence.failureMechanism === "PLAUSIBLE"
+                                    ? "halo-fix-badge-medium"
+                                    : "halo-fix-badge-low"
+                            }`}
+                        >
+                            {recommendation.decomposedConfidence.failureMechanism === "CONFIRMED"
+                                ? "Mechanism verified"
+                                : `Mechanism · ${recommendation.decomposedConfidence.failureMechanism.toLowerCase()}`}
+                        </span>
+
+                        <span
+                            className={`halo-fix-badge ${
+                                recommendation.decomposedConfidence.repairBoundary === "VERIFIED"
+                                    ? "halo-fix-badge-proposed"
+                                    : recommendation.decomposedConfidence.repairBoundary === "CANDIDATE"
+                                    ? "halo-fix-badge-medium"
+                                    : "halo-fix-badge-low"
+                            }`}
+                        >
+                            {recommendation.decomposedConfidence.repairBoundary === "VERIFIED"
+                                ? "Fix verified"
+                                : `Repair · ${recommendation.decomposedConfidence.repairBoundary.toLowerCase()}`}
+                        </span>
+
+                        <span
+                            className={`halo-fix-badge ${
+                                recommendation.decomposedConfidence.behavioralValidation === "EXECUTED_PASSED"
+                                    ? "halo-fix-badge-proposed"
+                                    : "halo-fix-badge-low"
+                            }`}
+                        >
+                            {recommendation.decomposedConfidence.behavioralValidation === "EXECUTED_PASSED"
+                                ? "Validation passed"
+                                : `Validation · ${recommendation.decomposedConfidence.behavioralValidation.toLowerCase().replace(/_/g, " ")}`}
+                        </span>
+
+                        {recommendation.decomposedConfidence.regressionAssociation && (
+                            <span
+                                className={`halo-fix-badge ${
+                                    recommendation.decomposedConfidence.regressionAssociation === "HIGH"
+                                        ? "halo-fix-badge-medium"
+                                        : "halo-fix-badge-low"
+                                }`}
+                            >
+                                Regression · {recommendation.decomposedConfidence.regressionAssociation.toLowerCase()}
                             </span>
-                        </div>
-                        <div className="p-2 rounded bg-black/40 border border-white/5 flex items-center justify-between">
-                            <span className="text-zinc-400">Regression:</span>
-                            <span className={recommendation.decomposedConfidence.regressionAssociation === "HIGH" ? "text-blue-400 font-bold" : "text-zinc-400"}>
-                                {recommendation.decomposedConfidence.regressionAssociation}
-                            </span>
-                        </div>
-                        <div className="p-2 rounded bg-black/40 border border-white/5 flex items-center justify-between">
-                            <span className="text-zinc-400">Repair Validity:</span>
-                            <span className={recommendation.decomposedConfidence.repairBoundary === "VERIFIED" ? "text-emerald-400 font-bold" : recommendation.decomposedConfidence.repairBoundary === "CANDIDATE" ? "text-blue-400" : "text-zinc-500"}>
-                                {recommendation.decomposedConfidence.repairBoundary}
-                            </span>
-                        </div>
-                        <div className="p-2 rounded bg-black/40 border border-white/5 flex items-center justify-between">
-                            <span className="text-zinc-400">Validation:</span>
-                            <span className={recommendation.decomposedConfidence.behavioralValidation === "EXECUTED_PASSED" ? "text-emerald-400 font-bold" : "text-zinc-400"}>
-                                {recommendation.decomposedConfidence.behavioralValidation}
-                            </span>
-                        </div>
+                        )}
                     </div>
                 )}
             </div>
@@ -307,12 +351,12 @@ export function FixRecommendationView({
             {/* State 3: Rendered Recommendation */}
             {recommendation && !isGenerating && (
                 <div className="space-y-6">
-                    {/* A. Primary Product Hierarchy: WHAT SHOULD I DO TO FIX THIS ISSUE? */}
-                    <div className="halo-fix-hero-action space-y-2.5">
+                    {/* A. Primary Product Hierarchy: RECOMMENDED FIX */}
+                    <div className="halo-fix-hero-action space-y-2.5 min-w-0">
                         <div className="flex items-center justify-between flex-wrap gap-2">
                             <span className="text-[11px] font-mono uppercase font-bold tracking-wider text-accent flex items-center gap-1.5">
                                 <ArrowRight className="w-3.5 h-3.5" />
-                                WHAT SHOULD I DO TO FIX THIS ISSUE?
+                                Recommended Action
                             </span>
                             {pill && (
                                 <span className={`halo-fix-outcome-pill ${pill.className}`}>
@@ -320,15 +364,15 @@ export function FixRecommendationView({
                                 </span>
                             )}
                         </div>
-                        <p className="text-sm md:text-base font-semibold text-white leading-relaxed">
+                        <p className="text-sm md:text-base font-semibold text-white leading-relaxed break-words">
                             {recommendation.actionAnswer || recommendation.summary}
                         </p>
                         {recommendation.status === "SUFFICIENT_FOR_DIAGNOSIS_BUT_NOT_REPAIR" && (
-                            <div className="p-3 rounded-lg bg-amber-500/[0.06] border border-amber-500/20 text-xs text-amber-200 space-y-1">
+                            <div className="p-3 rounded-lg bg-amber-500/[0.06] border border-amber-500/20 text-xs text-amber-200 space-y-1 min-w-0">
                                 <span className="text-[10px] uppercase font-bold font-mono text-amber-400 block">
                                     Failure Mechanism Confirmed • Repair Ownership Unproven
                                 </span>
-                                <p>
+                                <p className="break-words leading-relaxed">
                                     Halo has verified the exact failure mechanism, but repository evidence does not establish contract ownership between caller and callee. Code modifications are withheld to prevent symptom suppression.
                                 </p>
                             </div>
@@ -337,25 +381,25 @@ export function FixRecommendationView({
 
                     {/* A.1 Invariant Restoration & Formal Broken Invariant */}
                     {recommendation.brokenInvariant && (
-                        <div className="p-4 rounded-xl bg-purple-500/[0.04] border border-purple-500/20 text-xs space-y-2.5">
-                            <div className="flex items-center justify-between">
+                        <div className="p-4 rounded-xl bg-purple-500/[0.04] border border-purple-500/20 text-xs space-y-2.5 min-w-0">
+                            <div className="flex items-center justify-between flex-wrap gap-2">
                                 <span className="text-[10px] uppercase font-mono text-purple-400 font-bold tracking-wider flex items-center gap-1.5">
                                     <Layers className="w-3.5 h-3.5" />
                                     Broken Invariant: {(recommendation.brokenInvariant.classification || "state_invariant").replace(/_/g, " ").toUpperCase()}
                                 </span>
                                 <span className="text-[10px] font-mono text-purple-300/70">Contract Restoration</span>
                             </div>
-                            <div className="p-2.5 rounded-lg bg-black/40 border border-purple-500/10 font-mono text-[11px] text-purple-200">
+                            <div className="p-2.5 rounded-lg bg-black/40 border border-purple-500/10 font-mono text-[11px] text-purple-200 whitespace-pre-wrap break-words overflow-wrap-anywhere">
                                 {recommendation.brokenInvariant.formalStatement || recommendation.brokenInvariant.description}
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-zinc-300 pt-1">
-                                <div>
-                                    <span className="text-[10px] uppercase font-mono text-red-400 font-semibold block">Violated State</span>
-                                    <p className="text-[11px] text-zinc-400">{recommendation.brokenInvariant.violatedState || recommendation.brokenInvariant.actualViolation}</p>
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-2 text-zinc-300 pt-1 min-w-0">
+                                <div className="min-w-0 space-y-0.5">
+                                    <span className="text-[10px] uppercase font-mono text-red-400 font-semibold block">Violated</span>
+                                    <p className="text-[11px] text-zinc-400 break-words leading-relaxed">{recommendation.brokenInvariant.violatedState || recommendation.brokenInvariant.actualViolation}</p>
                                 </div>
-                                <div>
-                                    <span className="text-[10px] uppercase font-mono text-emerald-400 font-semibold block">Restored State</span>
-                                    <p className="text-[11px] text-zinc-400">{recommendation.brokenInvariant.restoredState || recommendation.brokenInvariant.expectedCondition}</p>
+                                <div className="min-w-0 space-y-0.5">
+                                    <span className="text-[10px] uppercase font-mono text-emerald-400 font-semibold block">Restored</span>
+                                    <p className="text-[11px] text-zinc-400 break-words leading-relaxed">{recommendation.brokenInvariant.restoredState || recommendation.brokenInvariant.expectedCondition}</p>
                                 </div>
                             </div>
                         </div>
@@ -363,47 +407,53 @@ export function FixRecommendationView({
 
                     {/* A.2 Separated Engineering Locations (Observation vs Mechanism vs Repair Boundary) */}
                     {recommendation.separatedLocations && (
-                        <div className="p-4 rounded-xl bg-surface-elevated/40 border border-border text-xs space-y-2.5">
-                            <div className="flex items-center justify-between">
+                        <div className="p-4 rounded-xl bg-surface-elevated/40 border border-border text-xs space-y-2.5 min-w-0">
+                            <div className="flex items-center justify-between flex-wrap gap-2">
                                 <span className="text-[10px] uppercase font-mono text-zinc-400 font-bold tracking-wider flex items-center gap-1.5">
                                     <Code2 className="w-3.5 h-3.5 text-accent" />
-                                    Separated Engineering Locations
+                                    Engineering Locations
                                 </span>
-                                <span className="text-[10px] font-mono text-zinc-500">Observation vs Mechanism vs Repair</span>
+                                <span className="text-[10px] font-mono text-zinc-500">Observation · Mechanism · Repair</span>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-3 gap-2.5 pt-1">
-                                <div className="p-2.5 rounded-lg bg-black/30 border border-white/5 space-y-1">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-[10px] uppercase font-mono text-amber-400 font-semibold">1. Observation Site</span>
+                            <div className="halo-fix-locations-grid pt-1">
+                                <div className="halo-fix-location-card">
+                                    <div className="flex items-center justify-between gap-1 flex-wrap">
+                                        <span className="text-[10px] uppercase font-mono text-amber-400 font-semibold">Observation</span>
                                         <span className="text-[9px] font-mono text-zinc-500">{recommendation.separatedLocations.observationLocation?.status === "CONFIRMED" ? "LOCATED" : recommendation.separatedLocations.observationLocation?.status}</span>
                                     </div>
-                                    <div className="font-mono text-[11px] text-white truncate" title={recommendation.separatedLocations.observationLocation?.filePath}>
+                                    <div className="halo-fix-location-path" title={recommendation.separatedLocations.observationLocation?.filePath}>
                                         {recommendation.separatedLocations.observationLocation?.filePath || "Unknown"}
                                         {recommendation.separatedLocations.observationLocation?.lineNumber ? `:${recommendation.separatedLocations.observationLocation.lineNumber}` : ""}
                                     </div>
-                                    <div className="text-[10px] text-zinc-400">{recommendation.separatedLocations.observationLocation?.provenance}</div>
+                                    {recommendation.separatedLocations.observationLocation?.provenance && (
+                                        <div className="text-[10px] text-zinc-400 break-words">{recommendation.separatedLocations.observationLocation.provenance}</div>
+                                    )}
                                 </div>
-                                <div className="p-2.5 rounded-lg bg-black/30 border border-white/5 space-y-1">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-[10px] uppercase font-mono text-red-400 font-semibold">2. Mechanism Site</span>
+                                <div className="halo-fix-location-card">
+                                    <div className="flex items-center justify-between gap-1 flex-wrap">
+                                        <span className="text-[10px] uppercase font-mono text-red-400 font-semibold">Mechanism</span>
                                         <span className="text-[9px] font-mono text-zinc-500">{recommendation.separatedLocations.mechanismLocation?.status === "CONFIRMED" ? "LOCATED" : recommendation.separatedLocations.mechanismLocation?.status}</span>
                                     </div>
-                                    <div className="font-mono text-[11px] text-white truncate" title={recommendation.separatedLocations.mechanismLocation?.filePath}>
+                                    <div className="halo-fix-location-path" title={recommendation.separatedLocations.mechanismLocation?.filePath}>
                                         {recommendation.separatedLocations.mechanismLocation?.filePath || "Unknown"}
                                         {recommendation.separatedLocations.mechanismLocation?.lineNumber ? `:${recommendation.separatedLocations.mechanismLocation.lineNumber}` : ""}
                                     </div>
-                                    <div className="text-[10px] text-zinc-400">{recommendation.separatedLocations.mechanismLocation?.provenance}</div>
+                                    {recommendation.separatedLocations.mechanismLocation?.provenance && (
+                                        <div className="text-[10px] text-zinc-400 break-words">{recommendation.separatedLocations.mechanismLocation.provenance}</div>
+                                    )}
                                 </div>
-                                <div className="p-2.5 rounded-lg bg-black/30 border border-white/5 space-y-1">
-                                    <div className="flex items-center justify-between">
-                                        <span className="text-[10px] uppercase font-mono text-emerald-400 font-semibold">3. Repair Target Site</span>
+                                <div className="halo-fix-location-card">
+                                    <div className="flex items-center justify-between gap-1 flex-wrap">
+                                        <span className="text-[10px] uppercase font-mono text-emerald-400 font-semibold">Repair</span>
                                         <span className="text-[9px] font-mono text-zinc-500">{recommendation.separatedLocations.repairLocation?.status}</span>
                                     </div>
-                                    <div className="font-mono text-[11px] text-white truncate" title={recommendation.separatedLocations.repairLocation?.filePath}>
+                                    <div className="halo-fix-location-path" title={recommendation.separatedLocations.repairLocation?.filePath}>
                                         {recommendation.separatedLocations.repairLocation?.filePath || "Unknown"}
                                         {recommendation.separatedLocations.repairLocation?.lineNumber ? `:${recommendation.separatedLocations.repairLocation.lineNumber}` : ""}
                                     </div>
-                                    <div className="text-[10px] text-zinc-400">{recommendation.separatedLocations.repairLocation?.provenance}</div>
+                                    {recommendation.separatedLocations.repairLocation?.provenance && (
+                                        <div className="text-[10px] text-zinc-400 break-words">{recommendation.separatedLocations.repairLocation.provenance}</div>
+                                    )}
                                 </div>
                             </div>
                         </div>
@@ -411,22 +461,22 @@ export function FixRecommendationView({
 
                     {/* A.3 Behavioral Proof */}
                     {recommendation.behavioralProof && (
-                        <div className="p-3.5 rounded-xl bg-emerald-500/[0.04] border border-emerald-500/20 text-xs space-y-1.5">
-                            <div className="flex items-center justify-between">
+                        <div className="p-3.5 rounded-xl bg-emerald-500/[0.04] border border-emerald-500/20 text-xs space-y-1.5 min-w-0">
+                            <div className="flex items-center justify-between flex-wrap gap-2">
                                 <span className="text-[10px] uppercase font-mono text-emerald-400 font-bold tracking-wider flex items-center gap-1.5">
                                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                                     Behavioral Proof: {recommendation.behavioralProof.status || (recommendation.behavioralProof.isCleanPass ? "PASS" : "TESTED")}
                                 </span>
                                 <span className="text-[10px] font-mono text-zinc-500">Method: {recommendation.behavioralProof.validationMethod || "Runtime Assertions"}</span>
                             </div>
-                            <p className="text-[11px] text-zinc-300 leading-relaxed">{recommendation.behavioralProof.summary || recommendation.behavioralProof.executionLog || "Invariant restoration verified."}</p>
+                            <p className="text-[11px] text-zinc-300 leading-relaxed break-words">{recommendation.behavioralProof.summary || recommendation.behavioralProof.executionLog || "Invariant restoration verified."}</p>
                         </div>
                     )}
 
                     {/* B. Active Investigation Progress (Phase 20 - Real Completed Steps) */}
                     {recommendation.completedSteps && recommendation.completedSteps.length > 0 && (
-                        <div className="p-4 rounded-xl bg-surface-elevated/40 border border-border space-y-2.5">
-                            <div className="flex items-center justify-between">
+                        <div className="p-4 rounded-xl bg-surface-elevated/40 border border-border space-y-2.5 min-w-0">
+                            <div className="flex items-center justify-between flex-wrap gap-2">
                                 <span className="text-[10px] uppercase font-mono text-zinc-400 font-bold tracking-wider flex items-center gap-1.5">
                                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
                                     Active Investigation Progress ({recommendation.completedSteps.length} Steps Completed)
@@ -435,11 +485,11 @@ export function FixRecommendationView({
                             </div>
                             <div className="space-y-2 pt-1 border-t border-white/5">
                                 {recommendation.completedSteps.map((step, idx) => (
-                                    <div key={idx} className="flex items-start gap-2.5 text-xs text-zinc-300">
+                                    <div key={idx} className="flex items-start gap-2.5 text-xs text-zinc-300 min-w-0">
                                         <Check className="w-3.5 h-3.5 text-emerald-400 shrink-0 mt-0.5" />
-                                        <div>
-                                            <span className="font-semibold text-zinc-200">{step.label}</span>
-                                            <span className="text-zinc-400 text-[11px] block">{step.detail}</span>
+                                        <div className="min-w-0">
+                                            <span className="font-semibold text-zinc-200 block break-words">{step.label}</span>
+                                            <span className="text-zinc-400 text-[11px] block break-words">{step.detail}</span>
                                         </div>
                                     </div>
                                 ))}
@@ -449,14 +499,14 @@ export function FixRecommendationView({
 
                     {/* C. Non-Code Remediation (Phase 14 & 15: External Outage, Dependency Pin, Infrastructure) */}
                     {recommendation.nonCodeRemediationDetails && (
-                        <div className="p-4 rounded-xl bg-blue-500/[0.06] border border-blue-500/20 space-y-2 text-xs text-blue-200 leading-relaxed">
+                        <div className="p-4 rounded-xl bg-blue-500/[0.06] border border-blue-500/20 space-y-2 text-xs text-blue-200 leading-relaxed min-w-0">
                             <span className="text-[10px] uppercase font-mono font-bold text-blue-400 block tracking-wider">
                                 Non-Code Remediation ({recommendation.nonCodeRemediationDetails.type})
                             </span>
-                            <p className="font-semibold text-white">
+                            <p className="font-semibold text-white break-words">
                                 {recommendation.nonCodeRemediationDetails.remediationInstruction}
                             </p>
-                            <p className="text-blue-300/90 text-[11px]">
+                            <p className="text-blue-300/90 text-[11px] break-words">
                                 Operational Action: {recommendation.nonCodeRemediationDetails.operationalAction}
                             </p>
                         </div>
@@ -464,35 +514,45 @@ export function FixRecommendationView({
 
                     {/* D. Case B: Investigation Exhausted Without Safe Repair (Phase 21) */}
                     {(recommendation.hasInsufficientEvidence || recommendation.status === "BLOCKED_BY_MISSING_RUNTIME_EVIDENCE") && (
-                        <div className="p-4 rounded-xl bg-amber-500/[0.04] border border-amber-500/20 text-xs space-y-3">
-                            <div className="flex items-center gap-2 text-amber-400">
-                                <AlertTriangle className="w-4 h-4 shrink-0" />
-                                <span className="text-[11px] font-mono uppercase font-bold tracking-wider">
-                                    Evidence Boundary — Investigation Findings
-                                </span>
+                        <div className="p-4 rounded-xl bg-amber-500/[0.04] border border-amber-500/20 text-xs space-y-3 min-w-0">
+                            <div className="space-y-1">
+                                <div className="flex items-center gap-2 text-amber-400">
+                                    <AlertTriangle className="w-4 h-4 shrink-0" />
+                                    <span className="text-[11px] font-mono uppercase font-bold tracking-wider">
+                                        ROOT CAUSE UNKNOWN
+                                    </span>
+                                </div>
+                                <p className="text-xs text-amber-200/90 leading-relaxed">
+                                    Available telemetry does not establish the upstream cause.
+                                    {(recommendation.decomposedConfidence?.failureMechanism === "CONFIRMED" || recommendation.status === "VERIFIED_REPAIR") && (
+                                        <span className="block text-emerald-400 pt-1 font-mono text-[11px]">
+                                            The failure mechanism and repair are independently verified.
+                                        </span>
+                                    )}
+                                </p>
                             </div>
-                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-zinc-300 pt-1 border-t border-amber-500/10">
-                                <div className="space-y-1">
+                            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 text-zinc-300 pt-1 border-t border-amber-500/10 min-w-0">
+                                <div className="space-y-1 min-w-0">
                                     <span className="text-[10px] uppercase font-mono text-emerald-400 font-semibold block">Halo Established</span>
-                                    <p className="leading-relaxed">{recommendation.actionExplanation?.whatWeKnow || recommendation.diagnosis}</p>
+                                    <p className="leading-relaxed break-words">{recommendation.actionExplanation?.whatWeKnow || recommendation.diagnosis}</p>
                                 </div>
-                                <div className="space-y-1">
+                                <div className="space-y-1 min-w-0">
                                     <span className="text-[10px] uppercase font-mono text-amber-400 font-semibold block">Halo Could Not Establish</span>
-                                    <p className="leading-relaxed">{recommendation.actionExplanation?.whatWeDontKnow || recommendation.missingEvidence?.[0] || "Exact runtime state"}</p>
+                                    <p className="leading-relaxed break-words">{recommendation.actionExplanation?.whatWeDontKnow || recommendation.missingEvidence?.[0] || "Exact runtime state"}</p>
                                 </div>
-                                <div className="space-y-1">
+                                <div className="space-y-1 min-w-0">
                                     <span className="text-[10px] uppercase font-mono text-blue-400 font-semibold block">Halo Attempted Automatically</span>
-                                    <p className="leading-relaxed">{recommendation.actionExplanation?.whatWasAlreadyInvestigated || "Repository AST tracing, caller-callee contracts, and release diffs"}</p>
+                                    <p className="leading-relaxed break-words">{recommendation.actionExplanation?.whatWasAlreadyInvestigated || "Repository AST tracing, caller-callee contracts, and release diffs"}</p>
                                 </div>
-                                <div className="space-y-1">
+                                <div className="space-y-1 min-w-0">
                                     <span className="text-[10px] uppercase font-mono text-purple-400 font-semibold block">Remaining Blocker</span>
-                                    <p className="leading-relaxed">{recommendation.blockedBy || recommendation.actionExplanation?.whyThatMatters || "Dynamic callback dispatch requires runtime argument values to distinguish implementations."}</p>
+                                    <p className="leading-relaxed break-words">{recommendation.blockedBy || recommendation.actionExplanation?.whyThatMatters || "Dynamic callback dispatch requires runtime argument values to distinguish implementations."}</p>
                                 </div>
                             </div>
                             {recommendation.nextActionBeforeRepair && (
-                                <div className="pt-2 border-t border-amber-500/10 flex items-start gap-2 text-blue-300">
+                                <div className="pt-2 border-t border-amber-500/10 flex items-start gap-2 text-blue-300 min-w-0">
                                     <Terminal className="w-3.5 h-3.5 text-blue-400 shrink-0 mt-0.5" />
-                                    <span><strong>Required Next Action:</strong> {recommendation.nextActionBeforeRepair}</span>
+                                    <span className="break-words"><strong>Required Next Action:</strong> {recommendation.nextActionBeforeRepair}</span>
                                 </div>
                             )}
                         </div>
@@ -527,8 +587,8 @@ export function FixRecommendationView({
 
                     {/* D. Code Changes (File by File) */}
                     {recommendation.changes.length > 0 && (
-                        <div className="space-y-4">
-                            <div className="flex items-center justify-between">
+                        <div className="space-y-4 min-w-0">
+                            <div className="flex items-center justify-between flex-wrap gap-2">
                                 <h3 className="text-xs font-mono uppercase font-bold text-zinc-400 tracking-wider">
                                     Proposed Code Changes
                                 </h3>
@@ -542,24 +602,24 @@ export function FixRecommendationView({
                                     <div key={idx} className="halo-fix-code-block space-y-0">
                                         {/* File Header */}
                                         <div className="halo-fix-code-header">
-                                            <div className="flex items-center gap-2">
-                                                <FileCode className="w-3.5 h-3.5 text-accent" />
-                                                <span className="font-semibold text-white">
+                                            <div className="flex items-center gap-2 flex-wrap min-w-0">
+                                                <FileCode className="w-3.5 h-3.5 text-accent shrink-0" />
+                                                <span className="font-semibold text-white break-all">
                                                     {change.filePath || "Target File"}
                                                 </span>
                                                 {change.startLine && (
-                                                    <span className="text-zinc-500">
+                                                    <span className="text-zinc-500 font-mono shrink-0">
                                                         :{change.startLine}
                                                     </span>
                                                 )}
                                                 {change.symbol && (
-                                                    <span className="text-zinc-400 text-[10px]">
+                                                    <span className="text-zinc-400 text-[10px] break-all">
                                                         in <code>{change.symbol}()</code>
                                                     </span>
                                                 )}
                                             </div>
 
-                                            <div className="flex items-center gap-2">
+                                            <div className="flex items-center gap-2 flex-wrap shrink-0">
                                                 <span
                                                     className={`halo-fix-badge ${
                                                         change.isExactSourceVerified
@@ -589,8 +649,9 @@ export function FixRecommendationView({
                                                                 idx
                                                             )
                                                         }
-                                                        className="text-xs text-secondary hover:text-white p-1 rounded hover:bg-white/5 transition-colors flex items-center gap-1"
+                                                        className="text-xs text-secondary hover:text-white p-1 rounded hover:bg-white/5 transition-colors flex items-center gap-1 focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-accent"
                                                         title="Copy code"
+                                                        aria-label="Copy code"
                                                     >
                                                         {copiedIndex === idx ? (
                                                             <Check size={12} className="text-emerald-400" />
@@ -609,9 +670,9 @@ export function FixRecommendationView({
                                         <div className="halo-fix-code-content space-y-3">
                                             {/* Existing Code */}
                                             {change.currentCode && (
-                                                <div className="space-y-1">
-                                                    <span className="text-[10px] uppercase font-bold text-red-400/80 block">
-                                                        CURRENT (VERIFIED SOURCE)
+                                                <div className="space-y-1 min-w-0">
+                                                    <span className="text-[10px] uppercase font-bold font-mono text-red-400/80 block">
+                                                        Current (Verified Source)
                                                     </span>
                                                     <pre className="halo-fix-panel-current">
                                                         <code>{change.currentCode}</code>
@@ -621,9 +682,9 @@ export function FixRecommendationView({
 
                                             {/* Proposed Change */}
                                             {change.proposedCode && (
-                                                <div className="space-y-1">
-                                                    <span className="text-[10px] uppercase font-bold text-emerald-400 block">
-                                                        PROPOSED CHANGE
+                                                <div className="space-y-1 min-w-0">
+                                                    <span className="text-[10px] uppercase font-bold font-mono text-emerald-400 block">
+                                                        Proposed Change
                                                     </span>
                                                     <pre className="halo-fix-panel-proposed">
                                                         <code>{change.proposedCode}</code>
@@ -633,17 +694,17 @@ export function FixRecommendationView({
 
                                             {/* Unified Diff if available */}
                                             {change.unifiedDiff && !change.proposedCode && (
-                                                <pre className="p-2.5 rounded bg-black/40 border border-white/5 text-zinc-300 overflow-x-auto text-xs">
+                                                <pre className="halo-fix-panel-diff">
                                                     <code>{change.unifiedDiff}</code>
                                                 </pre>
                                             )}
 
                                             {/* Why here */}
-                                            <div className="pt-2 border-t border-white/5 text-xs text-secondary space-y-1">
-                                                <span className="text-[10px] uppercase font-bold text-zinc-400 block">
-                                                    Why this location:
+                                            <div className="pt-2 border-t border-white/5 text-xs text-secondary space-y-1 min-w-0">
+                                                <span className="text-[10px] uppercase font-bold font-mono text-zinc-400 block">
+                                                    Why here
                                                 </span>
-                                                <p>{change.whyHere || change.explanation}</p>
+                                                <p className="break-words leading-relaxed">{change.whyHere || change.explanation}</p>
                                             </div>
                                         </div>
                                     </div>
@@ -651,11 +712,11 @@ export function FixRecommendationView({
 
                                 {/* Anti-symptom-masking reasoning card */}
                                 {recommendation.whyNotSymptomFix && (
-                                    <div className="p-3.5 rounded-xl bg-red-500/[0.04] border border-red-500/15 text-xs text-red-200/90 space-y-1">
+                                    <div className="p-3.5 rounded-xl bg-red-500/[0.04] border border-red-500/15 text-xs text-red-200/90 space-y-1 min-w-0">
                                         <span className="text-[10px] font-mono uppercase font-bold text-red-400 block">
-                                            Why Not Symptom Fix (Anti-Masking Rule)
+                                            Anti-symptom-masking principle
                                         </span>
-                                        <p>{recommendation.whyNotSymptomFix}</p>
+                                        <p className="break-words leading-relaxed">{recommendation.whyNotSymptomFix}</p>
                                     </div>
                                 )}
                             </div>
@@ -663,16 +724,16 @@ export function FixRecommendationView({
                     )}
 
                     {/* E. Why this is the right fix */}
-                    <div className="space-y-3">
+                    <div className="space-y-3 min-w-0">
                         <h3 className="text-xs font-mono uppercase font-bold text-zinc-400 tracking-wider">
                             Why this fixes it
                         </h3>
-                        <div className="p-4 rounded-xl bg-surface-elevated/60 border border-border text-xs text-zinc-200 leading-relaxed space-y-3">
-                            <p>{recommendation.whyThisFixesIt || recommendation.whyThisAction || recommendation.diagnosis}</p>
+                        <div className="p-4 rounded-xl bg-surface-elevated/60 border border-border text-xs text-zinc-200 leading-relaxed space-y-3 min-w-0">
+                            <p className="break-words">{recommendation.whyThisFixesIt || recommendation.whyThisAction || recommendation.diagnosis}</p>
 
                             {/* Evidence Citations */}
                             {recommendation.evidenceReferences.length > 0 && (
-                                <div className="pt-2 border-t border-white/5 flex items-center gap-2 flex-wrap">
+                                <div className="pt-2 border-t border-white/5 flex items-center gap-2 flex-wrap min-w-0">
                                     <span className="text-[11px] font-mono text-muted">Evidence used:</span>
                                     {recommendation.evidenceReferences.map((evId) => (
                                         <button
@@ -693,13 +754,13 @@ export function FixRecommendationView({
 
                     {/* Do Not Change */}
                     {recommendation.doNotChange && recommendation.doNotChange.length > 0 && (
-                        <div className="space-y-2">
+                        <div className="space-y-2 min-w-0">
                             <h3 className="text-xs font-mono uppercase font-bold text-amber-400/90 tracking-wider">
-                                Do Not Change
+                                Do not change
                             </h3>
-                            <div className="p-3.5 rounded-xl bg-amber-500/[0.04] border border-amber-500/20 text-xs text-amber-200/90 space-y-1">
+                            <div className="p-3.5 rounded-xl bg-amber-500/[0.04] border border-amber-500/20 text-xs text-amber-200/90 space-y-1 min-w-0">
                                 {recommendation.doNotChange.map((item, idx) => (
-                                    <p key={idx}>• {item}</p>
+                                    <p key={idx} className="break-words leading-relaxed">• {item}</p>
                                 ))}
                             </div>
                         </div>
@@ -707,15 +768,15 @@ export function FixRecommendationView({
 
                     {/* Competing Alternatives */}
                     {recommendation.alternatives && recommendation.alternatives.length > 0 && (
-                        <div className="space-y-2">
+                        <div className="space-y-2 min-w-0">
                             <h3 className="text-xs font-mono uppercase font-bold text-zinc-400 tracking-wider">
-                                Competing Fixes Considered
+                                Alternatives considered
                             </h3>
-                            <div className="space-y-2">
+                            <div className="space-y-2 min-w-0">
                                 {recommendation.alternatives.map((alt, idx) => (
-                                    <div key={idx} className="p-3 rounded-xl bg-surface-elevated/40 border border-border text-xs space-y-1">
-                                        <span className="font-semibold text-zinc-200 block">• {alt.description}</span>
-                                        <span className="text-secondary text-[11px] block">{alt.whyNotPreferred}</span>
+                                    <div key={idx} className="p-3 rounded-xl bg-surface-elevated/40 border border-border text-xs space-y-1 min-w-0">
+                                        <span className="font-semibold text-zinc-200 block break-words">• {alt.description}</span>
+                                        <span className="text-secondary text-[11px] block break-words pl-3 leading-relaxed">{alt.whyNotPreferred}</span>
                                     </div>
                                 ))}
                             </div>
@@ -725,15 +786,15 @@ export function FixRecommendationView({
                     {/* F. Also Check (Consistency Checks) */}
                     {recommendation.relatedConsistencyChecks &&
                         recommendation.relatedConsistencyChecks.length > 0 && (
-                            <div className="space-y-2">
+                            <div className="space-y-2 min-w-0">
                                 <h3 className="text-xs font-mono uppercase font-bold text-zinc-400 tracking-wider">
                                     Also check
                                 </h3>
-                                <ul className="p-4 rounded-xl bg-surface-elevated/40 border border-border text-xs text-zinc-300 space-y-2">
+                                <ul className="p-4 rounded-xl bg-surface-elevated/40 border border-border text-xs text-zinc-300 space-y-2 min-w-0">
                                     {recommendation.relatedConsistencyChecks.map((check, idx) => (
-                                        <li key={idx} className="flex items-start gap-2">
-                                            <span className="text-accent font-bold">•</span>
-                                            <span>{check}</span>
+                                        <li key={idx} className="flex items-start gap-2 min-w-0">
+                                            <span className="text-accent font-bold shrink-0">•</span>
+                                            <span className="break-words">{check}</span>
                                         </li>
                                     ))}
                                 </ul>
@@ -742,15 +803,15 @@ export function FixRecommendationView({
 
                     {/* G. What to Verify (Validation Blueprint) */}
                     {recommendation.validationSteps && recommendation.validationSteps.length > 0 && (
-                        <div className="space-y-2">
+                        <div className="space-y-2 min-w-0">
                             <h3 className="text-xs font-mono uppercase font-bold text-zinc-400 tracking-wider">
-                                Suggested Verification
+                                Verify the fix
                             </h3>
-                            <div className="p-4 rounded-xl bg-surface-elevated/40 border border-border space-y-2 text-xs text-zinc-300">
+                            <div className="p-4 rounded-xl bg-surface-elevated/40 border border-border space-y-2 text-xs text-zinc-300 min-w-0">
                                 {recommendation.validationSteps.map((step, idx) => (
-                                    <div key={idx} className="flex items-start gap-2.5">
+                                    <div key={idx} className="flex items-start gap-2.5 min-w-0">
                                         <CheckCircle2 className="w-3.5 h-3.5 text-accent shrink-0 mt-0.5" />
-                                        <span>{step}</span>
+                                        <span className="break-words leading-relaxed">{step}</span>
                                     </div>
                                 ))}
                             </div>
@@ -759,13 +820,13 @@ export function FixRecommendationView({
 
                     {/* H. Uncertainty (If any) */}
                     {recommendation.uncertainty && recommendation.uncertainty.length > 0 && (
-                        <div className="space-y-2">
+                        <div className="space-y-2 min-w-0">
                             <h3 className="text-xs font-mono uppercase font-bold text-amber-400 tracking-wider">
-                                Remaining Uncertainty
+                                Remaining uncertainty
                             </h3>
-                            <div className="p-4 rounded-xl bg-amber-500/[0.04] border border-amber-500/20 text-xs text-amber-200/90 space-y-1.5">
+                            <div className="p-4 rounded-xl bg-amber-500/[0.04] border border-amber-500/20 text-xs text-amber-200/90 space-y-1.5 min-w-0">
                                 {recommendation.uncertainty.map((item, idx) => (
-                                    <p key={idx}>• {item}</p>
+                                    <p key={idx} className="break-words leading-relaxed">• {item}</p>
                                 ))}
                             </div>
                         </div>

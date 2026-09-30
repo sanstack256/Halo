@@ -4037,23 +4037,24 @@ a.halo-primary-cta[aria-disabled="true"] {
   background: var(--surface);
   padding: 24px;
   position: relative;
-  overflow: hidden;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+@media (max-width: 640px) {
+  .halo-fix-container {
+    padding: 16px;
+  }
 }
 
 .halo-fix-header {
   display: flex;
   flex-direction: column;
-  gap: 12px;
+  gap: 14px;
   padding-bottom: 20px;
   border-bottom: 1px solid var(--border-subtle);
-}
-
-@media (min-width: 640px) {
-  .halo-fix-header {
-    flex-direction: row;
-    align-items: center;
-    justify-content: space-between;
-  }
+  min-width: 0;
 }
 
 .halo-fix-badge {
@@ -4061,13 +4062,17 @@ a.halo-primary-cta[aria-disabled="true"] {
   align-items: center;
   gap: 6px;
   padding: 3px 9px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   font-size: 11px;
   font-family: var(--font-mono);
   font-weight: 600;
   border: 1px solid var(--border-subtle);
   background: var(--surface-elevated);
   color: var(--text-secondary);
+  line-height: 1.4;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .halo-fix-badge-high {
@@ -4112,23 +4117,31 @@ a.halo-primary-cta[aria-disabled="true"] {
   background: #06090e;
   overflow: hidden;
   font-family: var(--font-mono);
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .halo-fix-code-header {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  padding: 8px 16px;
+  gap: 8px;
+  padding: 10px 16px;
   background: rgba(255, 255, 255, 0.02);
   border-bottom: 1px solid var(--border-subtle);
   font-size: 11px;
+  min-width: 0;
 }
 
 .halo-fix-code-content {
   padding: 14px 16px;
   font-size: 12px;
   line-height: 1.65;
-  overflow-x: auto;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .halo-fix-chip {
@@ -4136,7 +4149,7 @@ a.halo-primary-cta[aria-disabled="true"] {
   align-items: center;
   gap: 6px;
   padding: 5px 12px;
-  border-radius: 9999px;
+  border-radius: var(--radius-pill);
   border: 1px solid var(--border-subtle);
   background: rgba(255, 255, 255, 0.02);
   font-size: 11px;
@@ -4174,14 +4187,17 @@ a.halo-primary-cta[aria-disabled="true"] {
 
 .halo-fix-stale-banner {
   display: flex;
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: 12px;
   padding: 10px 16px;
   border-radius: 8px;
   border: 1px solid rgba(245, 158, 11, 0.3);
   background: rgba(245, 158, 11, 0.08);
   color: #fbbf24;
   font-size: 12px;
+  min-width: 0;
 }
 
 .halo-fix-hero-action {
@@ -4191,6 +4207,9 @@ a.halo-primary-cta[aria-disabled="true"] {
   border: 1px solid rgba(91, 188, 255, 0.28);
   box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
   position: relative;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .halo-fix-outcome-pill {
@@ -4204,6 +4223,9 @@ a.halo-primary-cta[aria-disabled="true"] {
   font-weight: 700;
   letter-spacing: 0.04em;
   text-transform: uppercase;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .halo-fix-outcome-code {
@@ -4232,43 +4254,120 @@ a.halo-primary-cta[aria-disabled="true"] {
 
 .halo-fix-missing-card {
   padding: 16px 20px;
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   background: rgba(245, 158, 11, 0.05);
   border: 1px solid rgba(245, 158, 11, 0.2);
   color: #fde68a;
   font-size: 12px;
   line-height: 1.6;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .halo-fix-next-action-card {
   padding: 16px 20px;
-  border-radius: 10px;
+  border-radius: var(--radius-card);
   background: rgba(91, 188, 255, 0.05);
   border: 1px solid rgba(91, 188, 255, 0.2);
   color: #bfdbfe;
   font-size: 12px;
   line-height: 1.6;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .halo-fix-panel-current {
   padding: 12px 16px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: rgba(239, 68, 68, 0.04);
   border: 1px solid rgba(239, 68, 68, 0.18);
   color: #fca5a5;
   font-family: var(--font-mono);
   font-size: 12px;
-  overflow-x: auto;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 .halo-fix-panel-proposed {
   padding: 12px 16px;
-  border-radius: 6px;
+  border-radius: var(--radius-sm);
   background: rgba(16, 185, 129, 0.06);
   border: 1px solid rgba(16, 185, 129, 0.24);
   color: #6ee7b7;
   font-family: var(--font-mono);
   font-size: 12px;
-  font-weight: 600;
-  overflow-x: auto;
+  font-weight: 500;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.halo-fix-panel-diff {
+  padding: 12px 16px;
+  border-radius: var(--radius-sm);
+  background: rgba(0, 0, 0, 0.4);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  color: #d4d4d8;
+  font-family: var(--font-mono);
+  font-size: 12px;
+  line-height: 1.6;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  min-width: 0;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.halo-fix-locations-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 10px;
+  min-width: 0;
+  max-width: 100%;
+}
+
+@media (min-width: 640px) {
+  .halo-fix-locations-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .halo-fix-locations-grid {
+    grid-template-columns: repeat(3, 1fr);
+  }
+}
+
+.halo-fix-location-card {
+  padding: 12px 14px;
+  border-radius: var(--radius-input);
+  background: rgba(0, 0, 0, 0.35);
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  box-sizing: border-box;
+}
+
+.halo-fix-location-path {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: #ffffff;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+  line-height: 1.5;
+  min-width: 0;
 }
