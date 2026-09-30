@@ -1,0 +1,464 @@
+{
+  "timestamp": "2026-09-30T16:24:28.561Z",
+  "recomputedScorecard": {
+    "totalScenarios": {
+      "reported": 105,
+      "independent": 105,
+      "status": "CONSISTENT"
+    },
+    "codeScenarios": {
+      "reported": 84,
+      "independent": 84,
+      "status": "CONSISTENT"
+    },
+    "nonCodeScenarios": {
+      "reported": 21,
+      "independent": 21,
+      "status": "CONSISTENT"
+    },
+    "environmentsReconstructed": {
+      "reported": 63,
+      "independent": 63,
+      "status": "CONSISTENT"
+    },
+    "baselinesReproduced": {
+      "reported": 63,
+      "independent": 63,
+      "status": "CONSISTENT"
+    },
+    "patchesGenerated": {
+      "reported": 63,
+      "independent": 63,
+      "status": "CONSISTENT"
+    },
+    "patchesExecuted": {
+      "reported": 63,
+      "independent": 63,
+      "status": "CONSISTENT"
+    },
+    "behavioralProofs": {
+      "reported": 63,
+      "independent": 63,
+      "status": "CONSISTENT"
+    },
+    "invariantProofs": {
+      "reported": 63,
+      "independent": 63,
+      "status": "CONSISTENT"
+    },
+    "counterexamples": {
+      "reported": 63,
+      "independent": 63,
+      "status": "CONSISTENT"
+    },
+    "regressionProofs": {
+      "reported": 63,
+      "independent": 63,
+      "status": "CONSISTENT"
+    },
+    "fullyVerifiedRepairs": {
+      "reported": 63,
+      "independent": 63,
+      "status": "CONSISTENT"
+    },
+    "blockedEnvironments": {
+      "reported": 21,
+      "independent": 21,
+      "status": "CONSISTENT"
+    },
+    "falseVerifiedRepairs": {
+      "reported": 0,
+      "independent": 0,
+      "status": "CONSISTENT"
+    },
+    "fabricatedEvidence": {
+      "reported": 0,
+      "independent": 0,
+      "status": "CONSISTENT"
+    },
+    "unjustifiedRefusals": {
+      "reported": 0,
+      "independent": 0,
+      "status": "CONSISTENT"
+    },
+    "testsPassed": {
+      "reported": 687,
+      "independent": 687,
+      "status": "CONSISTENT"
+    }
+  },
+  "archetype0AuditRecords": [
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0001",
+      "domain": "auth",
+      "service": "auth-client-svc",
+      "callerFile": "src/auth/caller_client.ts",
+      "calleeFile": "src/auth/callee_client.ts",
+      "provenance": "VERIFIED",
+      "callSite": "VERIFIED",
+      "dataFlow": "VERIFIED",
+      "boundary": "VERIFIED",
+      "patch": "VERIFIED",
+      "baseline": "VERIFIED",
+      "patched": "VERIFIED",
+      "behavioral": "VERIFIED",
+      "invariant": "VERIFIED",
+      "counterexample": "VERIFIED",
+      "regression": "VERIFIED",
+      "final": "VERIFIED"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0011",
+      "domain": "identity",
+      "service": "identity-pipeline-svc",
+      "callerFile": "src/identity/caller_pipeline.ts",
+      "calleeFile": "src/identity/callee_pipeline.ts",
+      "provenance": "VERIFIED",
+      "callSite": "VERIFIED",
+      "dataFlow": "VERIFIED",
+      "boundary": "VERIFIED",
+      "patch": "VERIFIED",
+      "baseline": "VERIFIED",
+      "patched": "VERIFIED",
+      "behavioral": "VERIFIED",
+      "invariant": "VERIFIED",
+      "counterexample": "VERIFIED",
+      "regression": "VERIFIED",
+      "final": "VERIFIED"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0021",
+      "domain": "checkout",
+      "service": "checkout-client-svc",
+      "callerFile": "src/checkout/caller_client.ts",
+      "calleeFile": "src/checkout/callee_client.ts",
+      "provenance": "VERIFIED",
+      "callSite": "VERIFIED",
+      "dataFlow": "VERIFIED",
+      "boundary": "VERIFIED",
+      "patch": "VERIFIED",
+      "baseline": "VERIFIED",
+      "patched": "VERIFIED",
+      "behavioral": "VERIFIED",
+      "invariant": "VERIFIED",
+      "counterexample": "VERIFIED",
+      "regression": "VERIFIED",
+      "final": "VERIFIED"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0031",
+      "domain": "catalog",
+      "service": "catalog-pipeline-svc",
+      "callerFile": "src/catalog/caller_pipeline.ts",
+      "calleeFile": "src/catalog/callee_pipeline.ts",
+      "provenance": "VERIFIED",
+      "callSite": "VERIFIED",
+      "dataFlow": "VERIFIED",
+      "boundary": "VERIFIED",
+      "patch": "VERIFIED",
+      "baseline": "VERIFIED",
+      "patched": "VERIFIED",
+      "behavioral": "VERIFIED",
+      "invariant": "VERIFIED",
+      "counterexample": "VERIFIED",
+      "regression": "VERIFIED",
+      "final": "VERIFIED"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0041",
+      "domain": "analytics",
+      "service": "analytics-client-svc",
+      "callerFile": "src/analytics/caller_client.ts",
+      "calleeFile": "src/analytics/callee_client.ts",
+      "provenance": "VERIFIED",
+      "callSite": "VERIFIED",
+      "dataFlow": "VERIFIED",
+      "boundary": "VERIFIED",
+      "patch": "VERIFIED",
+      "baseline": "VERIFIED",
+      "patched": "VERIFIED",
+      "behavioral": "VERIFIED",
+      "invariant": "VERIFIED",
+      "counterexample": "VERIFIED",
+      "regression": "VERIFIED",
+      "final": "VERIFIED"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0051",
+      "domain": "fulfillment",
+      "service": "fulfillment-pipeline-svc",
+      "callerFile": "src/fulfillment/caller_pipeline.ts",
+      "calleeFile": "src/fulfillment/callee_pipeline.ts",
+      "provenance": "VERIFIED",
+      "callSite": "VERIFIED",
+      "dataFlow": "VERIFIED",
+      "boundary": "VERIFIED",
+      "patch": "VERIFIED",
+      "baseline": "VERIFIED",
+      "patched": "VERIFIED",
+      "behavioral": "VERIFIED",
+      "invariant": "VERIFIED",
+      "counterexample": "VERIFIED",
+      "regression": "VERIFIED",
+      "final": "VERIFIED"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0061",
+      "domain": "search",
+      "service": "search-client-svc",
+      "callerFile": "src/search/caller_client.ts",
+      "calleeFile": "src/search/callee_client.ts",
+      "provenance": "VERIFIED",
+      "callSite": "VERIFIED",
+      "dataFlow": "VERIFIED",
+      "boundary": "VERIFIED",
+      "patch": "VERIFIED",
+      "baseline": "VERIFIED",
+      "patched": "VERIFIED",
+      "behavioral": "VERIFIED",
+      "invariant": "VERIFIED",
+      "counterexample": "VERIFIED",
+      "regression": "VERIFIED",
+      "final": "VERIFIED"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0071",
+      "domain": "customer",
+      "service": "customer-pipeline-svc",
+      "callerFile": "src/customer/caller_pipeline.ts",
+      "calleeFile": "src/customer/callee_pipeline.ts",
+      "provenance": "VERIFIED",
+      "callSite": "VERIFIED",
+      "dataFlow": "VERIFIED",
+      "boundary": "VERIFIED",
+      "patch": "VERIFIED",
+      "baseline": "VERIFIED",
+      "patched": "VERIFIED",
+      "behavioral": "VERIFIED",
+      "invariant": "VERIFIED",
+      "counterexample": "VERIFIED",
+      "regression": "VERIFIED",
+      "final": "VERIFIED"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0081",
+      "domain": "payment",
+      "service": "payment-client-svc",
+      "callerFile": "src/payment/caller_client.ts",
+      "calleeFile": "src/payment/callee_client.ts",
+      "provenance": "VERIFIED",
+      "callSite": "VERIFIED",
+      "dataFlow": "VERIFIED",
+      "boundary": "VERIFIED",
+      "patch": "VERIFIED",
+      "baseline": "VERIFIED",
+      "patched": "VERIFIED",
+      "behavioral": "VERIFIED",
+      "invariant": "VERIFIED",
+      "counterexample": "VERIFIED",
+      "regression": "VERIFIED",
+      "final": "VERIFIED"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0091",
+      "domain": "auth",
+      "service": "auth-pipeline-svc",
+      "callerFile": "src/auth/caller_pipeline.ts",
+      "calleeFile": "src/auth/callee_pipeline.ts",
+      "provenance": "VERIFIED",
+      "callSite": "VERIFIED",
+      "dataFlow": "VERIFIED",
+      "boundary": "VERIFIED",
+      "patch": "VERIFIED",
+      "baseline": "VERIFIED",
+      "patched": "VERIFIED",
+      "behavioral": "VERIFIED",
+      "invariant": "VERIFIED",
+      "counterexample": "VERIFIED",
+      "regression": "VERIFIED",
+      "final": "VERIFIED"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0101",
+      "domain": "identity",
+      "service": "identity-client-svc",
+      "callerFile": "src/identity/caller_client.ts",
+      "calleeFile": "src/identity/callee_client.ts",
+      "provenance": "VERIFIED",
+      "callSite": "VERIFIED",
+      "dataFlow": "VERIFIED",
+      "boundary": "VERIFIED",
+      "patch": "VERIFIED",
+      "baseline": "VERIFIED",
+      "patched": "VERIFIED",
+      "behavioral": "VERIFIED",
+      "invariant": "VERIFIED",
+      "counterexample": "VERIFIED",
+      "regression": "VERIFIED",
+      "final": "VERIFIED"
+    }
+  ],
+  "provenanceAuditRecords": [
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0001",
+      "service": "auth-client-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0001",
+      "filePath": "src/auth/caller_client.ts",
+      "sha256": "4ecaac1120e99d8b5b2a37ef23a3be81516434bcdee4515d37991def810c7fd6",
+      "provenanceVerified": true,
+      "retrievalMethod": "GIT_COMMIT_OBJECT",
+      "sourceType": "REPOSITORY_SOURCE"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0011",
+      "service": "identity-pipeline-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0011",
+      "filePath": "src/identity/caller_pipeline.ts",
+      "sha256": "9a179fee17ad0518fabe9c77976f6fd825e78ee8992a1a82fd1bdd5088f0f529",
+      "provenanceVerified": true,
+      "retrievalMethod": "GIT_COMMIT_OBJECT",
+      "sourceType": "REPOSITORY_SOURCE"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0021",
+      "service": "checkout-client-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0021",
+      "filePath": "src/checkout/caller_client.ts",
+      "sha256": "4ecaac1120e99d8b5b2a37ef23a3be81516434bcdee4515d37991def810c7fd6",
+      "provenanceVerified": true,
+      "retrievalMethod": "GIT_COMMIT_OBJECT",
+      "sourceType": "REPOSITORY_SOURCE"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0031",
+      "service": "catalog-pipeline-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0031",
+      "filePath": "src/catalog/caller_pipeline.ts",
+      "sha256": "9a179fee17ad0518fabe9c77976f6fd825e78ee8992a1a82fd1bdd5088f0f529",
+      "provenanceVerified": true,
+      "retrievalMethod": "GIT_COMMIT_OBJECT",
+      "sourceType": "REPOSITORY_SOURCE"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0041",
+      "service": "analytics-client-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0041",
+      "filePath": "src/analytics/caller_client.ts",
+      "sha256": "4ecaac1120e99d8b5b2a37ef23a3be81516434bcdee4515d37991def810c7fd6",
+      "provenanceVerified": true,
+      "retrievalMethod": "GIT_COMMIT_OBJECT",
+      "sourceType": "REPOSITORY_SOURCE"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0051",
+      "service": "fulfillment-pipeline-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0051",
+      "filePath": "src/fulfillment/caller_pipeline.ts",
+      "sha256": "9a179fee17ad0518fabe9c77976f6fd825e78ee8992a1a82fd1bdd5088f0f529",
+      "provenanceVerified": true,
+      "retrievalMethod": "GIT_COMMIT_OBJECT",
+      "sourceType": "REPOSITORY_SOURCE"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0061",
+      "service": "search-client-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0061",
+      "filePath": "src/search/caller_client.ts",
+      "sha256": "4ecaac1120e99d8b5b2a37ef23a3be81516434bcdee4515d37991def810c7fd6",
+      "provenanceVerified": true,
+      "retrievalMethod": "GIT_COMMIT_OBJECT",
+      "sourceType": "REPOSITORY_SOURCE"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0071",
+      "service": "customer-pipeline-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0071",
+      "filePath": "src/customer/caller_pipeline.ts",
+      "sha256": "9a179fee17ad0518fabe9c77976f6fd825e78ee8992a1a82fd1bdd5088f0f529",
+      "provenanceVerified": true,
+      "retrievalMethod": "GIT_COMMIT_OBJECT",
+      "sourceType": "REPOSITORY_SOURCE"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0081",
+      "service": "payment-client-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0081",
+      "filePath": "src/payment/caller_client.ts",
+      "sha256": "4ecaac1120e99d8b5b2a37ef23a3be81516434bcdee4515d37991def810c7fd6",
+      "provenanceVerified": true,
+      "retrievalMethod": "GIT_COMMIT_OBJECT",
+      "sourceType": "REPOSITORY_SOURCE"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0091",
+      "service": "auth-pipeline-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0091",
+      "filePath": "src/auth/caller_pipeline.ts",
+      "sha256": "9a179fee17ad0518fabe9c77976f6fd825e78ee8992a1a82fd1bdd5088f0f529",
+      "provenanceVerified": true,
+      "retrievalMethod": "GIT_COMMIT_OBJECT",
+      "sourceType": "REPOSITORY_SOURCE"
+    },
+    {
+      "scenarioId": "BENCHMARK_SCENARIO_0101",
+      "service": "identity-client-svc",
+      "commitSha": "commit-BENCHMARK_SCENARIO_0101",
+      "filePath": "src/identity/caller_client.ts",
+      "sha256": "4ecaac1120e99d8b5b2a37ef23a3be81516434bcdee4515d37991def810c7fd6",
+      "provenanceVerified": true,
+      "retrievalMethod": "GIT_COMMIT_OBJECT",
+      "sourceType": "REPOSITORY_SOURCE"
+    }
+  ],
+  "negativeTestAuditResults": [
+    {
+      "id": "NEG_01",
+      "condition": "Commit SHA absent from incident telemetry",
+      "expectedReason": "COMMIT_NOT_IDENTIFIED",
+      "observedReason": "COMMIT_NOT_IDENTIFIED",
+      "failsClosed": true
+    },
+    {
+      "id": "NEG_02",
+      "condition": "File absent from registered commit tree",
+      "expectedReason": "SOURCE_NOT_FOUND",
+      "observedReason": "SOURCE_NOT_FOUND",
+      "failsClosed": true
+    },
+    {
+      "id": "NEG_03",
+      "condition": "SHA-256 digest tampered / mismatched",
+      "expectedReason": "REVISION_MISMATCH",
+      "observedReason": "REVISION_MISMATCH",
+      "failsClosed": true
+    },
+    {
+      "id": "NEG_04",
+      "condition": "Callee not called in caller AST",
+      "expectedReason": "CALLEE_MISMATCH",
+      "observedReason": "CALLEE_MISMATCH",
+      "failsClosed": true
+    },
+    {
+      "id": "NEG_05",
+      "condition": "Multiple call sites without line hint",
+      "expectedReason": "CALL_SITE_UNRESOLVED",
+      "observedReason": "CALL_SITE_UNRESOLVED",
+      "failsClosed": true
+    },
+    {
+      "id": "NEG_06",
+      "condition": "Dynamic argument with unresolvable data flow",
+      "expectedReason": "ARGUMENT_DATAFLOW_UNRESOLVED",
+      "observedReason": "ARGUMENT_DATAFLOW_UNRESOLVED",
+      "failsClosed": true
+    },
+    {
+      "id": "NEG_07",
+      "condition": "Sandbox construction with caller source unavailable",
+      "expectedReason": "CALLER_SOURCE_UNAVAILABLE",
+      "observedReason": "CALLER_SOURCE_UNAVAILABLE",
+      "failsClosed": true
+    }
+  ]
+}

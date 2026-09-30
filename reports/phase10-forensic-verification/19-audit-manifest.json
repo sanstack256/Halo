@@ -1,0 +1,25 @@
+{
+  "timestamp": "2026-09-30T16:24:28.561Z",
+  "auditSha": "2ebc93bdd2e8c6bc1f6b1b299f32bcd9b308d984",
+  "verdict": "PHASE_10_FORENSICALLY_CONFIRMED",
+  "files": [
+    "01-repository-state.md",
+    "02-source-provenance-audit.md",
+    "03-scenario-population.md",
+    "04-archetype0-audit.md",
+    "05-callsite-audit.md",
+    "06-dataflow-audit.md",
+    "07-patch-audit.md",
+    "08-baseline-execution-audit.md",
+    "09-patched-execution-audit.md",
+    "10-proof-gate-audit.md",
+    "11-regression-audit.md",
+    "12-negative-test-audit.md",
+    "13-metric-reconciliation.md",
+    "14-raw-metric-recomputation.json",
+    "15-security-audit.md",
+    "16-generalization-audit.md",
+    "17-discrepancy-ledger.md",
+    "18-final-verdict.md"
+  ]
+}

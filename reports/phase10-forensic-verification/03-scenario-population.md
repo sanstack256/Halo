@@ -1,0 +1,23 @@
+# Phase 10 Forensic Verification — Scenario Population Reconstruction (§6)
+
+- **Total Scenarios Evaluated**: 105
+- **Code Scenarios**: 84
+- **Non-Code Scenarios**: 21
+- **Invariant Check**: 105 = 84 (Code) + 21 (Non-Code) -> **VALIDATED (105 = 84 + 21)**
+- **Duplicate Scenarios**: 0
+- **Excluded Scenarios**: 0
+
+## Defect Category Distribution (105 Scenarios)
+
+| Defect Category | Count | Code Defect | Expected Boundary |
+|---|---:|:---:|:---:|
+| `CALLER_CONTRACT_VIOLATION` | 11 | YES/NO | CALLEE/CALLER/PRODUCER/ADAPTER |
+| `SERIALIZATION_DEFECT` | 11 | YES/NO | CALLEE/CALLER/PRODUCER/ADAPTER |
+| `STATE_MACHINE_TRANSITION` | 11 | YES/NO | CALLEE/CALLER/PRODUCER/ADAPTER |
+| `RESOURCE_LEAK` | 11 | YES/NO | CALLEE/CALLER/PRODUCER/ADAPTER |
+| `EXTERNAL_OUTAGE` | 11 | YES/NO | CALLEE/CALLER/PRODUCER/ADAPTER |
+| `COLLECTION_BOUNDARY` | 10 | YES/NO | CALLEE/CALLER/PRODUCER/ADAPTER |
+| `CONFIGURATION_ENV_MISSING` | 10 | YES/NO | CALLEE/CALLER/PRODUCER/ADAPTER |
+| `DEPLOYMENT_ROLLBACK_SUPERIOR` | 10 | YES/NO | CALLEE/CALLER/PRODUCER/ADAPTER |
+| `ASYNC_RACE` | 10 | YES/NO | CALLEE/CALLER/PRODUCER/ADAPTER |
+| `NULL_DEREFERENCE` | 10 | YES/NO | CALLEE/CALLER/PRODUCER/ADAPTER |
