@@ -61,6 +61,7 @@ export interface CalleeContract {
     errorMessage?: string;
     exceptionType?: string;
     parameterName?: string;
+    preconditionCheckExpression?: string;
 }
 
 export interface ContractComparisonResult {

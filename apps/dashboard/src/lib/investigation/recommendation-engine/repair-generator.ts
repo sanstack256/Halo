@@ -959,7 +959,12 @@ export function generatePreciseRepair(
     );
     const contractDescription = contractAnalysis.calleeContract || `Expected valid non-nullish input for '${failingExpr}'`;
 
-    let repairSynthesis: { proposed: string; headline: string; whyFixes: string; test: string };
+    let repairSynthesis: { proposed: string; headline: string; whyFixes: string; test: string } = {
+        proposed: verifiedCurrent,
+        headline: `Fix issue in '${targetSymbol || targetFile}'`,
+        whyFixes: "Address detected failure",
+        test: `Verify behavior of '${targetSymbol || targetFile}'`,
+    };
 
     let adapterSpecificResult: { proposed: string; verifiedCurrent: string; startLine?: number; endLine?: number; headline: string; whyFixes: string; test: string } | undefined = undefined;
 
@@ -1000,7 +1005,8 @@ export function generatePreciseRepair(
             callerSource = (snapshot.source as any).callerSources[targetFile].content;
         }
         const commitSha = (snapshot.source as any)?.gitCommitSha ||
-            snapshot.release?.currentCommitSha ||
+            (snapshot.release as any)?.currentCommitSha ||
+            snapshot.release?.deployedCommitSha ||
             snapshot.incident?.release ||
             (snapshot.incident?.issueId ? `commit-${snapshot.incident.issueId.replace(/^inc-/, "")}` : undefined);
 

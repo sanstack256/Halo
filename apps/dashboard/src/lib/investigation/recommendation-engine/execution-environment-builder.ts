@@ -336,7 +336,8 @@ export class SnapshotReconstructionEnvironmentProvider implements ExecutionEnvir
         const callers = (snapshot.source as any)?.callers;
         const callerSources = (snapshot.source as any)?.callerSources as Record<string, { content?: string }> | undefined;
         const commitSha = (snapshot.source as any)?.gitCommitSha ||
-            snapshot.release?.currentCommitSha ||
+            (snapshot.release as any)?.currentCommitSha ||
+            snapshot.release?.deployedCommitSha ||
             snapshot.incident?.release ||
             (snapshot.incident?.issueId ? `commit-${snapshot.incident.issueId.replace(/^inc-/, "")}` : undefined);
 
@@ -391,7 +392,7 @@ export class SnapshotReconstructionEnvironmentProvider implements ExecutionEnvir
             missingArtifactDetails = "Missing secret environment variable DATABASE_URL; synthesizing production database credentials violates §20, §21.";
         } else {
             // Check if this incident involves a caller contract violation (§30, §33)
-            const frames = snapshot.failure?.frames || snapshot.stackFrames || [];
+            const frames = snapshot.failure?.frames || (snapshot as any).stackFrames || [];
             const callerFrame = frames.find(f => f.order === 2 && f.isApplication && f.filePath !== primaryRelPath) ||
                 frames.find(f => f.frameRole === "CALLER");
             const isCallerContractDefect = Boolean(
