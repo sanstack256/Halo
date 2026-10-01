@@ -12865,7 +12865,7 @@ var ReplayRingBuffer = class {
   constructor(maxDurationSeconds = 60, maxEvents = 5e3) {
     this.buffer = [];
     this.maxDurationMs = Math.max(1e3, maxDurationSeconds * 1e3);
-    this.maxEvents = Math.max(100, maxEvents);
+    this.maxEvents = Math.max(1, maxEvents);
   }
   add(event) {
     this.buffer.push(event);
@@ -12896,14 +12896,22 @@ var ReplayRingBuffer = class {
       }
     }
     if (snapshotIndex > 0) {
-      this.buffer = this.buffer.slice(snapshotIndex);
+      const startIndex = snapshotIndex > 0 && this.buffer[snapshotIndex - 1]?.type === 4 ? snapshotIndex - 1 : snapshotIndex;
+      this.buffer = this.buffer.slice(startIndex);
     } else if (countNeedsPrune && this.buffer.length > this.maxEvents) {
       const firstSnapshotIdx = this.buffer.findIndex((e) => e.type === 2);
       if (firstSnapshotIdx >= 0) {
-        const snapshot2 = this.buffer[firstSnapshotIdx];
-        const excess = this.buffer.length - this.maxEvents;
-        const remaining = this.buffer.slice(firstSnapshotIdx + 1 + excess);
-        this.buffer = [snapshot2, ...remaining];
+        const nextSnapshotIdx = this.buffer.slice(firstSnapshotIdx + 1).findIndex((e) => e.type === 2);
+        if (nextSnapshotIdx >= 0) {
+          const actualIdx = firstSnapshotIdx + 1 + nextSnapshotIdx;
+          const startIndex = actualIdx > 0 && this.buffer[actualIdx - 1]?.type === 4 ? actualIdx - 1 : actualIdx;
+          this.buffer = this.buffer.slice(startIndex);
+        } else {
+          const snapshot2 = this.buffer[firstSnapshotIdx];
+          const excess = this.buffer.length - this.maxEvents;
+          const remaining = this.buffer.slice(firstSnapshotIdx + 1 + excess);
+          this.buffer = [snapshot2, ...remaining];
+        }
       } else {
         this.buffer = this.buffer.slice(this.buffer.length - this.maxEvents);
       }
@@ -12938,9 +12946,13 @@ var ReplayUploader = class {
     this.apiKey = options.apiKey;
     this.projectId = options.projectId;
     this.sessionId = options.sessionId;
+    this.sessionStartedAt = options.sessionStartedAt;
     this.flushIntervalMs = options.flushIntervalMs ?? 5e3;
     this.environment = options.environment;
     this.issueId = options.issueId;
+  }
+  setSessionStartedAt(startedAt) {
+    this.sessionStartedAt = startedAt;
   }
   setIssueId(issueId) {
     this.issueId = issueId;
@@ -12974,7 +12986,7 @@ var ReplayUploader = class {
       clearTimeout(this.flushTimer);
       this.flushTimer = null;
     }
-    if (this.queue.length === 0 && (!isFinal || this.sequence === 0)) return;
+    if (this.queue.length === 0 && (!isFinal || this.sequence === 0)) return false;
     if (extraMeta) {
       this.sessionMeta = { ...this.sessionMeta, ...extraMeta };
     }
@@ -12992,6 +13004,7 @@ var ReplayUploader = class {
       endedAt,
       meta: {
         projectId: this.projectId,
+        sessionStartedAt: this.sessionStartedAt || startedAt,
         browser: getCleanBrowser(rawUserAgent),
         os: getCleanOs(rawPlatform, rawUserAgent),
         url: typeof window !== "undefined" ? sanitizeUrl(window.location.href) : void 0,
@@ -13018,16 +13031,21 @@ var ReplayUploader = class {
         body: bodyStr,
         keepalive: isFinal
       });
-      if (!res.ok && res.status >= 500 && !isFinal) {
-        this.queue.unshift(...eventsToUpload);
-        this.sequence--;
+      if (!res.ok) {
+        if (res.status >= 500 && !isFinal) {
+          this.queue.unshift(...eventsToUpload);
+          this.sequence--;
+        }
+        return false;
       }
+      return true;
     } catch (err) {
       console.error("[Halo Replay] Failed to upload chunk:", err);
       if (!isFinal) {
         this.queue.unshift(...eventsToUpload);
         this.sequence--;
       }
+      return false;
     }
   }
 };
@@ -13358,6 +13376,7 @@ var HaloReplay = class {
       apiKey: this.options.apiKey,
       projectId: this.options.projectId,
       sessionId: this.sessionId,
+      sessionStartedAt: new Date(this.startedAt).toISOString(),
       flushIntervalMs: this.options.flushIntervalMs,
       environment: this.options.environment
     });
@@ -13486,10 +13505,13 @@ var HaloReplay = class {
     }
     const maskerConfig = buildMaskerConfig(this.options.privacy);
     try {
+      this.captureState = this.isSampled && !this.options.errorTriggered ? "CAPTURING" : "BUFFERING";
       this.stopFn = record({
         emit: (event) => {
           this.handleEvent(event);
         },
+        checkoutEveryNms: this.options.checkoutEveryNms ?? 15e3,
+        checkoutEveryNth: this.options.checkoutEveryNth ?? 500,
         maskAllInputs: maskerConfig.maskAllInputs,
         maskInputOptions: maskerConfig.maskInputOptions,
         maskTextFn: maskerConfig.maskTextFn,
@@ -13528,12 +13550,13 @@ var HaloReplay = class {
         this.captureReason = `Normal session sampled (${Math.round(this.sampleRate * 100)}%)`;
         this.triggerTimestamp = (/* @__PURE__ */ new Date()).toISOString();
         this.uploader.setSessionMeta({
+          sessionStartedAt: new Date(this.startedAt).toISOString(),
           triggerType: this.triggerType,
           captureReason: this.captureReason,
           triggerTimestamp: this.triggerTimestamp
         });
       } else {
-        this.captureState = "OBSERVING";
+        this.captureState = "BUFFERING";
         this.isStreaming = false;
       }
     } catch (err) {
@@ -13564,9 +13587,9 @@ var HaloReplay = class {
     } else if (event.type === 5 && event.data?.tag !== "halo:dead-click" && event.data?.tag !== "halo:rage-click" && event.data?.tag !== "halo:lifecycle") {
       this.notifyMutationOrEffect();
     }
-    if (this.captureState === "CAPTURING") {
+    if (this.captureState === "CAPTURING" || this.captureState === "FINALIZING" || this.captureState === "FLUSHING") {
       this.uploader.addEvents([event]);
-    } else if (this.captureState === "OBSERVING") {
+    } else if (this.captureState === "BUFFERING" || this.captureState === "OBSERVING" || this.captureState === "INITIALIZING") {
       this.ringBuffer.add(event);
     }
   }
@@ -13745,7 +13768,7 @@ var HaloReplay = class {
     }
     const now = (/* @__PURE__ */ new Date()).toISOString();
     const reason = effectiveDetails?.reason || triggerType;
-    if (this.captureState === "CAPTURING") {
+    if (this.captureState === "CAPTURING" || this.captureState === "FINALIZING" || this.captureState === "FLUSHING") {
       this.recordCustomEvent("halo:trigger", {
         triggerType,
         reason,
@@ -13757,7 +13780,7 @@ var HaloReplay = class {
       }
       const postDurationMs2 = (this.options.postErrorDurationSeconds ?? 30) * 1e3;
       this.postErrorTimeout = setTimeout(() => {
-        this.flushAndConclude();
+        void this.flushAndConclude();
       }, postDurationMs2);
       return;
     }
@@ -13767,15 +13790,16 @@ var HaloReplay = class {
     this.triggerType = triggerType;
     this.captureReason = reason;
     this.triggerTimestamp = now;
+    const preTriggerEvents = this.ringBuffer.flush();
+    this.uploader.addEvents(preTriggerEvents);
     this.recordCustomEvent("halo:trigger", {
       triggerType,
       reason,
       timestamp: now,
       ...details?.meta
     });
-    const preTriggerEvents = this.ringBuffer.flush();
-    this.uploader.addEvents(preTriggerEvents);
     this.uploader.setSessionMeta({
+      sessionStartedAt: new Date(this.startedAt).toISOString(),
       triggerType: this.triggerType,
       captureReason: this.captureReason,
       triggerTimestamp: this.triggerTimestamp,
@@ -13786,13 +13810,13 @@ var HaloReplay = class {
       deadClickCount: this.deadClickCount,
       ...details?.meta
     });
-    this.uploader.flush(false);
+    void this.uploader.flush(false);
     if (this.postErrorTimeout) {
       clearTimeout(this.postErrorTimeout);
     }
     const postDurationMs = (this.options.postErrorDurationSeconds ?? 30) * 1e3;
     this.postErrorTimeout = setTimeout(() => {
-      this.flushAndConclude();
+      void this.flushAndConclude();
     }, postDurationMs);
   }
   /**
@@ -13825,17 +13849,17 @@ var HaloReplay = class {
       reason: options?.reason || "Developer-triggered capture"
     });
   }
-  flushAndConclude() {
+  async flushAndConclude() {
     if (this.captureState === "CAPTURING") {
-      this.captureState = "FLUSHING";
-      this.uploader.flush(true, {
+      this.captureState = "FINALIZING";
+      const success = await this.uploader.flush(true, {
         hasRageClicks: this.hasRageClicks,
         hasDeadClicks: this.hasDeadClicks,
         rageClickCount: this.rageClickCount,
         deadClickCount: this.deadClickCount
       });
-      this.captureState = "PERSISTED";
-    } else if (this.captureState === "OBSERVING") {
+      this.captureState = success ? "PERSISTED" : "FAILED";
+    } else if (this.captureState === "BUFFERING" || this.captureState === "OBSERVING") {
       this.captureState = "DISCARDED";
       this.ringBuffer.flush();
     }
@@ -13914,8 +13938,8 @@ var HaloReplay = class {
         event: "visibilitychange",
         state
       });
-      if (state === "hidden" && this.captureState === "CAPTURING") {
-        this.uploader.flush(false, {
+      if (state === "hidden" && (this.captureState === "CAPTURING" || this.captureState === "FINALIZING")) {
+        void this.uploader.flush(false, {
           hasRageClicks: this.hasRageClicks,
           hasDeadClicks: this.hasDeadClicks,
           rageClickCount: this.rageClickCount,
@@ -13929,14 +13953,14 @@ var HaloReplay = class {
         event: "pagehide",
         state: e.persisted ? "persisted" : "terminated"
       });
-      this.flushAndConclude();
+      void this.flushAndConclude();
     };
     window.addEventListener("pagehide", this.pagehideListener);
     this.beforeunloadListener = () => {
       this.recordCustomEvent("halo:lifecycle", {
         event: "beforeunload"
       });
-      this.flushAndConclude();
+      void this.flushAndConclude();
     };
     window.addEventListener("beforeunload", this.beforeunloadListener);
   }
@@ -13988,7 +14012,7 @@ var HaloReplay = class {
     if (this.originalConsoleError && typeof console !== "undefined") {
       console.error = this.originalConsoleError;
     }
-    this.flushAndConclude();
+    void this.flushAndConclude();
   }
 };
 function getElementSelector(el) {

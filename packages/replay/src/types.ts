@@ -137,6 +137,17 @@ export interface HaloReplayOptions {
      */
     deadClickTimeoutMs?: number;
     /**
+     * Periodic full snapshot checkout interval in milliseconds.
+     * Guarantees DOM reconstruction anchors throughout long sessions.
+     * Default: 15000 (15 seconds)
+     */
+    checkoutEveryNms?: number;
+    /**
+     * Periodic full snapshot checkout event count threshold.
+     * Default: 500
+     */
+    checkoutEveryNth?: number;
+    /**
      * Enable Canvas 2D and WebGL context operation & frame snapshot recording.
      * Default: false (enable explicitly for graphics / game applications)
      */
@@ -258,11 +269,15 @@ export interface ReplayErrorPayload {
 
 export type ReplayCaptureState =
     | "DISABLED"
-    | "OBSERVING"
+    | "INITIALIZING"
+    | "BUFFERING"
+    | "OBSERVING" // backward-compatible alias for BUFFERING
     | "CAPTURING"
-    | "FLUSHING"
+    | "FINALIZING"
+    | "FLUSHING" // backward-compatible alias for FINALIZING
     | "PERSISTED"
-    | "DISCARDED";
+    | "DISCARDED"
+    | "FAILED";
 
 export type ReplayTriggerType =
     | "ERROR"
@@ -281,6 +296,7 @@ export interface ReplayChunkPayload {
     endedAt: string;
     meta?: {
         projectId?: string;
+        sessionStartedAt?: string;
         browser?: string;
         os?: string;
         device?: string;

@@ -454,6 +454,9 @@ export async function getProjectReplaysPaginated(
 
     if (status && status !== "ALL") {
         where.status = status;
+    } else {
+        // Exclude expired or disabled invalid replay sessions by default
+        where.status = { notIn: ["EXPIRED", "DISABLED"] };
     }
 
     if (environmentId && environmentId !== "ALL") {

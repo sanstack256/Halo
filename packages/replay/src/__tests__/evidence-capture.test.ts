@@ -3,7 +3,21 @@ import { HaloReplay } from "../recorder";
 import { ReplayUploader } from "../uploader";
 
 vi.mock("rrweb", () => ({
-    record: vi.fn(() => vi.fn()),
+    record: vi.fn((opts?: any) => {
+        if (opts?.emit) {
+            opts.emit({
+                type: 4,
+                data: { href: "http://localhost:3000/checkout", width: 1440, height: 900 },
+                timestamp: Date.now(),
+            });
+            opts.emit({
+                type: 2,
+                data: { node: { id: 1, tagName: "html" } },
+                timestamp: Date.now() + 5,
+            });
+        }
+        return vi.fn();
+    }),
 }));
 
 describe("Evidence-Triggered Replay Capture", () => {
@@ -64,7 +78,7 @@ describe("Evidence-Triggered Replay Capture", () => {
         });
 
         recorder.start();
-        expect(recorder.getCaptureState()).toBe("OBSERVING");
+        expect(recorder.getCaptureState()).toBe("BUFFERING");
         expect(recorder.getSampleRate()).toBe(0);
 
         // Record events (simulating normal DOM interactions)
@@ -100,7 +114,7 @@ describe("Evidence-Triggered Replay Capture", () => {
         });
 
         recorder.start();
-        expect(recorder.getCaptureState()).toBe("OBSERVING");
+        expect(recorder.getCaptureState()).toBe("BUFFERING");
 
         // Simulate pre-error user interactions
         recorder.recordCustomEvent("halo:click", { selector: "#pay-btn" });
@@ -163,7 +177,7 @@ describe("Evidence-Triggered Replay Capture", () => {
         expect(recorder.getCaptureState()).toBe("CAPTURING");
 
         // Finalize
-        recorder.flushAndConclude();
+        await recorder.flushAndConclude();
         expect(recorder.getCaptureState()).toBe("PERSISTED");
     });
 
@@ -176,7 +190,7 @@ describe("Evidence-Triggered Replay Capture", () => {
         });
 
         recorder.start();
-        expect(recorder.getCaptureState()).toBe("OBSERVING");
+        expect(recorder.getCaptureState()).toBe("BUFFERING");
 
         recorder.recordCustomEvent("halo:step", { step: 1 });
 
@@ -204,7 +218,7 @@ describe("Evidence-Triggered Replay Capture", () => {
         });
 
         recorder.start();
-        expect(recorder.getCaptureState()).toBe("OBSERVING");
+        expect(recorder.getCaptureState()).toBe("BUFFERING");
 
         // Error occurs despite sampleRate = 0
         recorder.triggerCapture("ERROR", { reason: "Critical system fault" });

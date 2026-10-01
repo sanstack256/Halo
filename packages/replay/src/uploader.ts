@@ -16,12 +16,14 @@ export class ReplayUploader {
     private issueId?: string;
     private maxQueueEvents = 10000;
     private sessionMeta: Record<string, any> = {};
+    private sessionStartedAt?: string;
 
     constructor(options: {
         endpoint: string;
         apiKey?: string;
         projectId?: string;
         sessionId: string;
+        sessionStartedAt?: string;
         flushIntervalMs?: number;
         environment?: string;
         issueId?: string;
@@ -30,9 +32,14 @@ export class ReplayUploader {
         this.apiKey = options.apiKey;
         this.projectId = options.projectId;
         this.sessionId = options.sessionId;
+        this.sessionStartedAt = options.sessionStartedAt;
         this.flushIntervalMs = options.flushIntervalMs ?? 5000;
         this.environment = options.environment;
         this.issueId = options.issueId;
+    }
+
+    public setSessionStartedAt(startedAt: string): void {
+        this.sessionStartedAt = startedAt;
     }
 
     public setIssueId(issueId: string): void {
@@ -70,14 +77,14 @@ export class ReplayUploader {
         }, this.flushIntervalMs);
     }
 
-    async flush(isFinal = false, extraMeta?: Record<string, any>): Promise<void> {
+    async flush(isFinal = false, extraMeta?: Record<string, any>): Promise<boolean> {
         if (this.flushTimer) {
             clearTimeout(this.flushTimer);
             this.flushTimer = null;
         }
 
         // Evidence-triggered invariant: Never upload or create a session if no events were ever queued
-        if (this.queue.length === 0 && (!isFinal || this.sequence === 0)) return;
+        if (this.queue.length === 0 && (!isFinal || this.sequence === 0)) return false;
 
         if (extraMeta) {
             this.sessionMeta = { ...this.sessionMeta, ...extraMeta };
@@ -105,6 +112,7 @@ export class ReplayUploader {
             endedAt,
             meta: {
                 projectId: this.projectId,
+                sessionStartedAt: this.sessionStartedAt || startedAt,
                 browser: getCleanBrowser(rawUserAgent),
                 os: getCleanOs(rawPlatform, rawUserAgent),
                 url: typeof window !== "undefined" ? sanitizeUrl(window.location.href) : undefined,
@@ -141,11 +149,16 @@ export class ReplayUploader {
                 keepalive: isFinal,
             });
 
-            if (!res.ok && res.status >= 500 && !isFinal) {
-                // Re-queue on 5xx server errors
-                this.queue.unshift(...eventsToUpload);
-                this.sequence--;
+            if (!res.ok) {
+                if (res.status >= 500 && !isFinal) {
+                    // Re-queue on 5xx server errors
+                    this.queue.unshift(...eventsToUpload);
+                    this.sequence--;
+                }
+                return false;
             }
+
+            return true;
         } catch (err) {
             console.error("[Halo Replay] Failed to upload chunk:", err);
             // Re-queue events on network failure if not final
@@ -153,6 +166,7 @@ export class ReplayUploader {
                 this.queue.unshift(...eventsToUpload);
                 this.sequence--;
             }
+            return false;
         }
     }
 }

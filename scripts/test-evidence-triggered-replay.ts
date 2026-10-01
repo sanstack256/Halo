@@ -192,8 +192,7 @@ async function main() {
             const captureState = await page.evaluate(() => (window as any).__recorder.getCaptureState());
             record(
                 "Normal Session",
-                "Recorder remains in OBSERVING state",
-                captureState === "OBSERVING",
+                captureState === "BUFFERING" || captureState === "OBSERVING",
                 `captureState = ${captureState}`
             );
 

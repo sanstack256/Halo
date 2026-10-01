@@ -14,11 +14,27 @@ export class BrowserClient extends CoreClient {
 
     constructor(options: HaloOptions) {
         const endpoint = options.endpoint || (typeof window !== "undefined" ? "/api" : "http://localhost:3000/api");
-        super({ ...options, endpoint }, "@halo-trace/sdk-browser", "1.0.0");
+
+        // Maintain session ID stability in the browser
+        let canonicalSessionId = options.sessionId;
+        if (!canonicalSessionId && typeof window !== "undefined") {
+            try {
+                canonicalSessionId = window.sessionStorage?.getItem("halo_session_id") || undefined;
+            } catch {}
+            if (!canonicalSessionId) {
+                canonicalSessionId = (window as any).__HALO_SESSION_ID__;
+            }
+        }
+
+        super({ ...options, endpoint, sessionId: canonicalSessionId }, "@halo-trace/sdk-browser", "1.0.0");
 
         // Sync global browser identifiers
         if (typeof window !== "undefined") {
-            (window as any).__HALO_SESSION_ID__ = this.session.getSessionId();
+            const sid = this.session.getSessionId();
+            try {
+                window.sessionStorage?.setItem("halo_session_id", sid);
+            } catch {}
+            (window as any).__HALO_SESSION_ID__ = sid;
             (window as any).__HALO_SDK__ = this;
         }
 

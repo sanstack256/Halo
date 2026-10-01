@@ -501,6 +501,16 @@ var ReplayBridge = class {
       return;
     }
     try {
+      if (typeof window !== "undefined" && window.__HALO_REPLAY__) {
+        const existing = window.__HALO_REPLAY__;
+        if (existing && typeof existing.getCaptureState === "function") {
+          const state = existing.getCaptureState();
+          if (state !== "DISCARDED" && state !== "DISABLED") {
+            this.replayInstance = existing;
+            return;
+          }
+        }
+      }
       let ReplayModule = null;
       if (typeof window !== "undefined" && window.HaloReplayBundle?.HaloReplay) {
         ReplayModule = window.HaloReplayBundle;
@@ -608,9 +618,24 @@ var BrowserClient = class extends CoreClient {
   teardowns = [];
   constructor(options) {
     const endpoint = options.endpoint || (typeof window !== "undefined" ? "/api" : "http://localhost:3000/api");
-    super({ ...options, endpoint }, "@halo-trace/sdk-browser", "1.0.0");
+    let canonicalSessionId = options.sessionId;
+    if (!canonicalSessionId && typeof window !== "undefined") {
+      try {
+        canonicalSessionId = window.sessionStorage?.getItem("halo_session_id") || void 0;
+      } catch {
+      }
+      if (!canonicalSessionId) {
+        canonicalSessionId = window.__HALO_SESSION_ID__;
+      }
+    }
+    super({ ...options, endpoint, sessionId: canonicalSessionId }, "@halo-trace/sdk-browser", "1.0.0");
     if (typeof window !== "undefined") {
-      window.__HALO_SESSION_ID__ = this.session.getSessionId();
+      const sid = this.session.getSessionId();
+      try {
+        window.sessionStorage?.setItem("halo_session_id", sid);
+      } catch {
+      }
+      window.__HALO_SESSION_ID__ = sid;
       window.__HALO_SDK__ = this;
     }
     this.replayBridge = new ReplayBridge(this, options.replay);

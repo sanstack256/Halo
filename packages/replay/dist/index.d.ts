@@ -154,6 +154,17 @@ interface HaloReplayOptions {
      */
     deadClickTimeoutMs?: number;
     /**
+     * Periodic full snapshot checkout interval in milliseconds.
+     * Guarantees DOM reconstruction anchors throughout long sessions.
+     * Default: 15000 (15 seconds)
+     */
+    checkoutEveryNms?: number;
+    /**
+     * Periodic full snapshot checkout event count threshold.
+     * Default: 500
+     */
+    checkoutEveryNth?: number;
+    /**
      * Enable Canvas 2D and WebGL context operation & frame snapshot recording.
      * Default: false (enable explicitly for graphics / game applications)
      */
@@ -269,7 +280,7 @@ interface ReplayErrorPayload {
     issueId?: string;
     traceId?: string;
 }
-type ReplayCaptureState = "DISABLED" | "OBSERVING" | "CAPTURING" | "FLUSHING" | "PERSISTED" | "DISCARDED";
+type ReplayCaptureState = "DISABLED" | "INITIALIZING" | "BUFFERING" | "OBSERVING" | "CAPTURING" | "FINALIZING" | "FLUSHING" | "PERSISTED" | "DISCARDED" | "FAILED";
 type ReplayTriggerType = "ERROR" | "UNHANDLED_REJECTION" | "RAGE_CLICK" | "DEAD_CLICK" | "NETWORK_5XX" | "MANUAL" | "SAMPLE";
 interface ReplayChunkPayload {
     sessionId: string;
@@ -279,6 +290,7 @@ interface ReplayChunkPayload {
     endedAt: string;
     meta?: {
         projectId?: string;
+        sessionStartedAt?: string;
         browser?: string;
         os?: string;
         device?: string;
@@ -426,7 +438,7 @@ declare class HaloReplay {
     capture(options?: {
         reason?: string;
     }): void;
-    flushAndConclude(): void;
+    flushAndConclude(): Promise<void>;
     private setupFrustrationInstrumentation;
     private setupLifecycleInstrumentation;
     stop(): void;

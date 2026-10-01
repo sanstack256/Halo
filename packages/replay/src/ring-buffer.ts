@@ -7,7 +7,7 @@ export class ReplayRingBuffer {
 
     constructor(maxDurationSeconds = 60, maxEvents = 5000) {
         this.maxDurationMs = Math.max(1000, maxDurationSeconds * 1000);
-        this.maxEvents = Math.max(100, maxEvents);
+        this.maxEvents = Math.max(1, maxEvents);
     }
 
     add(event: eventWithTime): void {
@@ -46,19 +46,33 @@ export class ReplayRingBuffer {
             }
         }
 
-        // If a valid FullSnapshot before/at cutoff was found, prune everything before it
+        // If a valid FullSnapshot was found, prune everything before it.
+        // Include preceding Meta (type 4) if present right before the FullSnapshot.
         if (snapshotIndex > 0) {
-            this.buffer = this.buffer.slice(snapshotIndex);
+            const startIndex = snapshotIndex > 0 && this.buffer[snapshotIndex - 1]?.type === 4
+                ? snapshotIndex - 1
+                : snapshotIndex;
+            this.buffer = this.buffer.slice(startIndex);
         } else if (countNeedsPrune && this.buffer.length > this.maxEvents) {
-            // If the session has run for a while without a new full snapshot,
-            // we must retain the very first FullSnapshot (to avoid rendering a blank page)
-            // and drop the oldest incremental events after it.
+            // Find any FullSnapshot that leaves at least one snapshot in the remaining window
             const firstSnapshotIdx = this.buffer.findIndex(e => e.type === 2);
             if (firstSnapshotIdx >= 0) {
-                const snapshot = this.buffer[firstSnapshotIdx];
-                const excess = this.buffer.length - this.maxEvents;
-                const remaining = this.buffer.slice(firstSnapshotIdx + 1 + excess);
-                this.buffer = [snapshot, ...remaining];
+                // If there's another FullSnapshot later in the buffer, prune up to that one
+                const nextSnapshotIdx = this.buffer.slice(firstSnapshotIdx + 1).findIndex(e => e.type === 2);
+                if (nextSnapshotIdx >= 0) {
+                    const actualIdx = firstSnapshotIdx + 1 + nextSnapshotIdx;
+                    const startIndex = actualIdx > 0 && this.buffer[actualIdx - 1]?.type === 4
+                        ? actualIdx - 1
+                        : actualIdx;
+                    this.buffer = this.buffer.slice(startIndex);
+                } else {
+                    // Only one snapshot exists and buffer exceeded maxEvents:
+                    // Retain the initial FullSnapshot at index 0 and prune oldest incremental events
+                    const snapshot = this.buffer[firstSnapshotIdx];
+                    const excess = this.buffer.length - this.maxEvents;
+                    const remaining = this.buffer.slice(firstSnapshotIdx + 1 + excess);
+                    this.buffer = [snapshot, ...remaining];
+                }
             } else {
                 this.buffer = this.buffer.slice(this.buffer.length - this.maxEvents);
             }

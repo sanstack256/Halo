@@ -181,7 +181,20 @@ export async function POST(request: NextRequest) {
             console.warn("[Replay Ingestion] Failed to sync canonical TelemetrySession:", sessionErr);
         }
 
-        const currentDurationMs = Math.max(0, chunkEnded.getTime() - chunkStarted.getTime());
+        const sessionStarted = meta.sessionStartedAt ? new Date(meta.sessionStartedAt) : chunkStarted;
+
+        // Evidence-triggered invariant:
+        // A session must only be marked AVAILABLE if it has an investigation trigger or explicit sample,
+        // AND the final chunk has arrived.
+        const effectiveTriggerType = meta.triggerType || (meta.errorAt ? "ERROR" : undefined);
+        const effectiveCaptureReason = meta.captureReason || (meta.errorAt ? "Unhandled Exception" : undefined);
+        const effectiveErrorAt = meta.errorAt ? new Date(meta.errorAt) : undefined;
+        const effectiveTriggerTimestamp = meta.triggerTimestamp
+            ? new Date(meta.triggerTimestamp)
+            : effectiveErrorAt;
+
+        const hasTrigger = Boolean(effectiveTriggerType || effectiveErrorAt || resolvedIssueId);
+        const initialStatus = final && hasTrigger ? "AVAILABLE" : (final && !hasTrigger ? "DISABLED" : "RECORDING");
 
         const sanitizedUrl = sanitizeUrl(meta.url);
         const resolvedBrowser = parseBrowserName(meta.browser || meta.userAgent);
@@ -203,30 +216,28 @@ export async function POST(request: NextRequest) {
                 userAgent: meta.userAgent,
                 viewportWidth: meta.viewportWidth,
                 viewportHeight: meta.viewportHeight,
-                startedAt: chunkStarted,
+                startedAt: sessionStarted,
                 endedAt: chunkEnded,
-                totalDurationMs: currentDurationMs,
-                errorAt: meta.errorAt ? new Date(meta.errorAt) : undefined,
-                triggerType: meta.triggerType || (meta.errorAt ? "ERROR" : undefined),
-                captureReason: meta.captureReason || (meta.errorAt ? "Unhandled Exception" : undefined),
-                triggerTimestamp: meta.triggerTimestamp ? new Date(meta.triggerTimestamp) : (meta.errorAt ? new Date(meta.errorAt) : undefined),
+                totalDurationMs: Math.max(0, chunkEnded.getTime() - sessionStarted.getTime()),
+                errorAt: effectiveErrorAt,
+                triggerType: effectiveTriggerType,
+                captureReason: effectiveCaptureReason,
+                triggerTimestamp: effectiveTriggerTimestamp,
                 issueId: resolvedIssueId,
                 traceId: meta.traceId,
                 requestId: meta.requestId,
-                status: final || meta.errorAt ? "AVAILABLE" : "RECORDING",
+                status: initialStatus,
                 chunkCount: 1,
                 expiresAt,
             },
             update: {
                 endedAt: chunkEnded,
-                status: final || meta.errorAt ? "AVAILABLE" : undefined,
-                chunkCount: { increment: 1 },
                 browser: resolvedBrowser !== "Browser" ? resolvedBrowser : undefined,
                 os: resolvedOs !== "Unknown OS" ? resolvedOs : undefined,
-                errorAt: meta.errorAt ? new Date(meta.errorAt) : undefined,
-                triggerType: meta.triggerType || undefined,
-                captureReason: meta.captureReason || undefined,
-                triggerTimestamp: meta.triggerTimestamp ? new Date(meta.triggerTimestamp) : undefined,
+                errorAt: effectiveErrorAt || undefined,
+                triggerType: effectiveTriggerType || undefined,
+                captureReason: effectiveCaptureReason || undefined,
+                triggerTimestamp: effectiveTriggerTimestamp || undefined,
                 issueId: resolvedIssueId || undefined,
                 traceId: meta.traceId || undefined,
                 requestId: meta.requestId || undefined,
@@ -286,13 +297,39 @@ export async function POST(request: NextRequest) {
             });
         }
 
-        // Recalculate total duration from earliest start to latest chunk end
-        const totalDurationMs = Math.max(0, chunkEnded.getTime() - replaySession.startedAt.getTime());
+        // Recalculate true total duration from earliest start to latest chunk end
+        const earliestStartedAt = replaySession.startedAt.getTime() < sessionStarted.getTime()
+            ? replaySession.startedAt
+            : sessionStarted;
+        const totalDurationMs = Math.max(0, chunkEnded.getTime() - earliestStartedAt.getTime());
+
+        const chunkCount = await prisma.replayChunk.count({
+            where: { replaySessionId: replaySession.id },
+        });
+
+        // Determine final session status
+        const sessionHasTrigger = Boolean(
+            replaySession.triggerType ||
+            effectiveTriggerType ||
+            replaySession.errorAt ||
+            effectiveErrorAt ||
+            replaySession.issueId ||
+            resolvedIssueId
+        );
+
+        let finalStatus = replaySession.status;
+        if (final) {
+            finalStatus = sessionHasTrigger ? "AVAILABLE" : "DISABLED";
+        }
+
         await prisma.replaySession.update({
             where: { id: replaySession.id },
             data: {
+                startedAt: earliestStartedAt,
+                endedAt: chunkEnded,
                 totalDurationMs,
-                ...(final ? { status: "AVAILABLE" } : {}),
+                chunkCount,
+                status: finalStatus,
             },
         });
 

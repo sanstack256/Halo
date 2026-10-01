@@ -17,6 +17,18 @@ export class ReplayBridge {
         }
 
         try {
+            // Check if active recorder already exists for this browser session
+            if (typeof window !== "undefined" && (window as any).__HALO_REPLAY__) {
+                const existing = (window as any).__HALO_REPLAY__;
+                if (existing && typeof existing.getCaptureState === "function") {
+                    const state = existing.getCaptureState();
+                    if (state !== "DISCARDED" && state !== "DISABLED") {
+                        this.replayInstance = existing;
+                        return;
+                    }
+                }
+            }
+
             // Dynamically import replay or check global to keep bundle optional and tree-shakeable
             let ReplayModule: any = null;
             if (typeof window !== "undefined" && (window as any).HaloReplayBundle?.HaloReplay) {
