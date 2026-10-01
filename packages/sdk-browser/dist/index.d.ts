@@ -13,6 +13,7 @@ declare class ReplayBridge {
     }): void;
     getCaptureState(): string;
     triggerError(error: Error, traceId?: string, requestId?: string): void;
+    triggerUnhandledRejection(error: Error, traceId?: string, requestId?: string): void;
     setIssueId(issueId: string): void;
     openFeedbackModal(options?: any): any;
     flush(): void;
@@ -31,7 +32,7 @@ declare class BrowserClient extends CoreClient {
     close(): void;
 }
 
-declare function registerErrorInstrumentation(client: CoreClient, onFatalError?: (err: Error) => void): () => void;
+declare function registerErrorInstrumentation(client: CoreClient, onFatalError?: (err: Error) => void, onUnhandledRejection?: (err: Error) => void): () => void;
 
 interface BrowserHttpOptions {
     endpoint?: string;

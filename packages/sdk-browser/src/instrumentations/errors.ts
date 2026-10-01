@@ -2,7 +2,8 @@ import type { CoreClient } from "@halo-trace/sdk-core";
 
 export function registerErrorInstrumentation(
     client: CoreClient,
-    onFatalError?: (err: Error) => void
+    onFatalError?: (err: Error) => void,
+    onUnhandledRejection?: (err: Error) => void
 ): () => void {
     if (typeof window === "undefined") return () => {};
 
@@ -58,7 +59,11 @@ export function registerErrorInstrumentation(
                     unhandledRejection: true,
                 },
             });
-            onFatalError?.(err);
+            if (onUnhandledRejection) {
+                onUnhandledRejection(err);
+            } else {
+                onFatalError?.(err);
+            }
         } catch {
             // Safety
         } finally {

@@ -47,9 +47,15 @@ export class BrowserClient extends CoreClient {
 
     private installInstrumentations(options: HaloOptions, endpoint: string): void {
         if (options.autoCapture !== false) {
-            const unregisterErrors = registerErrorInstrumentation(this, (err) => {
-                this.replayBridge.triggerError(err, this.trace.getTraceId(), this.trace.getRequestId());
-            });
+            const unregisterErrors = registerErrorInstrumentation(
+                this,
+                (err) => {
+                    this.replayBridge.triggerError(err, this.trace.getTraceId(), this.trace.getRequestId());
+                },
+                (err) => {
+                    this.replayBridge.triggerUnhandledRejection(err, this.trace.getTraceId(), this.trace.getRequestId());
+                }
+            );
             this.teardowns.push(unregisterErrors);
         }
 
@@ -96,7 +102,11 @@ export class BrowserClient extends CoreClient {
 
     public override captureException(error: unknown, additional?: any): any {
         const err = error instanceof Error ? error : new Error(String(error));
-        this.replayBridge.triggerError(err, this.trace.getTraceId(), this.trace.getRequestId());
+        if (additional?.metadata?.unhandledRejection || additional?.unhandledRejection) {
+            this.replayBridge.triggerUnhandledRejection(err, this.trace.getTraceId(), this.trace.getRequestId());
+        } else {
+            this.replayBridge.triggerError(err, this.trace.getTraceId(), this.trace.getRequestId());
+        }
         return super.captureException(error, additional);
     }
 

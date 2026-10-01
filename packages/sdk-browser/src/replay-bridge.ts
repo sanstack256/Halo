@@ -50,6 +50,7 @@ export class ReplayBridge {
 
             const replay = new ReplayModule.HaloReplay({
                 apiKey,
+                projectId: (this.config as any)?.projectId || (this.client as any).options?.projectId,
                 endpoint,
                 sessionId,
                 samplingRate,
@@ -101,6 +102,25 @@ export class ReplayBridge {
                     stack: error.stack,
                     traceId,
                     requestId,
+                });
+            } catch {
+                // Safety
+            }
+        }
+    }
+
+    public triggerUnhandledRejection(error: Error, traceId?: string, requestId?: string): void {
+        if (this.replayInstance && typeof this.replayInstance.triggerCapture === "function") {
+            try {
+                this.replayInstance.triggerCapture("UNHANDLED_REJECTION", {
+                    reason: error.message || "Unhandled Promise Rejection",
+                    error,
+                    meta: {
+                        stack: error.stack,
+                        traceId,
+                        requestId,
+                        errorAt: new Date().toISOString(),
+                    },
                 });
             } catch {
                 // Safety
