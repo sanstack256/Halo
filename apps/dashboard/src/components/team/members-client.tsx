@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { Users, UserPlus, Shield, Trash2, AlertCircle, CheckCircle2 } from "lucide-react";
 import { addOrganizationMember, removeOrganizationMember, updateMemberRole, type OrgMemberView } from "@/actions/organization-members";
-import { OrganizationRole } from "@/generated/prisma/client";
+import type { OrganizationRole } from "@/generated/prisma/client";
 
 export function MembersClient({
     initialMembers,
@@ -18,7 +18,7 @@ export function MembersClient({
 }) {
     const [members, setMembers] = useState<OrgMemberView[]>(initialMembers);
     const [email, setEmail] = useState("");
-    const [role, setRole] = useState<OrganizationRole>(OrganizationRole.MEMBER);
+    const [role, setRole] = useState<OrganizationRole>("MEMBER");
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [error, setError] = useState<string | null>(null);
     const [success, setSuccess] = useState<string | null>(null);
@@ -134,8 +134,8 @@ export function MembersClient({
                             onChange={(e) => setRole(e.target.value as OrganizationRole)}
                             className="bg-zinc-900 border border-zinc-700/80 rounded-lg px-3 py-2 text-sm text-zinc-200 focus:outline-none focus:border-indigo-500"
                         >
-                            <option value={OrganizationRole.MEMBER}>Member (Standard Access)</option>
-                            <option value={OrganizationRole.ADMIN}>Admin (Manage Members & Settings)</option>
+                            <option value="MEMBER">Member (Standard Access)</option>
+                            <option value="ADMIN">Admin (Manage Members & Settings)</option>
                         </select>
                         <button
                             type="submit"
@@ -202,8 +202,8 @@ export function MembersClient({
                                         onChange={(e) => handleRoleChange(m.id, e.target.value as OrganizationRole)}
                                         className="bg-zinc-900 border border-zinc-800 text-xs font-mono rounded px-2 py-1 text-zinc-300 focus:outline-none focus:border-zinc-700"
                                     >
-                                        <option value={OrganizationRole.MEMBER}>MEMBER</option>
-                                        <option value={OrganizationRole.ADMIN}>ADMIN</option>
+                                        <option value="MEMBER">MEMBER</option>
+                                        <option value="ADMIN">ADMIN</option>
                                     </select>
                                 )}
 

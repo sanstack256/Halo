@@ -44,6 +44,7 @@ const CATEGORIES: CategoryNavItem[] = [
             "section-runtime-stack",
             "section-telemetry",
             "section-differential-trace",
+            "section-service-propagation",
         ],
         icon: Layers,
     },

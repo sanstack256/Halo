@@ -1,5 +1,5 @@
 import React from "react";
-import { EventSeverity } from "@/generated/prisma/client";
+import type { EventSeverity } from "@/generated/prisma/client";
 
 type Props = {
     severity: EventSeverity | string;

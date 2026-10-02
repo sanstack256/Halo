@@ -89,6 +89,7 @@ import { buildCallChains } from "@/lib/investigation/runtime/call-chain";
 import { FixRecommendationView } from "@/components/investigation/fix-recommendation-view";
 import { getPersistedRecommendation } from "@/actions/fix-recommendation";
 import { DifferentialTraceView } from "@/components/investigation/differential-trace-view";
+import { ServicePropagationView } from "@/components/topology/service-propagation-view";
 import { planHasCapability } from "@/lib/capabilities";
 import { prisma } from "@/lib/prisma";
 
@@ -396,7 +397,11 @@ export default async function InvestigationPage({
         });
         const isTeamPlan = planHasCapability(
             (projectRecord?.organization?.plan as any) || "FREE",
-            "TEAM_INVESTIGATION_ROOMS"
+            "TEAM_DIFFERENTIAL_ANALYSIS"
+        );
+        const isTeamTopologyPlan = planHasCapability(
+            (projectRecord?.organization?.plan as any) || "FREE",
+            "TEAM_CROSS_SERVICE_TOPOLOGY"
         );
 
         return (
@@ -418,6 +423,7 @@ export default async function InvestigationPage({
                 customModelName={customModel.name}
                 issueId={issueId}
                 isTeamPlan={isTeamPlan}
+                isTeamTopologyPlan={isTeamTopologyPlan}
             />
         );
     } catch (error) {
@@ -453,6 +459,7 @@ function InvestigationView({
     customModelName,
     issueId,
     isTeamPlan = false,
+    isTeamTopologyPlan = false,
 }: {
     investigation: Investigation;
     resolvedReplay: ResolvedOccurrenceReplay | null;
@@ -540,6 +547,7 @@ function InvestigationView({
     customModelName?: string;
     issueId?: string;
     isTeamPlan?: boolean;
+    isTeamTopologyPlan?: boolean;
 }) {
     const {
         status,
@@ -1278,12 +1286,21 @@ function InvestigationView({
                 relatedThirdParty={relatedThirdParty}
             />
 
-            {/* C7. DIFFERENTIAL TRACE ANALYSIS (TEAM PLAN) */}
+            {/* C7. DIFFERENTIAL TRACE ANALYSIS (TEAM PLAN PILLAR A) */}
             <div id="section-differential-trace" className="scroll-mt-24">
                 <DifferentialTraceView
                     projectId={projectId}
                     eventId={incidentAnchorId || anchorError?.id}
                     isTeamPlan={Boolean(isTeamPlan)}
+                />
+            </div>
+
+            {/* C8. CROSS-SERVICE FAILURE PROPAGATION (TEAM PLAN PILLAR B) */}
+            <div id="section-service-propagation" className="scroll-mt-24">
+                <ServicePropagationView
+                    projectId={projectId}
+                    eventId={incidentAnchorId || anchorError?.id || ""}
+                    isTeamPlan={Boolean(isTeamTopologyPlan)}
                 />
             </div>
 

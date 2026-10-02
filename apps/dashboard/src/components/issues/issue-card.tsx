@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Issue } from "@/generated/prisma/client";
+import type { Issue } from "@/generated/prisma/client";
 
 import { Badge } from "@/components/ui/badge";
 import { SeverityBadge } from "@/components/ui/severity-badge";

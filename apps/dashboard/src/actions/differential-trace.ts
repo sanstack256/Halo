@@ -46,7 +46,7 @@ export async function computeDifferentialTrace(
     const { organization } = await requireProjectAccess(projectId, providedUserId);
 
     // 2. Authoritative Phase 1 check: Verify organization has Team capability
-    await requireCapability(organization.id, "TEAM_INVESTIGATION_ROOMS");
+    await requireCapability(organization.id, "TEAM_DIFFERENTIAL_ANALYSIS");
 
     // 3. Fetch the failing event
     const failingEvent = await prisma.event.findUnique({

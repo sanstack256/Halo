@@ -8,6 +8,7 @@ import {
     TriangleAlert,
     Activity,
     MonitorPlay,
+    Network,
     KeyRound,
     Settings,
 } from "lucide-react";
@@ -41,6 +42,11 @@ const navigation = [
         label: "Replays",
         segment: "replays",
         icon: MonitorPlay,
+    },
+    {
+        label: "Topology",
+        segment: "topology",
+        icon: Network,
     },
     {
         label: "API Keys",
