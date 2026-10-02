@@ -129,34 +129,57 @@ export async function POST(request: NextRequest) {
         const expiresAt = new Date();
         expiresAt.setDate(expiresAt.getDate() + retentionDays);
 
-        // If issueId is not provided, look for correlated events in this project
-        let resolvedIssueId = meta.issueId;
-        if (!resolvedIssueId) {
-            const errorTimestamp = meta.errorAt ? new Date(meta.errorAt) : chunkStarted;
-            const matchingEvent = await prisma.event.findFirst({
-                where: {
-                    projectId: verified.project.id,
-                    issueId: { not: null },
-                    OR: [
-                        { sessionId },
-                        ...(meta.traceId ? [{ traceId: meta.traceId }] : []),
-                        ...(meta.requestId ? [{ requestId: meta.requestId }] : []),
-                        // If error-triggered, find error event in this project around the error timestamp
-                        ...(meta.errorAt ? [{
-                            type: "ERROR" as const,
-                            timestamp: {
-                                gte: new Date(errorTimestamp.getTime() - 5 * 60000),
-                                lte: new Date(errorTimestamp.getTime() + 5 * 60000),
-                            },
-                        }] : []),
-                    ],
-                },
-                select: { issueId: true },
-                orderBy: { timestamp: "desc" },
-            });
+        // Check if an existing ReplaySession already exists for this sessionId
+        const existingSession = await prisma.replaySession.findUnique({
+            where: { sessionId },
+            select: {
+                id: true,
+                issueId: true,
+                triggerType: true,
+                captureReason: true,
+                startedAt: true,
+                endedAt: true,
+                triggerTimestamp: true,
+                errorAt: true,
+                status: true,
+            },
+        });
 
-            if (matchingEvent?.issueId) {
-                resolvedIssueId = matchingEvent.issueId;
+        const initiatingTriggerType = existingSession?.triggerType || meta.triggerType || (meta.errorAt ? "ERROR" : undefined);
+        const effectiveCaptureReason = meta.captureReason || (meta.errorAt ? "Unhandled Exception" : undefined);
+        const effectiveErrorAt = meta.errorAt ? new Date(meta.errorAt) : undefined;
+        const effectiveTriggerTimestamp = meta.triggerTimestamp
+            ? new Date(meta.triggerTimestamp)
+            : effectiveErrorAt;
+
+        // INVARIANT A & B: issueId is write-once for initiating replay correlation.
+        // If an existing issueId is present, NEVER replace it with a later issueId.
+        // If initiating trigger is not an error (e.g. NETWORK_5XX, RAGE_CLICK, DEAD_CLICK, MANUAL, SAMPLE),
+        // do NOT search for or fabricate an issue (INVARIANT C).
+        let resolvedIssueId: string | null = existingSession?.issueId ?? (meta.issueId || null);
+        if (!resolvedIssueId) {
+            const isErrorInitiating = initiatingTriggerType === "ERROR" || initiatingTriggerType === "UNHANDLED_REJECTION" || Boolean(meta.errorAt);
+            if (isErrorInitiating) {
+                // INVARIANT: Strictly correlate by sessionId / traceId / requestId.
+                // NEVER fall back to global project errors from other sessions.
+                const correlationFilters: any[] = [{ sessionId }];
+                if (meta.traceId) correlationFilters.push({ traceId: meta.traceId });
+                if (meta.requestId) correlationFilters.push({ requestId: meta.requestId });
+
+                const matchingEvent = await prisma.event.findFirst({
+                    where: {
+                        projectId: verified.project.id,
+                        issueId: { not: null },
+                        type: "ERROR",
+                        OR: correlationFilters,
+                    },
+                    select: { issueId: true },
+                    orderBy: { timestamp: "asc" }, // INVARIANT: Pick earliest initiating error, NOT latest downstream error!
+                });
+
+                if (matchingEvent?.issueId) {
+                    resolvedIssueId = matchingEvent.issueId;
+                }
             }
         }
 
@@ -186,14 +209,14 @@ export async function POST(request: NextRequest) {
         // Evidence-triggered invariant:
         // A session must only be marked AVAILABLE if it has an investigation trigger or explicit sample,
         // AND the final chunk has arrived.
-        const effectiveTriggerType = meta.triggerType || (meta.errorAt ? "ERROR" : undefined);
-        const effectiveCaptureReason = meta.captureReason || (meta.errorAt ? "Unhandled Exception" : undefined);
-        const effectiveErrorAt = meta.errorAt ? new Date(meta.errorAt) : undefined;
-        const effectiveTriggerTimestamp = meta.triggerTimestamp
-            ? new Date(meta.triggerTimestamp)
-            : effectiveErrorAt;
-
-        const hasTrigger = Boolean(effectiveTriggerType || effectiveErrorAt || resolvedIssueId);
+        const hasTrigger = Boolean(
+            existingSession?.triggerType ||
+            initiatingTriggerType ||
+            existingSession?.errorAt ||
+            effectiveErrorAt ||
+            existingSession?.issueId ||
+            resolvedIssueId
+        );
         const initialStatus = final && hasTrigger ? "AVAILABLE" : (final && !hasTrigger ? "DISABLED" : "RECORDING");
 
         const sanitizedUrl = sanitizeUrl(meta.url);
@@ -220,7 +243,7 @@ export async function POST(request: NextRequest) {
                 endedAt: chunkEnded,
                 totalDurationMs: Math.max(0, chunkEnded.getTime() - sessionStarted.getTime()),
                 errorAt: effectiveErrorAt,
-                triggerType: effectiveTriggerType,
+                triggerType: initiatingTriggerType,
                 captureReason: effectiveCaptureReason,
                 triggerTimestamp: effectiveTriggerTimestamp,
                 issueId: resolvedIssueId,
@@ -231,14 +254,21 @@ export async function POST(request: NextRequest) {
                 expiresAt,
             },
             update: {
-                endedAt: chunkEnded,
+                // Out-of-order arrival: maintain earliest startedAt and latest endedAt
+                startedAt: existingSession?.startedAt && existingSession.startedAt.getTime() < sessionStarted.getTime()
+                    ? existingSession.startedAt
+                    : sessionStarted,
+                endedAt: existingSession?.endedAt && existingSession.endedAt.getTime() > chunkEnded.getTime()
+                    ? existingSession.endedAt
+                    : chunkEnded,
                 browser: resolvedBrowser !== "Browser" ? resolvedBrowser : undefined,
                 os: resolvedOs !== "Unknown OS" ? resolvedOs : undefined,
-                errorAt: effectiveErrorAt || undefined,
-                triggerType: effectiveTriggerType || undefined,
-                captureReason: effectiveCaptureReason || undefined,
-                triggerTimestamp: effectiveTriggerTimestamp || undefined,
-                issueId: resolvedIssueId || undefined,
+                // INVARIANT: Write-once for initiating trigger & issueId!
+                triggerType: existingSession?.triggerType ?? (initiatingTriggerType || undefined),
+                captureReason: existingSession?.captureReason ?? (effectiveCaptureReason || undefined),
+                triggerTimestamp: existingSession?.triggerTimestamp ?? (effectiveTriggerTimestamp || undefined),
+                errorAt: existingSession?.errorAt ?? (effectiveErrorAt || undefined),
+                issueId: existingSession?.issueId ?? (resolvedIssueId || undefined),
                 traceId: meta.traceId || undefined,
                 requestId: meta.requestId || undefined,
                 url: sanitizedUrl || undefined,
@@ -301,7 +331,10 @@ export async function POST(request: NextRequest) {
         const earliestStartedAt = replaySession.startedAt.getTime() < sessionStarted.getTime()
             ? replaySession.startedAt
             : sessionStarted;
-        const totalDurationMs = Math.max(0, chunkEnded.getTime() - earliestStartedAt.getTime());
+        const latestEndedAt = replaySession.endedAt && replaySession.endedAt.getTime() > chunkEnded.getTime()
+            ? replaySession.endedAt
+            : chunkEnded;
+        const totalDurationMs = Math.max(0, latestEndedAt.getTime() - earliestStartedAt.getTime());
 
         const chunkCount = await prisma.replayChunk.count({
             where: { replaySessionId: replaySession.id },
@@ -310,7 +343,7 @@ export async function POST(request: NextRequest) {
         // Determine final session status
         const sessionHasTrigger = Boolean(
             replaySession.triggerType ||
-            effectiveTriggerType ||
+            initiatingTriggerType ||
             replaySession.errorAt ||
             effectiveErrorAt ||
             replaySession.issueId ||
@@ -326,7 +359,7 @@ export async function POST(request: NextRequest) {
             where: { id: replaySession.id },
             data: {
                 startedAt: earliestStartedAt,
-                endedAt: chunkEnded,
+                endedAt: latestEndedAt,
                 totalDurationMs,
                 chunkCount,
                 status: finalStatus,

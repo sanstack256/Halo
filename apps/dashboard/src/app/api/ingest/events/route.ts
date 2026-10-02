@@ -122,45 +122,29 @@ export async function POST(request: NextRequest) {
             environmentId: verified.environment.id,
         });
 
-        // Auto-correlate: If an error event with an issueId was created, associate any matching unlinked ReplaySessions
-        if (event.issueId) {
+        // Invariant: Auto-correlate replay sessions ONLY if initiated by an error type
+        // and issueId is not already assigned (write-once initiating correlation).
+        // Never hijack replays initiated by NETWORK_5XX, RAGE_CLICK, DEAD_CLICK, MANUAL, or SAMPLED.
+        if (event.issueId && event.sessionId) {
             try {
                 const { prisma } = await import("@/lib/prisma");
 
-                if (event.sessionId) {
-                    await prisma.replaySession.updateMany({
-                        where: {
-                            sessionId: event.sessionId,
-                            issueId: null,
-                        },
-                        data: {
-                            issueId: event.issueId,
-                            traceId: event.traceId ?? undefined,
-                            requestId: event.requestId ?? undefined,
-                        },
-                    });
-                } else {
-                    // Link recent unassigned replay in the same project
-                    const recentReplay = await prisma.replaySession.findFirst({
-                        where: {
-                            projectId: verified.project.id,
-                            issueId: null,
-                            startedAt: { lte: new Date(event.timestamp.getTime() + 60000) },
-                            createdAt: { gte: new Date(event.timestamp.getTime() - 10 * 60000) },
-                        },
-                        orderBy: { createdAt: "desc" },
-                    });
-                    if (recentReplay) {
-                        await prisma.replaySession.update({
-                            where: { id: recentReplay.id },
-                            data: {
-                                issueId: event.issueId,
-                                traceId: event.traceId ?? undefined,
-                                requestId: event.requestId ?? undefined,
-                            },
-                        });
-                    }
-                }
+                await prisma.replaySession.updateMany({
+                    where: {
+                        sessionId: event.sessionId,
+                        issueId: null,
+                        OR: [
+                            { triggerType: "ERROR" },
+                            { triggerType: "UNHANDLED_REJECTION" },
+                            { triggerType: null },
+                        ],
+                    },
+                    data: {
+                        issueId: event.issueId,
+                        traceId: event.traceId ?? undefined,
+                        requestId: event.requestId ?? undefined,
+                    },
+                });
             } catch (corrErr) {
                 console.error("[Halo Ingest] Failed to correlate replay with event:", corrErr);
             }

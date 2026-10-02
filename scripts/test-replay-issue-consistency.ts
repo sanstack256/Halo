@@ -513,9 +513,37 @@ async function main() {
 
             record(
                 "Scenario H",
-                "Cascading session links to primary Issue root cause",
-                dbReplay?.issueId !== null && dbReplay?.issueId !== undefined,
-                `primaryIssueId = ${dbReplay?.issueId}`
+                "ReplaySession triggerType preserves initiating NETWORK_5XX trigger",
+                dbReplay?.triggerType === "NETWORK_5XX",
+                `triggerType = ${dbReplay?.triggerType}`
+            );
+
+            // Fetch downstream error events to verify issueId isolation
+            const cascadeEvents = await prisma.event.findMany({
+                where: { sessionId: multiSessionId },
+            });
+            const typeErr = cascadeEvents.find(e => e.title.includes("cascadingError"));
+            const rejErr = cascadeEvents.find(e => e.title.includes("length"));
+
+            record(
+                "Scenario H",
+                "Replay issueId is NOT overwritten by later TypeError Issue",
+                dbReplay?.issueId !== typeErr?.issueId,
+                `replay.issueId = ${dbReplay?.issueId ?? "null"}, typeError.issueId = ${typeErr?.issueId}`
+            );
+
+            record(
+                "Scenario H",
+                "Replay issueId is NOT overwritten by later UnhandledRejection Issue",
+                dbReplay?.issueId !== rejErr?.issueId,
+                `replay.issueId = ${dbReplay?.issueId ?? "null"}, rejection.issueId = ${rejErr?.issueId}`
+            );
+
+            record(
+                "Scenario H",
+                "All 3 telemetry events remain persisted for cascading session",
+                cascadeEvents.length === 3,
+                `eventCount = ${cascadeEvents.length}`
             );
 
             await page.close();
