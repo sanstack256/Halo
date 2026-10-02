@@ -24,7 +24,6 @@ import { extractTimelineMarkers } from "../apps/dashboard/src/components/replay/
 import { investigateIssueOccurrence } from "../apps/dashboard/src/lib/investigation/run";
 import { correlateEvidence } from "../packages/investigation-engine/src/pipeline/correlate";
 import { tracePropagationChains } from "../packages/investigation-engine/src/graph/propagation";
-import type { TelemetryEvent } from "../packages/investigation-engine/src/types/telemetry";
 
 const HALO_API_KEY = "hl_live_1468bd651c2aeda1f3d5a3eb5dec90e592ed883f582d851480bcdcbe2ccb02e2";
 const HALO_PROJECT_ID = "cmtokgkzi00006bitz85vcduu"; // Project "xyz"
@@ -441,7 +440,7 @@ async function main() {
             record(
                 "Phase 7 (Investigation Engine Cascade)",
                 "Engine reconstructs causal chain originating at HTTP 500 despite out-of-order ingestion",
-                investigation.causalChains && investigation.causalChains.length > 0,
+                Boolean(investigation.causalChains && investigation.causalChains.length > 0),
                 `causalChains = ${investigation.causalChains?.length ?? 0}`
             );
         }
