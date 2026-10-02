@@ -92,6 +92,7 @@ import { DifferentialTraceView } from "@/components/investigation/differential-t
 import { ServicePropagationView } from "@/components/topology/service-propagation-view";
 import { InvestigationCollaborativeRoom } from "@/components/investigation/collaboration/investigation-collaborative-room";
 import { HistoricalContextSection } from "@/components/investigation/memory/historical-context-section";
+import { OwnershipContextPanel } from "@/components/investigation/ownership/ownership-context-panel";
 import { getInvestigationCollaborationState } from "@/actions/collaboration";
 import { getSession } from "@/lib/session";
 import { planHasCapability } from "@/lib/capabilities";
@@ -415,6 +416,10 @@ export default async function InvestigationPage({
             (projectRecord?.organization?.plan as any) || "FREE",
             "TEAM_ORGANIZATIONAL_MEMORY"
         );
+        const isTeamOwnershipPlan = planHasCapability(
+            (projectRecord?.organization?.plan as any) || "FREE",
+            "TEAM_OWNERSHIP_INTELLIGENCE"
+        );
 
         // Ensure canonical durable Investigation record exists in database
         let investigationRecord = monitorContext?.investigationRecord;
@@ -471,6 +476,7 @@ export default async function InvestigationPage({
                 isTeamTopologyPlan={isTeamTopologyPlan}
                 isTeamCollaborationPlan={isTeamCollaborationPlan}
                 isTeamMemoryPlan={isTeamMemoryPlan}
+                isTeamOwnershipPlan={isTeamOwnershipPlan}
                 investigationId={investigationRecord?.id}
                 initialCollaborationState={initialCollaborationState}
                 currentUserId={session?.user?.id}
@@ -512,6 +518,7 @@ function InvestigationView({
     isTeamTopologyPlan = false,
     isTeamCollaborationPlan = false,
     isTeamMemoryPlan = false,
+    isTeamOwnershipPlan = false,
     investigationId,
     initialCollaborationState,
     currentUserId,
@@ -605,6 +612,7 @@ function InvestigationView({
     isTeamTopologyPlan?: boolean;
     isTeamCollaborationPlan?: boolean;
     isTeamMemoryPlan?: boolean;
+    isTeamOwnershipPlan?: boolean;
     investigationId?: string;
     initialCollaborationState?: any;
     currentUserId?: string;
@@ -1613,6 +1621,14 @@ function InvestigationView({
             {/* H. HISTORICAL FAILURE MEMORY (PHASE 5 / PILLAR D) */}
             {isTeamMemoryPlan && investigationId && (
                 <HistoricalContextSection
+                    investigationId={investigationId}
+                    projectId={projectId}
+                />
+            )}
+
+            {/* I. OWNERSHIP INTELLIGENCE (PHASE 6 / PILLAR E) */}
+            {isTeamOwnershipPlan && investigationId && (
+                <OwnershipContextPanel
                     investigationId={investigationId}
                     projectId={projectId}
                 />

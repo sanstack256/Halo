@@ -81,7 +81,10 @@ export const ModelName = {
   InvestigationActivity: 'InvestigationActivity',
   InvestigationProposedRelation: 'InvestigationProposedRelation',
   IncidentMemory: 'IncidentMemory',
-  FailurePattern: 'FailurePattern'
+  FailurePattern: 'FailurePattern',
+  ServiceOwnership: 'ServiceOwnership',
+  ServiceOwnershipAssertion: 'ServiceOwnershipAssertion',
+  ServiceOwnershipHistory: 'ServiceOwnershipHistory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -688,6 +691,63 @@ export const FailurePatternScalarFieldEnum = {
 } as const
 
 export type FailurePatternScalarFieldEnum = (typeof FailurePatternScalarFieldEnum)[keyof typeof FailurePatternScalarFieldEnum]
+
+
+export const ServiceOwnershipScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  serviceName: 'serviceName',
+  declaredOwner: 'declaredOwner',
+  declaredTeam: 'declaredTeam',
+  ownerType: 'ownerType',
+  classification: 'classification',
+  source: 'source',
+  sourcePath: 'sourcePath',
+  repositoryUrl: 'repositoryUrl',
+  commitSha: 'commitSha',
+  confidenceLevel: 'confidenceLevel',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceOwnershipScalarFieldEnum = (typeof ServiceOwnershipScalarFieldEnum)[keyof typeof ServiceOwnershipScalarFieldEnum]
+
+
+export const ServiceOwnershipAssertionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  serviceName: 'serviceName',
+  authorId: 'authorId',
+  authorName: 'authorName',
+  authorEmail: 'authorEmail',
+  statement: 'statement',
+  proposedOwner: 'proposedOwner',
+  scope: 'scope',
+  classification: 'classification',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceOwnershipAssertionScalarFieldEnum = (typeof ServiceOwnershipAssertionScalarFieldEnum)[keyof typeof ServiceOwnershipAssertionScalarFieldEnum]
+
+
+export const ServiceOwnershipHistoryScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  serviceName: 'serviceName',
+  previousOwner: 'previousOwner',
+  newOwner: 'newOwner',
+  source: 'source',
+  sourceVersion: 'sourceVersion',
+  reason: 'reason',
+  changedAt: 'changedAt'
+} as const
+
+export type ServiceOwnershipHistoryScalarFieldEnum = (typeof ServiceOwnershipHistoryScalarFieldEnum)[keyof typeof ServiceOwnershipHistoryScalarFieldEnum]
 
 
 export const SortOrder = {

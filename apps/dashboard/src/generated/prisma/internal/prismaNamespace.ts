@@ -427,7 +427,10 @@ export const ModelName = {
   InvestigationActivity: 'InvestigationActivity',
   InvestigationProposedRelation: 'InvestigationProposedRelation',
   IncidentMemory: 'IncidentMemory',
-  FailurePattern: 'FailurePattern'
+  FailurePattern: 'FailurePattern',
+  ServiceOwnership: 'ServiceOwnership',
+  ServiceOwnershipAssertion: 'ServiceOwnershipAssertion',
+  ServiceOwnershipHistory: 'ServiceOwnershipHistory'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -443,7 +446,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation" | "organizationMember" | "investigationComment" | "investigationVerdict" | "investigationActivity" | "investigationProposedRelation" | "incidentMemory" | "failurePattern"
+    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation" | "organizationMember" | "investigationComment" | "investigationVerdict" | "investigationActivity" | "investigationProposedRelation" | "incidentMemory" | "failurePattern" | "serviceOwnership" | "serviceOwnershipAssertion" | "serviceOwnershipHistory"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2741,6 +2744,228 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ServiceOwnership: {
+      payload: Prisma.$ServiceOwnershipPayload<ExtArgs>
+      fields: Prisma.ServiceOwnershipFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServiceOwnershipFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServiceOwnershipFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipPayload>
+        }
+        findFirst: {
+          args: Prisma.ServiceOwnershipFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServiceOwnershipFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipPayload>
+        }
+        findMany: {
+          args: Prisma.ServiceOwnershipFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipPayload>[]
+        }
+        create: {
+          args: Prisma.ServiceOwnershipCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipPayload>
+        }
+        createMany: {
+          args: Prisma.ServiceOwnershipCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServiceOwnershipCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipPayload>[]
+        }
+        delete: {
+          args: Prisma.ServiceOwnershipDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipPayload>
+        }
+        update: {
+          args: Prisma.ServiceOwnershipUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipPayload>
+        }
+        deleteMany: {
+          args: Prisma.ServiceOwnershipDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServiceOwnershipUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServiceOwnershipUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipPayload>[]
+        }
+        upsert: {
+          args: Prisma.ServiceOwnershipUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipPayload>
+        }
+        aggregate: {
+          args: Prisma.ServiceOwnershipAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServiceOwnership>
+        }
+        groupBy: {
+          args: Prisma.ServiceOwnershipGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceOwnershipGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServiceOwnershipCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceOwnershipCountAggregateOutputType> | number
+        }
+      }
+    }
+    ServiceOwnershipAssertion: {
+      payload: Prisma.$ServiceOwnershipAssertionPayload<ExtArgs>
+      fields: Prisma.ServiceOwnershipAssertionFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServiceOwnershipAssertionFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipAssertionPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServiceOwnershipAssertionFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipAssertionPayload>
+        }
+        findFirst: {
+          args: Prisma.ServiceOwnershipAssertionFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipAssertionPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServiceOwnershipAssertionFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipAssertionPayload>
+        }
+        findMany: {
+          args: Prisma.ServiceOwnershipAssertionFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipAssertionPayload>[]
+        }
+        create: {
+          args: Prisma.ServiceOwnershipAssertionCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipAssertionPayload>
+        }
+        createMany: {
+          args: Prisma.ServiceOwnershipAssertionCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServiceOwnershipAssertionCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipAssertionPayload>[]
+        }
+        delete: {
+          args: Prisma.ServiceOwnershipAssertionDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipAssertionPayload>
+        }
+        update: {
+          args: Prisma.ServiceOwnershipAssertionUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipAssertionPayload>
+        }
+        deleteMany: {
+          args: Prisma.ServiceOwnershipAssertionDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServiceOwnershipAssertionUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServiceOwnershipAssertionUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipAssertionPayload>[]
+        }
+        upsert: {
+          args: Prisma.ServiceOwnershipAssertionUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipAssertionPayload>
+        }
+        aggregate: {
+          args: Prisma.ServiceOwnershipAssertionAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServiceOwnershipAssertion>
+        }
+        groupBy: {
+          args: Prisma.ServiceOwnershipAssertionGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceOwnershipAssertionGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServiceOwnershipAssertionCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceOwnershipAssertionCountAggregateOutputType> | number
+        }
+      }
+    }
+    ServiceOwnershipHistory: {
+      payload: Prisma.$ServiceOwnershipHistoryPayload<ExtArgs>
+      fields: Prisma.ServiceOwnershipHistoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ServiceOwnershipHistoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipHistoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ServiceOwnershipHistoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipHistoryPayload>
+        }
+        findFirst: {
+          args: Prisma.ServiceOwnershipHistoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipHistoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ServiceOwnershipHistoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipHistoryPayload>
+        }
+        findMany: {
+          args: Prisma.ServiceOwnershipHistoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipHistoryPayload>[]
+        }
+        create: {
+          args: Prisma.ServiceOwnershipHistoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipHistoryPayload>
+        }
+        createMany: {
+          args: Prisma.ServiceOwnershipHistoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ServiceOwnershipHistoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipHistoryPayload>[]
+        }
+        delete: {
+          args: Prisma.ServiceOwnershipHistoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipHistoryPayload>
+        }
+        update: {
+          args: Prisma.ServiceOwnershipHistoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipHistoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.ServiceOwnershipHistoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ServiceOwnershipHistoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ServiceOwnershipHistoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipHistoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.ServiceOwnershipHistoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ServiceOwnershipHistoryPayload>
+        }
+        aggregate: {
+          args: Prisma.ServiceOwnershipHistoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateServiceOwnershipHistory>
+        }
+        groupBy: {
+          args: Prisma.ServiceOwnershipHistoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceOwnershipHistoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ServiceOwnershipHistoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ServiceOwnershipHistoryCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3370,6 +3595,63 @@ export const FailurePatternScalarFieldEnum = {
 export type FailurePatternScalarFieldEnum = (typeof FailurePatternScalarFieldEnum)[keyof typeof FailurePatternScalarFieldEnum]
 
 
+export const ServiceOwnershipScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  serviceName: 'serviceName',
+  declaredOwner: 'declaredOwner',
+  declaredTeam: 'declaredTeam',
+  ownerType: 'ownerType',
+  classification: 'classification',
+  source: 'source',
+  sourcePath: 'sourcePath',
+  repositoryUrl: 'repositoryUrl',
+  commitSha: 'commitSha',
+  confidenceLevel: 'confidenceLevel',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceOwnershipScalarFieldEnum = (typeof ServiceOwnershipScalarFieldEnum)[keyof typeof ServiceOwnershipScalarFieldEnum]
+
+
+export const ServiceOwnershipAssertionScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  serviceName: 'serviceName',
+  authorId: 'authorId',
+  authorName: 'authorName',
+  authorEmail: 'authorEmail',
+  statement: 'statement',
+  proposedOwner: 'proposedOwner',
+  scope: 'scope',
+  classification: 'classification',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ServiceOwnershipAssertionScalarFieldEnum = (typeof ServiceOwnershipAssertionScalarFieldEnum)[keyof typeof ServiceOwnershipAssertionScalarFieldEnum]
+
+
+export const ServiceOwnershipHistoryScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  serviceName: 'serviceName',
+  previousOwner: 'previousOwner',
+  newOwner: 'newOwner',
+  source: 'source',
+  sourceVersion: 'sourceVersion',
+  reason: 'reason',
+  changedAt: 'changedAt'
+} as const
+
+export type ServiceOwnershipHistoryScalarFieldEnum = (typeof ServiceOwnershipHistoryScalarFieldEnum)[keyof typeof ServiceOwnershipHistoryScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3822,6 +4104,34 @@ export type EnumInvestigationActivityTypeFieldRefInput<$PrismaModel> = FieldRefI
 export type ListEnumInvestigationActivityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvestigationActivityType[]'>
     
 
+
+/**
+ * Reference to a field of type 'OwnershipClassification'
+ */
+export type EnumOwnershipClassificationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OwnershipClassification'>
+    
+
+
+/**
+ * Reference to a field of type 'OwnershipClassification[]'
+ */
+export type ListEnumOwnershipClassificationFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OwnershipClassification[]'>
+    
+
+
+/**
+ * Reference to a field of type 'OwnershipSourceType'
+ */
+export type EnumOwnershipSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OwnershipSourceType'>
+    
+
+
+/**
+ * Reference to a field of type 'OwnershipSourceType[]'
+ */
+export type ListEnumOwnershipSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OwnershipSourceType[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -4004,6 +4314,9 @@ export type GlobalOmitConfig = {
   investigationProposedRelation?: Prisma.InvestigationProposedRelationOmit
   incidentMemory?: Prisma.IncidentMemoryOmit
   failurePattern?: Prisma.FailurePatternOmit
+  serviceOwnership?: Prisma.ServiceOwnershipOmit
+  serviceOwnershipAssertion?: Prisma.ServiceOwnershipAssertionOmit
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryOmit
 }
 
 /* Types for Logging */

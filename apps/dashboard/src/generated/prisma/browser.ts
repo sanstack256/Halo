@@ -172,3 +172,18 @@ export type IncidentMemory = Prisma.IncidentMemoryModel
  * 
  */
 export type FailurePattern = Prisma.FailurePatternModel
+/**
+ * Model ServiceOwnership
+ * 
+ */
+export type ServiceOwnership = Prisma.ServiceOwnershipModel
+/**
+ * Model ServiceOwnershipAssertion
+ * 
+ */
+export type ServiceOwnershipAssertion = Prisma.ServiceOwnershipAssertionModel
+/**
+ * Model ServiceOwnershipHistory
+ * 
+ */
+export type ServiceOwnershipHistory = Prisma.ServiceOwnershipHistoryModel

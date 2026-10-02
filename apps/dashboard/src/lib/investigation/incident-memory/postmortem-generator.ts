@@ -204,6 +204,23 @@ export async function generateInvestigationPostmortem(investigationId: string): 
         note: `Verified ${e.type} event at ${e.timestamp.toISOString()}`,
     }));
 
+    // Fetch declared ownership for affected services (Pillar E)
+    const ownerships = await prisma.serviceOwnership.findMany({
+        where: {
+            organizationId: investigation.project.organizationId,
+            serviceName: { in: affectedServices },
+            OR: [{ projectId: investigation.projectId }, { projectId: null }],
+        },
+        select: { serviceName: true, declaredOwner: true, source: true },
+    });
+
+    const ownershipStatements = affectedServices.map((s) => {
+        const match = ownerships.find((o) => o.serviceName === s);
+        return match
+            ? `- \`${s}\` is declared to be owned by **${match.declaredOwner}** (Source: ${match.source}).`
+            : `- \`${s}\`: Owner unknown.`;
+    });
+
     // Synthesize Markdown Report
     const markdownReport = `# POSTMORTEM: ${investigation.title.toUpperCase()}
 
@@ -217,8 +234,10 @@ export async function generateInvestigationPostmortem(investigationId: string): 
 ## 1. Executive Summary
 ${investigation.summary || "Investigation completed across observed service telemetry."}
 
-## 2. Impact & Detection
+## 2. Impact & Engineering Ownership
 - **Impacted Services:** ${affectedServices.join(", ") || "None"}
+- **Declared Engineering Ownership:**
+${ownershipStatements.map((st) => `  ${st}`).join("\n")}
 - **Total Telemetry Events:** ${events.length}
 - **First Observed:** ${firstEvent?.timestamp.toISOString() || "Unknown"}
 - **Last Observed:** ${lastEvent?.timestamp.toISOString() || "Unknown"}

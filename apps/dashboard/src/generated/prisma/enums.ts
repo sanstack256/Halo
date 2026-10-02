@@ -246,3 +246,26 @@ export const InvestigationActivityType = {
 } as const
 
 export type InvestigationActivityType = (typeof InvestigationActivityType)[keyof typeof InvestigationActivityType]
+
+
+export const OwnershipClassification = {
+  DECLARED: 'DECLARED',
+  INFERRED: 'INFERRED',
+  HISTORICAL: 'HISTORICAL',
+  UNKNOWN: 'UNKNOWN',
+  HUMAN_ASSERTION: 'HUMAN_ASSERTION'
+} as const
+
+export type OwnershipClassification = (typeof OwnershipClassification)[keyof typeof OwnershipClassification]
+
+
+export const OwnershipSourceType = {
+  CODEOWNERS: 'CODEOWNERS',
+  SERVICE_CONFIG: 'SERVICE_CONFIG',
+  REPOSITORY_METADATA: 'REPOSITORY_METADATA',
+  HISTORICAL_INCIDENT: 'HISTORICAL_INCIDENT',
+  SOURCE_CORRELATION: 'SOURCE_CORRELATION',
+  MANUAL_ASSERTION: 'MANUAL_ASSERTION'
+} as const
+
+export type OwnershipSourceType = (typeof OwnershipSourceType)[keyof typeof OwnershipSourceType]

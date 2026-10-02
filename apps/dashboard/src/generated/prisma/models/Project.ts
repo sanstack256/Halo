@@ -311,6 +311,9 @@ export type ProjectWhereInput = {
   feedbacks?: Prisma.FeedbackListRelationFilter
   repairCases?: Prisma.RepairCaseListRelationFilter
   incidentMemories?: Prisma.IncidentMemoryListRelationFilter
+  serviceOwnerships?: Prisma.ServiceOwnershipListRelationFilter
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionListRelationFilter
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryListRelationFilter
 }
 
 export type ProjectOrderByWithRelationInput = {
@@ -347,6 +350,9 @@ export type ProjectOrderByWithRelationInput = {
   feedbacks?: Prisma.FeedbackOrderByRelationAggregateInput
   repairCases?: Prisma.RepairCaseOrderByRelationAggregateInput
   incidentMemories?: Prisma.IncidentMemoryOrderByRelationAggregateInput
+  serviceOwnerships?: Prisma.ServiceOwnershipOrderByRelationAggregateInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionOrderByRelationAggregateInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryOrderByRelationAggregateInput
 }
 
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -387,6 +393,9 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   feedbacks?: Prisma.FeedbackListRelationFilter
   repairCases?: Prisma.RepairCaseListRelationFilter
   incidentMemories?: Prisma.IncidentMemoryListRelationFilter
+  serviceOwnerships?: Prisma.ServiceOwnershipListRelationFilter
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionListRelationFilter
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryListRelationFilter
 }, "id" | "organizationId_slug">
 
 export type ProjectOrderByWithAggregationInput = {
@@ -474,6 +483,9 @@ export type ProjectCreateInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateInput = {
@@ -509,6 +521,9 @@ export type ProjectUncheckedCreateInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUpdateInput = {
@@ -544,6 +559,9 @@ export type ProjectUpdateInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateInput = {
@@ -579,6 +597,9 @@ export type ProjectUncheckedUpdateInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyInput = {
@@ -734,6 +755,11 @@ export type ProjectMinOrderByAggregateInput = {
 export type ProjectScalarRelationFilter = {
   is?: Prisma.ProjectWhereInput
   isNot?: Prisma.ProjectWhereInput
+}
+
+export type ProjectNullableScalarRelationFilter = {
+  is?: Prisma.ProjectWhereInput | null
+  isNot?: Prisma.ProjectWhereInput | null
 }
 
 export type ProjectCreateNestedManyWithoutOrganizationInput = {
@@ -962,6 +988,54 @@ export type ProjectUpdateOneRequiredWithoutIncidentMemoriesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutIncidentMemoriesInput, Prisma.ProjectUpdateWithoutIncidentMemoriesInput>, Prisma.ProjectUncheckedUpdateWithoutIncidentMemoriesInput>
 }
 
+export type ProjectCreateNestedOneWithoutServiceOwnershipsInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutServiceOwnershipsInput, Prisma.ProjectUncheckedCreateWithoutServiceOwnershipsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutServiceOwnershipsInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneWithoutServiceOwnershipsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutServiceOwnershipsInput, Prisma.ProjectUncheckedCreateWithoutServiceOwnershipsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutServiceOwnershipsInput
+  upsert?: Prisma.ProjectUpsertWithoutServiceOwnershipsInput
+  disconnect?: Prisma.ProjectWhereInput | boolean
+  delete?: Prisma.ProjectWhereInput | boolean
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutServiceOwnershipsInput, Prisma.ProjectUpdateWithoutServiceOwnershipsInput>, Prisma.ProjectUncheckedUpdateWithoutServiceOwnershipsInput>
+}
+
+export type ProjectCreateNestedOneWithoutServiceOwnershipAssertionsInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutServiceOwnershipAssertionsInput, Prisma.ProjectUncheckedCreateWithoutServiceOwnershipAssertionsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutServiceOwnershipAssertionsInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneWithoutServiceOwnershipAssertionsNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutServiceOwnershipAssertionsInput, Prisma.ProjectUncheckedCreateWithoutServiceOwnershipAssertionsInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutServiceOwnershipAssertionsInput
+  upsert?: Prisma.ProjectUpsertWithoutServiceOwnershipAssertionsInput
+  disconnect?: Prisma.ProjectWhereInput | boolean
+  delete?: Prisma.ProjectWhereInput | boolean
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutServiceOwnershipAssertionsInput, Prisma.ProjectUpdateWithoutServiceOwnershipAssertionsInput>, Prisma.ProjectUncheckedUpdateWithoutServiceOwnershipAssertionsInput>
+}
+
+export type ProjectCreateNestedOneWithoutServiceOwnershipHistoryInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutServiceOwnershipHistoryInput, Prisma.ProjectUncheckedCreateWithoutServiceOwnershipHistoryInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutServiceOwnershipHistoryInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneWithoutServiceOwnershipHistoryNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutServiceOwnershipHistoryInput, Prisma.ProjectUncheckedCreateWithoutServiceOwnershipHistoryInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutServiceOwnershipHistoryInput
+  upsert?: Prisma.ProjectUpsertWithoutServiceOwnershipHistoryInput
+  disconnect?: Prisma.ProjectWhereInput | boolean
+  delete?: Prisma.ProjectWhereInput | boolean
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutServiceOwnershipHistoryInput, Prisma.ProjectUpdateWithoutServiceOwnershipHistoryInput>, Prisma.ProjectUncheckedUpdateWithoutServiceOwnershipHistoryInput>
+}
+
 export type ProjectCreateWithoutOrganizationInput = {
   id?: string
   name: string
@@ -994,6 +1068,9 @@ export type ProjectCreateWithoutOrganizationInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutOrganizationInput = {
@@ -1028,6 +1105,9 @@ export type ProjectUncheckedCreateWithoutOrganizationInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutOrganizationInput = {
@@ -1114,6 +1194,9 @@ export type ProjectCreateWithoutEnvironmentsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
@@ -1148,6 +1231,9 @@ export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutEnvironmentsInput = {
@@ -1198,6 +1284,9 @@ export type ProjectUpdateWithoutEnvironmentsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
@@ -1232,6 +1321,9 @@ export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutApiKeysInput = {
@@ -1266,6 +1358,9 @@ export type ProjectCreateWithoutApiKeysInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutApiKeysInput = {
@@ -1300,6 +1395,9 @@ export type ProjectUncheckedCreateWithoutApiKeysInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutApiKeysInput = {
@@ -1350,6 +1448,9 @@ export type ProjectUpdateWithoutApiKeysInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutApiKeysInput = {
@@ -1384,6 +1485,9 @@ export type ProjectUncheckedUpdateWithoutApiKeysInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutEventsInput = {
@@ -1418,6 +1522,9 @@ export type ProjectCreateWithoutEventsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutEventsInput = {
@@ -1452,6 +1559,9 @@ export type ProjectUncheckedCreateWithoutEventsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutEventsInput = {
@@ -1502,6 +1612,9 @@ export type ProjectUpdateWithoutEventsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutEventsInput = {
@@ -1536,6 +1649,9 @@ export type ProjectUncheckedUpdateWithoutEventsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutTelemetrySessionsInput = {
@@ -1570,6 +1686,9 @@ export type ProjectCreateWithoutTelemetrySessionsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutTelemetrySessionsInput = {
@@ -1604,6 +1723,9 @@ export type ProjectUncheckedCreateWithoutTelemetrySessionsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutTelemetrySessionsInput = {
@@ -1654,6 +1776,9 @@ export type ProjectUpdateWithoutTelemetrySessionsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutTelemetrySessionsInput = {
@@ -1688,6 +1813,9 @@ export type ProjectUncheckedUpdateWithoutTelemetrySessionsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutReleasesInput = {
@@ -1722,6 +1850,9 @@ export type ProjectCreateWithoutReleasesInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutReleasesInput = {
@@ -1756,6 +1887,9 @@ export type ProjectUncheckedCreateWithoutReleasesInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutReleasesInput = {
@@ -1806,6 +1940,9 @@ export type ProjectUpdateWithoutReleasesInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutReleasesInput = {
@@ -1840,6 +1977,9 @@ export type ProjectUncheckedUpdateWithoutReleasesInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutIssuesInput = {
@@ -1874,6 +2014,9 @@ export type ProjectCreateWithoutIssuesInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutIssuesInput = {
@@ -1908,6 +2051,9 @@ export type ProjectUncheckedCreateWithoutIssuesInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutIssuesInput = {
@@ -1958,6 +2104,9 @@ export type ProjectUpdateWithoutIssuesInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutIssuesInput = {
@@ -1992,6 +2141,9 @@ export type ProjectUncheckedUpdateWithoutIssuesInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutReplaySessionsInput = {
@@ -2026,6 +2178,9 @@ export type ProjectCreateWithoutReplaySessionsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutReplaySessionsInput = {
@@ -2060,6 +2215,9 @@ export type ProjectUncheckedCreateWithoutReplaySessionsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutReplaySessionsInput = {
@@ -2110,6 +2268,9 @@ export type ProjectUpdateWithoutReplaySessionsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutReplaySessionsInput = {
@@ -2144,6 +2305,9 @@ export type ProjectUncheckedUpdateWithoutReplaySessionsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutFeedbacksInput = {
@@ -2178,6 +2342,9 @@ export type ProjectCreateWithoutFeedbacksInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutFeedbacksInput = {
@@ -2212,6 +2379,9 @@ export type ProjectUncheckedCreateWithoutFeedbacksInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutFeedbacksInput = {
@@ -2262,6 +2432,9 @@ export type ProjectUpdateWithoutFeedbacksInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutFeedbacksInput = {
@@ -2296,6 +2469,9 @@ export type ProjectUncheckedUpdateWithoutFeedbacksInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutMonitorsInput = {
@@ -2330,6 +2506,9 @@ export type ProjectCreateWithoutMonitorsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutMonitorsInput = {
@@ -2364,6 +2543,9 @@ export type ProjectUncheckedCreateWithoutMonitorsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutMonitorsInput = {
@@ -2414,6 +2596,9 @@ export type ProjectUpdateWithoutMonitorsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutMonitorsInput = {
@@ -2448,6 +2633,9 @@ export type ProjectUncheckedUpdateWithoutMonitorsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutInvestigationsInput = {
@@ -2482,6 +2670,9 @@ export type ProjectCreateWithoutInvestigationsInput = {
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutInvestigationsInput = {
@@ -2516,6 +2707,9 @@ export type ProjectUncheckedCreateWithoutInvestigationsInput = {
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutInvestigationsInput = {
@@ -2566,6 +2760,9 @@ export type ProjectUpdateWithoutInvestigationsInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutInvestigationsInput = {
@@ -2600,6 +2797,9 @@ export type ProjectUncheckedUpdateWithoutInvestigationsInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutRepairCasesInput = {
@@ -2634,6 +2834,9 @@ export type ProjectCreateWithoutRepairCasesInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutRepairCasesInput = {
@@ -2668,6 +2871,9 @@ export type ProjectUncheckedCreateWithoutRepairCasesInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutRepairCasesInput = {
@@ -2718,6 +2924,9 @@ export type ProjectUpdateWithoutRepairCasesInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutRepairCasesInput = {
@@ -2752,6 +2961,9 @@ export type ProjectUncheckedUpdateWithoutRepairCasesInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutIncidentMemoriesInput = {
@@ -2786,6 +2998,9 @@ export type ProjectCreateWithoutIncidentMemoriesInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutIncidentMemoriesInput = {
@@ -2820,6 +3035,9 @@ export type ProjectUncheckedCreateWithoutIncidentMemoriesInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutIncidentMemoriesInput = {
@@ -2870,6 +3088,9 @@ export type ProjectUpdateWithoutIncidentMemoriesInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutIncidentMemoriesInput = {
@@ -2904,6 +3125,501 @@ export type ProjectUncheckedUpdateWithoutIncidentMemoriesInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutServiceOwnershipsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: string | null
+  githubRepoName?: string | null
+  githubToken?: string | null
+  githubDefaultBranch?: string | null
+  githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
+  environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
+  events?: Prisma.EventCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
+  releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
+  monitors?: Prisma.MonitorCreateNestedManyWithoutProjectInput
+  investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
+  repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutServiceOwnershipsInput = {
+  id?: string
+  name: string
+  slug: string
+  organizationId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: string | null
+  githubRepoName?: string | null
+  githubToken?: string | null
+  githubDefaultBranch?: string | null
+  githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
+  environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
+  releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
+  monitors?: Prisma.MonitorUncheckedCreateNestedManyWithoutProjectInput
+  investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
+  repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutServiceOwnershipsInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutServiceOwnershipsInput, Prisma.ProjectUncheckedCreateWithoutServiceOwnershipsInput>
+}
+
+export type ProjectUpsertWithoutServiceOwnershipsInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutServiceOwnershipsInput, Prisma.ProjectUncheckedUpdateWithoutServiceOwnershipsInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutServiceOwnershipsInput, Prisma.ProjectUncheckedCreateWithoutServiceOwnershipsInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutServiceOwnershipsInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutServiceOwnershipsInput, Prisma.ProjectUncheckedUpdateWithoutServiceOwnershipsInput>
+}
+
+export type ProjectUpdateWithoutServiceOwnershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
+  environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
+  events?: Prisma.EventUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
+  releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
+  monitors?: Prisma.MonitorUpdateManyWithoutProjectNestedInput
+  investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
+  repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutServiceOwnershipsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
+  environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
+  events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
+  releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
+  monitors?: Prisma.MonitorUncheckedUpdateManyWithoutProjectNestedInput
+  investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
+  repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutServiceOwnershipAssertionsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: string | null
+  githubRepoName?: string | null
+  githubToken?: string | null
+  githubDefaultBranch?: string | null
+  githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
+  environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
+  events?: Prisma.EventCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
+  releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
+  monitors?: Prisma.MonitorCreateNestedManyWithoutProjectInput
+  investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
+  repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutServiceOwnershipAssertionsInput = {
+  id?: string
+  name: string
+  slug: string
+  organizationId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: string | null
+  githubRepoName?: string | null
+  githubToken?: string | null
+  githubDefaultBranch?: string | null
+  githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
+  environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
+  releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
+  monitors?: Prisma.MonitorUncheckedCreateNestedManyWithoutProjectInput
+  investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
+  repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutServiceOwnershipAssertionsInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutServiceOwnershipAssertionsInput, Prisma.ProjectUncheckedCreateWithoutServiceOwnershipAssertionsInput>
+}
+
+export type ProjectUpsertWithoutServiceOwnershipAssertionsInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutServiceOwnershipAssertionsInput, Prisma.ProjectUncheckedUpdateWithoutServiceOwnershipAssertionsInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutServiceOwnershipAssertionsInput, Prisma.ProjectUncheckedCreateWithoutServiceOwnershipAssertionsInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutServiceOwnershipAssertionsInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutServiceOwnershipAssertionsInput, Prisma.ProjectUncheckedUpdateWithoutServiceOwnershipAssertionsInput>
+}
+
+export type ProjectUpdateWithoutServiceOwnershipAssertionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
+  environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
+  events?: Prisma.EventUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
+  releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
+  monitors?: Prisma.MonitorUpdateManyWithoutProjectNestedInput
+  investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
+  repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutServiceOwnershipAssertionsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
+  environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
+  events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
+  releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
+  monitors?: Prisma.MonitorUncheckedUpdateManyWithoutProjectNestedInput
+  investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
+  repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutServiceOwnershipHistoryInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: string | null
+  githubRepoName?: string | null
+  githubToken?: string | null
+  githubDefaultBranch?: string | null
+  githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
+  environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
+  events?: Prisma.EventCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
+  releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
+  monitors?: Prisma.MonitorCreateNestedManyWithoutProjectInput
+  investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
+  repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutServiceOwnershipHistoryInput = {
+  id?: string
+  name: string
+  slug: string
+  organizationId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: string | null
+  githubRepoName?: string | null
+  githubToken?: string | null
+  githubDefaultBranch?: string | null
+  githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
+  environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
+  releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
+  monitors?: Prisma.MonitorUncheckedCreateNestedManyWithoutProjectInput
+  investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
+  repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutProjectInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutServiceOwnershipHistoryInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutServiceOwnershipHistoryInput, Prisma.ProjectUncheckedCreateWithoutServiceOwnershipHistoryInput>
+}
+
+export type ProjectUpsertWithoutServiceOwnershipHistoryInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutServiceOwnershipHistoryInput, Prisma.ProjectUncheckedUpdateWithoutServiceOwnershipHistoryInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutServiceOwnershipHistoryInput, Prisma.ProjectUncheckedCreateWithoutServiceOwnershipHistoryInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutServiceOwnershipHistoryInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutServiceOwnershipHistoryInput, Prisma.ProjectUncheckedUpdateWithoutServiceOwnershipHistoryInput>
+}
+
+export type ProjectUpdateWithoutServiceOwnershipHistoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
+  environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
+  events?: Prisma.EventUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
+  releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
+  monitors?: Prisma.MonitorUpdateManyWithoutProjectNestedInput
+  investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
+  repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutServiceOwnershipHistoryInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
+  environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
+  events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
+  releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
+  monitors?: Prisma.MonitorUncheckedUpdateManyWithoutProjectNestedInput
+  investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
+  repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyOrganizationInput = {
@@ -2960,6 +3676,9 @@ export type ProjectUpdateWithoutOrganizationInput = {
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutOrganizationInput = {
@@ -2994,6 +3713,9 @@ export type ProjectUncheckedUpdateWithoutOrganizationInput = {
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
   incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutProjectNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateManyWithoutOrganizationInput = {
@@ -3036,6 +3758,9 @@ export type ProjectCountOutputType = {
   feedbacks: number
   repairCases: number
   incidentMemories: number
+  serviceOwnerships: number
+  serviceOwnershipAssertions: number
+  serviceOwnershipHistory: number
 }
 
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3051,6 +3776,9 @@ export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   feedbacks?: boolean | ProjectCountOutputTypeCountFeedbacksArgs
   repairCases?: boolean | ProjectCountOutputTypeCountRepairCasesArgs
   incidentMemories?: boolean | ProjectCountOutputTypeCountIncidentMemoriesArgs
+  serviceOwnerships?: boolean | ProjectCountOutputTypeCountServiceOwnershipsArgs
+  serviceOwnershipAssertions?: boolean | ProjectCountOutputTypeCountServiceOwnershipAssertionsArgs
+  serviceOwnershipHistory?: boolean | ProjectCountOutputTypeCountServiceOwnershipHistoryArgs
 }
 
 /**
@@ -3147,6 +3875,27 @@ export type ProjectCountOutputTypeCountIncidentMemoriesArgs<ExtArgs extends runt
   where?: Prisma.IncidentMemoryWhereInput
 }
 
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountServiceOwnershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServiceOwnershipWhereInput
+}
+
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountServiceOwnershipAssertionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServiceOwnershipAssertionWhereInput
+}
+
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountServiceOwnershipHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.ServiceOwnershipHistoryWhereInput
+}
+
 
 export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -3182,6 +3931,9 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   feedbacks?: boolean | Prisma.Project$feedbacksArgs<ExtArgs>
   repairCases?: boolean | Prisma.Project$repairCasesArgs<ExtArgs>
   incidentMemories?: boolean | Prisma.Project$incidentMemoriesArgs<ExtArgs>
+  serviceOwnerships?: boolean | Prisma.Project$serviceOwnershipsArgs<ExtArgs>
+  serviceOwnershipAssertions?: boolean | Prisma.Project$serviceOwnershipAssertionsArgs<ExtArgs>
+  serviceOwnershipHistory?: boolean | Prisma.Project$serviceOwnershipHistoryArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -3271,6 +4023,9 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   feedbacks?: boolean | Prisma.Project$feedbacksArgs<ExtArgs>
   repairCases?: boolean | Prisma.Project$repairCasesArgs<ExtArgs>
   incidentMemories?: boolean | Prisma.Project$incidentMemoriesArgs<ExtArgs>
+  serviceOwnerships?: boolean | Prisma.Project$serviceOwnershipsArgs<ExtArgs>
+  serviceOwnershipAssertions?: boolean | Prisma.Project$serviceOwnershipAssertionsArgs<ExtArgs>
+  serviceOwnershipHistory?: boolean | Prisma.Project$serviceOwnershipHistoryArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3296,6 +4051,9 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     feedbacks: Prisma.$FeedbackPayload<ExtArgs>[]
     repairCases: Prisma.$RepairCasePayload<ExtArgs>[]
     incidentMemories: Prisma.$IncidentMemoryPayload<ExtArgs>[]
+    serviceOwnerships: Prisma.$ServiceOwnershipPayload<ExtArgs>[]
+    serviceOwnershipAssertions: Prisma.$ServiceOwnershipAssertionPayload<ExtArgs>[]
+    serviceOwnershipHistory: Prisma.$ServiceOwnershipHistoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3725,6 +4483,9 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   feedbacks<T extends Prisma.Project$feedbacksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$feedbacksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   repairCases<T extends Prisma.Project$repairCasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$repairCasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairCasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   incidentMemories<T extends Prisma.Project$incidentMemoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$incidentMemoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncidentMemoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  serviceOwnerships<T extends Prisma.Project$serviceOwnershipsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$serviceOwnershipsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceOwnershipPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  serviceOwnershipAssertions<T extends Prisma.Project$serviceOwnershipAssertionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$serviceOwnershipAssertionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceOwnershipAssertionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  serviceOwnershipHistory<T extends Prisma.Project$serviceOwnershipHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$serviceOwnershipHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceOwnershipHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4460,6 +5221,78 @@ export type Project$incidentMemoriesArgs<ExtArgs extends runtime.Types.Extension
   take?: number
   skip?: number
   distinct?: Prisma.IncidentMemoryScalarFieldEnum | Prisma.IncidentMemoryScalarFieldEnum[]
+}
+
+/**
+ * Project.serviceOwnerships
+ */
+export type Project$serviceOwnershipsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ServiceOwnership
+   */
+  select?: Prisma.ServiceOwnershipSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ServiceOwnership
+   */
+  omit?: Prisma.ServiceOwnershipOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServiceOwnershipInclude<ExtArgs> | null
+  where?: Prisma.ServiceOwnershipWhereInput
+  orderBy?: Prisma.ServiceOwnershipOrderByWithRelationInput | Prisma.ServiceOwnershipOrderByWithRelationInput[]
+  cursor?: Prisma.ServiceOwnershipWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ServiceOwnershipScalarFieldEnum | Prisma.ServiceOwnershipScalarFieldEnum[]
+}
+
+/**
+ * Project.serviceOwnershipAssertions
+ */
+export type Project$serviceOwnershipAssertionsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ServiceOwnershipAssertion
+   */
+  select?: Prisma.ServiceOwnershipAssertionSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ServiceOwnershipAssertion
+   */
+  omit?: Prisma.ServiceOwnershipAssertionOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServiceOwnershipAssertionInclude<ExtArgs> | null
+  where?: Prisma.ServiceOwnershipAssertionWhereInput
+  orderBy?: Prisma.ServiceOwnershipAssertionOrderByWithRelationInput | Prisma.ServiceOwnershipAssertionOrderByWithRelationInput[]
+  cursor?: Prisma.ServiceOwnershipAssertionWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ServiceOwnershipAssertionScalarFieldEnum | Prisma.ServiceOwnershipAssertionScalarFieldEnum[]
+}
+
+/**
+ * Project.serviceOwnershipHistory
+ */
+export type Project$serviceOwnershipHistoryArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the ServiceOwnershipHistory
+   */
+  select?: Prisma.ServiceOwnershipHistorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the ServiceOwnershipHistory
+   */
+  omit?: Prisma.ServiceOwnershipHistoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.ServiceOwnershipHistoryInclude<ExtArgs> | null
+  where?: Prisma.ServiceOwnershipHistoryWhereInput
+  orderBy?: Prisma.ServiceOwnershipHistoryOrderByWithRelationInput | Prisma.ServiceOwnershipHistoryOrderByWithRelationInput[]
+  cursor?: Prisma.ServiceOwnershipHistoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.ServiceOwnershipHistoryScalarFieldEnum | Prisma.ServiceOwnershipHistoryScalarFieldEnum[]
 }
 
 /**

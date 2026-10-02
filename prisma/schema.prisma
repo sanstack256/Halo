@@ -19,6 +19,9 @@ model Organization {
   members   OrganizationMember[]
   incidentMemories IncidentMemory[]
   failurePatterns  FailurePattern[]
+  serviceOwnerships ServiceOwnership[]
+  serviceOwnershipAssertions ServiceOwnershipAssertion[]
+  serviceOwnershipHistory    ServiceOwnershipHistory[]
 }
 
 model Project {
@@ -55,6 +58,9 @@ model Project {
   feedbacks           Feedback[]
   repairCases         RepairCase[]
   incidentMemories    IncidentMemory[]
+  serviceOwnerships   ServiceOwnership[]
+  serviceOwnershipAssertions ServiceOwnershipAssertion[]
+  serviceOwnershipHistory    ServiceOwnershipHistory[]
 
   @@unique([organizationId, slug])
 }
@@ -214,6 +220,7 @@ model User {
   investigationVerdicts InvestigationVerdict[]
   investigationActivities InvestigationActivity[]
   investigationRelations InvestigationProposedRelation[]
+  serviceOwnershipAssertions ServiceOwnershipAssertion[]
 
   @@map("user")
 }
@@ -905,5 +912,92 @@ model FailurePattern {
   @@index([primaryService])
 }
 
+// ---------------------------------------------------------------------------
+// Team Plan Pillar E: Ownership Intelligence & Engineering Responsibility
+// ---------------------------------------------------------------------------
 
+enum OwnershipClassification {
+  DECLARED
+  INFERRED
+  HISTORICAL
+  UNKNOWN
+  HUMAN_ASSERTION
+}
 
+enum OwnershipSourceType {
+  CODEOWNERS
+  SERVICE_CONFIG
+  REPOSITORY_METADATA
+  HISTORICAL_INCIDENT
+  SOURCE_CORRELATION
+  MANUAL_ASSERTION
+}
+
+model ServiceOwnership {
+  id              String                  @id @default(cuid())
+  organizationId  String
+  projectId       String?
+  serviceName     String
+  declaredOwner   String
+  declaredTeam    String?
+  ownerType       String                  @default("TEAM")
+  classification  OwnershipClassification @default(DECLARED)
+  source          OwnershipSourceType     @default(SERVICE_CONFIG)
+  sourcePath      String?
+  repositoryUrl   String?
+  commitSha       String?
+  confidenceLevel String                  @default("HIGH")
+  metadata        Json?
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  organization    Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project         Project?                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, projectId, serviceName, source])
+  @@index([organizationId, serviceName])
+  @@index([projectId, serviceName])
+}
+
+model ServiceOwnershipAssertion {
+  id              String                  @id @default(cuid())
+  organizationId  String
+  projectId       String?
+  serviceName     String
+  authorId        String
+  authorName      String
+  authorEmail     String
+  statement       String
+  proposedOwner   String
+  scope           String?
+  classification  OwnershipClassification @default(HUMAN_ASSERTION)
+  createdAt       DateTime                @default(now())
+  updatedAt       DateTime                @updatedAt
+
+  organization    Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project         Project?                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  user            User                    @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, serviceName])
+  @@index([projectId, serviceName])
+  @@index([authorId])
+}
+
+model ServiceOwnershipHistory {
+  id              String                  @id @default(cuid())
+  organizationId  String
+  projectId       String?
+  serviceName     String
+  previousOwner   String?
+  newOwner        String
+  source          OwnershipSourceType     @default(SERVICE_CONFIG)
+  sourceVersion   String?
+  reason          String?
+  changedAt       DateTime                @default(now())
+
+  organization    Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project         Project?                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, serviceName, changedAt])
+  @@index([projectId, serviceName])
+}

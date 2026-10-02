@@ -257,8 +257,8 @@ export async function queryCanonicalServices(params: ServicesFilterParams): Prom
         compEventFilter.environment = { name: params.environment };
     }
 
-    // 3. Query telemetry, releases, issues, firing alerts, and all-time discovered services in parallel
-    const [currentEvents, comparisonEvents, releases, issues, firingAlerts, allTimeServices] = await Promise.all([
+    // 3. Query telemetry, releases, issues, firing alerts, all-time discovered services, and service ownerships in parallel
+    const [currentEvents, comparisonEvents, releases, issues, firingAlerts, allTimeServices, serviceOwnerships] = await Promise.all([
         prisma.event.findMany({
             where: eventFilter,
             select: {
@@ -316,6 +316,12 @@ export async function queryCanonicalServices(params: ServicesFilterParams): Prom
             },
             _min: { timestamp: true },
             _max: { timestamp: true },
+        }),
+        prisma.serviceOwnership.findMany({
+            where: {
+                projectId: { in: projectIds },
+            },
+            select: { serviceName: true, projectId: true, declaredOwner: true },
         }),
     ]);
 
@@ -502,6 +508,14 @@ export async function queryCanonicalServices(params: ServicesFilterParams): Prom
                 if ((tags as any).framework) framework = String((tags as any).framework);
                 if ((tags as any).language) language = String((tags as any).language);
             }
+        }
+
+        // Prioritize explicit declared service ownership (Pillar E)
+        const declaredOwnership = serviceOwnerships.find(
+            (o) => o.serviceName === acc.service && (o.projectId === acc.projectId || o.projectId === null)
+        );
+        if (declaredOwnership?.declaredOwner) {
+            owner = declaredOwnership.declaredOwner;
         }
 
         // Determine canonical active release version (sorted by latest event timestamp)

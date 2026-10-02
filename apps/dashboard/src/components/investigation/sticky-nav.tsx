@@ -10,6 +10,7 @@ import {
     Network,
     Users,
     Wrench,
+    ShieldCheck,
 } from "lucide-react";
 
 interface CategoryNavItem {
@@ -70,6 +71,13 @@ const CATEGORIES: CategoryNavItem[] = [
         targetSectionId: "historical-memory",
         sectionIds: ["historical-memory"],
         icon: History,
+    },
+    {
+        id: "ownership",
+        label: "Ownership",
+        targetSectionId: "section-ownership-intelligence",
+        sectionIds: ["section-ownership-intelligence"],
+        icon: ShieldCheck,
     },
     {
         id: "timeline",
