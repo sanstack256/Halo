@@ -75,7 +75,11 @@ export const ModelName = {
   RepairValidation: 'RepairValidation',
   RepairEvent: 'RepairEvent',
   IssueRecommendation: 'IssueRecommendation',
-  OrganizationMember: 'OrganizationMember'
+  OrganizationMember: 'OrganizationMember',
+  InvestigationComment: 'InvestigationComment',
+  InvestigationVerdict: 'InvestigationVerdict',
+  InvestigationActivity: 'InvestigationActivity',
+  InvestigationProposedRelation: 'InvestigationProposedRelation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -561,6 +565,78 @@ export const OrganizationMemberScalarFieldEnum = {
 } as const
 
 export type OrganizationMemberScalarFieldEnum = (typeof OrganizationMemberScalarFieldEnum)[keyof typeof OrganizationMemberScalarFieldEnum]
+
+
+export const InvestigationCommentScalarFieldEnum = {
+  id: 'id',
+  investigationId: 'investigationId',
+  authorId: 'authorId',
+  authorName: 'authorName',
+  authorEmail: 'authorEmail',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  evidenceId: 'evidenceId',
+  metadata: 'metadata',
+  content: 'content',
+  isDeleted: 'isDeleted',
+  idempotencyKey: 'idempotencyKey',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvestigationCommentScalarFieldEnum = (typeof InvestigationCommentScalarFieldEnum)[keyof typeof InvestigationCommentScalarFieldEnum]
+
+
+export const InvestigationVerdictScalarFieldEnum = {
+  id: 'id',
+  investigationId: 'investigationId',
+  hypothesisId: 'hypothesisId',
+  authorId: 'authorId',
+  authorName: 'authorName',
+  authorEmail: 'authorEmail',
+  verdict: 'verdict',
+  reasoning: 'reasoning',
+  evidenceReferences: 'evidenceReferences',
+  idempotencyKey: 'idempotencyKey',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvestigationVerdictScalarFieldEnum = (typeof InvestigationVerdictScalarFieldEnum)[keyof typeof InvestigationVerdictScalarFieldEnum]
+
+
+export const InvestigationActivityScalarFieldEnum = {
+  id: 'id',
+  investigationId: 'investigationId',
+  actorId: 'actorId',
+  actorName: 'actorName',
+  actorEmail: 'actorEmail',
+  type: 'type',
+  summary: 'summary',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type InvestigationActivityScalarFieldEnum = (typeof InvestigationActivityScalarFieldEnum)[keyof typeof InvestigationActivityScalarFieldEnum]
+
+
+export const InvestigationProposedRelationScalarFieldEnum = {
+  id: 'id',
+  investigationId: 'investigationId',
+  authorId: 'authorId',
+  authorName: 'authorName',
+  sourceId: 'sourceId',
+  targetId: 'targetId',
+  relationType: 'relationType',
+  classification: 'classification',
+  reasoning: 'reasoning',
+  evidenceIds: 'evidenceIds',
+  createdAt: 'createdAt'
+} as const
+
+export type InvestigationProposedRelationScalarFieldEnum = (typeof InvestigationProposedRelationScalarFieldEnum)[keyof typeof InvestigationProposedRelationScalarFieldEnum]
 
 
 export const SortOrder = {

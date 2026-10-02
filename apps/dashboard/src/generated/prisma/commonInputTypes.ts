@@ -684,6 +684,57 @@ export type EnumMembershipStatusWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumMembershipStatusFilter<$PrismaModel>
 }
 
+export type EnumInvestigationCommentTargetTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvestigationCommentTargetType | Prisma.EnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.InvestigationCommentTargetType[] | Prisma.ListEnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvestigationCommentTargetType[] | Prisma.ListEnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvestigationCommentTargetTypeFilter<$PrismaModel> | $Enums.InvestigationCommentTargetType
+}
+
+export type EnumInvestigationCommentTargetTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvestigationCommentTargetType | Prisma.EnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.InvestigationCommentTargetType[] | Prisma.ListEnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvestigationCommentTargetType[] | Prisma.ListEnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvestigationCommentTargetTypeWithAggregatesFilter<$PrismaModel> | $Enums.InvestigationCommentTargetType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumInvestigationCommentTargetTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumInvestigationCommentTargetTypeFilter<$PrismaModel>
+}
+
+export type EnumPeerVerdictTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PeerVerdictType | Prisma.EnumPeerVerdictTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PeerVerdictType[] | Prisma.ListEnumPeerVerdictTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PeerVerdictType[] | Prisma.ListEnumPeerVerdictTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPeerVerdictTypeFilter<$PrismaModel> | $Enums.PeerVerdictType
+}
+
+export type EnumPeerVerdictTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PeerVerdictType | Prisma.EnumPeerVerdictTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PeerVerdictType[] | Prisma.ListEnumPeerVerdictTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PeerVerdictType[] | Prisma.ListEnumPeerVerdictTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPeerVerdictTypeWithAggregatesFilter<$PrismaModel> | $Enums.PeerVerdictType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPeerVerdictTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPeerVerdictTypeFilter<$PrismaModel>
+}
+
+export type EnumInvestigationActivityTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvestigationActivityType | Prisma.EnumInvestigationActivityTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.InvestigationActivityType[] | Prisma.ListEnumInvestigationActivityTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvestigationActivityType[] | Prisma.ListEnumInvestigationActivityTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvestigationActivityTypeFilter<$PrismaModel> | $Enums.InvestigationActivityType
+}
+
+export type EnumInvestigationActivityTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvestigationActivityType | Prisma.EnumInvestigationActivityTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.InvestigationActivityType[] | Prisma.ListEnumInvestigationActivityTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvestigationActivityType[] | Prisma.ListEnumInvestigationActivityTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvestigationActivityTypeWithAggregatesFilter<$PrismaModel> | $Enums.InvestigationActivityType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumInvestigationActivityTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumInvestigationActivityTypeFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1300,6 +1351,57 @@ export type NestedEnumMembershipStatusWithAggregatesFilter<$PrismaModel = never>
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumMembershipStatusFilter<$PrismaModel>
   _max?: Prisma.NestedEnumMembershipStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumInvestigationCommentTargetTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvestigationCommentTargetType | Prisma.EnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.InvestigationCommentTargetType[] | Prisma.ListEnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvestigationCommentTargetType[] | Prisma.ListEnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvestigationCommentTargetTypeFilter<$PrismaModel> | $Enums.InvestigationCommentTargetType
+}
+
+export type NestedEnumInvestigationCommentTargetTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvestigationCommentTargetType | Prisma.EnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.InvestigationCommentTargetType[] | Prisma.ListEnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvestigationCommentTargetType[] | Prisma.ListEnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvestigationCommentTargetTypeWithAggregatesFilter<$PrismaModel> | $Enums.InvestigationCommentTargetType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumInvestigationCommentTargetTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumInvestigationCommentTargetTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumPeerVerdictTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.PeerVerdictType | Prisma.EnumPeerVerdictTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PeerVerdictType[] | Prisma.ListEnumPeerVerdictTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PeerVerdictType[] | Prisma.ListEnumPeerVerdictTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPeerVerdictTypeFilter<$PrismaModel> | $Enums.PeerVerdictType
+}
+
+export type NestedEnumPeerVerdictTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.PeerVerdictType | Prisma.EnumPeerVerdictTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.PeerVerdictType[] | Prisma.ListEnumPeerVerdictTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.PeerVerdictType[] | Prisma.ListEnumPeerVerdictTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumPeerVerdictTypeWithAggregatesFilter<$PrismaModel> | $Enums.PeerVerdictType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumPeerVerdictTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumPeerVerdictTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumInvestigationActivityTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvestigationActivityType | Prisma.EnumInvestigationActivityTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.InvestigationActivityType[] | Prisma.ListEnumInvestigationActivityTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvestigationActivityType[] | Prisma.ListEnumInvestigationActivityTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvestigationActivityTypeFilter<$PrismaModel> | $Enums.InvestigationActivityType
+}
+
+export type NestedEnumInvestigationActivityTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.InvestigationActivityType | Prisma.EnumInvestigationActivityTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.InvestigationActivityType[] | Prisma.ListEnumInvestigationActivityTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.InvestigationActivityType[] | Prisma.ListEnumInvestigationActivityTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumInvestigationActivityTypeWithAggregatesFilter<$PrismaModel> | $Enums.InvestigationActivityType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumInvestigationActivityTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumInvestigationActivityTypeFilter<$PrismaModel>
 }
 
 

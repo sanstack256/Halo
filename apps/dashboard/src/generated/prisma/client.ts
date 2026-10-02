@@ -166,3 +166,23 @@ export type IssueRecommendation = Prisma.IssueRecommendationModel
  * 
  */
 export type OrganizationMember = Prisma.OrganizationMemberModel
+/**
+ * Model InvestigationComment
+ * 
+ */
+export type InvestigationComment = Prisma.InvestigationCommentModel
+/**
+ * Model InvestigationVerdict
+ * 
+ */
+export type InvestigationVerdict = Prisma.InvestigationVerdictModel
+/**
+ * Model InvestigationActivity
+ * 
+ */
+export type InvestigationActivity = Prisma.InvestigationActivityModel
+/**
+ * Model InvestigationProposedRelation
+ * 
+ */
+export type InvestigationProposedRelation = Prisma.InvestigationProposedRelationModel

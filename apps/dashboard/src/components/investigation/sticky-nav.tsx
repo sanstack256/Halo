@@ -7,6 +7,7 @@ import {
     GitBranch,
     Layers,
     Network,
+    Users,
     Wrench,
 } from "lucide-react";
 
@@ -19,6 +20,13 @@ interface CategoryNavItem {
 }
 
 const CATEGORIES: CategoryNavItem[] = [
+    {
+        id: "collaboration",
+        label: "Live Room",
+        targetSectionId: "section-collaboration",
+        sectionIds: ["section-collaboration"],
+        icon: Users,
+    },
     {
         id: "summary",
         label: "Summary",

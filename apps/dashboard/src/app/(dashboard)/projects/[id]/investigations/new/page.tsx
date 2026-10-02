@@ -90,6 +90,9 @@ import { FixRecommendationView } from "@/components/investigation/fix-recommenda
 import { getPersistedRecommendation } from "@/actions/fix-recommendation";
 import { DifferentialTraceView } from "@/components/investigation/differential-trace-view";
 import { ServicePropagationView } from "@/components/topology/service-propagation-view";
+import { InvestigationCollaborativeRoom } from "@/components/investigation/collaboration/investigation-collaborative-room";
+import { getInvestigationCollaborationState } from "@/actions/collaboration";
+import { getSession } from "@/lib/session";
 import { planHasCapability } from "@/lib/capabilities";
 import { prisma } from "@/lib/prisma";
 
@@ -403,6 +406,43 @@ export default async function InvestigationPage({
             (projectRecord?.organization?.plan as any) || "FREE",
             "TEAM_CROSS_SERVICE_TOPOLOGY"
         );
+        const isTeamCollaborationPlan = planHasCapability(
+            (projectRecord?.organization?.plan as any) || "FREE",
+            "TEAM_INVESTIGATION_ROOMS"
+        );
+
+        // Ensure canonical durable Investigation record exists in database
+        let investigationRecord = monitorContext?.investigationRecord;
+        if (!investigationRecord) {
+            const existingInv = await prisma.investigation.findFirst({
+                where: {
+                    projectId: id,
+                    ...(issueId ? { issueId } : {}),
+                },
+                orderBy: { createdAt: "desc" },
+            });
+            if (existingInv) {
+                investigationRecord = existingInv;
+            } else {
+                investigationRecord = await prisma.investigation.create({
+                    data: {
+                        projectId: id,
+                        issueId: issueId || null,
+                        title: (investigation.report as any)?.title || `Investigation: ${issueId || service || "Incident"}`,
+                        summary: investigation.report.summary,
+                        rootCause: investigation.rootCause?.title || null,
+                        confidenceScore: investigation.rootCause?.confidence || null,
+                        evidenceCount: investigation.evidence.length,
+                        status: "COMPLETED",
+                    },
+                });
+            }
+        }
+
+        const session = await getSession();
+        const initialCollaborationState = (isTeamCollaborationPlan && investigationRecord)
+            ? await getInvestigationCollaborationState(investigationRecord.id).catch(() => null)
+            : null;
 
         return (
             <InvestigationView
@@ -424,6 +464,10 @@ export default async function InvestigationPage({
                 issueId={issueId}
                 isTeamPlan={isTeamPlan}
                 isTeamTopologyPlan={isTeamTopologyPlan}
+                isTeamCollaborationPlan={isTeamCollaborationPlan}
+                investigationId={investigationRecord?.id}
+                initialCollaborationState={initialCollaborationState}
+                currentUserId={session?.user?.id}
             />
         );
     } catch (error) {
@@ -460,6 +504,10 @@ function InvestigationView({
     issueId,
     isTeamPlan = false,
     isTeamTopologyPlan = false,
+    isTeamCollaborationPlan = false,
+    investigationId,
+    initialCollaborationState,
+    currentUserId,
 }: {
     investigation: Investigation;
     resolvedReplay: ResolvedOccurrenceReplay | null;
@@ -548,6 +596,10 @@ function InvestigationView({
     issueId?: string;
     isTeamPlan?: boolean;
     isTeamTopologyPlan?: boolean;
+    isTeamCollaborationPlan?: boolean;
+    investigationId?: string;
+    initialCollaborationState?: any;
+    currentUserId?: string;
 }) {
     const {
         status,
@@ -718,6 +770,18 @@ function InvestigationView({
                             <span>Change Intelligence</span>
                         </Link>
                     </div>
+                </div>
+            )}
+
+            {/* COLLABORATIVE ROOM (PHASE 4 / PILLAR C) */}
+            {investigationId && (
+                <div id="section-collaboration" className="scroll-mt-24">
+                    <InvestigationCollaborativeRoom
+                        investigationId={investigationId}
+                        projectId={projectId}
+                        isTeamPlan={Boolean(isTeamCollaborationPlan)}
+                        currentArea="OVERVIEW"
+                    />
                 </div>
             )}
 
@@ -1157,6 +1221,10 @@ function InvestigationView({
                     causalChains={interpreted.causalChains}
                     hypotheses={investigation.hypotheses}
                     rawEdges={interpreted.rawEdges}
+                    investigationId={investigationId}
+                    verdicts={initialCollaborationState?.verdicts || []}
+                    isTeamPlan={Boolean(isTeamCollaborationPlan)}
+                    currentUserId={currentUserId}
                 />
             </div>
 

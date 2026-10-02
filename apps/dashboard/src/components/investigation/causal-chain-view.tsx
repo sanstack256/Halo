@@ -26,11 +26,16 @@ import {
     Zap,
 } from "lucide-react";
 import type { CausalChain, CausalClassification, EvidenceEdge, Hypothesis, TemporalRelationship } from "@halo/investigation-engine";
+import { PeerVerdictCard } from "./collaboration/peer-verdict-card";
 
 interface Props {
     causalChains?: CausalChain[];
     hypotheses?: Hypothesis[];
     rawEdges?: EvidenceEdge[];
+    investigationId?: string;
+    verdicts?: any[];
+    isTeamPlan?: boolean;
+    currentUserId?: string;
 }
 
 const CLASSIFICATION_BADGES: Record<CausalClassification, { bg: string; text: string; border: string; desc: string }> = {
@@ -71,7 +76,15 @@ const TEMPORAL_BADGES: Record<TemporalRelationship, string> = {
     UNKNOWN: "text-zinc-500 bg-zinc-800 border-zinc-700",
 };
 
-export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges = [] }: Props) {
+export function CausalChainView({
+    causalChains = [],
+    hypotheses = [],
+    rawEdges = [],
+    investigationId,
+    verdicts = [],
+    isTeamPlan = false,
+    currentUserId,
+}: Props) {
     const [selectedChainId, setSelectedChainId] = useState<string>(
         causalChains.length > 0 ? causalChains[0].id : ""
     );
@@ -595,6 +608,18 @@ export function CausalChainView({ causalChains = [], hypotheses = [], rawEdges =
                                                     </div>
                                                 );
                                             })()}
+
+                                            {/* Peer Verdicts (Phase 4 / Pillar C) */}
+                                            {investigationId && (
+                                                <PeerVerdictCard
+                                                    investigationId={investigationId}
+                                                    hypothesisId={hyp.id}
+                                                    engineConfidence={hyp.confidence}
+                                                    verdicts={verdicts}
+                                                    currentUserId={currentUserId}
+                                                    isTeamPlan={Boolean(isTeamPlan)}
+                                                />
+                                            )}
                                         </div>
                                     )}
                                 </div>

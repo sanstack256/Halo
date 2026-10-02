@@ -207,6 +207,10 @@ model User {
   organization   Organization? @relation(fields: [organizationId], references: [id])
   monitors       Monitor[]
   memberships    OrganizationMember[]
+  investigationComments InvestigationComment[]
+  investigationVerdicts InvestigationVerdict[]
+  investigationActivities InvestigationActivity[]
+  investigationRelations InvestigationProposedRelation[]
 
   @@map("user")
 }
@@ -509,6 +513,10 @@ model Investigation {
   alert           MonitorAlert?       @relation(fields: [alertId], references: [id], onDelete: SetNull)
   repairCases     RepairCase[]
   recommendations IssueRecommendation[]
+  comments        InvestigationComment[]
+  verdicts        InvestigationVerdict[]
+  activities      InvestigationActivity[]
+  proposedRelations InvestigationProposedRelation[]
 
   @@index([projectId, createdAt])
   @@index([monitorId])
@@ -716,6 +724,119 @@ model OrganizationMember {
   @@unique([organizationId, userId])
   @@index([organizationId])
   @@index([userId])
+}
+
+// -----------------------------------------------------------------------------
+// PHASE 4 / PILLAR C: COLLABORATIVE LIVE INVESTIGATION ROOMS
+// -----------------------------------------------------------------------------
+
+enum InvestigationCommentTargetType {
+  INVESTIGATION
+  HYPOTHESIS
+  EVIDENCE
+  CAUSAL_EDGE
+  TOPOLOGY_NODE
+  REPLAY
+}
+
+model InvestigationComment {
+  id              String                         @id @default(cuid())
+  investigationId String
+  authorId        String
+  authorName      String
+  authorEmail     String
+  targetType      InvestigationCommentTargetType @default(INVESTIGATION)
+  targetId        String?                        // e.g. hypothesisId, edgeId, serviceName, replaySessionId
+  evidenceId      String?                        // linked event/evidence ID
+  metadata        Json?                          // replay timestamp, edge source/target, etc.
+  content         String
+  isDeleted       Boolean                        @default(false)
+  idempotencyKey  String?                        @unique
+  createdAt       DateTime                       @default(now())
+  updatedAt       DateTime                       @updatedAt
+
+  investigation   Investigation                  @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  user            User                           @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([investigationId, createdAt])
+  @@index([authorId])
+}
+
+enum PeerVerdictType {
+  SUPPORTED
+  DISPUTED
+  NEEDS_EVIDENCE
+  UNRESOLVED
+}
+
+model InvestigationVerdict {
+  id                 String          @id @default(cuid())
+  investigationId    String
+  hypothesisId       String          // hypothesis identifier
+  authorId           String
+  authorName         String
+  authorEmail        String
+  verdict            PeerVerdictType
+  reasoning          String?
+  evidenceReferences String[]        @default([]) // array of eventId / evidence IDs
+  idempotencyKey     String?         @unique
+  createdAt          DateTime        @default(now())
+  updatedAt          DateTime        @updatedAt
+
+  investigation      Investigation   @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  user               User            @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@unique([investigationId, hypothesisId, authorId])
+  @@index([investigationId, hypothesisId])
+}
+
+enum InvestigationActivityType {
+  MEMBER_JOINED
+  MEMBER_LEFT
+  COMMENT_ADDED
+  COMMENT_EDITED
+  COMMENT_DELETED
+  VERDICT_RECORDED
+  EVIDENCE_ANNOTATED
+  RELATIONSHIP_PROPOSED
+}
+
+model InvestigationActivity {
+  id              String                    @id @default(cuid())
+  investigationId String
+  actorId         String
+  actorName       String
+  actorEmail      String
+  type            InvestigationActivityType
+  summary         String                    // e.g. "Asha supported Hypothesis 2", "Rahul annotated payments-service"
+  targetType      String?                   // e.g. "HYPOTHESIS", "EVIDENCE", "TOPOLOGY_NODE", "REPLAY"
+  targetId        String?
+  metadata        Json?
+  createdAt       DateTime                  @default(now())
+
+  investigation   Investigation             @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  user            User                      @relation(fields: [actorId], references: [id], onDelete: Cascade)
+
+  @@index([investigationId, createdAt])
+}
+
+model InvestigationProposedRelation {
+  id              String        @id @default(cuid())
+  investigationId String
+  authorId        String
+  authorName      String
+  sourceId        String        // eventId or service name
+  targetId        String        // eventId or service name
+  relationType    String        // e.g. "CAUSES", "CORRELATED_WITH", "DEPENDS_ON"
+  classification  String        @default("HUMAN_PROPOSED") // Always HUMAN_PROPOSED, NEVER OBSERVED or INFERRED
+  reasoning       String?
+  evidenceIds     String[]      @default([])
+  createdAt       DateTime      @default(now())
+
+  investigation   Investigation @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  user            User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
+
+  @@index([investigationId, createdAt])
 }
 
 

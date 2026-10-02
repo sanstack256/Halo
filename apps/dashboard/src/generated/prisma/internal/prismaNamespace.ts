@@ -421,7 +421,11 @@ export const ModelName = {
   RepairValidation: 'RepairValidation',
   RepairEvent: 'RepairEvent',
   IssueRecommendation: 'IssueRecommendation',
-  OrganizationMember: 'OrganizationMember'
+  OrganizationMember: 'OrganizationMember',
+  InvestigationComment: 'InvestigationComment',
+  InvestigationVerdict: 'InvestigationVerdict',
+  InvestigationActivity: 'InvestigationActivity',
+  InvestigationProposedRelation: 'InvestigationProposedRelation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -437,7 +441,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation" | "organizationMember"
+    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation" | "organizationMember" | "investigationComment" | "investigationVerdict" | "investigationActivity" | "investigationProposedRelation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2291,6 +2295,302 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    InvestigationComment: {
+      payload: Prisma.$InvestigationCommentPayload<ExtArgs>
+      fields: Prisma.InvestigationCommentFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvestigationCommentFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationCommentPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvestigationCommentFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationCommentPayload>
+        }
+        findFirst: {
+          args: Prisma.InvestigationCommentFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationCommentPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvestigationCommentFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationCommentPayload>
+        }
+        findMany: {
+          args: Prisma.InvestigationCommentFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationCommentPayload>[]
+        }
+        create: {
+          args: Prisma.InvestigationCommentCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationCommentPayload>
+        }
+        createMany: {
+          args: Prisma.InvestigationCommentCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InvestigationCommentCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationCommentPayload>[]
+        }
+        delete: {
+          args: Prisma.InvestigationCommentDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationCommentPayload>
+        }
+        update: {
+          args: Prisma.InvestigationCommentUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationCommentPayload>
+        }
+        deleteMany: {
+          args: Prisma.InvestigationCommentDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvestigationCommentUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InvestigationCommentUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationCommentPayload>[]
+        }
+        upsert: {
+          args: Prisma.InvestigationCommentUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationCommentPayload>
+        }
+        aggregate: {
+          args: Prisma.InvestigationCommentAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvestigationComment>
+        }
+        groupBy: {
+          args: Prisma.InvestigationCommentGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvestigationCommentGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvestigationCommentCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvestigationCommentCountAggregateOutputType> | number
+        }
+      }
+    }
+    InvestigationVerdict: {
+      payload: Prisma.$InvestigationVerdictPayload<ExtArgs>
+      fields: Prisma.InvestigationVerdictFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvestigationVerdictFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationVerdictPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvestigationVerdictFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationVerdictPayload>
+        }
+        findFirst: {
+          args: Prisma.InvestigationVerdictFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationVerdictPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvestigationVerdictFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationVerdictPayload>
+        }
+        findMany: {
+          args: Prisma.InvestigationVerdictFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationVerdictPayload>[]
+        }
+        create: {
+          args: Prisma.InvestigationVerdictCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationVerdictPayload>
+        }
+        createMany: {
+          args: Prisma.InvestigationVerdictCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InvestigationVerdictCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationVerdictPayload>[]
+        }
+        delete: {
+          args: Prisma.InvestigationVerdictDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationVerdictPayload>
+        }
+        update: {
+          args: Prisma.InvestigationVerdictUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationVerdictPayload>
+        }
+        deleteMany: {
+          args: Prisma.InvestigationVerdictDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvestigationVerdictUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InvestigationVerdictUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationVerdictPayload>[]
+        }
+        upsert: {
+          args: Prisma.InvestigationVerdictUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationVerdictPayload>
+        }
+        aggregate: {
+          args: Prisma.InvestigationVerdictAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvestigationVerdict>
+        }
+        groupBy: {
+          args: Prisma.InvestigationVerdictGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvestigationVerdictGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvestigationVerdictCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvestigationVerdictCountAggregateOutputType> | number
+        }
+      }
+    }
+    InvestigationActivity: {
+      payload: Prisma.$InvestigationActivityPayload<ExtArgs>
+      fields: Prisma.InvestigationActivityFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvestigationActivityFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationActivityPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvestigationActivityFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationActivityPayload>
+        }
+        findFirst: {
+          args: Prisma.InvestigationActivityFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationActivityPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvestigationActivityFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationActivityPayload>
+        }
+        findMany: {
+          args: Prisma.InvestigationActivityFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationActivityPayload>[]
+        }
+        create: {
+          args: Prisma.InvestigationActivityCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationActivityPayload>
+        }
+        createMany: {
+          args: Prisma.InvestigationActivityCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InvestigationActivityCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationActivityPayload>[]
+        }
+        delete: {
+          args: Prisma.InvestigationActivityDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationActivityPayload>
+        }
+        update: {
+          args: Prisma.InvestigationActivityUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationActivityPayload>
+        }
+        deleteMany: {
+          args: Prisma.InvestigationActivityDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvestigationActivityUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InvestigationActivityUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationActivityPayload>[]
+        }
+        upsert: {
+          args: Prisma.InvestigationActivityUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationActivityPayload>
+        }
+        aggregate: {
+          args: Prisma.InvestigationActivityAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvestigationActivity>
+        }
+        groupBy: {
+          args: Prisma.InvestigationActivityGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvestigationActivityGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvestigationActivityCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvestigationActivityCountAggregateOutputType> | number
+        }
+      }
+    }
+    InvestigationProposedRelation: {
+      payload: Prisma.$InvestigationProposedRelationPayload<ExtArgs>
+      fields: Prisma.InvestigationProposedRelationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.InvestigationProposedRelationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationProposedRelationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.InvestigationProposedRelationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationProposedRelationPayload>
+        }
+        findFirst: {
+          args: Prisma.InvestigationProposedRelationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationProposedRelationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.InvestigationProposedRelationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationProposedRelationPayload>
+        }
+        findMany: {
+          args: Prisma.InvestigationProposedRelationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationProposedRelationPayload>[]
+        }
+        create: {
+          args: Prisma.InvestigationProposedRelationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationProposedRelationPayload>
+        }
+        createMany: {
+          args: Prisma.InvestigationProposedRelationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.InvestigationProposedRelationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationProposedRelationPayload>[]
+        }
+        delete: {
+          args: Prisma.InvestigationProposedRelationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationProposedRelationPayload>
+        }
+        update: {
+          args: Prisma.InvestigationProposedRelationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationProposedRelationPayload>
+        }
+        deleteMany: {
+          args: Prisma.InvestigationProposedRelationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.InvestigationProposedRelationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.InvestigationProposedRelationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationProposedRelationPayload>[]
+        }
+        upsert: {
+          args: Prisma.InvestigationProposedRelationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$InvestigationProposedRelationPayload>
+        }
+        aggregate: {
+          args: Prisma.InvestigationProposedRelationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateInvestigationProposedRelation>
+        }
+        groupBy: {
+          args: Prisma.InvestigationProposedRelationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvestigationProposedRelationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.InvestigationProposedRelationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.InvestigationProposedRelationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -2799,6 +3099,78 @@ export const OrganizationMemberScalarFieldEnum = {
 export type OrganizationMemberScalarFieldEnum = (typeof OrganizationMemberScalarFieldEnum)[keyof typeof OrganizationMemberScalarFieldEnum]
 
 
+export const InvestigationCommentScalarFieldEnum = {
+  id: 'id',
+  investigationId: 'investigationId',
+  authorId: 'authorId',
+  authorName: 'authorName',
+  authorEmail: 'authorEmail',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  evidenceId: 'evidenceId',
+  metadata: 'metadata',
+  content: 'content',
+  isDeleted: 'isDeleted',
+  idempotencyKey: 'idempotencyKey',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvestigationCommentScalarFieldEnum = (typeof InvestigationCommentScalarFieldEnum)[keyof typeof InvestigationCommentScalarFieldEnum]
+
+
+export const InvestigationVerdictScalarFieldEnum = {
+  id: 'id',
+  investigationId: 'investigationId',
+  hypothesisId: 'hypothesisId',
+  authorId: 'authorId',
+  authorName: 'authorName',
+  authorEmail: 'authorEmail',
+  verdict: 'verdict',
+  reasoning: 'reasoning',
+  evidenceReferences: 'evidenceReferences',
+  idempotencyKey: 'idempotencyKey',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type InvestigationVerdictScalarFieldEnum = (typeof InvestigationVerdictScalarFieldEnum)[keyof typeof InvestigationVerdictScalarFieldEnum]
+
+
+export const InvestigationActivityScalarFieldEnum = {
+  id: 'id',
+  investigationId: 'investigationId',
+  actorId: 'actorId',
+  actorName: 'actorName',
+  actorEmail: 'actorEmail',
+  type: 'type',
+  summary: 'summary',
+  targetType: 'targetType',
+  targetId: 'targetId',
+  metadata: 'metadata',
+  createdAt: 'createdAt'
+} as const
+
+export type InvestigationActivityScalarFieldEnum = (typeof InvestigationActivityScalarFieldEnum)[keyof typeof InvestigationActivityScalarFieldEnum]
+
+
+export const InvestigationProposedRelationScalarFieldEnum = {
+  id: 'id',
+  investigationId: 'investigationId',
+  authorId: 'authorId',
+  authorName: 'authorName',
+  sourceId: 'sourceId',
+  targetId: 'targetId',
+  relationType: 'relationType',
+  classification: 'classification',
+  reasoning: 'reasoning',
+  evidenceIds: 'evidenceIds',
+  createdAt: 'createdAt'
+} as const
+
+export type InvestigationProposedRelationScalarFieldEnum = (typeof InvestigationProposedRelationScalarFieldEnum)[keyof typeof InvestigationProposedRelationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -3209,6 +3581,48 @@ export type EnumMembershipStatusFieldRefInput<$PrismaModel> = FieldRefInputType<
 export type ListEnumMembershipStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'MembershipStatus[]'>
     
 
+
+/**
+ * Reference to a field of type 'InvestigationCommentTargetType'
+ */
+export type EnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvestigationCommentTargetType'>
+    
+
+
+/**
+ * Reference to a field of type 'InvestigationCommentTargetType[]'
+ */
+export type ListEnumInvestigationCommentTargetTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvestigationCommentTargetType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'PeerVerdictType'
+ */
+export type EnumPeerVerdictTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PeerVerdictType'>
+    
+
+
+/**
+ * Reference to a field of type 'PeerVerdictType[]'
+ */
+export type ListEnumPeerVerdictTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'PeerVerdictType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'InvestigationActivityType'
+ */
+export type EnumInvestigationActivityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvestigationActivityType'>
+    
+
+
+/**
+ * Reference to a field of type 'InvestigationActivityType[]'
+ */
+export type ListEnumInvestigationActivityTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'InvestigationActivityType[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -3385,6 +3799,10 @@ export type GlobalOmitConfig = {
   repairEvent?: Prisma.RepairEventOmit
   issueRecommendation?: Prisma.IssueRecommendationOmit
   organizationMember?: Prisma.OrganizationMemberOmit
+  investigationComment?: Prisma.InvestigationCommentOmit
+  investigationVerdict?: Prisma.InvestigationVerdictOmit
+  investigationActivity?: Prisma.InvestigationActivityOmit
+  investigationProposedRelation?: Prisma.InvestigationProposedRelationOmit
 }
 
 /* Types for Logging */

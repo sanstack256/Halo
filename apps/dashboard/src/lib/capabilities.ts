@@ -12,6 +12,7 @@ import { type PlanId } from "./plans";
 
 export type TeamCapability =
     | "TEAM_INVESTIGATION_ROOMS"
+    | "TEAM_COLLABORATIVE_INVESTIGATION"
     | "TEAM_DIFFERENTIAL_ANALYSIS"
     | "TEAM_INCIDENT_COORDINATION"
     | "TEAM_OWNERSHIP_INTELLIGENCE"
@@ -35,6 +36,11 @@ export const CAPABILITY_METADATA: Record<
     TEAM_INVESTIGATION_ROOMS: {
         name: "Collaborative Investigation Rooms",
         description: "Shared live causal graph workspace with peer verdicts and annotations.",
+        minimumPlan: "TEAM",
+    },
+    TEAM_COLLABORATIVE_INVESTIGATION: {
+        name: "Collaborative Live Investigation Rooms",
+        description: "Shared live causal graph workspace with peer verdicts, presence, and annotations.",
         minimumPlan: "TEAM",
     },
     TEAM_DIFFERENTIAL_ANALYSIS: {

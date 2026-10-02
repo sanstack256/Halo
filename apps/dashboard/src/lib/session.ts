@@ -3,6 +3,33 @@ import { auth } from "./auth";
 import { prisma } from "./prisma";
 
 export async function getSession() {
+  if (process.env.NODE_ENV !== "production" && process.env.HALO_TEST_USER_EMAIL) {
+    const user = await prisma.user.findUnique({
+      where: { email: process.env.HALO_TEST_USER_EMAIL },
+    });
+    if (user) {
+      return {
+        user: {
+          id: user.id,
+          email: user.email,
+          name: user.name,
+          createdAt: user.createdAt,
+          updatedAt: user.updatedAt,
+          emailVerified: user.emailVerified,
+          image: user.image,
+        },
+        session: {
+          id: `test-session-${user.id}`,
+          userId: user.id,
+          expiresAt: new Date(Date.now() + 86400000),
+          createdAt: new Date(),
+          updatedAt: new Date(),
+          token: "test-token",
+        },
+      };
+    }
+  }
+
   try {
     const h = await headers();
     if (process.env.NODE_ENV !== "production") {

@@ -210,3 +210,39 @@ export const MembershipStatus = {
 } as const
 
 export type MembershipStatus = (typeof MembershipStatus)[keyof typeof MembershipStatus]
+
+
+export const InvestigationCommentTargetType = {
+  INVESTIGATION: 'INVESTIGATION',
+  HYPOTHESIS: 'HYPOTHESIS',
+  EVIDENCE: 'EVIDENCE',
+  CAUSAL_EDGE: 'CAUSAL_EDGE',
+  TOPOLOGY_NODE: 'TOPOLOGY_NODE',
+  REPLAY: 'REPLAY'
+} as const
+
+export type InvestigationCommentTargetType = (typeof InvestigationCommentTargetType)[keyof typeof InvestigationCommentTargetType]
+
+
+export const PeerVerdictType = {
+  SUPPORTED: 'SUPPORTED',
+  DISPUTED: 'DISPUTED',
+  NEEDS_EVIDENCE: 'NEEDS_EVIDENCE',
+  UNRESOLVED: 'UNRESOLVED'
+} as const
+
+export type PeerVerdictType = (typeof PeerVerdictType)[keyof typeof PeerVerdictType]
+
+
+export const InvestigationActivityType = {
+  MEMBER_JOINED: 'MEMBER_JOINED',
+  MEMBER_LEFT: 'MEMBER_LEFT',
+  COMMENT_ADDED: 'COMMENT_ADDED',
+  COMMENT_EDITED: 'COMMENT_EDITED',
+  COMMENT_DELETED: 'COMMENT_DELETED',
+  VERDICT_RECORDED: 'VERDICT_RECORDED',
+  EVIDENCE_ANNOTATED: 'EVIDENCE_ANNOTATED',
+  RELATIONSHIP_PROPOSED: 'RELATIONSHIP_PROPOSED'
+} as const
+
+export type InvestigationActivityType = (typeof InvestigationActivityType)[keyof typeof InvestigationActivityType]
