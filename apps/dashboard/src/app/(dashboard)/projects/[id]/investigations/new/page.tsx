@@ -88,6 +88,9 @@ import { detectAnchorRuntimeOrigin } from "@/lib/investigation/interpreter";
 import { buildCallChains } from "@/lib/investigation/runtime/call-chain";
 import { FixRecommendationView } from "@/components/investigation/fix-recommendation-view";
 import { getPersistedRecommendation } from "@/actions/fix-recommendation";
+import { DifferentialTraceView } from "@/components/investigation/differential-trace-view";
+import { planHasCapability } from "@/lib/capabilities";
+import { prisma } from "@/lib/prisma";
 
 export default async function InvestigationPage({
     params,
@@ -386,6 +389,16 @@ export default async function InvestigationPage({
             ? await getPersistedRecommendation({ projectId: id, issueId })
             : null;
 
+        // Check organization capability for Team plan features
+        const projectRecord = await prisma.project.findUnique({
+            where: { id },
+            select: { organization: { select: { id: true, plan: true } } },
+        });
+        const isTeamPlan = planHasCapability(
+            (projectRecord?.organization?.plan as any) || "FREE",
+            "TEAM_INVESTIGATION_ROOMS"
+        );
+
         return (
             <InvestigationView
                 investigation={investigation}
@@ -404,6 +417,7 @@ export default async function InvestigationPage({
                 persistedRecommendation={persistedRecommendation}
                 customModelName={customModel.name}
                 issueId={issueId}
+                isTeamPlan={isTeamPlan}
             />
         );
     } catch (error) {
@@ -438,6 +452,7 @@ function InvestigationView({
     persistedRecommendation,
     customModelName,
     issueId,
+    isTeamPlan = false,
 }: {
     investigation: Investigation;
     resolvedReplay: ResolvedOccurrenceReplay | null;
@@ -524,6 +539,7 @@ function InvestigationView({
     persistedRecommendation?: any;
     customModelName?: string;
     issueId?: string;
+    isTeamPlan?: boolean;
 }) {
     const {
         status,
@@ -1261,6 +1277,15 @@ function InvestigationView({
                 relatedMetrics={relatedMetrics}
                 relatedThirdParty={relatedThirdParty}
             />
+
+            {/* C7. DIFFERENTIAL TRACE ANALYSIS (TEAM PLAN) */}
+            <div id="section-differential-trace" className="scroll-mt-24">
+                <DifferentialTraceView
+                    projectId={projectId}
+                    eventId={incidentAnchorId || anchorError?.id}
+                    isTeamPlan={Boolean(isTeamPlan)}
+                />
+            </div>
 
             {/* D. AUTOMATIC REGRESSION DETECTION (CHANGES) */}
             <div id="section-regression" className="scroll-mt-24">

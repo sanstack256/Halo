@@ -43,6 +43,7 @@ const CATEGORIES: CategoryNavItem[] = [
             "section-replay",
             "section-runtime-stack",
             "section-telemetry",
+            "section-differential-trace",
         ],
         icon: Layers,
     },
