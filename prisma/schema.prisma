@@ -16,6 +16,7 @@ model Organization {
   plan      OrganizationPlan @default(FREE)
   projects  Project[]
   owner     User?
+  members   OrganizationMember[]
 }
 
 model Project {
@@ -205,6 +206,7 @@ model User {
   sessions       Session[]
   organization   Organization? @relation(fields: [organizationId], references: [id])
   monitors       Monitor[]
+  memberships    OrganizationMember[]
 
   @@map("user")
 }
@@ -683,5 +685,38 @@ model IssueRecommendation {
   @@index([issueId, version])
   @@index([investigationId])
 }
+
+// ---------------------------------------------------------------------------
+// Team Plan Foundation: Multi-Member Organization & Roles
+// ---------------------------------------------------------------------------
+
+enum OrganizationRole {
+  OWNER
+  ADMIN
+  MEMBER
+}
+
+enum MembershipStatus {
+  ACTIVE
+  SUSPENDED
+}
+
+model OrganizationMember {
+  id             String           @id @default(cuid())
+  organizationId String
+  userId         String
+  role           OrganizationRole @default(MEMBER)
+  status         MembershipStatus @default(ACTIVE)
+  createdAt      DateTime         @default(now())
+  updatedAt      DateTime         @updatedAt
+
+  organization   Organization     @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  user           User             @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, userId])
+  @@index([organizationId])
+  @@index([userId])
+}
+
 
 

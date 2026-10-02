@@ -137,3 +137,8 @@ export type RepairEvent = Prisma.RepairEventModel
  * 
  */
 export type IssueRecommendation = Prisma.IssueRecommendationModel
+/**
+ * Model OrganizationMember
+ * 
+ */
+export type OrganizationMember = Prisma.OrganizationMemberModel

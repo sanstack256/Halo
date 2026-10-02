@@ -14,12 +14,14 @@ import {
     type PlanId,
     type PlanLimits,
 } from "@/lib/plans";
+import { planHasCapability, type TeamCapability } from "./capabilities";
+import { MembershipStatus } from "@/generated/prisma/client";
 
 // ---------------------------------------------------------------------------
 // Internal helpers
 // ---------------------------------------------------------------------------
 
-async function getOrgPlan(organizationId: string): Promise<PlanId> {
+export async function getOrgPlan(organizationId: string): Promise<PlanId> {
     try {
         const org = await prisma.organization.findUnique({
             where: { id: organizationId },
@@ -36,17 +38,42 @@ async function getOrgPlan(organizationId: string): Promise<PlanId> {
     }
 }
 
-async function getOrgIdForUser(userId: string): Promise<string> {
+export async function getOrgIdForUser(userId: string): Promise<string> {
     const user = await prisma.user.findUnique({
         where: { id: userId },
         select: { organizationId: true },
     });
 
-    if (!user?.organizationId) {
-        throw new Error("User has no organization");
+    if (user?.organizationId) {
+        return user.organizationId;
     }
 
-    return user.organizationId;
+    // Check OrganizationMember for non-owner members
+    const memberRecord = await prisma.organizationMember.findFirst({
+        where: {
+            userId,
+            status: MembershipStatus.ACTIVE,
+        },
+        select: { organizationId: true },
+    });
+
+    if (memberRecord?.organizationId) {
+        return memberRecord.organizationId;
+    }
+
+    throw new Error(`User ${userId} does not belong to any active organization`);
+}
+
+// ---------------------------------------------------------------------------
+// Semantic Capability checks
+// ---------------------------------------------------------------------------
+
+export async function canUse(
+    organizationId: string,
+    capability: TeamCapability
+): Promise<boolean> {
+    const plan = await getOrgPlan(organizationId);
+    return planHasCapability(plan, capability);
 }
 
 // ---------------------------------------------------------------------------

@@ -193,3 +193,20 @@ export const ValidationRunStatus = {
 } as const
 
 export type ValidationRunStatus = (typeof ValidationRunStatus)[keyof typeof ValidationRunStatus]
+
+
+export const OrganizationRole = {
+  OWNER: 'OWNER',
+  ADMIN: 'ADMIN',
+  MEMBER: 'MEMBER'
+} as const
+
+export type OrganizationRole = (typeof OrganizationRole)[keyof typeof OrganizationRole]
+
+
+export const MembershipStatus = {
+  ACTIVE: 'ACTIVE',
+  SUSPENDED: 'SUSPENDED'
+} as const
+
+export type MembershipStatus = (typeof MembershipStatus)[keyof typeof MembershipStatus]

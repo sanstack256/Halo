@@ -74,7 +74,8 @@ export const ModelName = {
   RepairChange: 'RepairChange',
   RepairValidation: 'RepairValidation',
   RepairEvent: 'RepairEvent',
-  IssueRecommendation: 'IssueRecommendation'
+  IssueRecommendation: 'IssueRecommendation',
+  OrganizationMember: 'OrganizationMember'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -547,6 +548,19 @@ export const IssueRecommendationScalarFieldEnum = {
 } as const
 
 export type IssueRecommendationScalarFieldEnum = (typeof IssueRecommendationScalarFieldEnum)[keyof typeof IssueRecommendationScalarFieldEnum]
+
+
+export const OrganizationMemberScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  userId: 'userId',
+  role: 'role',
+  status: 'status',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type OrganizationMemberScalarFieldEnum = (typeof OrganizationMemberScalarFieldEnum)[keyof typeof OrganizationMemberScalarFieldEnum]
 
 
 export const SortOrder = {

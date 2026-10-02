@@ -3,6 +3,7 @@
 import { prisma } from "@/lib/prisma";
 import { getSession } from "@/lib/session";
 import { getOrganization, ensureOrganization } from "@/lib/organization";
+import { assertResourceLimit, requireOrganizationRole } from "@/lib/authorization";
 import { slugify } from "@/lib/slug";
 import { revalidatePath } from "next/cache";
 
@@ -25,6 +26,10 @@ export async function createProject(
   if (!organization) {
     throw new Error("Organization could not be initialized.");
   }
+
+  // Authoritative server-side checks: role & resource limit
+  await requireOrganizationRole(organization.id, ["OWNER", "ADMIN"], session.user.id);
+  await assertResourceLimit(organization.id, "maxProjects");
 
   const baseSlug = slugify(name) || "project";
 

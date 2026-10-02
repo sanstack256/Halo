@@ -11,7 +11,22 @@ export async function getOrganization(userId: string) {
         },
     });
 
-    return user?.organization ?? null;
+    if (user?.organization) {
+        return user.organization;
+    }
+
+    // Check OrganizationMember for non-owner members
+    const memberRecord = await prisma.organizationMember.findFirst({
+        where: {
+            userId,
+            status: "ACTIVE",
+        },
+        include: {
+            organization: true,
+        },
+    });
+
+    return memberRecord?.organization ?? null;
 }
 
 export async function ensureOrganization(userId: string) {
@@ -36,20 +51,29 @@ export async function ensureOrganization(userId: string) {
     const uniqueSlug = `${baseSlug}-${user.id.slice(0, 8)}`;
 
     try {
-        const organization = await prisma.organization.create({
-            data: {
-                name: `${displayName}'s Organization`,
-                slug: uniqueSlug,
-            },
-        });
+        const organization = await prisma.$transaction(async (tx) => {
+            const org = await tx.organization.create({
+                data: {
+                    name: `${displayName}'s Organization`,
+                    slug: uniqueSlug,
+                },
+            });
 
-        await prisma.user.update({
-            where: {
-                id: user.id,
-            },
-            data: {
-                organizationId: organization.id,
-            },
+            await tx.user.update({
+                where: { id: user.id },
+                data: { organizationId: org.id },
+            });
+
+            await tx.organizationMember.create({
+                data: {
+                    organizationId: org.id,
+                    userId: user.id,
+                    role: "OWNER",
+                    status: "ACTIVE",
+                },
+            });
+
+            return org;
         });
 
         return organization;
@@ -62,20 +86,29 @@ export async function ensureOrganization(userId: string) {
 
         // Retry with timestamp suffix if slug collided
         const fallbackSlug = `${baseSlug}-${user.id.slice(0, 6)}-${Date.now().toString(36)}`;
-        const organization = await prisma.organization.create({
-            data: {
-                name: `${displayName}'s Organization`,
-                slug: fallbackSlug,
-            },
-        });
+        const organization = await prisma.$transaction(async (tx) => {
+            const org = await tx.organization.create({
+                data: {
+                    name: `${displayName}'s Organization`,
+                    slug: fallbackSlug,
+                },
+            });
 
-        await prisma.user.update({
-            where: {
-                id: user.id,
-            },
-            data: {
-                organizationId: organization.id,
-            },
+            await tx.user.update({
+                where: { id: user.id },
+                data: { organizationId: org.id },
+            });
+
+            await tx.organizationMember.create({
+                data: {
+                    organizationId: org.id,
+                    userId: user.id,
+                    role: "OWNER",
+                    status: "ACTIVE",
+                },
+            });
+
+            return org;
         });
 
         return organization;
