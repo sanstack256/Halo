@@ -193,6 +193,8 @@ export type OrganizationWhereInput = {
   projects?: Prisma.ProjectListRelationFilter
   owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   members?: Prisma.OrganizationMemberListRelationFilter
+  incidentMemories?: Prisma.IncidentMemoryListRelationFilter
+  failurePatterns?: Prisma.FailurePatternListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -205,6 +207,8 @@ export type OrganizationOrderByWithRelationInput = {
   projects?: Prisma.ProjectOrderByRelationAggregateInput
   owner?: Prisma.UserOrderByWithRelationInput
   members?: Prisma.OrganizationMemberOrderByRelationAggregateInput
+  incidentMemories?: Prisma.IncidentMemoryOrderByRelationAggregateInput
+  failurePatterns?: Prisma.FailurePatternOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -220,6 +224,8 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   projects?: Prisma.ProjectListRelationFilter
   owner?: Prisma.XOR<Prisma.UserNullableScalarRelationFilter, Prisma.UserWhereInput> | null
   members?: Prisma.OrganizationMemberListRelationFilter
+  incidentMemories?: Prisma.IncidentMemoryListRelationFilter
+  failurePatterns?: Prisma.FailurePatternListRelationFilter
 }, "id" | "slug">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -256,6 +262,8 @@ export type OrganizationCreateInput = {
   projects?: Prisma.ProjectCreateNestedManyWithoutOrganizationInput
   owner?: Prisma.UserCreateNestedOneWithoutOrganizationInput
   members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutOrganizationInput
+  failurePatterns?: Prisma.FailurePatternCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -268,6 +276,8 @@ export type OrganizationUncheckedCreateInput = {
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrganizationInput
   owner?: Prisma.UserUncheckedCreateNestedOneWithoutOrganizationInput
   members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutOrganizationInput
+  failurePatterns?: Prisma.FailurePatternUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUpdateInput = {
@@ -280,6 +290,8 @@ export type OrganizationUpdateInput = {
   projects?: Prisma.ProjectUpdateManyWithoutOrganizationNestedInput
   owner?: Prisma.UserUpdateOneWithoutOrganizationNestedInput
   members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutOrganizationNestedInput
+  failurePatterns?: Prisma.FailurePatternUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -292,6 +304,8 @@ export type OrganizationUncheckedUpdateInput = {
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
   owner?: Prisma.UserUncheckedUpdateOneWithoutOrganizationNestedInput
   members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  failurePatterns?: Prisma.FailurePatternUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -414,6 +428,34 @@ export type OrganizationUpdateOneRequiredWithoutMembersNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutMembersInput, Prisma.OrganizationUpdateWithoutMembersInput>, Prisma.OrganizationUncheckedUpdateWithoutMembersInput>
 }
 
+export type OrganizationCreateNestedOneWithoutIncidentMemoriesInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutIncidentMemoriesInput, Prisma.OrganizationUncheckedCreateWithoutIncidentMemoriesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutIncidentMemoriesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutIncidentMemoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutIncidentMemoriesInput, Prisma.OrganizationUncheckedCreateWithoutIncidentMemoriesInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutIncidentMemoriesInput
+  upsert?: Prisma.OrganizationUpsertWithoutIncidentMemoriesInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutIncidentMemoriesInput, Prisma.OrganizationUpdateWithoutIncidentMemoriesInput>, Prisma.OrganizationUncheckedUpdateWithoutIncidentMemoriesInput>
+}
+
+export type OrganizationCreateNestedOneWithoutFailurePatternsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutFailurePatternsInput, Prisma.OrganizationUncheckedCreateWithoutFailurePatternsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutFailurePatternsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutFailurePatternsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutFailurePatternsInput, Prisma.OrganizationUncheckedCreateWithoutFailurePatternsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutFailurePatternsInput
+  upsert?: Prisma.OrganizationUpsertWithoutFailurePatternsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutFailurePatternsInput, Prisma.OrganizationUpdateWithoutFailurePatternsInput>, Prisma.OrganizationUncheckedUpdateWithoutFailurePatternsInput>
+}
+
 export type OrganizationCreateWithoutProjectsInput = {
   id?: string
   name: string
@@ -423,6 +465,8 @@ export type OrganizationCreateWithoutProjectsInput = {
   plan?: $Enums.OrganizationPlan
   owner?: Prisma.UserCreateNestedOneWithoutOrganizationInput
   members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutOrganizationInput
+  failurePatterns?: Prisma.FailurePatternCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutProjectsInput = {
@@ -434,6 +478,8 @@ export type OrganizationUncheckedCreateWithoutProjectsInput = {
   plan?: $Enums.OrganizationPlan
   owner?: Prisma.UserUncheckedCreateNestedOneWithoutOrganizationInput
   members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutOrganizationInput
+  failurePatterns?: Prisma.FailurePatternUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutProjectsInput = {
@@ -461,6 +507,8 @@ export type OrganizationUpdateWithoutProjectsInput = {
   plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   owner?: Prisma.UserUpdateOneWithoutOrganizationNestedInput
   members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutOrganizationNestedInput
+  failurePatterns?: Prisma.FailurePatternUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutProjectsInput = {
@@ -472,6 +520,8 @@ export type OrganizationUncheckedUpdateWithoutProjectsInput = {
   plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   owner?: Prisma.UserUncheckedUpdateOneWithoutOrganizationNestedInput
   members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  failurePatterns?: Prisma.FailurePatternUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutOwnerInput = {
@@ -483,6 +533,8 @@ export type OrganizationCreateWithoutOwnerInput = {
   plan?: $Enums.OrganizationPlan
   projects?: Prisma.ProjectCreateNestedManyWithoutOrganizationInput
   members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutOrganizationInput
+  failurePatterns?: Prisma.FailurePatternCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutOwnerInput = {
@@ -494,6 +546,8 @@ export type OrganizationUncheckedCreateWithoutOwnerInput = {
   plan?: $Enums.OrganizationPlan
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrganizationInput
   members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutOrganizationInput
+  failurePatterns?: Prisma.FailurePatternUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutOwnerInput = {
@@ -521,6 +575,8 @@ export type OrganizationUpdateWithoutOwnerInput = {
   plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   projects?: Prisma.ProjectUpdateManyWithoutOrganizationNestedInput
   members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutOrganizationNestedInput
+  failurePatterns?: Prisma.FailurePatternUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutOwnerInput = {
@@ -532,6 +588,8 @@ export type OrganizationUncheckedUpdateWithoutOwnerInput = {
   plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
   members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  failurePatterns?: Prisma.FailurePatternUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutMembersInput = {
@@ -543,6 +601,8 @@ export type OrganizationCreateWithoutMembersInput = {
   plan?: $Enums.OrganizationPlan
   projects?: Prisma.ProjectCreateNestedManyWithoutOrganizationInput
   owner?: Prisma.UserCreateNestedOneWithoutOrganizationInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutOrganizationInput
+  failurePatterns?: Prisma.FailurePatternCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutMembersInput = {
@@ -554,6 +614,8 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   plan?: $Enums.OrganizationPlan
   projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrganizationInput
   owner?: Prisma.UserUncheckedCreateNestedOneWithoutOrganizationInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutOrganizationInput
+  failurePatterns?: Prisma.FailurePatternUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutMembersInput = {
@@ -581,6 +643,8 @@ export type OrganizationUpdateWithoutMembersInput = {
   plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   projects?: Prisma.ProjectUpdateManyWithoutOrganizationNestedInput
   owner?: Prisma.UserUpdateOneWithoutOrganizationNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutOrganizationNestedInput
+  failurePatterns?: Prisma.FailurePatternUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutMembersInput = {
@@ -592,6 +656,144 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
   projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
   owner?: Prisma.UserUncheckedUpdateOneWithoutOrganizationNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  failurePatterns?: Prisma.FailurePatternUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutIncidentMemoriesInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
+  projects?: Prisma.ProjectCreateNestedManyWithoutOrganizationInput
+  owner?: Prisma.UserCreateNestedOneWithoutOrganizationInput
+  members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  failurePatterns?: Prisma.FailurePatternCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutIncidentMemoriesInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrganizationInput
+  owner?: Prisma.UserUncheckedCreateNestedOneWithoutOrganizationInput
+  members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  failurePatterns?: Prisma.FailurePatternUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutIncidentMemoriesInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutIncidentMemoriesInput, Prisma.OrganizationUncheckedCreateWithoutIncidentMemoriesInput>
+}
+
+export type OrganizationUpsertWithoutIncidentMemoriesInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutIncidentMemoriesInput, Prisma.OrganizationUncheckedUpdateWithoutIncidentMemoriesInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutIncidentMemoriesInput, Prisma.OrganizationUncheckedCreateWithoutIncidentMemoriesInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutIncidentMemoriesInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutIncidentMemoriesInput, Prisma.OrganizationUncheckedUpdateWithoutIncidentMemoriesInput>
+}
+
+export type OrganizationUpdateWithoutIncidentMemoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
+  projects?: Prisma.ProjectUpdateManyWithoutOrganizationNestedInput
+  owner?: Prisma.UserUpdateOneWithoutOrganizationNestedInput
+  members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  failurePatterns?: Prisma.FailurePatternUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutIncidentMemoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
+  owner?: Prisma.UserUncheckedUpdateOneWithoutOrganizationNestedInput
+  members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  failurePatterns?: Prisma.FailurePatternUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutFailurePatternsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
+  projects?: Prisma.ProjectCreateNestedManyWithoutOrganizationInput
+  owner?: Prisma.UserCreateNestedOneWithoutOrganizationInput
+  members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutFailurePatternsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrganizationInput
+  owner?: Prisma.UserUncheckedCreateNestedOneWithoutOrganizationInput
+  members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutFailurePatternsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutFailurePatternsInput, Prisma.OrganizationUncheckedCreateWithoutFailurePatternsInput>
+}
+
+export type OrganizationUpsertWithoutFailurePatternsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutFailurePatternsInput, Prisma.OrganizationUncheckedUpdateWithoutFailurePatternsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutFailurePatternsInput, Prisma.OrganizationUncheckedCreateWithoutFailurePatternsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutFailurePatternsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutFailurePatternsInput, Prisma.OrganizationUncheckedUpdateWithoutFailurePatternsInput>
+}
+
+export type OrganizationUpdateWithoutFailurePatternsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
+  projects?: Prisma.ProjectUpdateManyWithoutOrganizationNestedInput
+  owner?: Prisma.UserUpdateOneWithoutOrganizationNestedInput
+  members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutFailurePatternsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
+  owner?: Prisma.UserUncheckedUpdateOneWithoutOrganizationNestedInput
+  members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 
@@ -602,11 +804,15 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
 export type OrganizationCountOutputType = {
   projects: number
   members: number
+  incidentMemories: number
+  failurePatterns: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   projects?: boolean | OrganizationCountOutputTypeCountProjectsArgs
   members?: boolean | OrganizationCountOutputTypeCountMembersArgs
+  incidentMemories?: boolean | OrganizationCountOutputTypeCountIncidentMemoriesArgs
+  failurePatterns?: boolean | OrganizationCountOutputTypeCountFailurePatternsArgs
 }
 
 /**
@@ -633,6 +839,20 @@ export type OrganizationCountOutputTypeCountMembersArgs<ExtArgs extends runtime.
   where?: Prisma.OrganizationMemberWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountIncidentMemoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.IncidentMemoryWhereInput
+}
+
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountFailurePatternsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.FailurePatternWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -644,6 +864,8 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   projects?: boolean | Prisma.Organization$projectsArgs<ExtArgs>
   owner?: boolean | Prisma.Organization$ownerArgs<ExtArgs>
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
+  incidentMemories?: boolean | Prisma.Organization$incidentMemoriesArgs<ExtArgs>
+  failurePatterns?: boolean | Prisma.Organization$failurePatternsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -679,6 +901,8 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   projects?: boolean | Prisma.Organization$projectsArgs<ExtArgs>
   owner?: boolean | Prisma.Organization$ownerArgs<ExtArgs>
   members?: boolean | Prisma.Organization$membersArgs<ExtArgs>
+  incidentMemories?: boolean | Prisma.Organization$incidentMemoriesArgs<ExtArgs>
+  failurePatterns?: boolean | Prisma.Organization$failurePatternsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -690,6 +914,8 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     projects: Prisma.$ProjectPayload<ExtArgs>[]
     owner: Prisma.$UserPayload<ExtArgs> | null
     members: Prisma.$OrganizationMemberPayload<ExtArgs>[]
+    incidentMemories: Prisma.$IncidentMemoryPayload<ExtArgs>[]
+    failurePatterns: Prisma.$FailurePatternPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1095,6 +1321,8 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   projects<T extends Prisma.Organization$projectsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$projectsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   owner<T extends Prisma.Organization$ownerArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$ownerArgs<ExtArgs>>): Prisma.Prisma__UserClient<runtime.Types.Result.GetResult<Prisma.$UserPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   members<T extends Prisma.Organization$membersArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$membersArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$OrganizationMemberPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  incidentMemories<T extends Prisma.Organization$incidentMemoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$incidentMemoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncidentMemoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  failurePatterns<T extends Prisma.Organization$failurePatternsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$failurePatternsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FailurePatternPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -1587,6 +1815,54 @@ export type Organization$membersArgs<ExtArgs extends runtime.Types.Extensions.In
   take?: number
   skip?: number
   distinct?: Prisma.OrganizationMemberScalarFieldEnum | Prisma.OrganizationMemberScalarFieldEnum[]
+}
+
+/**
+ * Organization.incidentMemories
+ */
+export type Organization$incidentMemoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the IncidentMemory
+   */
+  select?: Prisma.IncidentMemorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the IncidentMemory
+   */
+  omit?: Prisma.IncidentMemoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.IncidentMemoryInclude<ExtArgs> | null
+  where?: Prisma.IncidentMemoryWhereInput
+  orderBy?: Prisma.IncidentMemoryOrderByWithRelationInput | Prisma.IncidentMemoryOrderByWithRelationInput[]
+  cursor?: Prisma.IncidentMemoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.IncidentMemoryScalarFieldEnum | Prisma.IncidentMemoryScalarFieldEnum[]
+}
+
+/**
+ * Organization.failurePatterns
+ */
+export type Organization$failurePatternsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the FailurePattern
+   */
+  select?: Prisma.FailurePatternSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the FailurePattern
+   */
+  omit?: Prisma.FailurePatternOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.FailurePatternInclude<ExtArgs> | null
+  where?: Prisma.FailurePatternWhereInput
+  orderBy?: Prisma.FailurePatternOrderByWithRelationInput | Prisma.FailurePatternOrderByWithRelationInput[]
+  cursor?: Prisma.FailurePatternWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.FailurePatternScalarFieldEnum | Prisma.FailurePatternScalarFieldEnum[]
 }
 
 /**

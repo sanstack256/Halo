@@ -17,6 +17,8 @@ model Organization {
   projects  Project[]
   owner     User?
   members   OrganizationMember[]
+  incidentMemories IncidentMemory[]
+  failurePatterns  FailurePattern[]
 }
 
 model Project {
@@ -52,6 +54,7 @@ model Project {
   investigations      Investigation[]
   feedbacks           Feedback[]
   repairCases         RepairCase[]
+  incidentMemories    IncidentMemory[]
 
   @@unique([organizationId, slug])
 }
@@ -517,6 +520,7 @@ model Investigation {
   verdicts        InvestigationVerdict[]
   activities      InvestigationActivity[]
   proposedRelations InvestigationProposedRelation[]
+  incidentMemory  IncidentMemory?
 
   @@index([projectId, createdAt])
   @@index([monitorId])
@@ -837,6 +841,68 @@ model InvestigationProposedRelation {
   user            User          @relation(fields: [authorId], references: [id], onDelete: Cascade)
 
   @@index([investigationId, createdAt])
+}
+
+// ---------------------------------------------------------------------------
+// Team Plan Pillar D: Organizational Failure Memory & Incident Intelligence
+// ---------------------------------------------------------------------------
+
+model IncidentMemory {
+  id                  String              @id @default(cuid())
+  investigationId     String              @unique
+  projectId           String
+  organizationId      String
+  fingerprint         String              // structural similarity fingerprint (service:operation:errorType)
+  title               String
+  normalizedTitle     String
+  primaryService      String
+  primaryOperation    String?
+  errorType           String?
+  rootCause           String?             // from canonical investigation (null if honest uncertainty)
+  confidenceScore     Float?
+  status              InvestigationStatus @default(COMPLETED)
+  affectedServices    String[]            @default([])
+  causalChainSummary  Json?               // snapshot of verified hops, roles, origin
+  topologyEdges       Json?               // snapshot of active dependency edges
+  evidenceReferences  String[]            @default([]) // event IDs linked to incident
+  humanVerdicts       Json?               // snapshot of peer verdicts with attribution
+  recommendations     Json?               // snapshot of recommendations
+  memoryVersion       Int                 @default(1)
+  createdAt           DateTime            @default(now())
+  updatedAt           DateTime            @updatedAt
+
+  investigation       Investigation       @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  project             Project             @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  organization        Organization        @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, createdAt])
+  @@index([projectId, createdAt])
+  @@index([organizationId, fingerprint])
+  @@index([primaryService])
+}
+
+model FailurePattern {
+  id                  String        @id @default(cuid())
+  organizationId      String
+  projectId           String?       // null if cross-project pattern within org
+  patternKey          String        // deterministic pattern identifier (e.g. service:errorType)
+  title               String
+  primaryService      String
+  affectedServices    String[]      @default([])
+  incidentCount       Int           @default(1)
+  firstSeenAt         DateTime
+  lastSeenAt          DateTime
+  commonCausalSummary Json?
+  investigationIds    String[]      @default([])
+  version             Int           @default(1)
+  createdAt           DateTime      @default(now())
+  updatedAt           DateTime      @updatedAt
+
+  organization        Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  @@unique([organizationId, patternKey])
+  @@index([organizationId, lastSeenAt])
+  @@index([primaryService])
 }
 
 

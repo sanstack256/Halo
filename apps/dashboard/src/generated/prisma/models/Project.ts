@@ -310,6 +310,7 @@ export type ProjectWhereInput = {
   investigations?: Prisma.InvestigationListRelationFilter
   feedbacks?: Prisma.FeedbackListRelationFilter
   repairCases?: Prisma.RepairCaseListRelationFilter
+  incidentMemories?: Prisma.IncidentMemoryListRelationFilter
 }
 
 export type ProjectOrderByWithRelationInput = {
@@ -345,6 +346,7 @@ export type ProjectOrderByWithRelationInput = {
   investigations?: Prisma.InvestigationOrderByRelationAggregateInput
   feedbacks?: Prisma.FeedbackOrderByRelationAggregateInput
   repairCases?: Prisma.RepairCaseOrderByRelationAggregateInput
+  incidentMemories?: Prisma.IncidentMemoryOrderByRelationAggregateInput
 }
 
 export type ProjectWhereUniqueInput = Prisma.AtLeast<{
@@ -384,6 +386,7 @@ export type ProjectWhereUniqueInput = Prisma.AtLeast<{
   investigations?: Prisma.InvestigationListRelationFilter
   feedbacks?: Prisma.FeedbackListRelationFilter
   repairCases?: Prisma.RepairCaseListRelationFilter
+  incidentMemories?: Prisma.IncidentMemoryListRelationFilter
 }, "id" | "organizationId_slug">
 
 export type ProjectOrderByWithAggregationInput = {
@@ -470,6 +473,7 @@ export type ProjectCreateInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateInput = {
@@ -504,6 +508,7 @@ export type ProjectUncheckedCreateInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUpdateInput = {
@@ -538,6 +543,7 @@ export type ProjectUpdateInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateInput = {
@@ -572,6 +578,7 @@ export type ProjectUncheckedUpdateInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyInput = {
@@ -941,6 +948,20 @@ export type ProjectUpdateOneRequiredWithoutRepairCasesNestedInput = {
   update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutRepairCasesInput, Prisma.ProjectUpdateWithoutRepairCasesInput>, Prisma.ProjectUncheckedUpdateWithoutRepairCasesInput>
 }
 
+export type ProjectCreateNestedOneWithoutIncidentMemoriesInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutIncidentMemoriesInput, Prisma.ProjectUncheckedCreateWithoutIncidentMemoriesInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutIncidentMemoriesInput
+  connect?: Prisma.ProjectWhereUniqueInput
+}
+
+export type ProjectUpdateOneRequiredWithoutIncidentMemoriesNestedInput = {
+  create?: Prisma.XOR<Prisma.ProjectCreateWithoutIncidentMemoriesInput, Prisma.ProjectUncheckedCreateWithoutIncidentMemoriesInput>
+  connectOrCreate?: Prisma.ProjectCreateOrConnectWithoutIncidentMemoriesInput
+  upsert?: Prisma.ProjectUpsertWithoutIncidentMemoriesInput
+  connect?: Prisma.ProjectWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.ProjectUpdateToOneWithWhereWithoutIncidentMemoriesInput, Prisma.ProjectUpdateWithoutIncidentMemoriesInput>, Prisma.ProjectUncheckedUpdateWithoutIncidentMemoriesInput>
+}
+
 export type ProjectCreateWithoutOrganizationInput = {
   id?: string
   name: string
@@ -972,6 +993,7 @@ export type ProjectCreateWithoutOrganizationInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutOrganizationInput = {
@@ -1005,6 +1027,7 @@ export type ProjectUncheckedCreateWithoutOrganizationInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutOrganizationInput = {
@@ -1090,6 +1113,7 @@ export type ProjectCreateWithoutEnvironmentsInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
@@ -1123,6 +1147,7 @@ export type ProjectUncheckedCreateWithoutEnvironmentsInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutEnvironmentsInput = {
@@ -1172,6 +1197,7 @@ export type ProjectUpdateWithoutEnvironmentsInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
@@ -1205,6 +1231,7 @@ export type ProjectUncheckedUpdateWithoutEnvironmentsInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutApiKeysInput = {
@@ -1238,6 +1265,7 @@ export type ProjectCreateWithoutApiKeysInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutApiKeysInput = {
@@ -1271,6 +1299,7 @@ export type ProjectUncheckedCreateWithoutApiKeysInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutApiKeysInput = {
@@ -1320,6 +1349,7 @@ export type ProjectUpdateWithoutApiKeysInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutApiKeysInput = {
@@ -1353,6 +1383,7 @@ export type ProjectUncheckedUpdateWithoutApiKeysInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutEventsInput = {
@@ -1386,6 +1417,7 @@ export type ProjectCreateWithoutEventsInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutEventsInput = {
@@ -1419,6 +1451,7 @@ export type ProjectUncheckedCreateWithoutEventsInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutEventsInput = {
@@ -1468,6 +1501,7 @@ export type ProjectUpdateWithoutEventsInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutEventsInput = {
@@ -1501,6 +1535,7 @@ export type ProjectUncheckedUpdateWithoutEventsInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutTelemetrySessionsInput = {
@@ -1534,6 +1569,7 @@ export type ProjectCreateWithoutTelemetrySessionsInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutTelemetrySessionsInput = {
@@ -1567,6 +1603,7 @@ export type ProjectUncheckedCreateWithoutTelemetrySessionsInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutTelemetrySessionsInput = {
@@ -1616,6 +1653,7 @@ export type ProjectUpdateWithoutTelemetrySessionsInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutTelemetrySessionsInput = {
@@ -1649,6 +1687,7 @@ export type ProjectUncheckedUpdateWithoutTelemetrySessionsInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutReleasesInput = {
@@ -1682,6 +1721,7 @@ export type ProjectCreateWithoutReleasesInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutReleasesInput = {
@@ -1715,6 +1755,7 @@ export type ProjectUncheckedCreateWithoutReleasesInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutReleasesInput = {
@@ -1764,6 +1805,7 @@ export type ProjectUpdateWithoutReleasesInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutReleasesInput = {
@@ -1797,6 +1839,7 @@ export type ProjectUncheckedUpdateWithoutReleasesInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutIssuesInput = {
@@ -1830,6 +1873,7 @@ export type ProjectCreateWithoutIssuesInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutIssuesInput = {
@@ -1863,6 +1907,7 @@ export type ProjectUncheckedCreateWithoutIssuesInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutIssuesInput = {
@@ -1912,6 +1957,7 @@ export type ProjectUpdateWithoutIssuesInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutIssuesInput = {
@@ -1945,6 +1991,7 @@ export type ProjectUncheckedUpdateWithoutIssuesInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutReplaySessionsInput = {
@@ -1978,6 +2025,7 @@ export type ProjectCreateWithoutReplaySessionsInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutReplaySessionsInput = {
@@ -2011,6 +2059,7 @@ export type ProjectUncheckedCreateWithoutReplaySessionsInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutReplaySessionsInput = {
@@ -2060,6 +2109,7 @@ export type ProjectUpdateWithoutReplaySessionsInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutReplaySessionsInput = {
@@ -2093,6 +2143,7 @@ export type ProjectUncheckedUpdateWithoutReplaySessionsInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutFeedbacksInput = {
@@ -2126,6 +2177,7 @@ export type ProjectCreateWithoutFeedbacksInput = {
   monitors?: Prisma.MonitorCreateNestedManyWithoutProjectInput
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutFeedbacksInput = {
@@ -2159,6 +2211,7 @@ export type ProjectUncheckedCreateWithoutFeedbacksInput = {
   monitors?: Prisma.MonitorUncheckedCreateNestedManyWithoutProjectInput
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutFeedbacksInput = {
@@ -2208,6 +2261,7 @@ export type ProjectUpdateWithoutFeedbacksInput = {
   monitors?: Prisma.MonitorUpdateManyWithoutProjectNestedInput
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutFeedbacksInput = {
@@ -2241,6 +2295,7 @@ export type ProjectUncheckedUpdateWithoutFeedbacksInput = {
   monitors?: Prisma.MonitorUncheckedUpdateManyWithoutProjectNestedInput
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutMonitorsInput = {
@@ -2274,6 +2329,7 @@ export type ProjectCreateWithoutMonitorsInput = {
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutMonitorsInput = {
@@ -2307,6 +2363,7 @@ export type ProjectUncheckedCreateWithoutMonitorsInput = {
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutMonitorsInput = {
@@ -2356,6 +2413,7 @@ export type ProjectUpdateWithoutMonitorsInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutMonitorsInput = {
@@ -2389,6 +2447,7 @@ export type ProjectUncheckedUpdateWithoutMonitorsInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutInvestigationsInput = {
@@ -2422,6 +2481,7 @@ export type ProjectCreateWithoutInvestigationsInput = {
   monitors?: Prisma.MonitorCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutInvestigationsInput = {
@@ -2455,6 +2515,7 @@ export type ProjectUncheckedCreateWithoutInvestigationsInput = {
   monitors?: Prisma.MonitorUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
   repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutInvestigationsInput = {
@@ -2504,6 +2565,7 @@ export type ProjectUpdateWithoutInvestigationsInput = {
   monitors?: Prisma.MonitorUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutInvestigationsInput = {
@@ -2537,6 +2599,7 @@ export type ProjectUncheckedUpdateWithoutInvestigationsInput = {
   monitors?: Prisma.MonitorUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateWithoutRepairCasesInput = {
@@ -2570,6 +2633,7 @@ export type ProjectCreateWithoutRepairCasesInput = {
   monitors?: Prisma.MonitorCreateNestedManyWithoutProjectInput
   investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectUncheckedCreateWithoutRepairCasesInput = {
@@ -2603,6 +2667,7 @@ export type ProjectUncheckedCreateWithoutRepairCasesInput = {
   monitors?: Prisma.MonitorUncheckedCreateNestedManyWithoutProjectInput
   investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
   feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutProjectInput
 }
 
 export type ProjectCreateOrConnectWithoutRepairCasesInput = {
@@ -2652,6 +2717,7 @@ export type ProjectUpdateWithoutRepairCasesInput = {
   monitors?: Prisma.MonitorUpdateManyWithoutProjectNestedInput
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutRepairCasesInput = {
@@ -2685,6 +2751,159 @@ export type ProjectUncheckedUpdateWithoutRepairCasesInput = {
   monitors?: Prisma.MonitorUncheckedUpdateManyWithoutProjectNestedInput
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectCreateWithoutIncidentMemoriesInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: string | null
+  githubRepoName?: string | null
+  githubToken?: string | null
+  githubDefaultBranch?: string | null
+  githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
+  apiKeys?: Prisma.ApiKeyCreateNestedManyWithoutProjectInput
+  environments?: Prisma.EnvironmentCreateNestedManyWithoutProjectInput
+  events?: Prisma.EventCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueCreateNestedManyWithoutProjectInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutProjectsInput
+  releases?: Prisma.ReleaseCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionCreateNestedManyWithoutProjectInput
+  monitors?: Prisma.MonitorCreateNestedManyWithoutProjectInput
+  investigations?: Prisma.InvestigationCreateNestedManyWithoutProjectInput
+  feedbacks?: Prisma.FeedbackCreateNestedManyWithoutProjectInput
+  repairCases?: Prisma.RepairCaseCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectUncheckedCreateWithoutIncidentMemoriesInput = {
+  id?: string
+  name: string
+  slug: string
+  organizationId: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  description?: string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: string | null
+  githubRepoName?: string | null
+  githubToken?: string | null
+  githubDefaultBranch?: string | null
+  githubInstallationId?: string | null
+  aiProvider?: $Enums.AiProvider
+  aiEncryptedKey?: string | null
+  aiKeyPrefix?: string | null
+  aiKeySuffix?: string | null
+  aiModel?: string | null
+  aiStatus?: $Enums.AiConnectionStatus
+  aiLastTestedAt?: Date | string | null
+  apiKeys?: Prisma.ApiKeyUncheckedCreateNestedManyWithoutProjectInput
+  environments?: Prisma.EnvironmentUncheckedCreateNestedManyWithoutProjectInput
+  events?: Prisma.EventUncheckedCreateNestedManyWithoutProjectInput
+  issues?: Prisma.IssueUncheckedCreateNestedManyWithoutProjectInput
+  releases?: Prisma.ReleaseUncheckedCreateNestedManyWithoutProjectInput
+  replaySessions?: Prisma.ReplaySessionUncheckedCreateNestedManyWithoutProjectInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedCreateNestedManyWithoutProjectInput
+  monitors?: Prisma.MonitorUncheckedCreateNestedManyWithoutProjectInput
+  investigations?: Prisma.InvestigationUncheckedCreateNestedManyWithoutProjectInput
+  feedbacks?: Prisma.FeedbackUncheckedCreateNestedManyWithoutProjectInput
+  repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutProjectInput
+}
+
+export type ProjectCreateOrConnectWithoutIncidentMemoriesInput = {
+  where: Prisma.ProjectWhereUniqueInput
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutIncidentMemoriesInput, Prisma.ProjectUncheckedCreateWithoutIncidentMemoriesInput>
+}
+
+export type ProjectUpsertWithoutIncidentMemoriesInput = {
+  update: Prisma.XOR<Prisma.ProjectUpdateWithoutIncidentMemoriesInput, Prisma.ProjectUncheckedUpdateWithoutIncidentMemoriesInput>
+  create: Prisma.XOR<Prisma.ProjectCreateWithoutIncidentMemoriesInput, Prisma.ProjectUncheckedCreateWithoutIncidentMemoriesInput>
+  where?: Prisma.ProjectWhereInput
+}
+
+export type ProjectUpdateToOneWithWhereWithoutIncidentMemoriesInput = {
+  where?: Prisma.ProjectWhereInput
+  data: Prisma.XOR<Prisma.ProjectUpdateWithoutIncidentMemoriesInput, Prisma.ProjectUncheckedUpdateWithoutIncidentMemoriesInput>
+}
+
+export type ProjectUpdateWithoutIncidentMemoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  apiKeys?: Prisma.ApiKeyUpdateManyWithoutProjectNestedInput
+  environments?: Prisma.EnvironmentUpdateManyWithoutProjectNestedInput
+  events?: Prisma.EventUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUpdateManyWithoutProjectNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutProjectsNestedInput
+  releases?: Prisma.ReleaseUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUpdateManyWithoutProjectNestedInput
+  monitors?: Prisma.MonitorUpdateManyWithoutProjectNestedInput
+  investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
+  feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
+  repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+}
+
+export type ProjectUncheckedUpdateWithoutIncidentMemoriesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  description?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  replayConfig?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  githubRepoOwner?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubRepoName?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubToken?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubDefaultBranch?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  githubInstallationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiProvider?: Prisma.EnumAiProviderFieldUpdateOperationsInput | $Enums.AiProvider
+  aiEncryptedKey?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeyPrefix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiKeySuffix?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiModel?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  aiStatus?: Prisma.EnumAiConnectionStatusFieldUpdateOperationsInput | $Enums.AiConnectionStatus
+  aiLastTestedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  apiKeys?: Prisma.ApiKeyUncheckedUpdateManyWithoutProjectNestedInput
+  environments?: Prisma.EnvironmentUncheckedUpdateManyWithoutProjectNestedInput
+  events?: Prisma.EventUncheckedUpdateManyWithoutProjectNestedInput
+  issues?: Prisma.IssueUncheckedUpdateManyWithoutProjectNestedInput
+  releases?: Prisma.ReleaseUncheckedUpdateManyWithoutProjectNestedInput
+  replaySessions?: Prisma.ReplaySessionUncheckedUpdateManyWithoutProjectNestedInput
+  telemetrySessions?: Prisma.TelemetrySessionUncheckedUpdateManyWithoutProjectNestedInput
+  monitors?: Prisma.MonitorUncheckedUpdateManyWithoutProjectNestedInput
+  investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
+  feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
+  repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectCreateManyOrganizationInput = {
@@ -2740,6 +2959,7 @@ export type ProjectUpdateWithoutOrganizationInput = {
   investigations?: Prisma.InvestigationUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateWithoutOrganizationInput = {
@@ -2773,6 +2993,7 @@ export type ProjectUncheckedUpdateWithoutOrganizationInput = {
   investigations?: Prisma.InvestigationUncheckedUpdateManyWithoutProjectNestedInput
   feedbacks?: Prisma.FeedbackUncheckedUpdateManyWithoutProjectNestedInput
   repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutProjectNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutProjectNestedInput
 }
 
 export type ProjectUncheckedUpdateManyWithoutOrganizationInput = {
@@ -2814,6 +3035,7 @@ export type ProjectCountOutputType = {
   investigations: number
   feedbacks: number
   repairCases: number
+  incidentMemories: number
 }
 
 export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2828,6 +3050,7 @@ export type ProjectCountOutputTypeSelect<ExtArgs extends runtime.Types.Extension
   investigations?: boolean | ProjectCountOutputTypeCountInvestigationsArgs
   feedbacks?: boolean | ProjectCountOutputTypeCountFeedbacksArgs
   repairCases?: boolean | ProjectCountOutputTypeCountRepairCasesArgs
+  incidentMemories?: boolean | ProjectCountOutputTypeCountIncidentMemoriesArgs
 }
 
 /**
@@ -2917,6 +3140,13 @@ export type ProjectCountOutputTypeCountRepairCasesArgs<ExtArgs extends runtime.T
   where?: Prisma.RepairCaseWhereInput
 }
 
+/**
+ * ProjectCountOutputType without action
+ */
+export type ProjectCountOutputTypeCountIncidentMemoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.IncidentMemoryWhereInput
+}
+
 
 export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2951,6 +3181,7 @@ export type ProjectSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs 
   investigations?: boolean | Prisma.Project$investigationsArgs<ExtArgs>
   feedbacks?: boolean | Prisma.Project$feedbacksArgs<ExtArgs>
   repairCases?: boolean | Prisma.Project$repairCasesArgs<ExtArgs>
+  incidentMemories?: boolean | Prisma.Project$incidentMemoriesArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["project"]>
 
@@ -3039,6 +3270,7 @@ export type ProjectInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs
   investigations?: boolean | Prisma.Project$investigationsArgs<ExtArgs>
   feedbacks?: boolean | Prisma.Project$feedbacksArgs<ExtArgs>
   repairCases?: boolean | Prisma.Project$repairCasesArgs<ExtArgs>
+  incidentMemories?: boolean | Prisma.Project$incidentMemoriesArgs<ExtArgs>
   _count?: boolean | Prisma.ProjectCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type ProjectIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -3063,6 +3295,7 @@ export type $ProjectPayload<ExtArgs extends runtime.Types.Extensions.InternalArg
     investigations: Prisma.$InvestigationPayload<ExtArgs>[]
     feedbacks: Prisma.$FeedbackPayload<ExtArgs>[]
     repairCases: Prisma.$RepairCasePayload<ExtArgs>[]
+    incidentMemories: Prisma.$IncidentMemoryPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3491,6 +3724,7 @@ export interface Prisma__ProjectClient<T, Null = never, ExtArgs extends runtime.
   investigations<T extends Prisma.Project$investigationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$investigationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvestigationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   feedbacks<T extends Prisma.Project$feedbacksArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$feedbacksArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$FeedbackPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   repairCases<T extends Prisma.Project$repairCasesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$repairCasesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RepairCasePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  incidentMemories<T extends Prisma.Project$incidentMemoriesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Project$incidentMemoriesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$IncidentMemoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -4202,6 +4436,30 @@ export type Project$repairCasesArgs<ExtArgs extends runtime.Types.Extensions.Int
   take?: number
   skip?: number
   distinct?: Prisma.RepairCaseScalarFieldEnum | Prisma.RepairCaseScalarFieldEnum[]
+}
+
+/**
+ * Project.incidentMemories
+ */
+export type Project$incidentMemoriesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the IncidentMemory
+   */
+  select?: Prisma.IncidentMemorySelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the IncidentMemory
+   */
+  omit?: Prisma.IncidentMemoryOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.IncidentMemoryInclude<ExtArgs> | null
+  where?: Prisma.IncidentMemoryWhereInput
+  orderBy?: Prisma.IncidentMemoryOrderByWithRelationInput | Prisma.IncidentMemoryOrderByWithRelationInput[]
+  cursor?: Prisma.IncidentMemoryWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.IncidentMemoryScalarFieldEnum | Prisma.IncidentMemoryScalarFieldEnum[]
 }
 
 /**

@@ -162,3 +162,13 @@ export type InvestigationActivity = Prisma.InvestigationActivityModel
  * 
  */
 export type InvestigationProposedRelation = Prisma.InvestigationProposedRelationModel
+/**
+ * Model IncidentMemory
+ * 
+ */
+export type IncidentMemory = Prisma.IncidentMemoryModel
+/**
+ * Model FailurePattern
+ * 
+ */
+export type FailurePattern = Prisma.FailurePatternModel

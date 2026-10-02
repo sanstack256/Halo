@@ -425,7 +425,9 @@ export const ModelName = {
   InvestigationComment: 'InvestigationComment',
   InvestigationVerdict: 'InvestigationVerdict',
   InvestigationActivity: 'InvestigationActivity',
-  InvestigationProposedRelation: 'InvestigationProposedRelation'
+  InvestigationProposedRelation: 'InvestigationProposedRelation',
+  IncidentMemory: 'IncidentMemory',
+  FailurePattern: 'FailurePattern'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -441,7 +443,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation" | "organizationMember" | "investigationComment" | "investigationVerdict" | "investigationActivity" | "investigationProposedRelation"
+    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation" | "organizationMember" | "investigationComment" | "investigationVerdict" | "investigationActivity" | "investigationProposedRelation" | "incidentMemory" | "failurePattern"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2591,6 +2593,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    IncidentMemory: {
+      payload: Prisma.$IncidentMemoryPayload<ExtArgs>
+      fields: Prisma.IncidentMemoryFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.IncidentMemoryFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IncidentMemoryPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.IncidentMemoryFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IncidentMemoryPayload>
+        }
+        findFirst: {
+          args: Prisma.IncidentMemoryFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IncidentMemoryPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.IncidentMemoryFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IncidentMemoryPayload>
+        }
+        findMany: {
+          args: Prisma.IncidentMemoryFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IncidentMemoryPayload>[]
+        }
+        create: {
+          args: Prisma.IncidentMemoryCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IncidentMemoryPayload>
+        }
+        createMany: {
+          args: Prisma.IncidentMemoryCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.IncidentMemoryCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IncidentMemoryPayload>[]
+        }
+        delete: {
+          args: Prisma.IncidentMemoryDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IncidentMemoryPayload>
+        }
+        update: {
+          args: Prisma.IncidentMemoryUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IncidentMemoryPayload>
+        }
+        deleteMany: {
+          args: Prisma.IncidentMemoryDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.IncidentMemoryUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.IncidentMemoryUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IncidentMemoryPayload>[]
+        }
+        upsert: {
+          args: Prisma.IncidentMemoryUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$IncidentMemoryPayload>
+        }
+        aggregate: {
+          args: Prisma.IncidentMemoryAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateIncidentMemory>
+        }
+        groupBy: {
+          args: Prisma.IncidentMemoryGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.IncidentMemoryGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.IncidentMemoryCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.IncidentMemoryCountAggregateOutputType> | number
+        }
+      }
+    }
+    FailurePattern: {
+      payload: Prisma.$FailurePatternPayload<ExtArgs>
+      fields: Prisma.FailurePatternFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.FailurePatternFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FailurePatternPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.FailurePatternFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FailurePatternPayload>
+        }
+        findFirst: {
+          args: Prisma.FailurePatternFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FailurePatternPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.FailurePatternFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FailurePatternPayload>
+        }
+        findMany: {
+          args: Prisma.FailurePatternFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FailurePatternPayload>[]
+        }
+        create: {
+          args: Prisma.FailurePatternCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FailurePatternPayload>
+        }
+        createMany: {
+          args: Prisma.FailurePatternCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.FailurePatternCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FailurePatternPayload>[]
+        }
+        delete: {
+          args: Prisma.FailurePatternDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FailurePatternPayload>
+        }
+        update: {
+          args: Prisma.FailurePatternUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FailurePatternPayload>
+        }
+        deleteMany: {
+          args: Prisma.FailurePatternDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.FailurePatternUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.FailurePatternUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FailurePatternPayload>[]
+        }
+        upsert: {
+          args: Prisma.FailurePatternUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$FailurePatternPayload>
+        }
+        aggregate: {
+          args: Prisma.FailurePatternAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateFailurePattern>
+        }
+        groupBy: {
+          args: Prisma.FailurePatternGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FailurePatternGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.FailurePatternCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.FailurePatternCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3169,6 +3319,55 @@ export const InvestigationProposedRelationScalarFieldEnum = {
 } as const
 
 export type InvestigationProposedRelationScalarFieldEnum = (typeof InvestigationProposedRelationScalarFieldEnum)[keyof typeof InvestigationProposedRelationScalarFieldEnum]
+
+
+export const IncidentMemoryScalarFieldEnum = {
+  id: 'id',
+  investigationId: 'investigationId',
+  projectId: 'projectId',
+  organizationId: 'organizationId',
+  fingerprint: 'fingerprint',
+  title: 'title',
+  normalizedTitle: 'normalizedTitle',
+  primaryService: 'primaryService',
+  primaryOperation: 'primaryOperation',
+  errorType: 'errorType',
+  rootCause: 'rootCause',
+  confidenceScore: 'confidenceScore',
+  status: 'status',
+  affectedServices: 'affectedServices',
+  causalChainSummary: 'causalChainSummary',
+  topologyEdges: 'topologyEdges',
+  evidenceReferences: 'evidenceReferences',
+  humanVerdicts: 'humanVerdicts',
+  recommendations: 'recommendations',
+  memoryVersion: 'memoryVersion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IncidentMemoryScalarFieldEnum = (typeof IncidentMemoryScalarFieldEnum)[keyof typeof IncidentMemoryScalarFieldEnum]
+
+
+export const FailurePatternScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  patternKey: 'patternKey',
+  title: 'title',
+  primaryService: 'primaryService',
+  affectedServices: 'affectedServices',
+  incidentCount: 'incidentCount',
+  firstSeenAt: 'firstSeenAt',
+  lastSeenAt: 'lastSeenAt',
+  commonCausalSummary: 'commonCausalSummary',
+  investigationIds: 'investigationIds',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FailurePatternScalarFieldEnum = (typeof FailurePatternScalarFieldEnum)[keyof typeof FailurePatternScalarFieldEnum]
 
 
 export const SortOrder = {
@@ -3803,6 +4002,8 @@ export type GlobalOmitConfig = {
   investigationVerdict?: Prisma.InvestigationVerdictOmit
   investigationActivity?: Prisma.InvestigationActivityOmit
   investigationProposedRelation?: Prisma.InvestigationProposedRelationOmit
+  incidentMemory?: Prisma.IncidentMemoryOmit
+  failurePattern?: Prisma.FailurePatternOmit
 }
 
 /* Types for Logging */

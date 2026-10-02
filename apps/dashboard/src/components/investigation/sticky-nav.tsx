@@ -5,6 +5,7 @@ import {
     Activity,
     FileText,
     GitBranch,
+    History,
     Layers,
     Network,
     Users,
@@ -62,6 +63,13 @@ const CATEGORIES: CategoryNavItem[] = [
         targetSectionId: "section-regression",
         sectionIds: ["section-regression"],
         icon: GitBranch,
+    },
+    {
+        id: "history",
+        label: "History",
+        targetSectionId: "historical-memory",
+        sectionIds: ["historical-memory"],
+        icon: History,
     },
     {
         id: "timeline",

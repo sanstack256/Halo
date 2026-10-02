@@ -91,6 +91,7 @@ import { getPersistedRecommendation } from "@/actions/fix-recommendation";
 import { DifferentialTraceView } from "@/components/investigation/differential-trace-view";
 import { ServicePropagationView } from "@/components/topology/service-propagation-view";
 import { InvestigationCollaborativeRoom } from "@/components/investigation/collaboration/investigation-collaborative-room";
+import { HistoricalContextSection } from "@/components/investigation/memory/historical-context-section";
 import { getInvestigationCollaborationState } from "@/actions/collaboration";
 import { getSession } from "@/lib/session";
 import { planHasCapability } from "@/lib/capabilities";
@@ -410,6 +411,10 @@ export default async function InvestigationPage({
             (projectRecord?.organization?.plan as any) || "FREE",
             "TEAM_INVESTIGATION_ROOMS"
         );
+        const isTeamMemoryPlan = planHasCapability(
+            (projectRecord?.organization?.plan as any) || "FREE",
+            "TEAM_ORGANIZATIONAL_MEMORY"
+        );
 
         // Ensure canonical durable Investigation record exists in database
         let investigationRecord = monitorContext?.investigationRecord;
@@ -465,6 +470,7 @@ export default async function InvestigationPage({
                 isTeamPlan={isTeamPlan}
                 isTeamTopologyPlan={isTeamTopologyPlan}
                 isTeamCollaborationPlan={isTeamCollaborationPlan}
+                isTeamMemoryPlan={isTeamMemoryPlan}
                 investigationId={investigationRecord?.id}
                 initialCollaborationState={initialCollaborationState}
                 currentUserId={session?.user?.id}
@@ -505,6 +511,7 @@ function InvestigationView({
     isTeamPlan = false,
     isTeamTopologyPlan = false,
     isTeamCollaborationPlan = false,
+    isTeamMemoryPlan = false,
     investigationId,
     initialCollaborationState,
     currentUserId,
@@ -597,6 +604,7 @@ function InvestigationView({
     isTeamPlan?: boolean;
     isTeamTopologyPlan?: boolean;
     isTeamCollaborationPlan?: boolean;
+    isTeamMemoryPlan?: boolean;
     investigationId?: string;
     initialCollaborationState?: any;
     currentUserId?: string;
@@ -1601,6 +1609,14 @@ function InvestigationView({
                 initialRecommendationId={persistedRecommendation?.id}
                 modelName={persistedRecommendation?.modelName || customModelName || "Halo Engine"}
             />
+
+            {/* H. HISTORICAL FAILURE MEMORY (PHASE 5 / PILLAR D) */}
+            {isTeamMemoryPlan && investigationId && (
+                <HistoricalContextSection
+                    investigationId={investigationId}
+                    projectId={projectId}
+                />
+            )}
         </div>
     );
 }

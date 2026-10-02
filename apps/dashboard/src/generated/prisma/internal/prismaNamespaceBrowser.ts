@@ -79,7 +79,9 @@ export const ModelName = {
   InvestigationComment: 'InvestigationComment',
   InvestigationVerdict: 'InvestigationVerdict',
   InvestigationActivity: 'InvestigationActivity',
-  InvestigationProposedRelation: 'InvestigationProposedRelation'
+  InvestigationProposedRelation: 'InvestigationProposedRelation',
+  IncidentMemory: 'IncidentMemory',
+  FailurePattern: 'FailurePattern'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -637,6 +639,55 @@ export const InvestigationProposedRelationScalarFieldEnum = {
 } as const
 
 export type InvestigationProposedRelationScalarFieldEnum = (typeof InvestigationProposedRelationScalarFieldEnum)[keyof typeof InvestigationProposedRelationScalarFieldEnum]
+
+
+export const IncidentMemoryScalarFieldEnum = {
+  id: 'id',
+  investigationId: 'investigationId',
+  projectId: 'projectId',
+  organizationId: 'organizationId',
+  fingerprint: 'fingerprint',
+  title: 'title',
+  normalizedTitle: 'normalizedTitle',
+  primaryService: 'primaryService',
+  primaryOperation: 'primaryOperation',
+  errorType: 'errorType',
+  rootCause: 'rootCause',
+  confidenceScore: 'confidenceScore',
+  status: 'status',
+  affectedServices: 'affectedServices',
+  causalChainSummary: 'causalChainSummary',
+  topologyEdges: 'topologyEdges',
+  evidenceReferences: 'evidenceReferences',
+  humanVerdicts: 'humanVerdicts',
+  recommendations: 'recommendations',
+  memoryVersion: 'memoryVersion',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type IncidentMemoryScalarFieldEnum = (typeof IncidentMemoryScalarFieldEnum)[keyof typeof IncidentMemoryScalarFieldEnum]
+
+
+export const FailurePatternScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  patternKey: 'patternKey',
+  title: 'title',
+  primaryService: 'primaryService',
+  affectedServices: 'affectedServices',
+  incidentCount: 'incidentCount',
+  firstSeenAt: 'firstSeenAt',
+  lastSeenAt: 'lastSeenAt',
+  commonCausalSummary: 'commonCausalSummary',
+  investigationIds: 'investigationIds',
+  version: 'version',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type FailurePatternScalarFieldEnum = (typeof FailurePatternScalarFieldEnum)[keyof typeof FailurePatternScalarFieldEnum]
 
 
 export const SortOrder = {
