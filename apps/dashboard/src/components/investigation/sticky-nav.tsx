@@ -11,6 +11,7 @@ import {
     Users,
     Wrench,
     ShieldCheck,
+    Sparkles,
 } from "lucide-react";
 
 interface CategoryNavItem {
@@ -22,6 +23,13 @@ interface CategoryNavItem {
 }
 
 const CATEGORIES: CategoryNavItem[] = [
+    {
+        id: "synthesis",
+        label: "Synthesis",
+        targetSectionId: "section-evidence-synthesis",
+        sectionIds: ["section-evidence-synthesis"],
+        icon: Sparkles,
+    },
     {
         id: "collaboration",
         label: "Live Room",

@@ -94,6 +94,7 @@ import { InvestigationCollaborativeRoom } from "@/components/investigation/colla
 import { HistoricalContextSection } from "@/components/investigation/memory/historical-context-section";
 import { OwnershipContextPanel } from "@/components/investigation/ownership/ownership-context-panel";
 import { ChangeIntelligencePanel } from "@/components/investigation/changes/change-intelligence-panel";
+import { EvidenceSynthesisPanel } from "@/components/investigation/synthesis/evidence-synthesis-panel";
 import { getInvestigationCollaborationState } from "@/actions/collaboration";
 import { getSession } from "@/lib/session";
 import { planHasCapability } from "@/lib/capabilities";
@@ -425,6 +426,10 @@ export default async function InvestigationPage({
             (projectRecord?.organization?.plan as any) || "FREE",
             "TEAM_CHANGE_INTELLIGENCE"
         );
+        const isTeamSynthesisPlan = planHasCapability(
+            (projectRecord?.organization?.plan as any) || "FREE",
+            "TEAM_EVIDENCE_SYNTHESIS"
+        );
 
         // Ensure canonical durable Investigation record exists in database
         let investigationRecord = monitorContext?.investigationRecord;
@@ -483,6 +488,7 @@ export default async function InvestigationPage({
                 isTeamMemoryPlan={isTeamMemoryPlan}
                 isTeamOwnershipPlan={isTeamOwnershipPlan}
                 isTeamChangePlan={isTeamChangePlan}
+                isTeamSynthesisPlan={isTeamSynthesisPlan}
                 investigationId={investigationRecord?.id}
                 initialCollaborationState={initialCollaborationState}
                 currentUserId={session?.user?.id}
@@ -526,6 +532,7 @@ function InvestigationView({
     isTeamMemoryPlan = false,
     isTeamOwnershipPlan = false,
     isTeamChangePlan = false,
+    isTeamSynthesisPlan = false,
     investigationId,
     initialCollaborationState,
     currentUserId,
@@ -621,6 +628,7 @@ function InvestigationView({
     isTeamMemoryPlan?: boolean;
     isTeamOwnershipPlan?: boolean;
     isTeamChangePlan?: boolean;
+    isTeamSynthesisPlan?: boolean;
     investigationId?: string;
     initialCollaborationState?: any;
     currentUserId?: string;
@@ -794,6 +802,16 @@ function InvestigationView({
                             <span>Change Intelligence</span>
                         </Link>
                     </div>
+                </div>
+            )}
+
+            {/* EVIDENCE SYNTHESIS (PHASE 8 / PILLAR G) */}
+            {isTeamSynthesisPlan && investigationId && (
+                <div id="section-evidence-synthesis" className="scroll-mt-24">
+                    <EvidenceSynthesisPanel
+                        investigationId={investigationId}
+                        projectId={projectId}
+                    />
                 </div>
             )}
 

@@ -18,6 +18,7 @@ export type TeamCapability =
     | "TEAM_OWNERSHIP_INTELLIGENCE"
     | "TEAM_ORGANIZATIONAL_MEMORY"
     | "TEAM_CHANGE_INTELLIGENCE"
+    | "TEAM_EVIDENCE_SYNTHESIS"
     | "TEAM_CROSS_SERVICE_TOPOLOGY"
     | "TEAM_EVIDENCE_AUTOMATION"
     | "SHARED_DASHBOARDS"
@@ -67,6 +68,11 @@ export const CAPABILITY_METADATA: Record<
     TEAM_CHANGE_INTELLIGENCE: {
         name: "Change Intelligence & Causal Change Analysis",
         description: "Correlate git commits, deployments, and configuration changes with failure timelines and code execution paths.",
+        minimumPlan: "TEAM",
+    },
+    TEAM_EVIDENCE_SYNTHESIS: {
+        name: "Evidence Synthesis & Investigation Reasoning",
+        description: "Deterministic synthesis of cross-pillar evidence into inspectable claims, independent verification, and investigation narratives.",
         minimumPlan: "TEAM",
     },
     TEAM_CROSS_SERVICE_TOPOLOGY: {
