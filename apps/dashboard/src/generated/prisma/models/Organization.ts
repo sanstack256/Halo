@@ -199,6 +199,7 @@ export type OrganizationWhereInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionListRelationFilter
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryListRelationFilter
   changeObservations?: Prisma.ChangeObservationListRelationFilter
+  remediationRecommendations?: Prisma.RemediationRecommendationListRelationFilter
 }
 
 export type OrganizationOrderByWithRelationInput = {
@@ -217,6 +218,7 @@ export type OrganizationOrderByWithRelationInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionOrderByRelationAggregateInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryOrderByRelationAggregateInput
   changeObservations?: Prisma.ChangeObservationOrderByRelationAggregateInput
+  remediationRecommendations?: Prisma.RemediationRecommendationOrderByRelationAggregateInput
 }
 
 export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
@@ -238,6 +240,7 @@ export type OrganizationWhereUniqueInput = Prisma.AtLeast<{
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionListRelationFilter
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryListRelationFilter
   changeObservations?: Prisma.ChangeObservationListRelationFilter
+  remediationRecommendations?: Prisma.RemediationRecommendationListRelationFilter
 }, "id" | "slug">
 
 export type OrganizationOrderByWithAggregationInput = {
@@ -280,6 +283,7 @@ export type OrganizationCreateInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateInput = {
@@ -298,6 +302,7 @@ export type OrganizationUncheckedCreateInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationUncheckedCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUpdateInput = {
@@ -316,6 +321,7 @@ export type OrganizationUpdateInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateInput = {
@@ -334,6 +340,7 @@ export type OrganizationUncheckedUpdateInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUncheckedUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateManyInput = {
@@ -540,6 +547,20 @@ export type OrganizationUpdateOneRequiredWithoutChangeObservationsNestedInput = 
   update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutChangeObservationsInput, Prisma.OrganizationUpdateWithoutChangeObservationsInput>, Prisma.OrganizationUncheckedUpdateWithoutChangeObservationsInput>
 }
 
+export type OrganizationCreateNestedOneWithoutRemediationRecommendationsInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutRemediationRecommendationsInput, Prisma.OrganizationUncheckedCreateWithoutRemediationRecommendationsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutRemediationRecommendationsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+}
+
+export type OrganizationUpdateOneRequiredWithoutRemediationRecommendationsNestedInput = {
+  create?: Prisma.XOR<Prisma.OrganizationCreateWithoutRemediationRecommendationsInput, Prisma.OrganizationUncheckedCreateWithoutRemediationRecommendationsInput>
+  connectOrCreate?: Prisma.OrganizationCreateOrConnectWithoutRemediationRecommendationsInput
+  upsert?: Prisma.OrganizationUpsertWithoutRemediationRecommendationsInput
+  connect?: Prisma.OrganizationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.OrganizationUpdateToOneWithWhereWithoutRemediationRecommendationsInput, Prisma.OrganizationUpdateWithoutRemediationRecommendationsInput>, Prisma.OrganizationUncheckedUpdateWithoutRemediationRecommendationsInput>
+}
+
 export type OrganizationCreateWithoutProjectsInput = {
   id?: string
   name: string
@@ -555,6 +576,7 @@ export type OrganizationCreateWithoutProjectsInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutProjectsInput = {
@@ -572,6 +594,7 @@ export type OrganizationUncheckedCreateWithoutProjectsInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationUncheckedCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutProjectsInput = {
@@ -605,6 +628,7 @@ export type OrganizationUpdateWithoutProjectsInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutProjectsInput = {
@@ -622,6 +646,7 @@ export type OrganizationUncheckedUpdateWithoutProjectsInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUncheckedUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutOwnerInput = {
@@ -639,6 +664,7 @@ export type OrganizationCreateWithoutOwnerInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutOwnerInput = {
@@ -656,6 +682,7 @@ export type OrganizationUncheckedCreateWithoutOwnerInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationUncheckedCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutOwnerInput = {
@@ -689,6 +716,7 @@ export type OrganizationUpdateWithoutOwnerInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutOwnerInput = {
@@ -706,6 +734,7 @@ export type OrganizationUncheckedUpdateWithoutOwnerInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUncheckedUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutMembersInput = {
@@ -723,6 +752,7 @@ export type OrganizationCreateWithoutMembersInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutMembersInput = {
@@ -740,6 +770,7 @@ export type OrganizationUncheckedCreateWithoutMembersInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationUncheckedCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutMembersInput = {
@@ -773,6 +804,7 @@ export type OrganizationUpdateWithoutMembersInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutMembersInput = {
@@ -790,6 +822,7 @@ export type OrganizationUncheckedUpdateWithoutMembersInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUncheckedUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutIncidentMemoriesInput = {
@@ -807,6 +840,7 @@ export type OrganizationCreateWithoutIncidentMemoriesInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutIncidentMemoriesInput = {
@@ -824,6 +858,7 @@ export type OrganizationUncheckedCreateWithoutIncidentMemoriesInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationUncheckedCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutIncidentMemoriesInput = {
@@ -857,6 +892,7 @@ export type OrganizationUpdateWithoutIncidentMemoriesInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutIncidentMemoriesInput = {
@@ -874,6 +910,7 @@ export type OrganizationUncheckedUpdateWithoutIncidentMemoriesInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUncheckedUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutFailurePatternsInput = {
@@ -891,6 +928,7 @@ export type OrganizationCreateWithoutFailurePatternsInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutFailurePatternsInput = {
@@ -908,6 +946,7 @@ export type OrganizationUncheckedCreateWithoutFailurePatternsInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationUncheckedCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutFailurePatternsInput = {
@@ -941,6 +980,7 @@ export type OrganizationUpdateWithoutFailurePatternsInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutFailurePatternsInput = {
@@ -958,6 +998,7 @@ export type OrganizationUncheckedUpdateWithoutFailurePatternsInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUncheckedUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutServiceOwnershipsInput = {
@@ -975,6 +1016,7 @@ export type OrganizationCreateWithoutServiceOwnershipsInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutServiceOwnershipsInput = {
@@ -992,6 +1034,7 @@ export type OrganizationUncheckedCreateWithoutServiceOwnershipsInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationUncheckedCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutServiceOwnershipsInput = {
@@ -1025,6 +1068,7 @@ export type OrganizationUpdateWithoutServiceOwnershipsInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutServiceOwnershipsInput = {
@@ -1042,6 +1086,7 @@ export type OrganizationUncheckedUpdateWithoutServiceOwnershipsInput = {
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUncheckedUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutServiceOwnershipAssertionsInput = {
@@ -1059,6 +1104,7 @@ export type OrganizationCreateWithoutServiceOwnershipAssertionsInput = {
   serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutServiceOwnershipAssertionsInput = {
@@ -1076,6 +1122,7 @@ export type OrganizationUncheckedCreateWithoutServiceOwnershipAssertionsInput = 
   serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationUncheckedCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutServiceOwnershipAssertionsInput = {
@@ -1109,6 +1156,7 @@ export type OrganizationUpdateWithoutServiceOwnershipAssertionsInput = {
   serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutServiceOwnershipAssertionsInput = {
@@ -1126,6 +1174,7 @@ export type OrganizationUncheckedUpdateWithoutServiceOwnershipAssertionsInput = 
   serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUncheckedUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutServiceOwnershipHistoryInput = {
@@ -1143,6 +1192,7 @@ export type OrganizationCreateWithoutServiceOwnershipHistoryInput = {
   serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutOrganizationInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutServiceOwnershipHistoryInput = {
@@ -1160,6 +1210,7 @@ export type OrganizationUncheckedCreateWithoutServiceOwnershipHistoryInput = {
   serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutOrganizationInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutOrganizationInput
   changeObservations?: Prisma.ChangeObservationUncheckedCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutServiceOwnershipHistoryInput = {
@@ -1193,6 +1244,7 @@ export type OrganizationUpdateWithoutServiceOwnershipHistoryInput = {
   serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutServiceOwnershipHistoryInput = {
@@ -1210,6 +1262,7 @@ export type OrganizationUncheckedUpdateWithoutServiceOwnershipHistoryInput = {
   serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutOrganizationNestedInput
   changeObservations?: Prisma.ChangeObservationUncheckedUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationCreateWithoutChangeObservationsInput = {
@@ -1227,6 +1280,7 @@ export type OrganizationCreateWithoutChangeObservationsInput = {
   serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutOrganizationInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationUncheckedCreateWithoutChangeObservationsInput = {
@@ -1244,6 +1298,7 @@ export type OrganizationUncheckedCreateWithoutChangeObservationsInput = {
   serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutOrganizationInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutOrganizationInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutOrganizationInput
 }
 
 export type OrganizationCreateOrConnectWithoutChangeObservationsInput = {
@@ -1277,6 +1332,7 @@ export type OrganizationUpdateWithoutChangeObservationsInput = {
   serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutOrganizationNestedInput
 }
 
 export type OrganizationUncheckedUpdateWithoutChangeObservationsInput = {
@@ -1294,6 +1350,95 @@ export type OrganizationUncheckedUpdateWithoutChangeObservationsInput = {
   serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutOrganizationNestedInput
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationCreateWithoutRemediationRecommendationsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
+  projects?: Prisma.ProjectCreateNestedManyWithoutOrganizationInput
+  owner?: Prisma.UserCreateNestedOneWithoutOrganizationInput
+  members?: Prisma.OrganizationMemberCreateNestedManyWithoutOrganizationInput
+  incidentMemories?: Prisma.IncidentMemoryCreateNestedManyWithoutOrganizationInput
+  failurePatterns?: Prisma.FailurePatternCreateNestedManyWithoutOrganizationInput
+  serviceOwnerships?: Prisma.ServiceOwnershipCreateNestedManyWithoutOrganizationInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutOrganizationInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryCreateNestedManyWithoutOrganizationInput
+  changeObservations?: Prisma.ChangeObservationCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationUncheckedCreateWithoutRemediationRecommendationsInput = {
+  id?: string
+  name: string
+  slug: string
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  plan?: $Enums.OrganizationPlan
+  projects?: Prisma.ProjectUncheckedCreateNestedManyWithoutOrganizationInput
+  owner?: Prisma.UserUncheckedCreateNestedOneWithoutOrganizationInput
+  members?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutOrganizationInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedCreateNestedManyWithoutOrganizationInput
+  failurePatterns?: Prisma.FailurePatternUncheckedCreateNestedManyWithoutOrganizationInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedCreateNestedManyWithoutOrganizationInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutOrganizationInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedCreateNestedManyWithoutOrganizationInput
+  changeObservations?: Prisma.ChangeObservationUncheckedCreateNestedManyWithoutOrganizationInput
+}
+
+export type OrganizationCreateOrConnectWithoutRemediationRecommendationsInput = {
+  where: Prisma.OrganizationWhereUniqueInput
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutRemediationRecommendationsInput, Prisma.OrganizationUncheckedCreateWithoutRemediationRecommendationsInput>
+}
+
+export type OrganizationUpsertWithoutRemediationRecommendationsInput = {
+  update: Prisma.XOR<Prisma.OrganizationUpdateWithoutRemediationRecommendationsInput, Prisma.OrganizationUncheckedUpdateWithoutRemediationRecommendationsInput>
+  create: Prisma.XOR<Prisma.OrganizationCreateWithoutRemediationRecommendationsInput, Prisma.OrganizationUncheckedCreateWithoutRemediationRecommendationsInput>
+  where?: Prisma.OrganizationWhereInput
+}
+
+export type OrganizationUpdateToOneWithWhereWithoutRemediationRecommendationsInput = {
+  where?: Prisma.OrganizationWhereInput
+  data: Prisma.XOR<Prisma.OrganizationUpdateWithoutRemediationRecommendationsInput, Prisma.OrganizationUncheckedUpdateWithoutRemediationRecommendationsInput>
+}
+
+export type OrganizationUpdateWithoutRemediationRecommendationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
+  projects?: Prisma.ProjectUpdateManyWithoutOrganizationNestedInput
+  owner?: Prisma.UserUpdateOneWithoutOrganizationNestedInput
+  members?: Prisma.OrganizationMemberUpdateManyWithoutOrganizationNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUpdateManyWithoutOrganizationNestedInput
+  failurePatterns?: Prisma.FailurePatternUpdateManyWithoutOrganizationNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUpdateManyWithoutOrganizationNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutOrganizationNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUpdateManyWithoutOrganizationNestedInput
+  changeObservations?: Prisma.ChangeObservationUpdateManyWithoutOrganizationNestedInput
+}
+
+export type OrganizationUncheckedUpdateWithoutRemediationRecommendationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  slug?: Prisma.StringFieldUpdateOperationsInput | string
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  plan?: Prisma.EnumOrganizationPlanFieldUpdateOperationsInput | $Enums.OrganizationPlan
+  projects?: Prisma.ProjectUncheckedUpdateManyWithoutOrganizationNestedInput
+  owner?: Prisma.UserUncheckedUpdateOneWithoutOrganizationNestedInput
+  members?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutOrganizationNestedInput
+  incidentMemories?: Prisma.IncidentMemoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  failurePatterns?: Prisma.FailurePatternUncheckedUpdateManyWithoutOrganizationNestedInput
+  serviceOwnerships?: Prisma.ServiceOwnershipUncheckedUpdateManyWithoutOrganizationNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutOrganizationNestedInput
+  serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryUncheckedUpdateManyWithoutOrganizationNestedInput
+  changeObservations?: Prisma.ChangeObservationUncheckedUpdateManyWithoutOrganizationNestedInput
 }
 
 
@@ -1310,6 +1455,7 @@ export type OrganizationCountOutputType = {
   serviceOwnershipAssertions: number
   serviceOwnershipHistory: number
   changeObservations: number
+  remediationRecommendations: number
 }
 
 export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1321,6 +1467,7 @@ export type OrganizationCountOutputTypeSelect<ExtArgs extends runtime.Types.Exte
   serviceOwnershipAssertions?: boolean | OrganizationCountOutputTypeCountServiceOwnershipAssertionsArgs
   serviceOwnershipHistory?: boolean | OrganizationCountOutputTypeCountServiceOwnershipHistoryArgs
   changeObservations?: boolean | OrganizationCountOutputTypeCountChangeObservationsArgs
+  remediationRecommendations?: boolean | OrganizationCountOutputTypeCountRemediationRecommendationsArgs
 }
 
 /**
@@ -1389,6 +1536,13 @@ export type OrganizationCountOutputTypeCountChangeObservationsArgs<ExtArgs exten
   where?: Prisma.ChangeObservationWhereInput
 }
 
+/**
+ * OrganizationCountOutputType without action
+ */
+export type OrganizationCountOutputTypeCountRemediationRecommendationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RemediationRecommendationWhereInput
+}
+
 
 export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1406,6 +1560,7 @@ export type OrganizationSelect<ExtArgs extends runtime.Types.Extensions.Internal
   serviceOwnershipAssertions?: boolean | Prisma.Organization$serviceOwnershipAssertionsArgs<ExtArgs>
   serviceOwnershipHistory?: boolean | Prisma.Organization$serviceOwnershipHistoryArgs<ExtArgs>
   changeObservations?: boolean | Prisma.Organization$changeObservationsArgs<ExtArgs>
+  remediationRecommendations?: boolean | Prisma.Organization$remediationRecommendationsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["organization"]>
 
@@ -1447,6 +1602,7 @@ export type OrganizationInclude<ExtArgs extends runtime.Types.Extensions.Interna
   serviceOwnershipAssertions?: boolean | Prisma.Organization$serviceOwnershipAssertionsArgs<ExtArgs>
   serviceOwnershipHistory?: boolean | Prisma.Organization$serviceOwnershipHistoryArgs<ExtArgs>
   changeObservations?: boolean | Prisma.Organization$changeObservationsArgs<ExtArgs>
+  remediationRecommendations?: boolean | Prisma.Organization$remediationRecommendationsArgs<ExtArgs>
   _count?: boolean | Prisma.OrganizationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type OrganizationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {}
@@ -1464,6 +1620,7 @@ export type $OrganizationPayload<ExtArgs extends runtime.Types.Extensions.Intern
     serviceOwnershipAssertions: Prisma.$ServiceOwnershipAssertionPayload<ExtArgs>[]
     serviceOwnershipHistory: Prisma.$ServiceOwnershipHistoryPayload<ExtArgs>[]
     changeObservations: Prisma.$ChangeObservationPayload<ExtArgs>[]
+    remediationRecommendations: Prisma.$RemediationRecommendationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -1875,6 +2032,7 @@ export interface Prisma__OrganizationClient<T, Null = never, ExtArgs extends run
   serviceOwnershipAssertions<T extends Prisma.Organization$serviceOwnershipAssertionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$serviceOwnershipAssertionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceOwnershipAssertionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   serviceOwnershipHistory<T extends Prisma.Organization$serviceOwnershipHistoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$serviceOwnershipHistoryArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceOwnershipHistoryPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   changeObservations<T extends Prisma.Organization$changeObservationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$changeObservationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ChangeObservationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  remediationRecommendations<T extends Prisma.Organization$remediationRecommendationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Organization$remediationRecommendationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RemediationRecommendationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2511,6 +2669,30 @@ export type Organization$changeObservationsArgs<ExtArgs extends runtime.Types.Ex
   take?: number
   skip?: number
   distinct?: Prisma.ChangeObservationScalarFieldEnum | Prisma.ChangeObservationScalarFieldEnum[]
+}
+
+/**
+ * Organization.remediationRecommendations
+ */
+export type Organization$remediationRecommendationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RemediationRecommendation
+   */
+  select?: Prisma.RemediationRecommendationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RemediationRecommendation
+   */
+  omit?: Prisma.RemediationRecommendationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RemediationRecommendationInclude<ExtArgs> | null
+  where?: Prisma.RemediationRecommendationWhereInput
+  orderBy?: Prisma.RemediationRecommendationOrderByWithRelationInput | Prisma.RemediationRecommendationOrderByWithRelationInput[]
+  cursor?: Prisma.RemediationRecommendationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RemediationRecommendationScalarFieldEnum | Prisma.RemediationRecommendationScalarFieldEnum[]
 }
 
 /**

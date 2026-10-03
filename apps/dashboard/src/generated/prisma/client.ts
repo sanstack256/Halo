@@ -216,3 +216,13 @@ export type ServiceOwnershipHistory = Prisma.ServiceOwnershipHistoryModel
  * 
  */
 export type ChangeObservation = Prisma.ChangeObservationModel
+/**
+ * Model RemediationRecommendation
+ * 
+ */
+export type RemediationRecommendation = Prisma.RemediationRecommendationModel
+/**
+ * Model RemediationNote
+ * 
+ */
+export type RemediationNote = Prisma.RemediationNoteModel

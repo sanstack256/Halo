@@ -74,6 +74,22 @@ export interface GeneratedPostmortem {
         changesObserved: number;
         summary: string;
     };
+    remediationRecommendations?: Array<{
+        id: string;
+        title: string;
+        type: string;
+        status: string;
+        action: string;
+        rationale?: string | null;
+        expectedOutcome?: string | null;
+        validationMethod?: string | null;
+        uncertainty?: string | null;
+        evidenceReferences: string[];
+        isVerifiedCompleted: boolean;
+        completedBy?: string | null;
+        completedAt?: string | null;
+        historicalContext?: any;
+    }>;
     markdownReport: string;
 }
 
@@ -90,6 +106,10 @@ export async function generateInvestigationPostmortem(investigationId: string): 
             proposedRelations: { select: { authorName: true, sourceId: true, targetId: true, reasoning: true } },
             recommendations: { select: { recommendation: true, modelProvider: true } },
             incidentMemory: true,
+            remediationRecommendations: {
+                orderBy: { createdAt: "asc" },
+                include: { notes: true },
+            },
         },
     });
 
@@ -315,6 +335,21 @@ ${
 ## 9. Change Context
 ${changeContextText}
 
+## 10. Remediation Recommendations
+${
+    (investigation.remediationRecommendations || []).length > 0
+        ? (investigation.remediationRecommendations || []).map((r) => `### Recommendation: ${r.title} [${r.type}] — Status: ${r.status}
+- **Recommended Action:** ${r.action}
+- **Why:** ${r.rationale || "Derived from verified investigation evidence."}
+- **Evidence References:** ${r.evidenceReferences.length > 0 ? r.evidenceReferences.join(", ") : "None"}
+- **Expected Outcome:** ${r.expectedOutcome || "Not specified"}
+- **Validation Method:** ${r.validationMethod || "Not specified"}
+- **Remaining Uncertainty:** ${r.uncertainty || "None recorded"}
+${r.historicalContext ? `- **Historical Remediation Context:** (Historical reference only) ${typeof r.historicalContext === "object" && r.historicalContext !== null ? (r.historicalContext as any).historicalRecommendation || JSON.stringify(r.historicalContext) : r.historicalContext}` : ""}
+${r.status === "COMPLETED" && r.completedBy ? `- **Verification:** Verified completed by user ${r.completedBy} at ${r.completedAt?.toISOString()}` : ""}`).join("\n\n")
+        : "- *No evidence-backed remediation recommendations recorded for this investigation.*"
+}
+
 ---
 *Notice: This postmortem is deterministically synthesized from immutable telemetry events and verified human peer records. It does not fabricate unobserved metrics or external dependencies.*
 `;
@@ -360,6 +395,22 @@ ${changeContextText}
                 : "No matching recurring pattern found in organizational memory.",
         },
         changeContext: changeSummaryObj,
+        remediationRecommendations: (investigation.remediationRecommendations || []).map((r) => ({
+            id: r.id,
+            title: r.title,
+            type: r.type,
+            status: r.status,
+            action: r.action,
+            rationale: r.rationale,
+            expectedOutcome: r.expectedOutcome,
+            validationMethod: r.validationMethod,
+            uncertainty: r.uncertainty,
+            evidenceReferences: r.evidenceReferences,
+            isVerifiedCompleted: r.status === "COMPLETED" && Boolean(r.completedBy),
+            completedBy: r.completedBy,
+            completedAt: r.completedAt ? r.completedAt.toISOString() : null,
+            historicalContext: r.historicalContext,
+        })),
         markdownReport,
     };
 }

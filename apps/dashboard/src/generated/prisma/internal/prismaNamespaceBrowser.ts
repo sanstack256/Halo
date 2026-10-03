@@ -85,7 +85,9 @@ export const ModelName = {
   ServiceOwnership: 'ServiceOwnership',
   ServiceOwnershipAssertion: 'ServiceOwnershipAssertion',
   ServiceOwnershipHistory: 'ServiceOwnershipHistory',
-  ChangeObservation: 'ChangeObservation'
+  ChangeObservation: 'ChangeObservation',
+  RemediationRecommendation: 'RemediationRecommendation',
+  RemediationNote: 'RemediationNote'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -781,6 +783,58 @@ export const ChangeObservationScalarFieldEnum = {
 } as const
 
 export type ChangeObservationScalarFieldEnum = (typeof ChangeObservationScalarFieldEnum)[keyof typeof ChangeObservationScalarFieldEnum]
+
+
+export const RemediationRecommendationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  investigationId: 'investigationId',
+  recommendationKey: 'recommendationKey',
+  type: 'type',
+  status: 'status',
+  supportLevel: 'supportLevel',
+  riskLevel: 'riskLevel',
+  title: 'title',
+  summary: 'summary',
+  action: 'action',
+  rationale: 'rationale',
+  expectedOutcome: 'expectedOutcome',
+  validationMethod: 'validationMethod',
+  prerequisites: 'prerequisites',
+  evidenceReferences: 'evidenceReferences',
+  supportingClaimIds: 'supportingClaimIds',
+  affectedServices: 'affectedServices',
+  affectedOperations: 'affectedOperations',
+  affectedCodePaths: 'affectedCodePaths',
+  ownerContext: 'ownerContext',
+  uncertainty: 'uncertainty',
+  completedAt: 'completedAt',
+  completedBy: 'completedBy',
+  dismissedAt: 'dismissedAt',
+  dismissedBy: 'dismissedBy',
+  dismissalReason: 'dismissalReason',
+  historicalContext: 'historicalContext',
+  contradictionNotes: 'contradictionNotes',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RemediationRecommendationScalarFieldEnum = (typeof RemediationRecommendationScalarFieldEnum)[keyof typeof RemediationRecommendationScalarFieldEnum]
+
+
+export const RemediationNoteScalarFieldEnum = {
+  id: 'id',
+  recommendationId: 'recommendationId',
+  userId: 'userId',
+  userEmail: 'userEmail',
+  userName: 'userName',
+  content: 'content',
+  createdAt: 'createdAt'
+} as const
+
+export type RemediationNoteScalarFieldEnum = (typeof RemediationNoteScalarFieldEnum)[keyof typeof RemediationNoteScalarFieldEnum]
 
 
 export const SortOrder = {

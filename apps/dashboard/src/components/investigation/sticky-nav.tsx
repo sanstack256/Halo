@@ -31,6 +31,13 @@ const CATEGORIES: CategoryNavItem[] = [
         icon: Sparkles,
     },
     {
+        id: "remediation",
+        label: "Remediation",
+        targetSectionId: "section-remediation-intelligence",
+        sectionIds: ["section-remediation-intelligence"],
+        icon: Wrench,
+    },
+    {
         id: "collaboration",
         label: "Live Room",
         targetSectionId: "section-collaboration",

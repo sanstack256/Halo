@@ -23,6 +23,7 @@ model Organization {
   serviceOwnershipAssertions ServiceOwnershipAssertion[]
   serviceOwnershipHistory    ServiceOwnershipHistory[]
   changeObservations         ChangeObservation[]
+  remediationRecommendations RemediationRecommendation[]
 }
 
 model Project {
@@ -63,6 +64,7 @@ model Project {
   serviceOwnershipAssertions ServiceOwnershipAssertion[]
   serviceOwnershipHistory    ServiceOwnershipHistory[]
   changeObservations         ChangeObservation[]
+  remediationRecommendations RemediationRecommendation[]
 
   @@unique([organizationId, slug])
 }
@@ -223,6 +225,7 @@ model User {
   investigationActivities InvestigationActivity[]
   investigationRelations InvestigationProposedRelation[]
   serviceOwnershipAssertions ServiceOwnershipAssertion[]
+  remediationNotes           RemediationNote[]
 
   @@map("user")
 }
@@ -530,6 +533,7 @@ model Investigation {
   activities      InvestigationActivity[]
   proposedRelations InvestigationProposedRelation[]
   incidentMemory  IncidentMemory?
+  remediationRecommendations RemediationRecommendation[]
 
   @@index([projectId, createdAt])
   @@index([monitorId])
@@ -1065,3 +1069,105 @@ model ChangeObservation {
   @@index([organizationId, repository, commitSha])
   @@index([authorTimestamp])
 }
+
+// ---------------------------------------------------------------------------
+// Team Plan Pillar H: Evidence-Backed Remediation Intelligence
+// ---------------------------------------------------------------------------
+
+enum RemediationType {
+  CODE_CHANGE
+  CONFIGURATION_REVIEW
+  DEPENDENCY_REVIEW
+  DEPLOYMENT_REVIEW
+  FEATURE_FLAG_REVIEW
+  DATA_VALIDATION
+  OBSERVABILITY_GAP
+  REGRESSION_TEST
+  ROLLBACK_REVIEW
+  DOCUMENTATION_UPDATE
+  RUNBOOK_REVIEW
+}
+
+enum RemediationStatus {
+  ACTIONABLE
+  NEEDS_VALIDATION
+  INSUFFICIENT_EVIDENCE
+  BLOCKED
+  COMPLETED
+  DISMISSED
+}
+
+enum RemediationSupportLevel {
+  EVIDENCE_BACKED
+  PARTIALLY_SUPPORTED
+  INSUFFICIENT_EVIDENCE
+}
+
+enum RemediationRiskLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+model RemediationRecommendation {
+  id                   String                  @id @default(cuid())
+  organizationId       String
+  projectId            String
+  investigationId      String
+  recommendationKey    String                  // Deterministic deduplication key for idempotency
+  type                 RemediationType
+  status               RemediationStatus       @default(ACTIONABLE)
+  supportLevel         RemediationSupportLevel @default(EVIDENCE_BACKED)
+  riskLevel            RemediationRiskLevel    @default(LOW)
+  title                String
+  summary              String?
+  action               String
+  rationale            String?
+  expectedOutcome      String?
+  validationMethod     String?
+  prerequisites        String[]                @default([])
+  evidenceReferences   String[]                @default([])
+  supportingClaimIds   String[]                @default([])
+  affectedServices     String[]                @default([])
+  affectedOperations   String[]                @default([])
+  affectedCodePaths    String[]                @default([])
+  ownerContext         Json?                   // Routing context only: declared owner, source, confidence (no blame)
+  uncertainty          String?
+  completedAt          DateTime?
+  completedBy          String?                 // Human user id who marked completed
+  dismissedAt          DateTime?
+  dismissedBy          String?                 // Human user id who dismissed
+  dismissalReason      String?
+  historicalContext    Json?                   // Historical remediation comparison if similar incident exists
+  contradictionNotes   String?                 // If multiple alternative remediation paths exist
+  metadata             Json?
+  createdAt            DateTime                @default(now())
+  updatedAt            DateTime                @updatedAt
+
+  organization         Organization            @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project              Project                 @relation(fields: [projectId], references: [id], onDelete: Cascade)
+  investigation        Investigation           @relation(fields: [investigationId], references: [id], onDelete: Cascade)
+  notes                RemediationNote[]
+
+  @@unique([investigationId, recommendationKey])
+  @@index([organizationId, createdAt])
+  @@index([projectId, createdAt])
+  @@index([investigationId, status])
+}
+
+model RemediationNote {
+  id               String                    @id @default(cuid())
+  recommendationId String
+  userId           String
+  userEmail        String?
+  userName         String?
+  content          String
+  createdAt        DateTime                  @default(now())
+
+  recommendation   RemediationRecommendation @relation(fields: [recommendationId], references: [id], onDelete: Cascade)
+  user             User                      @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@index([recommendationId, createdAt])
+  @@index([userId])
+}
+

@@ -216,6 +216,7 @@ export type UserWhereInput = {
   investigationActivities?: Prisma.InvestigationActivityListRelationFilter
   investigationRelations?: Prisma.InvestigationProposedRelationListRelationFilter
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionListRelationFilter
+  remediationNotes?: Prisma.RemediationNoteListRelationFilter
 }
 
 export type UserOrderByWithRelationInput = {
@@ -237,6 +238,7 @@ export type UserOrderByWithRelationInput = {
   investigationActivities?: Prisma.InvestigationActivityOrderByRelationAggregateInput
   investigationRelations?: Prisma.InvestigationProposedRelationOrderByRelationAggregateInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionOrderByRelationAggregateInput
+  remediationNotes?: Prisma.RemediationNoteOrderByRelationAggregateInput
 }
 
 export type UserWhereUniqueInput = Prisma.AtLeast<{
@@ -261,6 +263,7 @@ export type UserWhereUniqueInput = Prisma.AtLeast<{
   investigationActivities?: Prisma.InvestigationActivityListRelationFilter
   investigationRelations?: Prisma.InvestigationProposedRelationListRelationFilter
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionListRelationFilter
+  remediationNotes?: Prisma.RemediationNoteListRelationFilter
 }, "id" | "email" | "organizationId">
 
 export type UserOrderByWithAggregationInput = {
@@ -309,6 +312,7 @@ export type UserCreateInput = {
   investigationActivities?: Prisma.InvestigationActivityCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateInput = {
@@ -329,6 +333,7 @@ export type UserUncheckedCreateInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserUpdateInput = {
@@ -349,6 +354,7 @@ export type UserUpdateInput = {
   investigationActivities?: Prisma.InvestigationActivityUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateInput = {
@@ -369,6 +375,7 @@ export type UserUncheckedUpdateInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateManyInput = {
@@ -610,6 +617,20 @@ export type UserUpdateOneRequiredWithoutServiceOwnershipAssertionsNestedInput = 
   update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutServiceOwnershipAssertionsInput, Prisma.UserUpdateWithoutServiceOwnershipAssertionsInput>, Prisma.UserUncheckedUpdateWithoutServiceOwnershipAssertionsInput>
 }
 
+export type UserCreateNestedOneWithoutRemediationNotesInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRemediationNotesInput, Prisma.UserUncheckedCreateWithoutRemediationNotesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRemediationNotesInput
+  connect?: Prisma.UserWhereUniqueInput
+}
+
+export type UserUpdateOneRequiredWithoutRemediationNotesNestedInput = {
+  create?: Prisma.XOR<Prisma.UserCreateWithoutRemediationNotesInput, Prisma.UserUncheckedCreateWithoutRemediationNotesInput>
+  connectOrCreate?: Prisma.UserCreateOrConnectWithoutRemediationNotesInput
+  upsert?: Prisma.UserUpsertWithoutRemediationNotesInput
+  connect?: Prisma.UserWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.UserUpdateToOneWithWhereWithoutRemediationNotesInput, Prisma.UserUpdateWithoutRemediationNotesInput>, Prisma.UserUncheckedUpdateWithoutRemediationNotesInput>
+}
+
 export type UserCreateWithoutOrganizationInput = {
   id: string
   name: string
@@ -627,6 +648,7 @@ export type UserCreateWithoutOrganizationInput = {
   investigationActivities?: Prisma.InvestigationActivityCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutOrganizationInput = {
@@ -646,6 +668,7 @@ export type UserUncheckedCreateWithoutOrganizationInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutOrganizationInput = {
@@ -681,6 +704,7 @@ export type UserUpdateWithoutOrganizationInput = {
   investigationActivities?: Prisma.InvestigationActivityUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutOrganizationInput = {
@@ -700,6 +724,7 @@ export type UserUncheckedUpdateWithoutOrganizationInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutSessionsInput = {
@@ -719,6 +744,7 @@ export type UserCreateWithoutSessionsInput = {
   investigationActivities?: Prisma.InvestigationActivityCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutSessionsInput = {
@@ -738,6 +764,7 @@ export type UserUncheckedCreateWithoutSessionsInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutSessionsInput = {
@@ -773,6 +800,7 @@ export type UserUpdateWithoutSessionsInput = {
   investigationActivities?: Prisma.InvestigationActivityUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutSessionsInput = {
@@ -792,6 +820,7 @@ export type UserUncheckedUpdateWithoutSessionsInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutAccountsInput = {
@@ -811,6 +840,7 @@ export type UserCreateWithoutAccountsInput = {
   investigationActivities?: Prisma.InvestigationActivityCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutAccountsInput = {
@@ -830,6 +860,7 @@ export type UserUncheckedCreateWithoutAccountsInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutAccountsInput = {
@@ -865,6 +896,7 @@ export type UserUpdateWithoutAccountsInput = {
   investigationActivities?: Prisma.InvestigationActivityUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutAccountsInput = {
@@ -884,6 +916,7 @@ export type UserUncheckedUpdateWithoutAccountsInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMonitorsInput = {
@@ -903,6 +936,7 @@ export type UserCreateWithoutMonitorsInput = {
   investigationActivities?: Prisma.InvestigationActivityCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMonitorsInput = {
@@ -922,6 +956,7 @@ export type UserUncheckedCreateWithoutMonitorsInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMonitorsInput = {
@@ -957,6 +992,7 @@ export type UserUpdateWithoutMonitorsInput = {
   investigationActivities?: Prisma.InvestigationActivityUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMonitorsInput = {
@@ -976,6 +1012,7 @@ export type UserUncheckedUpdateWithoutMonitorsInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutMembershipsInput = {
@@ -995,6 +1032,7 @@ export type UserCreateWithoutMembershipsInput = {
   investigationActivities?: Prisma.InvestigationActivityCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutMembershipsInput = {
@@ -1014,6 +1052,7 @@ export type UserUncheckedCreateWithoutMembershipsInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutMembershipsInput = {
@@ -1049,6 +1088,7 @@ export type UserUpdateWithoutMembershipsInput = {
   investigationActivities?: Prisma.InvestigationActivityUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutMembershipsInput = {
@@ -1068,6 +1108,7 @@ export type UserUncheckedUpdateWithoutMembershipsInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvestigationCommentsInput = {
@@ -1087,6 +1128,7 @@ export type UserCreateWithoutInvestigationCommentsInput = {
   investigationActivities?: Prisma.InvestigationActivityCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvestigationCommentsInput = {
@@ -1106,6 +1148,7 @@ export type UserUncheckedCreateWithoutInvestigationCommentsInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvestigationCommentsInput = {
@@ -1141,6 +1184,7 @@ export type UserUpdateWithoutInvestigationCommentsInput = {
   investigationActivities?: Prisma.InvestigationActivityUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvestigationCommentsInput = {
@@ -1160,6 +1204,7 @@ export type UserUncheckedUpdateWithoutInvestigationCommentsInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvestigationVerdictsInput = {
@@ -1179,6 +1224,7 @@ export type UserCreateWithoutInvestigationVerdictsInput = {
   investigationActivities?: Prisma.InvestigationActivityCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvestigationVerdictsInput = {
@@ -1198,6 +1244,7 @@ export type UserUncheckedCreateWithoutInvestigationVerdictsInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvestigationVerdictsInput = {
@@ -1233,6 +1280,7 @@ export type UserUpdateWithoutInvestigationVerdictsInput = {
   investigationActivities?: Prisma.InvestigationActivityUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvestigationVerdictsInput = {
@@ -1252,6 +1300,7 @@ export type UserUncheckedUpdateWithoutInvestigationVerdictsInput = {
   investigationActivities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvestigationActivitiesInput = {
@@ -1271,6 +1320,7 @@ export type UserCreateWithoutInvestigationActivitiesInput = {
   investigationVerdicts?: Prisma.InvestigationVerdictCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvestigationActivitiesInput = {
@@ -1290,6 +1340,7 @@ export type UserUncheckedCreateWithoutInvestigationActivitiesInput = {
   investigationVerdicts?: Prisma.InvestigationVerdictUncheckedCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvestigationActivitiesInput = {
@@ -1325,6 +1376,7 @@ export type UserUpdateWithoutInvestigationActivitiesInput = {
   investigationVerdicts?: Prisma.InvestigationVerdictUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvestigationActivitiesInput = {
@@ -1344,6 +1396,7 @@ export type UserUncheckedUpdateWithoutInvestigationActivitiesInput = {
   investigationVerdicts?: Prisma.InvestigationVerdictUncheckedUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutInvestigationRelationsInput = {
@@ -1363,6 +1416,7 @@ export type UserCreateWithoutInvestigationRelationsInput = {
   investigationVerdicts?: Prisma.InvestigationVerdictCreateNestedManyWithoutUserInput
   investigationActivities?: Prisma.InvestigationActivityCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutInvestigationRelationsInput = {
@@ -1382,6 +1436,7 @@ export type UserUncheckedCreateWithoutInvestigationRelationsInput = {
   investigationVerdicts?: Prisma.InvestigationVerdictUncheckedCreateNestedManyWithoutUserInput
   investigationActivities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutUserInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutInvestigationRelationsInput = {
@@ -1417,6 +1472,7 @@ export type UserUpdateWithoutInvestigationRelationsInput = {
   investigationVerdicts?: Prisma.InvestigationVerdictUpdateManyWithoutUserNestedInput
   investigationActivities?: Prisma.InvestigationActivityUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutInvestigationRelationsInput = {
@@ -1436,6 +1492,7 @@ export type UserUncheckedUpdateWithoutInvestigationRelationsInput = {
   investigationVerdicts?: Prisma.InvestigationVerdictUncheckedUpdateManyWithoutUserNestedInput
   investigationActivities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutUserNestedInput
   serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutUserNestedInput
 }
 
 export type UserCreateWithoutServiceOwnershipAssertionsInput = {
@@ -1455,6 +1512,7 @@ export type UserCreateWithoutServiceOwnershipAssertionsInput = {
   investigationVerdicts?: Prisma.InvestigationVerdictCreateNestedManyWithoutUserInput
   investigationActivities?: Prisma.InvestigationActivityCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteCreateNestedManyWithoutUserInput
 }
 
 export type UserUncheckedCreateWithoutServiceOwnershipAssertionsInput = {
@@ -1474,6 +1532,7 @@ export type UserUncheckedCreateWithoutServiceOwnershipAssertionsInput = {
   investigationVerdicts?: Prisma.InvestigationVerdictUncheckedCreateNestedManyWithoutUserInput
   investigationActivities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutUserInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutUserInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutUserInput
 }
 
 export type UserCreateOrConnectWithoutServiceOwnershipAssertionsInput = {
@@ -1509,6 +1568,7 @@ export type UserUpdateWithoutServiceOwnershipAssertionsInput = {
   investigationVerdicts?: Prisma.InvestigationVerdictUpdateManyWithoutUserNestedInput
   investigationActivities?: Prisma.InvestigationActivityUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUpdateManyWithoutUserNestedInput
 }
 
 export type UserUncheckedUpdateWithoutServiceOwnershipAssertionsInput = {
@@ -1528,6 +1588,103 @@ export type UserUncheckedUpdateWithoutServiceOwnershipAssertionsInput = {
   investigationVerdicts?: Prisma.InvestigationVerdictUncheckedUpdateManyWithoutUserNestedInput
   investigationActivities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutUserNestedInput
   investigationRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutUserNestedInput
+  remediationNotes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutUserNestedInput
+}
+
+export type UserCreateWithoutRemediationNotesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  accounts?: Prisma.AccountCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionCreateNestedManyWithoutUserInput
+  organization?: Prisma.OrganizationCreateNestedOneWithoutOwnerInput
+  monitors?: Prisma.MonitorCreateNestedManyWithoutCreatorInput
+  memberships?: Prisma.OrganizationMemberCreateNestedManyWithoutUserInput
+  investigationComments?: Prisma.InvestigationCommentCreateNestedManyWithoutUserInput
+  investigationVerdicts?: Prisma.InvestigationVerdictCreateNestedManyWithoutUserInput
+  investigationActivities?: Prisma.InvestigationActivityCreateNestedManyWithoutUserInput
+  investigationRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutUserInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionCreateNestedManyWithoutUserInput
+}
+
+export type UserUncheckedCreateWithoutRemediationNotesInput = {
+  id: string
+  name: string
+  email: string
+  emailVerified?: boolean
+  image?: string | null
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organizationId?: string | null
+  accounts?: Prisma.AccountUncheckedCreateNestedManyWithoutUserInput
+  sessions?: Prisma.SessionUncheckedCreateNestedManyWithoutUserInput
+  monitors?: Prisma.MonitorUncheckedCreateNestedManyWithoutCreatorInput
+  memberships?: Prisma.OrganizationMemberUncheckedCreateNestedManyWithoutUserInput
+  investigationComments?: Prisma.InvestigationCommentUncheckedCreateNestedManyWithoutUserInput
+  investigationVerdicts?: Prisma.InvestigationVerdictUncheckedCreateNestedManyWithoutUserInput
+  investigationActivities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutUserInput
+  investigationRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutUserInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedCreateNestedManyWithoutUserInput
+}
+
+export type UserCreateOrConnectWithoutRemediationNotesInput = {
+  where: Prisma.UserWhereUniqueInput
+  create: Prisma.XOR<Prisma.UserCreateWithoutRemediationNotesInput, Prisma.UserUncheckedCreateWithoutRemediationNotesInput>
+}
+
+export type UserUpsertWithoutRemediationNotesInput = {
+  update: Prisma.XOR<Prisma.UserUpdateWithoutRemediationNotesInput, Prisma.UserUncheckedUpdateWithoutRemediationNotesInput>
+  create: Prisma.XOR<Prisma.UserCreateWithoutRemediationNotesInput, Prisma.UserUncheckedCreateWithoutRemediationNotesInput>
+  where?: Prisma.UserWhereInput
+}
+
+export type UserUpdateToOneWithWhereWithoutRemediationNotesInput = {
+  where?: Prisma.UserWhereInput
+  data: Prisma.XOR<Prisma.UserUpdateWithoutRemediationNotesInput, Prisma.UserUncheckedUpdateWithoutRemediationNotesInput>
+}
+
+export type UserUpdateWithoutRemediationNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  accounts?: Prisma.AccountUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUpdateManyWithoutUserNestedInput
+  organization?: Prisma.OrganizationUpdateOneWithoutOwnerNestedInput
+  monitors?: Prisma.MonitorUpdateManyWithoutCreatorNestedInput
+  memberships?: Prisma.OrganizationMemberUpdateManyWithoutUserNestedInput
+  investigationComments?: Prisma.InvestigationCommentUpdateManyWithoutUserNestedInput
+  investigationVerdicts?: Prisma.InvestigationVerdictUpdateManyWithoutUserNestedInput
+  investigationActivities?: Prisma.InvestigationActivityUpdateManyWithoutUserNestedInput
+  investigationRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutUserNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUpdateManyWithoutUserNestedInput
+}
+
+export type UserUncheckedUpdateWithoutRemediationNotesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  name?: Prisma.StringFieldUpdateOperationsInput | string
+  email?: Prisma.StringFieldUpdateOperationsInput | string
+  emailVerified?: Prisma.BoolFieldUpdateOperationsInput | boolean
+  image?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organizationId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  accounts?: Prisma.AccountUncheckedUpdateManyWithoutUserNestedInput
+  sessions?: Prisma.SessionUncheckedUpdateManyWithoutUserNestedInput
+  monitors?: Prisma.MonitorUncheckedUpdateManyWithoutCreatorNestedInput
+  memberships?: Prisma.OrganizationMemberUncheckedUpdateManyWithoutUserNestedInput
+  investigationComments?: Prisma.InvestigationCommentUncheckedUpdateManyWithoutUserNestedInput
+  investigationVerdicts?: Prisma.InvestigationVerdictUncheckedUpdateManyWithoutUserNestedInput
+  investigationActivities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutUserNestedInput
+  investigationRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutUserNestedInput
+  serviceOwnershipAssertions?: Prisma.ServiceOwnershipAssertionUncheckedUpdateManyWithoutUserNestedInput
 }
 
 
@@ -1545,6 +1702,7 @@ export type UserCountOutputType = {
   investigationActivities: number
   investigationRelations: number
   serviceOwnershipAssertions: number
+  remediationNotes: number
 }
 
 export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1557,6 +1715,7 @@ export type UserCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.I
   investigationActivities?: boolean | UserCountOutputTypeCountInvestigationActivitiesArgs
   investigationRelations?: boolean | UserCountOutputTypeCountInvestigationRelationsArgs
   serviceOwnershipAssertions?: boolean | UserCountOutputTypeCountServiceOwnershipAssertionsArgs
+  remediationNotes?: boolean | UserCountOutputTypeCountRemediationNotesArgs
 }
 
 /**
@@ -1632,6 +1791,13 @@ export type UserCountOutputTypeCountServiceOwnershipAssertionsArgs<ExtArgs exten
   where?: Prisma.ServiceOwnershipAssertionWhereInput
 }
 
+/**
+ * UserCountOutputType without action
+ */
+export type UserCountOutputTypeCountRemediationNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RemediationNoteWhereInput
+}
+
 
 export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -1652,6 +1818,7 @@ export type UserSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = r
   investigationActivities?: boolean | Prisma.User$investigationActivitiesArgs<ExtArgs>
   investigationRelations?: boolean | Prisma.User$investigationRelationsArgs<ExtArgs>
   serviceOwnershipAssertions?: boolean | Prisma.User$serviceOwnershipAssertionsArgs<ExtArgs>
+  remediationNotes?: boolean | Prisma.User$remediationNotesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["user"]>
 
@@ -1702,6 +1869,7 @@ export type UserInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = 
   investigationActivities?: boolean | Prisma.User$investigationActivitiesArgs<ExtArgs>
   investigationRelations?: boolean | Prisma.User$investigationRelationsArgs<ExtArgs>
   serviceOwnershipAssertions?: boolean | Prisma.User$serviceOwnershipAssertionsArgs<ExtArgs>
+  remediationNotes?: boolean | Prisma.User$remediationNotesArgs<ExtArgs>
   _count?: boolean | Prisma.UserCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type UserIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -1724,6 +1892,7 @@ export type $UserPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs =
     investigationActivities: Prisma.$InvestigationActivityPayload<ExtArgs>[]
     investigationRelations: Prisma.$InvestigationProposedRelationPayload<ExtArgs>[]
     serviceOwnershipAssertions: Prisma.$ServiceOwnershipAssertionPayload<ExtArgs>[]
+    remediationNotes: Prisma.$RemediationNotePayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2138,6 +2307,7 @@ export interface Prisma__UserClient<T, Null = never, ExtArgs extends runtime.Typ
   investigationActivities<T extends Prisma.User$investigationActivitiesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$investigationActivitiesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvestigationActivityPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   investigationRelations<T extends Prisma.User$investigationRelationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$investigationRelationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvestigationProposedRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   serviceOwnershipAssertions<T extends Prisma.User$serviceOwnershipAssertionsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$serviceOwnershipAssertionsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$ServiceOwnershipAssertionPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  remediationNotes<T extends Prisma.User$remediationNotesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.User$remediationNotesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RemediationNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -2808,6 +2978,30 @@ export type User$serviceOwnershipAssertionsArgs<ExtArgs extends runtime.Types.Ex
   take?: number
   skip?: number
   distinct?: Prisma.ServiceOwnershipAssertionScalarFieldEnum | Prisma.ServiceOwnershipAssertionScalarFieldEnum[]
+}
+
+/**
+ * User.remediationNotes
+ */
+export type User$remediationNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RemediationNote
+   */
+  select?: Prisma.RemediationNoteSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RemediationNote
+   */
+  omit?: Prisma.RemediationNoteOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RemediationNoteInclude<ExtArgs> | null
+  where?: Prisma.RemediationNoteWhereInput
+  orderBy?: Prisma.RemediationNoteOrderByWithRelationInput | Prisma.RemediationNoteOrderByWithRelationInput[]
+  cursor?: Prisma.RemediationNoteWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RemediationNoteScalarFieldEnum | Prisma.RemediationNoteScalarFieldEnum[]
 }
 
 /**

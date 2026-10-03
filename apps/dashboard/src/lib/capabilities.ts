@@ -19,6 +19,7 @@ export type TeamCapability =
     | "TEAM_ORGANIZATIONAL_MEMORY"
     | "TEAM_CHANGE_INTELLIGENCE"
     | "TEAM_EVIDENCE_SYNTHESIS"
+    | "TEAM_REMEDIATION_INTELLIGENCE"
     | "TEAM_CROSS_SERVICE_TOPOLOGY"
     | "TEAM_EVIDENCE_AUTOMATION"
     | "SHARED_DASHBOARDS"
@@ -73,6 +74,11 @@ export const CAPABILITY_METADATA: Record<
     TEAM_EVIDENCE_SYNTHESIS: {
         name: "Evidence Synthesis & Investigation Reasoning",
         description: "Deterministic synthesis of cross-pillar evidence into inspectable claims, independent verification, and investigation narratives.",
+        minimumPlan: "TEAM",
+    },
+    TEAM_REMEDIATION_INTELLIGENCE: {
+        name: "Evidence-Backed Remediation Intelligence",
+        description: "Deterministic, inspectable remediation recommendations, action planning, validation criteria, and uncertainty assessment derived from verified evidence.",
         minimumPlan: "TEAM",
     },
     TEAM_CROSS_SERVICE_TOPOLOGY: {

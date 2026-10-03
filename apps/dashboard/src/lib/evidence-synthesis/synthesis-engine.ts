@@ -388,10 +388,97 @@ export async function synthesizeInvestigationEvidence(
     let suspectChangedFile: string | null = null;
 
     for (const change of changeObservations) {
+        if (change.sourceType === "DEPLOYMENT_EVENT") continue;
+
+        const changeTime = change.authorTimestamp || change.observedAt || undefined;
+        const changeService = change.serviceAssociation || change.repository;
+
+        if (change.sourceType === "CONFIGURATION_CHANGE") {
+            const configArea = (change.metadata as any)?.configArea || change.commitMessage || "configuration";
+            rawClaims.push(
+                buildClaim({
+                    claimId: `claim-config-${change.id}`,
+                    investigationId,
+                    statement: `Configuration update for ${configArea} in service ${changeService || primaryService} occurred prior to failure onset`,
+                    status: "ESTABLISHED",
+                    evidenceReferences: [
+                        {
+                            id: `ref-change-${change.id}`,
+                            sourceType: "CHANGE",
+                            label: `Config Change (${configArea})`,
+                            targetId: change.id,
+                            timestamp: changeTime,
+                            metadata: {
+                                changeType: "CONFIGURATION_CHANGE",
+                                configArea,
+                            },
+                        },
+                    ],
+                    firstObservedAt: changeTime,
+                    relatedServices: [changeService || primaryService],
+                })
+            );
+            continue;
+        }
+
+        if (change.sourceType === "FEATURE_FLAG_CHANGE") {
+            const flagName = (change.metadata as any)?.flagName || change.commitMessage || "feature_flag";
+            rawClaims.push(
+                buildClaim({
+                    claimId: `claim-ff-${change.id}`,
+                    investigationId,
+                    statement: `Feature flag change for ${flagName} in service ${changeService || primaryService} occurred prior to failure onset`,
+                    status: "ESTABLISHED",
+                    evidenceReferences: [
+                        {
+                            id: `ref-change-${change.id}`,
+                            sourceType: "CHANGE",
+                            label: `Feature Flag (${flagName})`,
+                            targetId: change.id,
+                            timestamp: changeTime,
+                            metadata: {
+                                changeType: "FEATURE_FLAG_CHANGE",
+                                flagName,
+                            },
+                        },
+                    ],
+                    firstObservedAt: changeTime,
+                    relatedServices: [changeService || primaryService],
+                })
+            );
+            continue;
+        }
+
+        if (change.sourceType === "DEPENDENCY_CHANGE") {
+            const pkgName = (change.metadata as any)?.packageName || change.commitMessage || "dependency";
+            rawClaims.push(
+                buildClaim({
+                    claimId: `claim-dep-${change.id}`,
+                    investigationId,
+                    statement: `Dependency package update for ${pkgName} in service ${changeService || primaryService} occurred prior to failure onset`,
+                    status: "ESTABLISHED",
+                    evidenceReferences: [
+                        {
+                            id: `ref-change-${change.id}`,
+                            sourceType: "CHANGE",
+                            label: `Dependency Update (${pkgName})`,
+                            targetId: change.id,
+                            timestamp: changeTime,
+                            metadata: {
+                                changeType: "DEPENDENCY_CHANGE",
+                                packageName: pkgName,
+                            },
+                        },
+                    ],
+                    firstObservedAt: changeTime,
+                    relatedServices: [changeService || primaryService],
+                })
+            );
+            continue;
+        }
+
         const changedFiles = Array.isArray(change.changedFiles) ? (change.changedFiles as any[]) : [];
         const commitSha = change.commitSha || "";
-        const changeTime = change.authorTimestamp || change.observedAt;
-        const changeService = change.serviceAssociation || change.repository;
 
         if (!commitSha) continue;
 
@@ -505,8 +592,35 @@ export async function synthesizeInvestigationEvidence(
     }
 
     // --- CLAIM 4: Deployment & Releases ---
+    const deploymentChange = changeObservations.find((c) => c.sourceType === "DEPLOYMENT_EVENT" || Boolean(c.deploymentReference));
     const latestRelease = investigation.project.releases[0];
-    if (latestRelease && suspectCommitSha && latestRelease.commitSha === suspectCommitSha) {
+    if (deploymentChange) {
+        const depRef = deploymentChange.deploymentReference || deploymentChange.changeKey;
+        rawClaims.push(
+            buildClaim({
+                claimId: `claim-deploy-${deploymentChange.id}`,
+                investigationId,
+                statement: `Deployment ${depRef} for service ${deploymentChange.serviceAssociation || primaryService} was verified prior to failure onset`,
+                status: "ESTABLISHED",
+                evidenceReferences: [
+                    {
+                        id: `ref-deploy-${deploymentChange.id}`,
+                        sourceType: "DEPLOYMENT",
+                        label: `Deployment ${depRef}`,
+                        targetId: deploymentChange.id,
+                        timestamp: deploymentChange.authorTimestamp || undefined,
+                        metadata: {
+                            commitSha: deploymentChange.commitSha,
+                            deploymentReference: depRef,
+                        },
+                    },
+                ],
+                firstObservedAt: deploymentChange.authorTimestamp || undefined,
+                relatedServices: [deploymentChange.serviceAssociation || primaryService],
+                relatedCodePaths: deploymentChange.codePathAssociation ? [deploymentChange.codePathAssociation] : [],
+            })
+        );
+    } else if (latestRelease && suspectCommitSha && latestRelease.commitSha === suspectCommitSha) {
         rawClaims.push(
             buildClaim({
                 claimId: `claim-deploy-${latestRelease.id}`,

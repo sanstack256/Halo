@@ -431,7 +431,9 @@ export const ModelName = {
   ServiceOwnership: 'ServiceOwnership',
   ServiceOwnershipAssertion: 'ServiceOwnershipAssertion',
   ServiceOwnershipHistory: 'ServiceOwnershipHistory',
-  ChangeObservation: 'ChangeObservation'
+  ChangeObservation: 'ChangeObservation',
+  RemediationRecommendation: 'RemediationRecommendation',
+  RemediationNote: 'RemediationNote'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -447,7 +449,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation" | "organizationMember" | "investigationComment" | "investigationVerdict" | "investigationActivity" | "investigationProposedRelation" | "incidentMemory" | "failurePattern" | "serviceOwnership" | "serviceOwnershipAssertion" | "serviceOwnershipHistory" | "changeObservation"
+    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation" | "organizationMember" | "investigationComment" | "investigationVerdict" | "investigationActivity" | "investigationProposedRelation" | "incidentMemory" | "failurePattern" | "serviceOwnership" | "serviceOwnershipAssertion" | "serviceOwnershipHistory" | "changeObservation" | "remediationRecommendation" | "remediationNote"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3041,6 +3043,154 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RemediationRecommendation: {
+      payload: Prisma.$RemediationRecommendationPayload<ExtArgs>
+      fields: Prisma.RemediationRecommendationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RemediationRecommendationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationRecommendationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RemediationRecommendationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationRecommendationPayload>
+        }
+        findFirst: {
+          args: Prisma.RemediationRecommendationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationRecommendationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RemediationRecommendationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationRecommendationPayload>
+        }
+        findMany: {
+          args: Prisma.RemediationRecommendationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationRecommendationPayload>[]
+        }
+        create: {
+          args: Prisma.RemediationRecommendationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationRecommendationPayload>
+        }
+        createMany: {
+          args: Prisma.RemediationRecommendationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RemediationRecommendationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationRecommendationPayload>[]
+        }
+        delete: {
+          args: Prisma.RemediationRecommendationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationRecommendationPayload>
+        }
+        update: {
+          args: Prisma.RemediationRecommendationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationRecommendationPayload>
+        }
+        deleteMany: {
+          args: Prisma.RemediationRecommendationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RemediationRecommendationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RemediationRecommendationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationRecommendationPayload>[]
+        }
+        upsert: {
+          args: Prisma.RemediationRecommendationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationRecommendationPayload>
+        }
+        aggregate: {
+          args: Prisma.RemediationRecommendationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRemediationRecommendation>
+        }
+        groupBy: {
+          args: Prisma.RemediationRecommendationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RemediationRecommendationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RemediationRecommendationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RemediationRecommendationCountAggregateOutputType> | number
+        }
+      }
+    }
+    RemediationNote: {
+      payload: Prisma.$RemediationNotePayload<ExtArgs>
+      fields: Prisma.RemediationNoteFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RemediationNoteFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationNotePayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RemediationNoteFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationNotePayload>
+        }
+        findFirst: {
+          args: Prisma.RemediationNoteFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationNotePayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RemediationNoteFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationNotePayload>
+        }
+        findMany: {
+          args: Prisma.RemediationNoteFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationNotePayload>[]
+        }
+        create: {
+          args: Prisma.RemediationNoteCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationNotePayload>
+        }
+        createMany: {
+          args: Prisma.RemediationNoteCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RemediationNoteCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationNotePayload>[]
+        }
+        delete: {
+          args: Prisma.RemediationNoteDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationNotePayload>
+        }
+        update: {
+          args: Prisma.RemediationNoteUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationNotePayload>
+        }
+        deleteMany: {
+          args: Prisma.RemediationNoteDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RemediationNoteUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RemediationNoteUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationNotePayload>[]
+        }
+        upsert: {
+          args: Prisma.RemediationNoteUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationNotePayload>
+        }
+        aggregate: {
+          args: Prisma.RemediationNoteAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRemediationNote>
+        }
+        groupBy: {
+          args: Prisma.RemediationNoteGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RemediationNoteGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RemediationNoteCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RemediationNoteCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3759,6 +3909,58 @@ export const ChangeObservationScalarFieldEnum = {
 export type ChangeObservationScalarFieldEnum = (typeof ChangeObservationScalarFieldEnum)[keyof typeof ChangeObservationScalarFieldEnum]
 
 
+export const RemediationRecommendationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  investigationId: 'investigationId',
+  recommendationKey: 'recommendationKey',
+  type: 'type',
+  status: 'status',
+  supportLevel: 'supportLevel',
+  riskLevel: 'riskLevel',
+  title: 'title',
+  summary: 'summary',
+  action: 'action',
+  rationale: 'rationale',
+  expectedOutcome: 'expectedOutcome',
+  validationMethod: 'validationMethod',
+  prerequisites: 'prerequisites',
+  evidenceReferences: 'evidenceReferences',
+  supportingClaimIds: 'supportingClaimIds',
+  affectedServices: 'affectedServices',
+  affectedOperations: 'affectedOperations',
+  affectedCodePaths: 'affectedCodePaths',
+  ownerContext: 'ownerContext',
+  uncertainty: 'uncertainty',
+  completedAt: 'completedAt',
+  completedBy: 'completedBy',
+  dismissedAt: 'dismissedAt',
+  dismissedBy: 'dismissedBy',
+  dismissalReason: 'dismissalReason',
+  historicalContext: 'historicalContext',
+  contradictionNotes: 'contradictionNotes',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RemediationRecommendationScalarFieldEnum = (typeof RemediationRecommendationScalarFieldEnum)[keyof typeof RemediationRecommendationScalarFieldEnum]
+
+
+export const RemediationNoteScalarFieldEnum = {
+  id: 'id',
+  recommendationId: 'recommendationId',
+  userId: 'userId',
+  userEmail: 'userEmail',
+  userName: 'userName',
+  content: 'content',
+  createdAt: 'createdAt'
+} as const
+
+export type RemediationNoteScalarFieldEnum = (typeof RemediationNoteScalarFieldEnum)[keyof typeof RemediationNoteScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4253,6 +4455,62 @@ export type EnumChangeSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<
 export type ListEnumChangeSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChangeSourceType[]'>
     
 
+
+/**
+ * Reference to a field of type 'RemediationType'
+ */
+export type EnumRemediationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RemediationType'>
+    
+
+
+/**
+ * Reference to a field of type 'RemediationType[]'
+ */
+export type ListEnumRemediationTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RemediationType[]'>
+    
+
+
+/**
+ * Reference to a field of type 'RemediationStatus'
+ */
+export type EnumRemediationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RemediationStatus'>
+    
+
+
+/**
+ * Reference to a field of type 'RemediationStatus[]'
+ */
+export type ListEnumRemediationStatusFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RemediationStatus[]'>
+    
+
+
+/**
+ * Reference to a field of type 'RemediationSupportLevel'
+ */
+export type EnumRemediationSupportLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RemediationSupportLevel'>
+    
+
+
+/**
+ * Reference to a field of type 'RemediationSupportLevel[]'
+ */
+export type ListEnumRemediationSupportLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RemediationSupportLevel[]'>
+    
+
+
+/**
+ * Reference to a field of type 'RemediationRiskLevel'
+ */
+export type EnumRemediationRiskLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RemediationRiskLevel'>
+    
+
+
+/**
+ * Reference to a field of type 'RemediationRiskLevel[]'
+ */
+export type ListEnumRemediationRiskLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RemediationRiskLevel[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -4439,6 +4697,8 @@ export type GlobalOmitConfig = {
   serviceOwnershipAssertion?: Prisma.ServiceOwnershipAssertionOmit
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryOmit
   changeObservation?: Prisma.ChangeObservationOmit
+  remediationRecommendation?: Prisma.RemediationRecommendationOmit
+  remediationNote?: Prisma.RemediationNoteOmit
 }
 
 /* Types for Logging */

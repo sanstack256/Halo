@@ -786,6 +786,74 @@ export type EnumChangeSourceTypeWithAggregatesFilter<$PrismaModel = never> = {
   _max?: Prisma.NestedEnumChangeSourceTypeFilter<$PrismaModel>
 }
 
+export type EnumRemediationTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationType | Prisma.EnumRemediationTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationType[] | Prisma.ListEnumRemediationTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationType[] | Prisma.ListEnumRemediationTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationTypeFilter<$PrismaModel> | $Enums.RemediationType
+}
+
+export type EnumRemediationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationStatus | Prisma.EnumRemediationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationStatus[] | Prisma.ListEnumRemediationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationStatus[] | Prisma.ListEnumRemediationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationStatusFilter<$PrismaModel> | $Enums.RemediationStatus
+}
+
+export type EnumRemediationSupportLevelFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationSupportLevel | Prisma.EnumRemediationSupportLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationSupportLevel[] | Prisma.ListEnumRemediationSupportLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationSupportLevel[] | Prisma.ListEnumRemediationSupportLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationSupportLevelFilter<$PrismaModel> | $Enums.RemediationSupportLevel
+}
+
+export type EnumRemediationRiskLevelFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationRiskLevel | Prisma.EnumRemediationRiskLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationRiskLevel[] | Prisma.ListEnumRemediationRiskLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationRiskLevel[] | Prisma.ListEnumRemediationRiskLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationRiskLevelFilter<$PrismaModel> | $Enums.RemediationRiskLevel
+}
+
+export type EnumRemediationTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationType | Prisma.EnumRemediationTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationType[] | Prisma.ListEnumRemediationTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationType[] | Prisma.ListEnumRemediationTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationTypeWithAggregatesFilter<$PrismaModel> | $Enums.RemediationType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRemediationTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRemediationTypeFilter<$PrismaModel>
+}
+
+export type EnumRemediationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationStatus | Prisma.EnumRemediationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationStatus[] | Prisma.ListEnumRemediationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationStatus[] | Prisma.ListEnumRemediationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationStatusWithAggregatesFilter<$PrismaModel> | $Enums.RemediationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRemediationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRemediationStatusFilter<$PrismaModel>
+}
+
+export type EnumRemediationSupportLevelWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationSupportLevel | Prisma.EnumRemediationSupportLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationSupportLevel[] | Prisma.ListEnumRemediationSupportLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationSupportLevel[] | Prisma.ListEnumRemediationSupportLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationSupportLevelWithAggregatesFilter<$PrismaModel> | $Enums.RemediationSupportLevel
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRemediationSupportLevelFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRemediationSupportLevelFilter<$PrismaModel>
+}
+
+export type EnumRemediationRiskLevelWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationRiskLevel | Prisma.EnumRemediationRiskLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationRiskLevel[] | Prisma.ListEnumRemediationRiskLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationRiskLevel[] | Prisma.ListEnumRemediationRiskLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationRiskLevelWithAggregatesFilter<$PrismaModel> | $Enums.RemediationRiskLevel
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRemediationRiskLevelFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRemediationRiskLevelFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1504,6 +1572,74 @@ export type NestedEnumChangeSourceTypeWithAggregatesFilter<$PrismaModel = never>
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumChangeSourceTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumChangeSourceTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumRemediationTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationType | Prisma.EnumRemediationTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationType[] | Prisma.ListEnumRemediationTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationType[] | Prisma.ListEnumRemediationTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationTypeFilter<$PrismaModel> | $Enums.RemediationType
+}
+
+export type NestedEnumRemediationStatusFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationStatus | Prisma.EnumRemediationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationStatus[] | Prisma.ListEnumRemediationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationStatus[] | Prisma.ListEnumRemediationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationStatusFilter<$PrismaModel> | $Enums.RemediationStatus
+}
+
+export type NestedEnumRemediationSupportLevelFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationSupportLevel | Prisma.EnumRemediationSupportLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationSupportLevel[] | Prisma.ListEnumRemediationSupportLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationSupportLevel[] | Prisma.ListEnumRemediationSupportLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationSupportLevelFilter<$PrismaModel> | $Enums.RemediationSupportLevel
+}
+
+export type NestedEnumRemediationRiskLevelFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationRiskLevel | Prisma.EnumRemediationRiskLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationRiskLevel[] | Prisma.ListEnumRemediationRiskLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationRiskLevel[] | Prisma.ListEnumRemediationRiskLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationRiskLevelFilter<$PrismaModel> | $Enums.RemediationRiskLevel
+}
+
+export type NestedEnumRemediationTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationType | Prisma.EnumRemediationTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationType[] | Prisma.ListEnumRemediationTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationType[] | Prisma.ListEnumRemediationTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationTypeWithAggregatesFilter<$PrismaModel> | $Enums.RemediationType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRemediationTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRemediationTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumRemediationStatusWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationStatus | Prisma.EnumRemediationStatusFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationStatus[] | Prisma.ListEnumRemediationStatusFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationStatus[] | Prisma.ListEnumRemediationStatusFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationStatusWithAggregatesFilter<$PrismaModel> | $Enums.RemediationStatus
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRemediationStatusFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRemediationStatusFilter<$PrismaModel>
+}
+
+export type NestedEnumRemediationSupportLevelWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationSupportLevel | Prisma.EnumRemediationSupportLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationSupportLevel[] | Prisma.ListEnumRemediationSupportLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationSupportLevel[] | Prisma.ListEnumRemediationSupportLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationSupportLevelWithAggregatesFilter<$PrismaModel> | $Enums.RemediationSupportLevel
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRemediationSupportLevelFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRemediationSupportLevelFilter<$PrismaModel>
+}
+
+export type NestedEnumRemediationRiskLevelWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.RemediationRiskLevel | Prisma.EnumRemediationRiskLevelFieldRefInput<$PrismaModel>
+  in?: $Enums.RemediationRiskLevel[] | Prisma.ListEnumRemediationRiskLevelFieldRefInput<$PrismaModel>
+  notIn?: $Enums.RemediationRiskLevel[] | Prisma.ListEnumRemediationRiskLevelFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumRemediationRiskLevelWithAggregatesFilter<$PrismaModel> | $Enums.RemediationRiskLevel
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumRemediationRiskLevelFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumRemediationRiskLevelFilter<$PrismaModel>
 }
 
 

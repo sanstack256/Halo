@@ -294,3 +294,50 @@ export const ChangeRelationshipType = {
 } as const
 
 export type ChangeRelationshipType = (typeof ChangeRelationshipType)[keyof typeof ChangeRelationshipType]
+
+
+export const RemediationType = {
+  CODE_CHANGE: 'CODE_CHANGE',
+  CONFIGURATION_REVIEW: 'CONFIGURATION_REVIEW',
+  DEPENDENCY_REVIEW: 'DEPENDENCY_REVIEW',
+  DEPLOYMENT_REVIEW: 'DEPLOYMENT_REVIEW',
+  FEATURE_FLAG_REVIEW: 'FEATURE_FLAG_REVIEW',
+  DATA_VALIDATION: 'DATA_VALIDATION',
+  OBSERVABILITY_GAP: 'OBSERVABILITY_GAP',
+  REGRESSION_TEST: 'REGRESSION_TEST',
+  ROLLBACK_REVIEW: 'ROLLBACK_REVIEW',
+  DOCUMENTATION_UPDATE: 'DOCUMENTATION_UPDATE',
+  RUNBOOK_REVIEW: 'RUNBOOK_REVIEW'
+} as const
+
+export type RemediationType = (typeof RemediationType)[keyof typeof RemediationType]
+
+
+export const RemediationStatus = {
+  ACTIONABLE: 'ACTIONABLE',
+  NEEDS_VALIDATION: 'NEEDS_VALIDATION',
+  INSUFFICIENT_EVIDENCE: 'INSUFFICIENT_EVIDENCE',
+  BLOCKED: 'BLOCKED',
+  COMPLETED: 'COMPLETED',
+  DISMISSED: 'DISMISSED'
+} as const
+
+export type RemediationStatus = (typeof RemediationStatus)[keyof typeof RemediationStatus]
+
+
+export const RemediationSupportLevel = {
+  EVIDENCE_BACKED: 'EVIDENCE_BACKED',
+  PARTIALLY_SUPPORTED: 'PARTIALLY_SUPPORTED',
+  INSUFFICIENT_EVIDENCE: 'INSUFFICIENT_EVIDENCE'
+} as const
+
+export type RemediationSupportLevel = (typeof RemediationSupportLevel)[keyof typeof RemediationSupportLevel]
+
+
+export const RemediationRiskLevel = {
+  LOW: 'LOW',
+  MEDIUM: 'MEDIUM',
+  HIGH: 'HIGH'
+} as const
+
+export type RemediationRiskLevel = (typeof RemediationRiskLevel)[keyof typeof RemediationRiskLevel]
