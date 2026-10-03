@@ -187,3 +187,8 @@ export type ServiceOwnershipAssertion = Prisma.ServiceOwnershipAssertionModel
  * 
  */
 export type ServiceOwnershipHistory = Prisma.ServiceOwnershipHistoryModel
+/**
+ * Model ChangeObservation
+ * 
+ */
+export type ChangeObservation = Prisma.ChangeObservationModel

@@ -62,7 +62,7 @@ const CATEGORIES: CategoryNavItem[] = [
         id: "changes",
         label: "Changes",
         targetSectionId: "section-regression",
-        sectionIds: ["section-regression"],
+        sectionIds: ["section-regression", "section-change-intelligence"],
         icon: GitBranch,
     },
     {

@@ -70,6 +70,10 @@ export interface GeneratedPostmortem {
         similarIncidentsCount: number;
         notes: string;
     };
+    changeContext?: {
+        changesObserved: number;
+        summary: string;
+    };
     markdownReport: string;
 }
 
@@ -221,6 +225,36 @@ export async function generateInvestigationPostmortem(investigationId: string): 
             : `- \`${s}\`: Owner unknown.`;
     });
 
+    // Fetch Change Intelligence context (Pillar F)
+    let changeContextText = "- *Change evidence not observed for this investigation window.*";
+    let changeSummaryObj = { changesObserved: 0, summary: "No change evidence observed." };
+    try {
+        const changes = await prisma.changeObservation.findMany({
+            where: {
+                projectId: investigation.projectId,
+                organizationId: investigation.project.organizationId,
+            },
+            orderBy: { observedAt: "desc" },
+            take: 5,
+        });
+
+        if (changes.length > 0) {
+            const statements = changes.map((c) => {
+                const shaStr = c.commitSha ? `\`${c.commitSha.slice(0, 7)}\`` : `\`${c.sourceType}\``;
+                const deployStr = c.deploymentReference ? ` (Deployment: \`${c.deploymentReference}\`)` : "";
+                const serviceStr = c.serviceAssociation ? ` affecting \`${c.serviceAssociation}\`` : "";
+                return `- Change ${shaStr}${deployStr}${serviceStr}: "${c.commitMessage || "Update"}". Direct causal evidence: Not observed.`;
+            });
+            changeContextText = statements.join("\n");
+            changeSummaryObj = {
+                changesObserved: changes.length,
+                summary: `${changes.length} change candidate(s) observed. Direct causal evidence was not observed.`,
+            };
+        }
+    } catch {
+        // fail-safe
+    }
+
     // Synthesize Markdown Report
     const markdownReport = `# POSTMORTEM: ${investigation.title.toUpperCase()}
 
@@ -278,6 +312,9 @@ ${
         : "- *No prior identical failure pattern was clustered for this incident.*"
 }
 
+## 9. Change Context
+${changeContextText}
+
 ---
 *Notice: This postmortem is deterministically synthesized from immutable telemetry events and verified human peer records. It does not fabricate unobserved metrics or external dependencies.*
 `;
@@ -322,6 +359,7 @@ ${
                 ? `Historical pattern "${patternTitle}" has occurred ${recurringCount} times in this organization.`
                 : "No matching recurring pattern found in organizational memory.",
         },
+        changeContext: changeSummaryObj,
         markdownReport,
     };
 }

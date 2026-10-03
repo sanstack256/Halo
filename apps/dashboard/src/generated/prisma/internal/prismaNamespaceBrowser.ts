@@ -84,7 +84,8 @@ export const ModelName = {
   FailurePattern: 'FailurePattern',
   ServiceOwnership: 'ServiceOwnership',
   ServiceOwnershipAssertion: 'ServiceOwnershipAssertion',
-  ServiceOwnershipHistory: 'ServiceOwnershipHistory'
+  ServiceOwnershipHistory: 'ServiceOwnershipHistory',
+  ChangeObservation: 'ChangeObservation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -748,6 +749,38 @@ export const ServiceOwnershipHistoryScalarFieldEnum = {
 } as const
 
 export type ServiceOwnershipHistoryScalarFieldEnum = (typeof ServiceOwnershipHistoryScalarFieldEnum)[keyof typeof ServiceOwnershipHistoryScalarFieldEnum]
+
+
+export const ChangeObservationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  changeKey: 'changeKey',
+  repository: 'repository',
+  commitSha: 'commitSha',
+  parentCommitSha: 'parentCommitSha',
+  commitMessage: 'commitMessage',
+  authorIdentity: 'authorIdentity',
+  authorTimestamp: 'authorTimestamp',
+  sourceType: 'sourceType',
+  sourceVersion: 'sourceVersion',
+  deploymentReference: 'deploymentReference',
+  pullRequestReference: 'pullRequestReference',
+  changedFiles: 'changedFiles',
+  additions: 'additions',
+  deletions: 'deletions',
+  branch: 'branch',
+  ref: 'ref',
+  serviceAssociation: 'serviceAssociation',
+  codePathAssociation: 'codePathAssociation',
+  evidenceReferences: 'evidenceReferences',
+  observedAt: 'observedAt',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ChangeObservationScalarFieldEnum = (typeof ChangeObservationScalarFieldEnum)[keyof typeof ChangeObservationScalarFieldEnum]
 
 
 export const SortOrder = {

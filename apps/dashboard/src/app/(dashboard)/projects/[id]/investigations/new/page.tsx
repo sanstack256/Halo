@@ -93,6 +93,7 @@ import { ServicePropagationView } from "@/components/topology/service-propagatio
 import { InvestigationCollaborativeRoom } from "@/components/investigation/collaboration/investigation-collaborative-room";
 import { HistoricalContextSection } from "@/components/investigation/memory/historical-context-section";
 import { OwnershipContextPanel } from "@/components/investigation/ownership/ownership-context-panel";
+import { ChangeIntelligencePanel } from "@/components/investigation/changes/change-intelligence-panel";
 import { getInvestigationCollaborationState } from "@/actions/collaboration";
 import { getSession } from "@/lib/session";
 import { planHasCapability } from "@/lib/capabilities";
@@ -420,6 +421,10 @@ export default async function InvestigationPage({
             (projectRecord?.organization?.plan as any) || "FREE",
             "TEAM_OWNERSHIP_INTELLIGENCE"
         );
+        const isTeamChangePlan = planHasCapability(
+            (projectRecord?.organization?.plan as any) || "FREE",
+            "TEAM_CHANGE_INTELLIGENCE"
+        );
 
         // Ensure canonical durable Investigation record exists in database
         let investigationRecord = monitorContext?.investigationRecord;
@@ -477,6 +482,7 @@ export default async function InvestigationPage({
                 isTeamCollaborationPlan={isTeamCollaborationPlan}
                 isTeamMemoryPlan={isTeamMemoryPlan}
                 isTeamOwnershipPlan={isTeamOwnershipPlan}
+                isTeamChangePlan={isTeamChangePlan}
                 investigationId={investigationRecord?.id}
                 initialCollaborationState={initialCollaborationState}
                 currentUserId={session?.user?.id}
@@ -519,6 +525,7 @@ function InvestigationView({
     isTeamCollaborationPlan = false,
     isTeamMemoryPlan = false,
     isTeamOwnershipPlan = false,
+    isTeamChangePlan = false,
     investigationId,
     initialCollaborationState,
     currentUserId,
@@ -613,6 +620,7 @@ function InvestigationView({
     isTeamCollaborationPlan?: boolean;
     isTeamMemoryPlan?: boolean;
     isTeamOwnershipPlan?: boolean;
+    isTeamChangePlan?: boolean;
     investigationId?: string;
     initialCollaborationState?: any;
     currentUserId?: string;
@@ -1388,12 +1396,19 @@ function InvestigationView({
                 />
             </div>
 
-            {/* D. AUTOMATIC REGRESSION DETECTION (CHANGES) */}
+            {/* D. CHANGE INTELLIGENCE (CHANGES - PILLAR F) */}
             <div id="section-regression" className="scroll-mt-24">
-                <RegressionDetectionView
-                    regression={interpreted.regressionAnalysis}
-                    projectId={projectId}
-                />
+                {isTeamChangePlan && investigationId ? (
+                    <ChangeIntelligencePanel
+                        investigationId={investigationId}
+                        projectId={projectId}
+                    />
+                ) : (
+                    <RegressionDetectionView
+                        regression={interpreted.regressionAnalysis}
+                        projectId={projectId}
+                    />
+                )}
             </div>
 
             {/* E. WHAT HAPPENED (TIMELINE) */}

@@ -22,6 +22,7 @@ model Organization {
   serviceOwnerships ServiceOwnership[]
   serviceOwnershipAssertions ServiceOwnershipAssertion[]
   serviceOwnershipHistory    ServiceOwnershipHistory[]
+  changeObservations         ChangeObservation[]
 }
 
 model Project {
@@ -61,6 +62,7 @@ model Project {
   serviceOwnerships   ServiceOwnership[]
   serviceOwnershipAssertions ServiceOwnershipAssertion[]
   serviceOwnershipHistory    ServiceOwnershipHistory[]
+  changeObservations         ChangeObservation[]
 
   @@unique([organizationId, slug])
 }
@@ -1000,4 +1002,66 @@ model ServiceOwnershipHistory {
 
   @@index([organizationId, serviceName, changedAt])
   @@index([projectId, serviceName])
+}
+
+// ---------------------------------------------------------------------------
+// Team Plan Pillar F: Change Intelligence & Causal Change Analysis
+// ---------------------------------------------------------------------------
+
+enum ChangeSourceType {
+  GIT_COMMIT
+  DEPLOYMENT_EVENT
+  PULL_REQUEST
+  CONFIGURATION_CHANGE
+  DEPENDENCY_CHANGE
+  FEATURE_FLAG_CHANGE
+}
+
+enum ChangeRelationshipType {
+  UNRELATED
+  TEMPORALLY_RELATED
+  SERVICE_RELATED
+  CODE_PATH_RELATED
+  BEHAVIORALLY_RELATED
+  STRONGLY_SUPPORTED
+  INSUFFICIENT_EVIDENCE
+}
+
+model ChangeObservation {
+  id                   String                 @id @default(cuid())
+  organizationId       String
+  projectId            String
+  changeKey            String                 // Deterministic deduplication key for idempotency
+  repository           String?
+  commitSha            String?
+  parentCommitSha      String?
+  commitMessage        String?
+  authorIdentity       String?                // Historical metadata only; author != owner != culprit
+  authorTimestamp      DateTime?
+  sourceType           ChangeSourceType       @default(GIT_COMMIT)
+  sourceVersion        String?
+  deploymentReference  String?
+  pullRequestReference String?
+  changedFiles         Json?                  // array of changed file paths or objects
+  additions            Int?
+  deletions            Int?
+  branch               String?
+  ref                  String?
+  serviceAssociation   String?
+  codePathAssociation  String?
+  evidenceReferences   String[]               @default([])
+  observedAt           DateTime               @default(now())
+  metadata             Json?
+  createdAt            DateTime               @default(now())
+  updatedAt            DateTime               @updatedAt
+
+  organization         Organization           @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project              Project                @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@unique([projectId, changeKey])
+  @@index([organizationId, createdAt])
+  @@index([projectId, createdAt])
+  @@index([projectId, commitSha])
+  @@index([organizationId, repository, commitSha])
+  @@index([authorTimestamp])
 }

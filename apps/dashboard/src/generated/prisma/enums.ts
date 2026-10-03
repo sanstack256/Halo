@@ -269,3 +269,28 @@ export const OwnershipSourceType = {
 } as const
 
 export type OwnershipSourceType = (typeof OwnershipSourceType)[keyof typeof OwnershipSourceType]
+
+
+export const ChangeSourceType = {
+  GIT_COMMIT: 'GIT_COMMIT',
+  DEPLOYMENT_EVENT: 'DEPLOYMENT_EVENT',
+  PULL_REQUEST: 'PULL_REQUEST',
+  CONFIGURATION_CHANGE: 'CONFIGURATION_CHANGE',
+  DEPENDENCY_CHANGE: 'DEPENDENCY_CHANGE',
+  FEATURE_FLAG_CHANGE: 'FEATURE_FLAG_CHANGE'
+} as const
+
+export type ChangeSourceType = (typeof ChangeSourceType)[keyof typeof ChangeSourceType]
+
+
+export const ChangeRelationshipType = {
+  UNRELATED: 'UNRELATED',
+  TEMPORALLY_RELATED: 'TEMPORALLY_RELATED',
+  SERVICE_RELATED: 'SERVICE_RELATED',
+  CODE_PATH_RELATED: 'CODE_PATH_RELATED',
+  BEHAVIORALLY_RELATED: 'BEHAVIORALLY_RELATED',
+  STRONGLY_SUPPORTED: 'STRONGLY_SUPPORTED',
+  INSUFFICIENT_EVIDENCE: 'INSUFFICIENT_EVIDENCE'
+} as const
+
+export type ChangeRelationshipType = (typeof ChangeRelationshipType)[keyof typeof ChangeRelationshipType]

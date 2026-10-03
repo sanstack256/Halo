@@ -769,6 +769,23 @@ export type EnumOwnershipSourceTypeWithAggregatesFilter<$PrismaModel = never> = 
   _max?: Prisma.NestedEnumOwnershipSourceTypeFilter<$PrismaModel>
 }
 
+export type EnumChangeSourceTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChangeSourceType | Prisma.EnumChangeSourceTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ChangeSourceType[] | Prisma.ListEnumChangeSourceTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChangeSourceType[] | Prisma.ListEnumChangeSourceTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChangeSourceTypeFilter<$PrismaModel> | $Enums.ChangeSourceType
+}
+
+export type EnumChangeSourceTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChangeSourceType | Prisma.EnumChangeSourceTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ChangeSourceType[] | Prisma.ListEnumChangeSourceTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChangeSourceType[] | Prisma.ListEnumChangeSourceTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChangeSourceTypeWithAggregatesFilter<$PrismaModel> | $Enums.ChangeSourceType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumChangeSourceTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumChangeSourceTypeFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1470,6 +1487,23 @@ export type NestedEnumOwnershipSourceTypeWithAggregatesFilter<$PrismaModel = nev
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumOwnershipSourceTypeFilter<$PrismaModel>
   _max?: Prisma.NestedEnumOwnershipSourceTypeFilter<$PrismaModel>
+}
+
+export type NestedEnumChangeSourceTypeFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChangeSourceType | Prisma.EnumChangeSourceTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ChangeSourceType[] | Prisma.ListEnumChangeSourceTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChangeSourceType[] | Prisma.ListEnumChangeSourceTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChangeSourceTypeFilter<$PrismaModel> | $Enums.ChangeSourceType
+}
+
+export type NestedEnumChangeSourceTypeWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.ChangeSourceType | Prisma.EnumChangeSourceTypeFieldRefInput<$PrismaModel>
+  in?: $Enums.ChangeSourceType[] | Prisma.ListEnumChangeSourceTypeFieldRefInput<$PrismaModel>
+  notIn?: $Enums.ChangeSourceType[] | Prisma.ListEnumChangeSourceTypeFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumChangeSourceTypeWithAggregatesFilter<$PrismaModel> | $Enums.ChangeSourceType
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumChangeSourceTypeFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumChangeSourceTypeFilter<$PrismaModel>
 }
 
 

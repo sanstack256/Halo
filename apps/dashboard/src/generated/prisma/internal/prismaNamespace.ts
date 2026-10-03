@@ -430,7 +430,8 @@ export const ModelName = {
   FailurePattern: 'FailurePattern',
   ServiceOwnership: 'ServiceOwnership',
   ServiceOwnershipAssertion: 'ServiceOwnershipAssertion',
-  ServiceOwnershipHistory: 'ServiceOwnershipHistory'
+  ServiceOwnershipHistory: 'ServiceOwnershipHistory',
+  ChangeObservation: 'ChangeObservation'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -446,7 +447,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation" | "organizationMember" | "investigationComment" | "investigationVerdict" | "investigationActivity" | "investigationProposedRelation" | "incidentMemory" | "failurePattern" | "serviceOwnership" | "serviceOwnershipAssertion" | "serviceOwnershipHistory"
+    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation" | "organizationMember" | "investigationComment" | "investigationVerdict" | "investigationActivity" | "investigationProposedRelation" | "incidentMemory" | "failurePattern" | "serviceOwnership" | "serviceOwnershipAssertion" | "serviceOwnershipHistory" | "changeObservation"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -2966,6 +2967,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    ChangeObservation: {
+      payload: Prisma.$ChangeObservationPayload<ExtArgs>
+      fields: Prisma.ChangeObservationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.ChangeObservationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChangeObservationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.ChangeObservationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChangeObservationPayload>
+        }
+        findFirst: {
+          args: Prisma.ChangeObservationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChangeObservationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.ChangeObservationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChangeObservationPayload>
+        }
+        findMany: {
+          args: Prisma.ChangeObservationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChangeObservationPayload>[]
+        }
+        create: {
+          args: Prisma.ChangeObservationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChangeObservationPayload>
+        }
+        createMany: {
+          args: Prisma.ChangeObservationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.ChangeObservationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChangeObservationPayload>[]
+        }
+        delete: {
+          args: Prisma.ChangeObservationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChangeObservationPayload>
+        }
+        update: {
+          args: Prisma.ChangeObservationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChangeObservationPayload>
+        }
+        deleteMany: {
+          args: Prisma.ChangeObservationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.ChangeObservationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.ChangeObservationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChangeObservationPayload>[]
+        }
+        upsert: {
+          args: Prisma.ChangeObservationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$ChangeObservationPayload>
+        }
+        aggregate: {
+          args: Prisma.ChangeObservationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateChangeObservation>
+        }
+        groupBy: {
+          args: Prisma.ChangeObservationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChangeObservationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.ChangeObservationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.ChangeObservationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3652,6 +3727,38 @@ export const ServiceOwnershipHistoryScalarFieldEnum = {
 export type ServiceOwnershipHistoryScalarFieldEnum = (typeof ServiceOwnershipHistoryScalarFieldEnum)[keyof typeof ServiceOwnershipHistoryScalarFieldEnum]
 
 
+export const ChangeObservationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  changeKey: 'changeKey',
+  repository: 'repository',
+  commitSha: 'commitSha',
+  parentCommitSha: 'parentCommitSha',
+  commitMessage: 'commitMessage',
+  authorIdentity: 'authorIdentity',
+  authorTimestamp: 'authorTimestamp',
+  sourceType: 'sourceType',
+  sourceVersion: 'sourceVersion',
+  deploymentReference: 'deploymentReference',
+  pullRequestReference: 'pullRequestReference',
+  changedFiles: 'changedFiles',
+  additions: 'additions',
+  deletions: 'deletions',
+  branch: 'branch',
+  ref: 'ref',
+  serviceAssociation: 'serviceAssociation',
+  codePathAssociation: 'codePathAssociation',
+  evidenceReferences: 'evidenceReferences',
+  observedAt: 'observedAt',
+  metadata: 'metadata',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type ChangeObservationScalarFieldEnum = (typeof ChangeObservationScalarFieldEnum)[keyof typeof ChangeObservationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4132,6 +4239,20 @@ export type EnumOwnershipSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputTy
 export type ListEnumOwnershipSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'OwnershipSourceType[]'>
     
 
+
+/**
+ * Reference to a field of type 'ChangeSourceType'
+ */
+export type EnumChangeSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChangeSourceType'>
+    
+
+
+/**
+ * Reference to a field of type 'ChangeSourceType[]'
+ */
+export type ListEnumChangeSourceTypeFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'ChangeSourceType[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -4317,6 +4438,7 @@ export type GlobalOmitConfig = {
   serviceOwnership?: Prisma.ServiceOwnershipOmit
   serviceOwnershipAssertion?: Prisma.ServiceOwnershipAssertionOmit
   serviceOwnershipHistory?: Prisma.ServiceOwnershipHistoryOmit
+  changeObservation?: Prisma.ChangeObservationOmit
 }
 
 /* Types for Logging */

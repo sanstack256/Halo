@@ -17,6 +17,7 @@ export type TeamCapability =
     | "TEAM_INCIDENT_COORDINATION"
     | "TEAM_OWNERSHIP_INTELLIGENCE"
     | "TEAM_ORGANIZATIONAL_MEMORY"
+    | "TEAM_CHANGE_INTELLIGENCE"
     | "TEAM_CROSS_SERVICE_TOPOLOGY"
     | "TEAM_EVIDENCE_AUTOMATION"
     | "SHARED_DASHBOARDS"
@@ -61,6 +62,11 @@ export const CAPABILITY_METADATA: Record<
     TEAM_ORGANIZATIONAL_MEMORY: {
         name: "Organizational Failure Memory",
         description: "Cross-incident pattern matching, recurring failure graphs, and automated postmortems.",
+        minimumPlan: "TEAM",
+    },
+    TEAM_CHANGE_INTELLIGENCE: {
+        name: "Change Intelligence & Causal Change Analysis",
+        description: "Correlate git commits, deployments, and configuration changes with failure timelines and code execution paths.",
         minimumPlan: "TEAM",
     },
     TEAM_CROSS_SERVICE_TOPOLOGY: {
