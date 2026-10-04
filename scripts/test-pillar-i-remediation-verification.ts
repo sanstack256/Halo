@@ -137,14 +137,13 @@ import {
     getVerificationHistory,
 } from "@/actions/remediation-verification";
 import {
-    generateRemediationRecommendations,
     updateRecommendationStatus,
     recordRecommendationNote,
 } from "@/actions/remediation-intelligence";
 import { generateInvestigationPostmortem } from "@/lib/investigation/incident-memory/postmortem-generator";
 import { clearVerificationCache } from "@/lib/remediation-verification/verification-engine";
 
-function assert(condition: boolean, message: string) {
+function assert(condition: unknown, message: string) {
     if (!condition) {
         console.error(`  ✗ FAIL: ${message}`);
         throw new Error(`Assertion failed: ${message}`);
@@ -739,7 +738,7 @@ async function runPillarITestSuite() {
         // Test 25: Verified deployment anchors post-change comparison window
         assert(
             resolvedResult.temporalAnchor.type === "DEPLOYMENT" &&
-            resolvedResult.temporalAnchor.label?.includes("v2.1.0"),
+            Boolean(resolvedResult.temporalAnchor.label?.includes("v2.1.0")),
             "Test 25: Verified deployment anchors post-change comparison window"
         );
         checksPassed++;
@@ -760,7 +759,7 @@ async function runPillarITestSuite() {
 
         // Test 31: No latest-commit guessing
         assert(
-            resolvedResult.temporalAnchor.label?.includes("v2.1.0-checkout-fix"),
+            Boolean(resolvedResult.temporalAnchor.label?.includes("v2.1.0-checkout-fix")),
             "Test 31: System does not guess latest commit without evidence"
         );
         checksPassed++;
@@ -1087,7 +1086,7 @@ async function runPillarITestSuite() {
 
         // Test 32: Relevant changed file observation correlates with anchor
         assert(
-            resolvedResult.temporalAnchor.label?.includes("v2.1.0"),
+            Boolean(resolvedResult.temporalAnchor.label?.includes("v2.1.0")),
             "Test 32: Relevant deployment observation links to anchor"
         );
         checksPassed++;
@@ -1313,7 +1312,7 @@ async function runPillarITestSuite() {
 
         // Test 59: Historical outcome labeled as historical, not current proof
         assert(
-            resolvedResult.temporalAnchor.label?.includes("v2.1.0"),
+            Boolean(resolvedResult.temporalAnchor.label?.includes("v2.1.0")),
             "Test 59: Historical outcome labeled as historical, not current proof"
         );
         checksPassed++;
