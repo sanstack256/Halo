@@ -87,7 +87,8 @@ export const ModelName = {
   ServiceOwnershipHistory: 'ServiceOwnershipHistory',
   ChangeObservation: 'ChangeObservation',
   RemediationRecommendation: 'RemediationRecommendation',
-  RemediationNote: 'RemediationNote'
+  RemediationNote: 'RemediationNote',
+  RemediationVerification: 'RemediationVerification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -835,6 +836,48 @@ export const RemediationNoteScalarFieldEnum = {
 } as const
 
 export type RemediationNoteScalarFieldEnum = (typeof RemediationNoteScalarFieldEnum)[keyof typeof RemediationNoteScalarFieldEnum]
+
+
+export const RemediationVerificationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  investigationId: 'investigationId',
+  recommendationId: 'recommendationId',
+  result: 'result',
+  strength: 'strength',
+  baselineStart: 'baselineStart',
+  baselineEnd: 'baselineEnd',
+  postStart: 'postStart',
+  postEnd: 'postEnd',
+  baselineSampleCount: 'baselineSampleCount',
+  postSampleCount: 'postSampleCount',
+  baselineFailureCount: 'baselineFailureCount',
+  postFailureCount: 'postFailureCount',
+  baselineFailureRate: 'baselineFailureRate',
+  postFailureRate: 'postFailureRate',
+  baselineP50: 'baselineP50',
+  postP50: 'postP50',
+  baselineP95: 'baselineP95',
+  postP95: 'postP95',
+  baselineP99: 'baselineP99',
+  postP99: 'postP99',
+  targetService: 'targetService',
+  targetOperation: 'targetOperation',
+  originalFailureFingerprint: 'originalFailureFingerprint',
+  regressionFingerprint: 'regressionFingerprint',
+  evidenceReferences: 'evidenceReferences',
+  regressionSignals: 'regressionSignals',
+  failureComparison: 'failureComparison',
+  uncertainty: 'uncertainty',
+  explanation: 'explanation',
+  temporalAnchor: 'temporalAnchor',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RemediationVerificationScalarFieldEnum = (typeof RemediationVerificationScalarFieldEnum)[keyof typeof RemediationVerificationScalarFieldEnum]
 
 
 export const SortOrder = {

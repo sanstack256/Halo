@@ -226,3 +226,8 @@ export type RemediationRecommendation = Prisma.RemediationRecommendationModel
  * 
  */
 export type RemediationNote = Prisma.RemediationNoteModel
+/**
+ * Model RemediationVerification
+ * 
+ */
+export type RemediationVerification = Prisma.RemediationVerificationModel

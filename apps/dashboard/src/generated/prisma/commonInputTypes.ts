@@ -854,6 +854,67 @@ export type EnumRemediationRiskLevelWithAggregatesFilter<$PrismaModel = never> =
   _max?: Prisma.NestedEnumRemediationRiskLevelFilter<$PrismaModel>
 }
 
+export type EnumVerificationResultFilter<$PrismaModel = never> = {
+  equals?: $Enums.VerificationResult | Prisma.EnumVerificationResultFieldRefInput<$PrismaModel>
+  in?: $Enums.VerificationResult[] | Prisma.ListEnumVerificationResultFieldRefInput<$PrismaModel>
+  notIn?: $Enums.VerificationResult[] | Prisma.ListEnumVerificationResultFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumVerificationResultFilter<$PrismaModel> | $Enums.VerificationResult
+}
+
+export type EnumVerificationStrengthFilter<$PrismaModel = never> = {
+  equals?: $Enums.VerificationStrength | Prisma.EnumVerificationStrengthFieldRefInput<$PrismaModel>
+  in?: $Enums.VerificationStrength[] | Prisma.ListEnumVerificationStrengthFieldRefInput<$PrismaModel>
+  notIn?: $Enums.VerificationStrength[] | Prisma.ListEnumVerificationStrengthFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumVerificationStrengthFilter<$PrismaModel> | $Enums.VerificationStrength
+}
+
+export type FloatFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatFilter<$PrismaModel> | number
+}
+
+export type EnumVerificationResultWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.VerificationResult | Prisma.EnumVerificationResultFieldRefInput<$PrismaModel>
+  in?: $Enums.VerificationResult[] | Prisma.ListEnumVerificationResultFieldRefInput<$PrismaModel>
+  notIn?: $Enums.VerificationResult[] | Prisma.ListEnumVerificationResultFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumVerificationResultWithAggregatesFilter<$PrismaModel> | $Enums.VerificationResult
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumVerificationResultFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumVerificationResultFilter<$PrismaModel>
+}
+
+export type EnumVerificationStrengthWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.VerificationStrength | Prisma.EnumVerificationStrengthFieldRefInput<$PrismaModel>
+  in?: $Enums.VerificationStrength[] | Prisma.ListEnumVerificationStrengthFieldRefInput<$PrismaModel>
+  notIn?: $Enums.VerificationStrength[] | Prisma.ListEnumVerificationStrengthFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumVerificationStrengthWithAggregatesFilter<$PrismaModel> | $Enums.VerificationStrength
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumVerificationStrengthFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumVerificationStrengthFilter<$PrismaModel>
+}
+
+export type FloatWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatWithAggregatesFilter<$PrismaModel> | number
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
+  _sum?: Prisma.NestedFloatFilter<$PrismaModel>
+  _min?: Prisma.NestedFloatFilter<$PrismaModel>
+  _max?: Prisma.NestedFloatFilter<$PrismaModel>
+}
+
 export type NestedStringFilter<$PrismaModel = never> = {
   equals?: string | Prisma.StringFieldRefInput<$PrismaModel>
   in?: string[] | Prisma.ListStringFieldRefInput<$PrismaModel>
@@ -1640,6 +1701,56 @@ export type NestedEnumRemediationRiskLevelWithAggregatesFilter<$PrismaModel = ne
   _count?: Prisma.NestedIntFilter<$PrismaModel>
   _min?: Prisma.NestedEnumRemediationRiskLevelFilter<$PrismaModel>
   _max?: Prisma.NestedEnumRemediationRiskLevelFilter<$PrismaModel>
+}
+
+export type NestedEnumVerificationResultFilter<$PrismaModel = never> = {
+  equals?: $Enums.VerificationResult | Prisma.EnumVerificationResultFieldRefInput<$PrismaModel>
+  in?: $Enums.VerificationResult[] | Prisma.ListEnumVerificationResultFieldRefInput<$PrismaModel>
+  notIn?: $Enums.VerificationResult[] | Prisma.ListEnumVerificationResultFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumVerificationResultFilter<$PrismaModel> | $Enums.VerificationResult
+}
+
+export type NestedEnumVerificationStrengthFilter<$PrismaModel = never> = {
+  equals?: $Enums.VerificationStrength | Prisma.EnumVerificationStrengthFieldRefInput<$PrismaModel>
+  in?: $Enums.VerificationStrength[] | Prisma.ListEnumVerificationStrengthFieldRefInput<$PrismaModel>
+  notIn?: $Enums.VerificationStrength[] | Prisma.ListEnumVerificationStrengthFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumVerificationStrengthFilter<$PrismaModel> | $Enums.VerificationStrength
+}
+
+export type NestedEnumVerificationResultWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.VerificationResult | Prisma.EnumVerificationResultFieldRefInput<$PrismaModel>
+  in?: $Enums.VerificationResult[] | Prisma.ListEnumVerificationResultFieldRefInput<$PrismaModel>
+  notIn?: $Enums.VerificationResult[] | Prisma.ListEnumVerificationResultFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumVerificationResultWithAggregatesFilter<$PrismaModel> | $Enums.VerificationResult
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumVerificationResultFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumVerificationResultFilter<$PrismaModel>
+}
+
+export type NestedEnumVerificationStrengthWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: $Enums.VerificationStrength | Prisma.EnumVerificationStrengthFieldRefInput<$PrismaModel>
+  in?: $Enums.VerificationStrength[] | Prisma.ListEnumVerificationStrengthFieldRefInput<$PrismaModel>
+  notIn?: $Enums.VerificationStrength[] | Prisma.ListEnumVerificationStrengthFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedEnumVerificationStrengthWithAggregatesFilter<$PrismaModel> | $Enums.VerificationStrength
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _min?: Prisma.NestedEnumVerificationStrengthFilter<$PrismaModel>
+  _max?: Prisma.NestedEnumVerificationStrengthFilter<$PrismaModel>
+}
+
+export type NestedFloatWithAggregatesFilter<$PrismaModel = never> = {
+  equals?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  in?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  notIn?: number[] | Prisma.ListFloatFieldRefInput<$PrismaModel>
+  lt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  lte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gt?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  gte?: number | Prisma.FloatFieldRefInput<$PrismaModel>
+  not?: Prisma.NestedFloatWithAggregatesFilter<$PrismaModel> | number
+  _count?: Prisma.NestedIntFilter<$PrismaModel>
+  _avg?: Prisma.NestedFloatFilter<$PrismaModel>
+  _sum?: Prisma.NestedFloatFilter<$PrismaModel>
+  _min?: Prisma.NestedFloatFilter<$PrismaModel>
+  _max?: Prisma.NestedFloatFilter<$PrismaModel>
 }
 
 

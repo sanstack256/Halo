@@ -7,11 +7,16 @@ import {
     updateRecommendationStatus,
     recordRecommendationNote,
 } from "@/actions/remediation-intelligence";
+import {
+    runRemediationVerification,
+    getRemediationVerification,
+} from "@/actions/remediation-verification";
 import type {
     RemediationRecommendationDomain,
     RemediationPlanResult,
     RemediationStatus,
 } from "@/lib/remediation-intelligence/types";
+import type { RemediationVerificationDomain } from "@/lib/remediation-verification/types";
 import {
     Wrench,
     CheckCircle2,
@@ -48,6 +53,8 @@ export function RemediationPanel({
     const [isSubmittingNote, setIsSubmittingNote] = useState<Record<string, boolean>>({});
     const [dismissingId, setDismissingId] = useState<string | null>(null);
     const [dismissReason, setDismissReason] = useState<string>("");
+    const [verifications, setVerifications] = useState<Record<string, RemediationVerificationDomain | null>>({});
+    const [isVerifying, setIsVerifying] = useState<Record<string, boolean>>({});
 
     useEffect(() => {
         let isMounted = true;
@@ -143,6 +150,22 @@ export function RemediationPanel({
             alert(err?.message || "Failed to record human note.");
         } finally {
             setIsSubmittingNote((prev) => ({ ...prev, [recommendationId]: false }));
+        }
+    };
+
+    const handleVerify = async (recommendationId: string) => {
+        try {
+            setIsVerifying((prev) => ({ ...prev, [recommendationId]: true }));
+            const v = await runRemediationVerification({
+                recommendationId,
+                projectId,
+                forceFresh: true,
+            });
+            setVerifications((prev) => ({ ...prev, [recommendationId]: v }));
+        } catch (err: any) {
+            setError(err?.message || "Verification failed to complete.");
+        } finally {
+            setIsVerifying((prev) => ({ ...prev, [recommendationId]: false }));
         }
     };
 
@@ -609,6 +632,147 @@ export function RemediationPanel({
                                                 Add Note
                                             </button>
                                         </div>
+                                    </div>
+
+                                    {/* Pillar I: Remediation Verification & Resolution Section */}
+                                    <div className="pt-3 border-t border-border/40 space-y-2.5">
+                                        <div className="flex items-center justify-between">
+                                            <div className="flex items-center gap-1.5 text-[11px] text-zinc-300 font-semibold uppercase tracking-wider">
+                                                <Activity className="w-3.5 h-3.5 text-indigo-400" />
+                                                <span>Remediation Verification & Telemetry Resolution</span>
+                                            </div>
+                                            <button
+                                                onClick={() => handleVerify(rec.id)}
+                                                disabled={isVerifying[rec.id]}
+                                                className="inline-flex items-center gap-1 px-2.5 py-1 text-[11px] rounded bg-indigo-500/10 hover:bg-indigo-500/20 text-indigo-300 border border-indigo-500/30 transition-colors disabled:opacity-50"
+                                            >
+                                                <RefreshCw className={`w-3 h-3 ${isVerifying[rec.id] ? "animate-spin" : ""}`} />
+                                                <span>{isVerifying[rec.id] ? "Verifying..." : "Verify Telemetry"}</span>
+                                            </button>
+                                        </div>
+
+                                        {verifications[rec.id] ? (
+                                            <div className="p-3 rounded-md bg-zinc-950/80 border border-zinc-800 space-y-2.5">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <span
+                                                            className={`text-[11px] font-mono px-2 py-0.5 rounded font-bold ${
+                                                                verifications[rec.id]!.result === "RESOLVED"
+                                                                    ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
+                                                                    : verifications[rec.id]!.result === "IMPROVED"
+                                                                    ? "bg-blue-500/20 text-blue-300 border border-blue-500/30"
+                                                                    : verifications[rec.id]!.result === "REGRESSED"
+                                                                    ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
+                                                                    : verifications[rec.id]!.result === "NOT_RESOLVED"
+                                                                    ? "bg-amber-500/20 text-amber-300 border border-amber-500/30"
+                                                                    : "bg-zinc-800 text-zinc-400 border border-zinc-700"
+                                                            }`}
+                                                        >
+                                                            {verifications[rec.id]!.result}
+                                                        </span>
+                                                        <span className="text-[10px] font-mono text-zinc-400">
+                                                            STRENGTH: {verifications[rec.id]!.strength}
+                                                        </span>
+                                                    </div>
+                                                    <span className="text-[10px] font-mono text-zinc-500">
+                                                        Anchor: {verifications[rec.id]!.temporalAnchor.label}
+                                                    </span>
+                                                </div>
+
+                                                {/* Before / After Metrics Comparison */}
+                                                <div className="grid grid-cols-2 gap-2 text-xs pt-1">
+                                                    <div className="p-2 rounded bg-black/40 border border-zinc-800/80">
+                                                        <span className="text-[10px] uppercase font-mono text-zinc-500 block mb-1">
+                                                            Before (Baseline Window)
+                                                        </span>
+                                                        <div className="space-y-0.5">
+                                                            <div className="flex justify-between">
+                                                                <span className="text-zinc-400">Failure Rate:</span>
+                                                                <span className="font-mono text-zinc-200">
+                                                                    {(verifications[rec.id]!.baseline.failureRate * 100).toFixed(1)}%
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex justify-between">
+                                                                <span className="text-zinc-400">Sample Count:</span>
+                                                                <span className="font-mono text-zinc-300">
+                                                                    {verifications[rec.id]!.baseline.sampleCount} reqs
+                                                                </span>
+                                                            </div>
+                                                            {verifications[rec.id]!.baseline.p95LatencyMs !== null && (
+                                                                <div className="flex justify-between">
+                                                                    <span className="text-zinc-400">p95 Latency:</span>
+                                                                    <span className="font-mono text-zinc-300">
+                                                                        {verifications[rec.id]!.baseline.p95LatencyMs}ms
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+
+                                                    <div className="p-2 rounded bg-black/40 border border-zinc-800/80">
+                                                        <span className="text-[10px] uppercase font-mono text-zinc-500 block mb-1">
+                                                            After (Post-Change Window)
+                                                        </span>
+                                                        <div className="space-y-0.5">
+                                                            <div className="flex justify-between">
+                                                                <span className="text-zinc-400">Failure Rate:</span>
+                                                                <span
+                                                                    className={`font-mono font-semibold ${
+                                                                        verifications[rec.id]!.postChange.failureRate <
+                                                                        verifications[rec.id]!.baseline.failureRate
+                                                                            ? "text-emerald-400"
+                                                                            : "text-zinc-200"
+                                                                    }`}
+                                                                >
+                                                                    {(verifications[rec.id]!.postChange.failureRate * 100).toFixed(1)}%
+                                                                </span>
+                                                            </div>
+                                                            <div className="flex justify-between">
+                                                                <span className="text-zinc-400">Sample Count:</span>
+                                                                <span className="font-mono text-zinc-300">
+                                                                    {verifications[rec.id]!.postChange.sampleCount} reqs
+                                                                </span>
+                                                            </div>
+                                                            {verifications[rec.id]!.postChange.p95LatencyMs !== null && (
+                                                                <div className="flex justify-between">
+                                                                    <span className="text-zinc-400">p95 Latency:</span>
+                                                                    <span className="font-mono text-zinc-300">
+                                                                        {verifications[rec.id]!.postChange.p95LatencyMs}ms
+                                                                    </span>
+                                                                </div>
+                                                            )}
+                                                        </div>
+                                                    </div>
+                                                </div>
+
+                                                {/* Regression alert if detected */}
+                                                {verifications[rec.id]!.regressionSignals.length > 0 && (
+                                                    <div className="p-2 rounded bg-rose-950/40 border border-rose-800/50 space-y-1">
+                                                        <div className="flex items-center gap-1.5 text-rose-300 font-semibold text-[11px]">
+                                                            <AlertTriangle className="w-3.5 h-3.5 text-rose-400" />
+                                                            <span>Regression Signals Observed Post-Change</span>
+                                                        </div>
+                                                        <ul className="list-disc list-inside text-[11px] text-rose-200/90 space-y-0.5">
+                                                            {verifications[rec.id]!.regressionSignals.map((rs, idx) => (
+                                                                <li key={idx}>{rs.description}</li>
+                                                            ))}
+                                                        </ul>
+                                                    </div>
+                                                )}
+
+                                                <div className="text-[11px] text-zinc-300 pt-1">
+                                                    {verifications[rec.id]!.explanation}
+                                                </div>
+
+                                                <div className="text-[10px] text-zinc-500 italic pt-0.5">
+                                                    Remaining Uncertainty: {verifications[rec.id]!.uncertainty}
+                                                </div>
+                                            </div>
+                                        ) : (
+                                            <div className="text-[11px] text-zinc-500 italic">
+                                                No verification executed yet for this recommendation. Click &quot;Verify Telemetry&quot; to inspect post-change execution.
+                                            </div>
+                                        )}
                                     </div>
                                 </div>
                             </div>

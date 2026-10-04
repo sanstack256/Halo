@@ -433,7 +433,8 @@ export const ModelName = {
   ServiceOwnershipHistory: 'ServiceOwnershipHistory',
   ChangeObservation: 'ChangeObservation',
   RemediationRecommendation: 'RemediationRecommendation',
-  RemediationNote: 'RemediationNote'
+  RemediationNote: 'RemediationNote',
+  RemediationVerification: 'RemediationVerification'
 } as const
 
 export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -449,7 +450,7 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
     omit: GlobalOmitOptions
   }
   meta: {
-    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation" | "organizationMember" | "investigationComment" | "investigationVerdict" | "investigationActivity" | "investigationProposedRelation" | "incidentMemory" | "failurePattern" | "serviceOwnership" | "serviceOwnershipAssertion" | "serviceOwnershipHistory" | "changeObservation" | "remediationRecommendation" | "remediationNote"
+    modelProps: "organization" | "project" | "environment" | "apiKey" | "event" | "telemetrySession" | "release" | "issue" | "user" | "session" | "account" | "verification" | "replaySession" | "feedback" | "replayChunk" | "monitor" | "monitorAlert" | "monitorAlertNotification" | "investigation" | "repairCase" | "repairChange" | "repairValidation" | "repairEvent" | "issueRecommendation" | "organizationMember" | "investigationComment" | "investigationVerdict" | "investigationActivity" | "investigationProposedRelation" | "incidentMemory" | "failurePattern" | "serviceOwnership" | "serviceOwnershipAssertion" | "serviceOwnershipHistory" | "changeObservation" | "remediationRecommendation" | "remediationNote" | "remediationVerification"
     txIsolationLevel: TransactionIsolationLevel
   }
   model: {
@@ -3191,6 +3192,80 @@ export type TypeMap<ExtArgs extends runtime.Types.Extensions.InternalArgs = runt
         }
       }
     }
+    RemediationVerification: {
+      payload: Prisma.$RemediationVerificationPayload<ExtArgs>
+      fields: Prisma.RemediationVerificationFieldRefs
+      operations: {
+        findUnique: {
+          args: Prisma.RemediationVerificationFindUniqueArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationVerificationPayload> | null
+        }
+        findUniqueOrThrow: {
+          args: Prisma.RemediationVerificationFindUniqueOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationVerificationPayload>
+        }
+        findFirst: {
+          args: Prisma.RemediationVerificationFindFirstArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationVerificationPayload> | null
+        }
+        findFirstOrThrow: {
+          args: Prisma.RemediationVerificationFindFirstOrThrowArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationVerificationPayload>
+        }
+        findMany: {
+          args: Prisma.RemediationVerificationFindManyArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationVerificationPayload>[]
+        }
+        create: {
+          args: Prisma.RemediationVerificationCreateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationVerificationPayload>
+        }
+        createMany: {
+          args: Prisma.RemediationVerificationCreateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        createManyAndReturn: {
+          args: Prisma.RemediationVerificationCreateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationVerificationPayload>[]
+        }
+        delete: {
+          args: Prisma.RemediationVerificationDeleteArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationVerificationPayload>
+        }
+        update: {
+          args: Prisma.RemediationVerificationUpdateArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationVerificationPayload>
+        }
+        deleteMany: {
+          args: Prisma.RemediationVerificationDeleteManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateMany: {
+          args: Prisma.RemediationVerificationUpdateManyArgs<ExtArgs>
+          result: BatchPayload
+        }
+        updateManyAndReturn: {
+          args: Prisma.RemediationVerificationUpdateManyAndReturnArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationVerificationPayload>[]
+        }
+        upsert: {
+          args: Prisma.RemediationVerificationUpsertArgs<ExtArgs>
+          result: runtime.Types.Utils.PayloadToResult<Prisma.$RemediationVerificationPayload>
+        }
+        aggregate: {
+          args: Prisma.RemediationVerificationAggregateArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.AggregateRemediationVerification>
+        }
+        groupBy: {
+          args: Prisma.RemediationVerificationGroupByArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RemediationVerificationGroupByOutputType>[]
+        }
+        count: {
+          args: Prisma.RemediationVerificationCountArgs<ExtArgs>
+          result: runtime.Types.Utils.Optional<Prisma.RemediationVerificationCountAggregateOutputType> | number
+        }
+      }
+    }
   }
 } & {
   other: {
@@ -3961,6 +4036,48 @@ export const RemediationNoteScalarFieldEnum = {
 export type RemediationNoteScalarFieldEnum = (typeof RemediationNoteScalarFieldEnum)[keyof typeof RemediationNoteScalarFieldEnum]
 
 
+export const RemediationVerificationScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  investigationId: 'investigationId',
+  recommendationId: 'recommendationId',
+  result: 'result',
+  strength: 'strength',
+  baselineStart: 'baselineStart',
+  baselineEnd: 'baselineEnd',
+  postStart: 'postStart',
+  postEnd: 'postEnd',
+  baselineSampleCount: 'baselineSampleCount',
+  postSampleCount: 'postSampleCount',
+  baselineFailureCount: 'baselineFailureCount',
+  postFailureCount: 'postFailureCount',
+  baselineFailureRate: 'baselineFailureRate',
+  postFailureRate: 'postFailureRate',
+  baselineP50: 'baselineP50',
+  postP50: 'postP50',
+  baselineP95: 'baselineP95',
+  postP95: 'postP95',
+  baselineP99: 'baselineP99',
+  postP99: 'postP99',
+  targetService: 'targetService',
+  targetOperation: 'targetOperation',
+  originalFailureFingerprint: 'originalFailureFingerprint',
+  regressionFingerprint: 'regressionFingerprint',
+  evidenceReferences: 'evidenceReferences',
+  regressionSignals: 'regressionSignals',
+  failureComparison: 'failureComparison',
+  uncertainty: 'uncertainty',
+  explanation: 'explanation',
+  temporalAnchor: 'temporalAnchor',
+  verifiedAt: 'verifiedAt',
+  createdAt: 'createdAt',
+  updatedAt: 'updatedAt'
+} as const
+
+export type RemediationVerificationScalarFieldEnum = (typeof RemediationVerificationScalarFieldEnum)[keyof typeof RemediationVerificationScalarFieldEnum]
+
+
 export const SortOrder = {
   asc: 'asc',
   desc: 'desc'
@@ -4511,6 +4628,34 @@ export type EnumRemediationRiskLevelFieldRefInput<$PrismaModel> = FieldRefInputT
 export type ListEnumRemediationRiskLevelFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'RemediationRiskLevel[]'>
     
 
+
+/**
+ * Reference to a field of type 'VerificationResult'
+ */
+export type EnumVerificationResultFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationResult'>
+    
+
+
+/**
+ * Reference to a field of type 'VerificationResult[]'
+ */
+export type ListEnumVerificationResultFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationResult[]'>
+    
+
+
+/**
+ * Reference to a field of type 'VerificationStrength'
+ */
+export type EnumVerificationStrengthFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationStrength'>
+    
+
+
+/**
+ * Reference to a field of type 'VerificationStrength[]'
+ */
+export type ListEnumVerificationStrengthFieldRefInput<$PrismaModel> = FieldRefInputType<$PrismaModel, 'VerificationStrength[]'>
+    
+
 /**
  * Batch Payload for updateMany & deleteMany & createMany
  */
@@ -4699,6 +4844,7 @@ export type GlobalOmitConfig = {
   changeObservation?: Prisma.ChangeObservationOmit
   remediationRecommendation?: Prisma.RemediationRecommendationOmit
   remediationNote?: Prisma.RemediationNoteOmit
+  remediationVerification?: Prisma.RemediationVerificationOmit
 }
 
 /* Types for Logging */

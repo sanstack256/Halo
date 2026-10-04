@@ -316,6 +316,7 @@ export type InvestigationWhereInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationListRelationFilter
   incidentMemory?: Prisma.XOR<Prisma.IncidentMemoryNullableScalarRelationFilter, Prisma.IncidentMemoryWhereInput> | null
   remediationRecommendations?: Prisma.RemediationRecommendationListRelationFilter
+  remediationVerifications?: Prisma.RemediationVerificationListRelationFilter
 }
 
 export type InvestigationOrderByWithRelationInput = {
@@ -347,6 +348,7 @@ export type InvestigationOrderByWithRelationInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationOrderByRelationAggregateInput
   incidentMemory?: Prisma.IncidentMemoryOrderByWithRelationInput
   remediationRecommendations?: Prisma.RemediationRecommendationOrderByRelationAggregateInput
+  remediationVerifications?: Prisma.RemediationVerificationOrderByRelationAggregateInput
 }
 
 export type InvestigationWhereUniqueInput = Prisma.AtLeast<{
@@ -381,6 +383,7 @@ export type InvestigationWhereUniqueInput = Prisma.AtLeast<{
   proposedRelations?: Prisma.InvestigationProposedRelationListRelationFilter
   incidentMemory?: Prisma.XOR<Prisma.IncidentMemoryNullableScalarRelationFilter, Prisma.IncidentMemoryWhereInput> | null
   remediationRecommendations?: Prisma.RemediationRecommendationListRelationFilter
+  remediationVerifications?: Prisma.RemediationVerificationListRelationFilter
 }, "id" | "alertId">
 
 export type InvestigationOrderByWithAggregationInput = {
@@ -454,6 +457,7 @@ export type InvestigationCreateInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateInput = {
@@ -481,6 +485,7 @@ export type InvestigationUncheckedCreateInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUpdateInput = {
@@ -508,6 +513,7 @@ export type InvestigationUpdateInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateInput = {
@@ -535,6 +541,7 @@ export type InvestigationUncheckedUpdateInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateManyInput = {
@@ -953,6 +960,20 @@ export type InvestigationUpdateOneRequiredWithoutRemediationRecommendationsNeste
   update?: Prisma.XOR<Prisma.XOR<Prisma.InvestigationUpdateToOneWithWhereWithoutRemediationRecommendationsInput, Prisma.InvestigationUpdateWithoutRemediationRecommendationsInput>, Prisma.InvestigationUncheckedUpdateWithoutRemediationRecommendationsInput>
 }
 
+export type InvestigationCreateNestedOneWithoutRemediationVerificationsInput = {
+  create?: Prisma.XOR<Prisma.InvestigationCreateWithoutRemediationVerificationsInput, Prisma.InvestigationUncheckedCreateWithoutRemediationVerificationsInput>
+  connectOrCreate?: Prisma.InvestigationCreateOrConnectWithoutRemediationVerificationsInput
+  connect?: Prisma.InvestigationWhereUniqueInput
+}
+
+export type InvestigationUpdateOneRequiredWithoutRemediationVerificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.InvestigationCreateWithoutRemediationVerificationsInput, Prisma.InvestigationUncheckedCreateWithoutRemediationVerificationsInput>
+  connectOrCreate?: Prisma.InvestigationCreateOrConnectWithoutRemediationVerificationsInput
+  upsert?: Prisma.InvestigationUpsertWithoutRemediationVerificationsInput
+  connect?: Prisma.InvestigationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.InvestigationUpdateToOneWithWhereWithoutRemediationVerificationsInput, Prisma.InvestigationUpdateWithoutRemediationVerificationsInput>, Prisma.InvestigationUncheckedUpdateWithoutRemediationVerificationsInput>
+}
+
 export type InvestigationCreateWithoutProjectInput = {
   id?: string
   status?: $Enums.InvestigationStatus
@@ -977,6 +998,7 @@ export type InvestigationCreateWithoutProjectInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutProjectInput = {
@@ -1003,6 +1025,7 @@ export type InvestigationUncheckedCreateWithoutProjectInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutProjectInput = {
@@ -1077,6 +1100,7 @@ export type InvestigationCreateWithoutIssueInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutIssueInput = {
@@ -1103,6 +1127,7 @@ export type InvestigationUncheckedCreateWithoutIssueInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutIssueInput = {
@@ -1155,6 +1180,7 @@ export type InvestigationCreateWithoutMonitorInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutMonitorInput = {
@@ -1181,6 +1207,7 @@ export type InvestigationUncheckedCreateWithoutMonitorInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutMonitorInput = {
@@ -1233,6 +1260,7 @@ export type InvestigationCreateWithoutAlertInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutAlertInput = {
@@ -1259,6 +1287,7 @@ export type InvestigationUncheckedCreateWithoutAlertInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutAlertInput = {
@@ -1301,6 +1330,7 @@ export type InvestigationUpdateWithoutAlertInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutAlertInput = {
@@ -1327,6 +1357,7 @@ export type InvestigationUncheckedUpdateWithoutAlertInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateWithoutRepairCasesInput = {
@@ -1353,6 +1384,7 @@ export type InvestigationCreateWithoutRepairCasesInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutRepairCasesInput = {
@@ -1379,6 +1411,7 @@ export type InvestigationUncheckedCreateWithoutRepairCasesInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutRepairCasesInput = {
@@ -1421,6 +1454,7 @@ export type InvestigationUpdateWithoutRepairCasesInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutRepairCasesInput = {
@@ -1447,6 +1481,7 @@ export type InvestigationUncheckedUpdateWithoutRepairCasesInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateWithoutRecommendationsInput = {
@@ -1473,6 +1508,7 @@ export type InvestigationCreateWithoutRecommendationsInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutRecommendationsInput = {
@@ -1499,6 +1535,7 @@ export type InvestigationUncheckedCreateWithoutRecommendationsInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutRecommendationsInput = {
@@ -1541,6 +1578,7 @@ export type InvestigationUpdateWithoutRecommendationsInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutRecommendationsInput = {
@@ -1567,6 +1605,7 @@ export type InvestigationUncheckedUpdateWithoutRecommendationsInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateWithoutCommentsInput = {
@@ -1593,6 +1632,7 @@ export type InvestigationCreateWithoutCommentsInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutCommentsInput = {
@@ -1619,6 +1659,7 @@ export type InvestigationUncheckedCreateWithoutCommentsInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutCommentsInput = {
@@ -1661,6 +1702,7 @@ export type InvestigationUpdateWithoutCommentsInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutCommentsInput = {
@@ -1687,6 +1729,7 @@ export type InvestigationUncheckedUpdateWithoutCommentsInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateWithoutVerdictsInput = {
@@ -1713,6 +1756,7 @@ export type InvestigationCreateWithoutVerdictsInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutVerdictsInput = {
@@ -1739,6 +1783,7 @@ export type InvestigationUncheckedCreateWithoutVerdictsInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutVerdictsInput = {
@@ -1781,6 +1826,7 @@ export type InvestigationUpdateWithoutVerdictsInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutVerdictsInput = {
@@ -1807,6 +1853,7 @@ export type InvestigationUncheckedUpdateWithoutVerdictsInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateWithoutActivitiesInput = {
@@ -1833,6 +1880,7 @@ export type InvestigationCreateWithoutActivitiesInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutActivitiesInput = {
@@ -1859,6 +1907,7 @@ export type InvestigationUncheckedCreateWithoutActivitiesInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutActivitiesInput = {
@@ -1901,6 +1950,7 @@ export type InvestigationUpdateWithoutActivitiesInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutActivitiesInput = {
@@ -1927,6 +1977,7 @@ export type InvestigationUncheckedUpdateWithoutActivitiesInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateWithoutProposedRelationsInput = {
@@ -1953,6 +2004,7 @@ export type InvestigationCreateWithoutProposedRelationsInput = {
   activities?: Prisma.InvestigationActivityCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutProposedRelationsInput = {
@@ -1979,6 +2031,7 @@ export type InvestigationUncheckedCreateWithoutProposedRelationsInput = {
   activities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutProposedRelationsInput = {
@@ -2021,6 +2074,7 @@ export type InvestigationUpdateWithoutProposedRelationsInput = {
   activities?: Prisma.InvestigationActivityUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutProposedRelationsInput = {
@@ -2047,6 +2101,7 @@ export type InvestigationUncheckedUpdateWithoutProposedRelationsInput = {
   activities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateWithoutIncidentMemoryInput = {
@@ -2073,6 +2128,7 @@ export type InvestigationCreateWithoutIncidentMemoryInput = {
   activities?: Prisma.InvestigationActivityCreateNestedManyWithoutInvestigationInput
   proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutIncidentMemoryInput = {
@@ -2099,6 +2155,7 @@ export type InvestigationUncheckedCreateWithoutIncidentMemoryInput = {
   activities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutInvestigationInput
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutIncidentMemoryInput = {
@@ -2141,6 +2198,7 @@ export type InvestigationUpdateWithoutIncidentMemoryInput = {
   activities?: Prisma.InvestigationActivityUpdateManyWithoutInvestigationNestedInput
   proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutIncidentMemoryInput = {
@@ -2167,6 +2225,7 @@ export type InvestigationUncheckedUpdateWithoutIncidentMemoryInput = {
   activities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutInvestigationNestedInput
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateWithoutRemediationRecommendationsInput = {
@@ -2193,6 +2252,7 @@ export type InvestigationCreateWithoutRemediationRecommendationsInput = {
   activities?: Prisma.InvestigationActivityCreateNestedManyWithoutInvestigationInput
   proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationUncheckedCreateWithoutRemediationRecommendationsInput = {
@@ -2219,6 +2279,7 @@ export type InvestigationUncheckedCreateWithoutRemediationRecommendationsInput =
   activities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutInvestigationInput
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutInvestigationInput
 }
 
 export type InvestigationCreateOrConnectWithoutRemediationRecommendationsInput = {
@@ -2261,6 +2322,7 @@ export type InvestigationUpdateWithoutRemediationRecommendationsInput = {
   activities?: Prisma.InvestigationActivityUpdateManyWithoutInvestigationNestedInput
   proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutRemediationRecommendationsInput = {
@@ -2287,6 +2349,131 @@ export type InvestigationUncheckedUpdateWithoutRemediationRecommendationsInput =
   activities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutInvestigationNestedInput
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
+}
+
+export type InvestigationCreateWithoutRemediationVerificationsInput = {
+  id?: string
+  status?: $Enums.InvestigationStatus
+  title: string
+  summary?: string | null
+  rootCause?: string | null
+  confidenceScore?: number | null
+  startedAt?: Date | string
+  completedAt?: Date | string | null
+  evidenceCount?: number
+  context?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  project: Prisma.ProjectCreateNestedOneWithoutInvestigationsInput
+  issue?: Prisma.IssueCreateNestedOneWithoutInvestigationsInput
+  monitor?: Prisma.MonitorCreateNestedOneWithoutInvestigationsInput
+  alert?: Prisma.MonitorAlertCreateNestedOneWithoutInvestigationInput
+  repairCases?: Prisma.RepairCaseCreateNestedManyWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationCreateNestedManyWithoutInvestigationInput
+  comments?: Prisma.InvestigationCommentCreateNestedManyWithoutInvestigationInput
+  verdicts?: Prisma.InvestigationVerdictCreateNestedManyWithoutInvestigationInput
+  activities?: Prisma.InvestigationActivityCreateNestedManyWithoutInvestigationInput
+  proposedRelations?: Prisma.InvestigationProposedRelationCreateNestedManyWithoutInvestigationInput
+  incidentMemory?: Prisma.IncidentMemoryCreateNestedOneWithoutInvestigationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationCreateNestedManyWithoutInvestigationInput
+}
+
+export type InvestigationUncheckedCreateWithoutRemediationVerificationsInput = {
+  id?: string
+  projectId: string
+  issueId?: string | null
+  monitorId?: string | null
+  alertId?: string | null
+  status?: $Enums.InvestigationStatus
+  title: string
+  summary?: string | null
+  rootCause?: string | null
+  confidenceScore?: number | null
+  startedAt?: Date | string
+  completedAt?: Date | string | null
+  evidenceCount?: number
+  context?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  repairCases?: Prisma.RepairCaseUncheckedCreateNestedManyWithoutInvestigationInput
+  recommendations?: Prisma.IssueRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+  comments?: Prisma.InvestigationCommentUncheckedCreateNestedManyWithoutInvestigationInput
+  verdicts?: Prisma.InvestigationVerdictUncheckedCreateNestedManyWithoutInvestigationInput
+  activities?: Prisma.InvestigationActivityUncheckedCreateNestedManyWithoutInvestigationInput
+  proposedRelations?: Prisma.InvestigationProposedRelationUncheckedCreateNestedManyWithoutInvestigationInput
+  incidentMemory?: Prisma.IncidentMemoryUncheckedCreateNestedOneWithoutInvestigationInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedCreateNestedManyWithoutInvestigationInput
+}
+
+export type InvestigationCreateOrConnectWithoutRemediationVerificationsInput = {
+  where: Prisma.InvestigationWhereUniqueInput
+  create: Prisma.XOR<Prisma.InvestigationCreateWithoutRemediationVerificationsInput, Prisma.InvestigationUncheckedCreateWithoutRemediationVerificationsInput>
+}
+
+export type InvestigationUpsertWithoutRemediationVerificationsInput = {
+  update: Prisma.XOR<Prisma.InvestigationUpdateWithoutRemediationVerificationsInput, Prisma.InvestigationUncheckedUpdateWithoutRemediationVerificationsInput>
+  create: Prisma.XOR<Prisma.InvestigationCreateWithoutRemediationVerificationsInput, Prisma.InvestigationUncheckedCreateWithoutRemediationVerificationsInput>
+  where?: Prisma.InvestigationWhereInput
+}
+
+export type InvestigationUpdateToOneWithWhereWithoutRemediationVerificationsInput = {
+  where?: Prisma.InvestigationWhereInput
+  data: Prisma.XOR<Prisma.InvestigationUpdateWithoutRemediationVerificationsInput, Prisma.InvestigationUncheckedUpdateWithoutRemediationVerificationsInput>
+}
+
+export type InvestigationUpdateWithoutRemediationVerificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  status?: Prisma.EnumInvestigationStatusFieldUpdateOperationsInput | $Enums.InvestigationStatus
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootCause?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  context?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  project?: Prisma.ProjectUpdateOneRequiredWithoutInvestigationsNestedInput
+  issue?: Prisma.IssueUpdateOneWithoutInvestigationsNestedInput
+  monitor?: Prisma.MonitorUpdateOneWithoutInvestigationsNestedInput
+  alert?: Prisma.MonitorAlertUpdateOneWithoutInvestigationNestedInput
+  repairCases?: Prisma.RepairCaseUpdateManyWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUpdateManyWithoutInvestigationNestedInput
+  comments?: Prisma.InvestigationCommentUpdateManyWithoutInvestigationNestedInput
+  verdicts?: Prisma.InvestigationVerdictUpdateManyWithoutInvestigationNestedInput
+  activities?: Prisma.InvestigationActivityUpdateManyWithoutInvestigationNestedInput
+  proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
+  incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+}
+
+export type InvestigationUncheckedUpdateWithoutRemediationVerificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  issueId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  monitorId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  alertId?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  status?: Prisma.EnumInvestigationStatusFieldUpdateOperationsInput | $Enums.InvestigationStatus
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootCause?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  startedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  evidenceCount?: Prisma.IntFieldUpdateOperationsInput | number
+  context?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  repairCases?: Prisma.RepairCaseUncheckedUpdateManyWithoutInvestigationNestedInput
+  recommendations?: Prisma.IssueRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  comments?: Prisma.InvestigationCommentUncheckedUpdateManyWithoutInvestigationNestedInput
+  verdicts?: Prisma.InvestigationVerdictUncheckedUpdateManyWithoutInvestigationNestedInput
+  activities?: Prisma.InvestigationActivityUncheckedUpdateManyWithoutInvestigationNestedInput
+  proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
+  incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
+  remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationCreateManyProjectInput = {
@@ -2331,6 +2518,7 @@ export type InvestigationUpdateWithoutProjectInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutProjectInput = {
@@ -2357,6 +2545,7 @@ export type InvestigationUncheckedUpdateWithoutProjectInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateManyWithoutProjectInput = {
@@ -2419,6 +2608,7 @@ export type InvestigationUpdateWithoutIssueInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutIssueInput = {
@@ -2445,6 +2635,7 @@ export type InvestigationUncheckedUpdateWithoutIssueInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateManyWithoutIssueInput = {
@@ -2507,6 +2698,7 @@ export type InvestigationUpdateWithoutMonitorInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateWithoutMonitorInput = {
@@ -2533,6 +2725,7 @@ export type InvestigationUncheckedUpdateWithoutMonitorInput = {
   proposedRelations?: Prisma.InvestigationProposedRelationUncheckedUpdateManyWithoutInvestigationNestedInput
   incidentMemory?: Prisma.IncidentMemoryUncheckedUpdateOneWithoutInvestigationNestedInput
   remediationRecommendations?: Prisma.RemediationRecommendationUncheckedUpdateManyWithoutInvestigationNestedInput
+  remediationVerifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutInvestigationNestedInput
 }
 
 export type InvestigationUncheckedUpdateManyWithoutMonitorInput = {
@@ -2566,6 +2759,7 @@ export type InvestigationCountOutputType = {
   activities: number
   proposedRelations: number
   remediationRecommendations: number
+  remediationVerifications: number
 }
 
 export type InvestigationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2576,6 +2770,7 @@ export type InvestigationCountOutputTypeSelect<ExtArgs extends runtime.Types.Ext
   activities?: boolean | InvestigationCountOutputTypeCountActivitiesArgs
   proposedRelations?: boolean | InvestigationCountOutputTypeCountProposedRelationsArgs
   remediationRecommendations?: boolean | InvestigationCountOutputTypeCountRemediationRecommendationsArgs
+  remediationVerifications?: boolean | InvestigationCountOutputTypeCountRemediationVerificationsArgs
 }
 
 /**
@@ -2637,6 +2832,13 @@ export type InvestigationCountOutputTypeCountRemediationRecommendationsArgs<ExtA
   where?: Prisma.RemediationRecommendationWhereInput
 }
 
+/**
+ * InvestigationCountOutputType without action
+ */
+export type InvestigationCountOutputTypeCountRemediationVerificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RemediationVerificationWhereInput
+}
+
 
 export type InvestigationSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
   id?: boolean
@@ -2667,6 +2869,7 @@ export type InvestigationSelect<ExtArgs extends runtime.Types.Extensions.Interna
   proposedRelations?: boolean | Prisma.Investigation$proposedRelationsArgs<ExtArgs>
   incidentMemory?: boolean | Prisma.Investigation$incidentMemoryArgs<ExtArgs>
   remediationRecommendations?: boolean | Prisma.Investigation$remediationRecommendationsArgs<ExtArgs>
+  remediationVerifications?: boolean | Prisma.Investigation$remediationVerificationsArgs<ExtArgs>
   _count?: boolean | Prisma.InvestigationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["investigation"]>
 
@@ -2749,6 +2952,7 @@ export type InvestigationInclude<ExtArgs extends runtime.Types.Extensions.Intern
   proposedRelations?: boolean | Prisma.Investigation$proposedRelationsArgs<ExtArgs>
   incidentMemory?: boolean | Prisma.Investigation$incidentMemoryArgs<ExtArgs>
   remediationRecommendations?: boolean | Prisma.Investigation$remediationRecommendationsArgs<ExtArgs>
+  remediationVerifications?: boolean | Prisma.Investigation$remediationVerificationsArgs<ExtArgs>
   _count?: boolean | Prisma.InvestigationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type InvestigationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2779,6 +2983,7 @@ export type $InvestigationPayload<ExtArgs extends runtime.Types.Extensions.Inter
     proposedRelations: Prisma.$InvestigationProposedRelationPayload<ExtArgs>[]
     incidentMemory: Prisma.$IncidentMemoryPayload<ExtArgs> | null
     remediationRecommendations: Prisma.$RemediationRecommendationPayload<ExtArgs>[]
+    remediationVerifications: Prisma.$RemediationVerificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -3203,6 +3408,7 @@ export interface Prisma__InvestigationClient<T, Null = never, ExtArgs extends ru
   proposedRelations<T extends Prisma.Investigation$proposedRelationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Investigation$proposedRelationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$InvestigationProposedRelationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   incidentMemory<T extends Prisma.Investigation$incidentMemoryArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Investigation$incidentMemoryArgs<ExtArgs>>): Prisma.Prisma__IncidentMemoryClient<runtime.Types.Result.GetResult<Prisma.$IncidentMemoryPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | null, null, ExtArgs, GlobalOmitOptions>
   remediationRecommendations<T extends Prisma.Investigation$remediationRecommendationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Investigation$remediationRecommendationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RemediationRecommendationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  remediationVerifications<T extends Prisma.Investigation$remediationVerificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.Investigation$remediationVerificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RemediationVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3890,6 +4096,30 @@ export type Investigation$remediationRecommendationsArgs<ExtArgs extends runtime
   take?: number
   skip?: number
   distinct?: Prisma.RemediationRecommendationScalarFieldEnum | Prisma.RemediationRecommendationScalarFieldEnum[]
+}
+
+/**
+ * Investigation.remediationVerifications
+ */
+export type Investigation$remediationVerificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RemediationVerification
+   */
+  select?: Prisma.RemediationVerificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RemediationVerification
+   */
+  omit?: Prisma.RemediationVerificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RemediationVerificationInclude<ExtArgs> | null
+  where?: Prisma.RemediationVerificationWhereInput
+  orderBy?: Prisma.RemediationVerificationOrderByWithRelationInput | Prisma.RemediationVerificationOrderByWithRelationInput[]
+  cursor?: Prisma.RemediationVerificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RemediationVerificationScalarFieldEnum | Prisma.RemediationVerificationScalarFieldEnum[]
 }
 
 /**

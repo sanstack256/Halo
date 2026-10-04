@@ -374,6 +374,7 @@ export type RemediationRecommendationWhereInput = {
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   investigation?: Prisma.XOR<Prisma.InvestigationScalarRelationFilter, Prisma.InvestigationWhereInput>
   notes?: Prisma.RemediationNoteListRelationFilter
+  verifications?: Prisma.RemediationVerificationListRelationFilter
 }
 
 export type RemediationRecommendationOrderByWithRelationInput = {
@@ -414,6 +415,7 @@ export type RemediationRecommendationOrderByWithRelationInput = {
   project?: Prisma.ProjectOrderByWithRelationInput
   investigation?: Prisma.InvestigationOrderByWithRelationInput
   notes?: Prisma.RemediationNoteOrderByRelationAggregateInput
+  verifications?: Prisma.RemediationVerificationOrderByRelationAggregateInput
 }
 
 export type RemediationRecommendationWhereUniqueInput = Prisma.AtLeast<{
@@ -458,6 +460,7 @@ export type RemediationRecommendationWhereUniqueInput = Prisma.AtLeast<{
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   investigation?: Prisma.XOR<Prisma.InvestigationScalarRelationFilter, Prisma.InvestigationWhereInput>
   notes?: Prisma.RemediationNoteListRelationFilter
+  verifications?: Prisma.RemediationVerificationListRelationFilter
 }, "id" | "investigationId_recommendationKey">
 
 export type RemediationRecommendationOrderByWithAggregationInput = {
@@ -573,6 +576,7 @@ export type RemediationRecommendationCreateInput = {
   project: Prisma.ProjectCreateNestedOneWithoutRemediationRecommendationsInput
   investigation: Prisma.InvestigationCreateNestedOneWithoutRemediationRecommendationsInput
   notes?: Prisma.RemediationNoteCreateNestedManyWithoutRecommendationInput
+  verifications?: Prisma.RemediationVerificationCreateNestedManyWithoutRecommendationInput
 }
 
 export type RemediationRecommendationUncheckedCreateInput = {
@@ -610,6 +614,7 @@ export type RemediationRecommendationUncheckedCreateInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutRecommendationInput
+  verifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutRecommendationInput
 }
 
 export type RemediationRecommendationUpdateInput = {
@@ -647,6 +652,7 @@ export type RemediationRecommendationUpdateInput = {
   project?: Prisma.ProjectUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
   investigation?: Prisma.InvestigationUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
   notes?: Prisma.RemediationNoteUpdateManyWithoutRecommendationNestedInput
+  verifications?: Prisma.RemediationVerificationUpdateManyWithoutRecommendationNestedInput
 }
 
 export type RemediationRecommendationUncheckedUpdateInput = {
@@ -684,6 +690,7 @@ export type RemediationRecommendationUncheckedUpdateInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutRecommendationNestedInput
+  verifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutRecommendationNestedInput
 }
 
 export type RemediationRecommendationCreateManyInput = {
@@ -1111,6 +1118,20 @@ export type RemediationRecommendationUpdateOneRequiredWithoutNotesNestedInput = 
   update?: Prisma.XOR<Prisma.XOR<Prisma.RemediationRecommendationUpdateToOneWithWhereWithoutNotesInput, Prisma.RemediationRecommendationUpdateWithoutNotesInput>, Prisma.RemediationRecommendationUncheckedUpdateWithoutNotesInput>
 }
 
+export type RemediationRecommendationCreateNestedOneWithoutVerificationsInput = {
+  create?: Prisma.XOR<Prisma.RemediationRecommendationCreateWithoutVerificationsInput, Prisma.RemediationRecommendationUncheckedCreateWithoutVerificationsInput>
+  connectOrCreate?: Prisma.RemediationRecommendationCreateOrConnectWithoutVerificationsInput
+  connect?: Prisma.RemediationRecommendationWhereUniqueInput
+}
+
+export type RemediationRecommendationUpdateOneRequiredWithoutVerificationsNestedInput = {
+  create?: Prisma.XOR<Prisma.RemediationRecommendationCreateWithoutVerificationsInput, Prisma.RemediationRecommendationUncheckedCreateWithoutVerificationsInput>
+  connectOrCreate?: Prisma.RemediationRecommendationCreateOrConnectWithoutVerificationsInput
+  upsert?: Prisma.RemediationRecommendationUpsertWithoutVerificationsInput
+  connect?: Prisma.RemediationRecommendationWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.RemediationRecommendationUpdateToOneWithWhereWithoutVerificationsInput, Prisma.RemediationRecommendationUpdateWithoutVerificationsInput>, Prisma.RemediationRecommendationUncheckedUpdateWithoutVerificationsInput>
+}
+
 export type RemediationRecommendationCreateWithoutOrganizationInput = {
   id?: string
   recommendationKey: string
@@ -1145,6 +1166,7 @@ export type RemediationRecommendationCreateWithoutOrganizationInput = {
   project: Prisma.ProjectCreateNestedOneWithoutRemediationRecommendationsInput
   investigation: Prisma.InvestigationCreateNestedOneWithoutRemediationRecommendationsInput
   notes?: Prisma.RemediationNoteCreateNestedManyWithoutRecommendationInput
+  verifications?: Prisma.RemediationVerificationCreateNestedManyWithoutRecommendationInput
 }
 
 export type RemediationRecommendationUncheckedCreateWithoutOrganizationInput = {
@@ -1181,6 +1203,7 @@ export type RemediationRecommendationUncheckedCreateWithoutOrganizationInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutRecommendationInput
+  verifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutRecommendationInput
 }
 
 export type RemediationRecommendationCreateOrConnectWithoutOrganizationInput = {
@@ -1282,6 +1305,7 @@ export type RemediationRecommendationCreateWithoutProjectInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutRemediationRecommendationsInput
   investigation: Prisma.InvestigationCreateNestedOneWithoutRemediationRecommendationsInput
   notes?: Prisma.RemediationNoteCreateNestedManyWithoutRecommendationInput
+  verifications?: Prisma.RemediationVerificationCreateNestedManyWithoutRecommendationInput
 }
 
 export type RemediationRecommendationUncheckedCreateWithoutProjectInput = {
@@ -1318,6 +1342,7 @@ export type RemediationRecommendationUncheckedCreateWithoutProjectInput = {
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutRecommendationInput
+  verifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutRecommendationInput
 }
 
 export type RemediationRecommendationCreateOrConnectWithoutProjectInput = {
@@ -1380,6 +1405,7 @@ export type RemediationRecommendationCreateWithoutInvestigationInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutRemediationRecommendationsInput
   project: Prisma.ProjectCreateNestedOneWithoutRemediationRecommendationsInput
   notes?: Prisma.RemediationNoteCreateNestedManyWithoutRecommendationInput
+  verifications?: Prisma.RemediationVerificationCreateNestedManyWithoutRecommendationInput
 }
 
 export type RemediationRecommendationUncheckedCreateWithoutInvestigationInput = {
@@ -1416,6 +1442,7 @@ export type RemediationRecommendationUncheckedCreateWithoutInvestigationInput = 
   createdAt?: Date | string
   updatedAt?: Date | string
   notes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutRecommendationInput
+  verifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutRecommendationInput
 }
 
 export type RemediationRecommendationCreateOrConnectWithoutInvestigationInput = {
@@ -1478,6 +1505,7 @@ export type RemediationRecommendationCreateWithoutNotesInput = {
   organization: Prisma.OrganizationCreateNestedOneWithoutRemediationRecommendationsInput
   project: Prisma.ProjectCreateNestedOneWithoutRemediationRecommendationsInput
   investigation: Prisma.InvestigationCreateNestedOneWithoutRemediationRecommendationsInput
+  verifications?: Prisma.RemediationVerificationCreateNestedManyWithoutRecommendationInput
 }
 
 export type RemediationRecommendationUncheckedCreateWithoutNotesInput = {
@@ -1514,6 +1542,7 @@ export type RemediationRecommendationUncheckedCreateWithoutNotesInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Date | string
   updatedAt?: Date | string
+  verifications?: Prisma.RemediationVerificationUncheckedCreateNestedManyWithoutRecommendationInput
 }
 
 export type RemediationRecommendationCreateOrConnectWithoutNotesInput = {
@@ -1566,6 +1595,7 @@ export type RemediationRecommendationUpdateWithoutNotesInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
   investigation?: Prisma.InvestigationUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
+  verifications?: Prisma.RemediationVerificationUpdateManyWithoutRecommendationNestedInput
 }
 
 export type RemediationRecommendationUncheckedUpdateWithoutNotesInput = {
@@ -1602,6 +1632,171 @@ export type RemediationRecommendationUncheckedUpdateWithoutNotesInput = {
   metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  verifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutRecommendationNestedInput
+}
+
+export type RemediationRecommendationCreateWithoutVerificationsInput = {
+  id?: string
+  recommendationKey: string
+  type: $Enums.RemediationType
+  status?: $Enums.RemediationStatus
+  supportLevel?: $Enums.RemediationSupportLevel
+  riskLevel?: $Enums.RemediationRiskLevel
+  title: string
+  summary?: string | null
+  action: string
+  rationale?: string | null
+  expectedOutcome?: string | null
+  validationMethod?: string | null
+  prerequisites?: Prisma.RemediationRecommendationCreateprerequisitesInput | string[]
+  evidenceReferences?: Prisma.RemediationRecommendationCreateevidenceReferencesInput | string[]
+  supportingClaimIds?: Prisma.RemediationRecommendationCreatesupportingClaimIdsInput | string[]
+  affectedServices?: Prisma.RemediationRecommendationCreateaffectedServicesInput | string[]
+  affectedOperations?: Prisma.RemediationRecommendationCreateaffectedOperationsInput | string[]
+  affectedCodePaths?: Prisma.RemediationRecommendationCreateaffectedCodePathsInput | string[]
+  ownerContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncertainty?: string | null
+  completedAt?: Date | string | null
+  completedBy?: string | null
+  dismissedAt?: Date | string | null
+  dismissedBy?: string | null
+  dismissalReason?: string | null
+  historicalContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contradictionNotes?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  organization: Prisma.OrganizationCreateNestedOneWithoutRemediationRecommendationsInput
+  project: Prisma.ProjectCreateNestedOneWithoutRemediationRecommendationsInput
+  investigation: Prisma.InvestigationCreateNestedOneWithoutRemediationRecommendationsInput
+  notes?: Prisma.RemediationNoteCreateNestedManyWithoutRecommendationInput
+}
+
+export type RemediationRecommendationUncheckedCreateWithoutVerificationsInput = {
+  id?: string
+  organizationId: string
+  projectId: string
+  investigationId: string
+  recommendationKey: string
+  type: $Enums.RemediationType
+  status?: $Enums.RemediationStatus
+  supportLevel?: $Enums.RemediationSupportLevel
+  riskLevel?: $Enums.RemediationRiskLevel
+  title: string
+  summary?: string | null
+  action: string
+  rationale?: string | null
+  expectedOutcome?: string | null
+  validationMethod?: string | null
+  prerequisites?: Prisma.RemediationRecommendationCreateprerequisitesInput | string[]
+  evidenceReferences?: Prisma.RemediationRecommendationCreateevidenceReferencesInput | string[]
+  supportingClaimIds?: Prisma.RemediationRecommendationCreatesupportingClaimIdsInput | string[]
+  affectedServices?: Prisma.RemediationRecommendationCreateaffectedServicesInput | string[]
+  affectedOperations?: Prisma.RemediationRecommendationCreateaffectedOperationsInput | string[]
+  affectedCodePaths?: Prisma.RemediationRecommendationCreateaffectedCodePathsInput | string[]
+  ownerContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncertainty?: string | null
+  completedAt?: Date | string | null
+  completedBy?: string | null
+  dismissedAt?: Date | string | null
+  dismissedBy?: string | null
+  dismissalReason?: string | null
+  historicalContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contradictionNotes?: string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  notes?: Prisma.RemediationNoteUncheckedCreateNestedManyWithoutRecommendationInput
+}
+
+export type RemediationRecommendationCreateOrConnectWithoutVerificationsInput = {
+  where: Prisma.RemediationRecommendationWhereUniqueInput
+  create: Prisma.XOR<Prisma.RemediationRecommendationCreateWithoutVerificationsInput, Prisma.RemediationRecommendationUncheckedCreateWithoutVerificationsInput>
+}
+
+export type RemediationRecommendationUpsertWithoutVerificationsInput = {
+  update: Prisma.XOR<Prisma.RemediationRecommendationUpdateWithoutVerificationsInput, Prisma.RemediationRecommendationUncheckedUpdateWithoutVerificationsInput>
+  create: Prisma.XOR<Prisma.RemediationRecommendationCreateWithoutVerificationsInput, Prisma.RemediationRecommendationUncheckedCreateWithoutVerificationsInput>
+  where?: Prisma.RemediationRecommendationWhereInput
+}
+
+export type RemediationRecommendationUpdateToOneWithWhereWithoutVerificationsInput = {
+  where?: Prisma.RemediationRecommendationWhereInput
+  data: Prisma.XOR<Prisma.RemediationRecommendationUpdateWithoutVerificationsInput, Prisma.RemediationRecommendationUncheckedUpdateWithoutVerificationsInput>
+}
+
+export type RemediationRecommendationUpdateWithoutVerificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  recommendationKey?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRemediationTypeFieldUpdateOperationsInput | $Enums.RemediationType
+  status?: Prisma.EnumRemediationStatusFieldUpdateOperationsInput | $Enums.RemediationStatus
+  supportLevel?: Prisma.EnumRemediationSupportLevelFieldUpdateOperationsInput | $Enums.RemediationSupportLevel
+  riskLevel?: Prisma.EnumRemediationRiskLevelFieldUpdateOperationsInput | $Enums.RemediationRiskLevel
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  action?: Prisma.StringFieldUpdateOperationsInput | string
+  rationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validationMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prerequisites?: Prisma.RemediationRecommendationUpdateprerequisitesInput | string[]
+  evidenceReferences?: Prisma.RemediationRecommendationUpdateevidenceReferencesInput | string[]
+  supportingClaimIds?: Prisma.RemediationRecommendationUpdatesupportingClaimIdsInput | string[]
+  affectedServices?: Prisma.RemediationRecommendationUpdateaffectedServicesInput | string[]
+  affectedOperations?: Prisma.RemediationRecommendationUpdateaffectedOperationsInput | string[]
+  affectedCodePaths?: Prisma.RemediationRecommendationUpdateaffectedCodePathsInput | string[]
+  ownerContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncertainty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dismissedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dismissedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dismissalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  historicalContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contradictionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
+  investigation?: Prisma.InvestigationUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
+  notes?: Prisma.RemediationNoteUpdateManyWithoutRecommendationNestedInput
+}
+
+export type RemediationRecommendationUncheckedUpdateWithoutVerificationsInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  investigationId?: Prisma.StringFieldUpdateOperationsInput | string
+  recommendationKey?: Prisma.StringFieldUpdateOperationsInput | string
+  type?: Prisma.EnumRemediationTypeFieldUpdateOperationsInput | $Enums.RemediationType
+  status?: Prisma.EnumRemediationStatusFieldUpdateOperationsInput | $Enums.RemediationStatus
+  supportLevel?: Prisma.EnumRemediationSupportLevelFieldUpdateOperationsInput | $Enums.RemediationSupportLevel
+  riskLevel?: Prisma.EnumRemediationRiskLevelFieldUpdateOperationsInput | $Enums.RemediationRiskLevel
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  summary?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  action?: Prisma.StringFieldUpdateOperationsInput | string
+  rationale?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  expectedOutcome?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  validationMethod?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  prerequisites?: Prisma.RemediationRecommendationUpdateprerequisitesInput | string[]
+  evidenceReferences?: Prisma.RemediationRecommendationUpdateevidenceReferencesInput | string[]
+  supportingClaimIds?: Prisma.RemediationRecommendationUpdatesupportingClaimIdsInput | string[]
+  affectedServices?: Prisma.RemediationRecommendationUpdateaffectedServicesInput | string[]
+  affectedOperations?: Prisma.RemediationRecommendationUpdateaffectedOperationsInput | string[]
+  affectedCodePaths?: Prisma.RemediationRecommendationUpdateaffectedCodePathsInput | string[]
+  ownerContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  uncertainty?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  completedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  completedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dismissedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  dismissedBy?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  dismissalReason?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  historicalContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  contradictionNotes?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  metadata?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  notes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutRecommendationNestedInput
 }
 
 export type RemediationRecommendationCreateManyOrganizationInput = {
@@ -1673,6 +1868,7 @@ export type RemediationRecommendationUpdateWithoutOrganizationInput = {
   project?: Prisma.ProjectUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
   investigation?: Prisma.InvestigationUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
   notes?: Prisma.RemediationNoteUpdateManyWithoutRecommendationNestedInput
+  verifications?: Prisma.RemediationVerificationUpdateManyWithoutRecommendationNestedInput
 }
 
 export type RemediationRecommendationUncheckedUpdateWithoutOrganizationInput = {
@@ -1709,6 +1905,7 @@ export type RemediationRecommendationUncheckedUpdateWithoutOrganizationInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutRecommendationNestedInput
+  verifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutRecommendationNestedInput
 }
 
 export type RemediationRecommendationUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1815,6 +2012,7 @@ export type RemediationRecommendationUpdateWithoutProjectInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
   investigation?: Prisma.InvestigationUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
   notes?: Prisma.RemediationNoteUpdateManyWithoutRecommendationNestedInput
+  verifications?: Prisma.RemediationVerificationUpdateManyWithoutRecommendationNestedInput
 }
 
 export type RemediationRecommendationUncheckedUpdateWithoutProjectInput = {
@@ -1851,6 +2049,7 @@ export type RemediationRecommendationUncheckedUpdateWithoutProjectInput = {
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutRecommendationNestedInput
+  verifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutRecommendationNestedInput
 }
 
 export type RemediationRecommendationUncheckedUpdateManyWithoutProjectInput = {
@@ -1957,6 +2156,7 @@ export type RemediationRecommendationUpdateWithoutInvestigationInput = {
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutRemediationRecommendationsNestedInput
   notes?: Prisma.RemediationNoteUpdateManyWithoutRecommendationNestedInput
+  verifications?: Prisma.RemediationVerificationUpdateManyWithoutRecommendationNestedInput
 }
 
 export type RemediationRecommendationUncheckedUpdateWithoutInvestigationInput = {
@@ -1993,6 +2193,7 @@ export type RemediationRecommendationUncheckedUpdateWithoutInvestigationInput = 
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   notes?: Prisma.RemediationNoteUncheckedUpdateManyWithoutRecommendationNestedInput
+  verifications?: Prisma.RemediationVerificationUncheckedUpdateManyWithoutRecommendationNestedInput
 }
 
 export type RemediationRecommendationUncheckedUpdateManyWithoutInvestigationInput = {
@@ -2037,10 +2238,12 @@ export type RemediationRecommendationUncheckedUpdateManyWithoutInvestigationInpu
 
 export type RemediationRecommendationCountOutputType = {
   notes: number
+  verifications: number
 }
 
 export type RemediationRecommendationCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   notes?: boolean | RemediationRecommendationCountOutputTypeCountNotesArgs
+  verifications?: boolean | RemediationRecommendationCountOutputTypeCountVerificationsArgs
 }
 
 /**
@@ -2058,6 +2261,13 @@ export type RemediationRecommendationCountOutputTypeDefaultArgs<ExtArgs extends 
  */
 export type RemediationRecommendationCountOutputTypeCountNotesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   where?: Prisma.RemediationNoteWhereInput
+}
+
+/**
+ * RemediationRecommendationCountOutputType without action
+ */
+export type RemediationRecommendationCountOutputTypeCountVerificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.RemediationVerificationWhereInput
 }
 
 
@@ -2099,6 +2309,7 @@ export type RemediationRecommendationSelect<ExtArgs extends runtime.Types.Extens
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   investigation?: boolean | Prisma.InvestigationDefaultArgs<ExtArgs>
   notes?: boolean | Prisma.RemediationRecommendation$notesArgs<ExtArgs>
+  verifications?: boolean | Prisma.RemediationRecommendation$verificationsArgs<ExtArgs>
   _count?: boolean | Prisma.RemediationRecommendationCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["remediationRecommendation"]>
 
@@ -2222,6 +2433,7 @@ export type RemediationRecommendationInclude<ExtArgs extends runtime.Types.Exten
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   investigation?: boolean | Prisma.InvestigationDefaultArgs<ExtArgs>
   notes?: boolean | Prisma.RemediationRecommendation$notesArgs<ExtArgs>
+  verifications?: boolean | Prisma.RemediationRecommendation$verificationsArgs<ExtArgs>
   _count?: boolean | Prisma.RemediationRecommendationCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type RemediationRecommendationIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
@@ -2242,6 +2454,7 @@ export type $RemediationRecommendationPayload<ExtArgs extends runtime.Types.Exte
     project: Prisma.$ProjectPayload<ExtArgs>
     investigation: Prisma.$InvestigationPayload<ExtArgs>
     notes: Prisma.$RemediationNotePayload<ExtArgs>[]
+    verifications: Prisma.$RemediationVerificationPayload<ExtArgs>[]
   }
   scalars: runtime.Types.Extensions.GetPayloadResult<{
     id: string
@@ -2675,6 +2888,7 @@ export interface Prisma__RemediationRecommendationClient<T, Null = never, ExtArg
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   investigation<T extends Prisma.InvestigationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvestigationDefaultArgs<ExtArgs>>): Prisma.Prisma__InvestigationClient<runtime.Types.Result.GetResult<Prisma.$InvestigationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   notes<T extends Prisma.RemediationRecommendation$notesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RemediationRecommendation$notesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RemediationNotePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
+  verifications<T extends Prisma.RemediationRecommendation$verificationsArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.RemediationRecommendation$verificationsArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$RemediationVerificationPayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   /**
    * Attaches callbacks for the resolution and/or rejection of the Promise.
    * @param onfulfilled The callback to execute when the Promise is resolved.
@@ -3159,6 +3373,30 @@ export type RemediationRecommendation$notesArgs<ExtArgs extends runtime.Types.Ex
   take?: number
   skip?: number
   distinct?: Prisma.RemediationNoteScalarFieldEnum | Prisma.RemediationNoteScalarFieldEnum[]
+}
+
+/**
+ * RemediationRecommendation.verifications
+ */
+export type RemediationRecommendation$verificationsArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the RemediationVerification
+   */
+  select?: Prisma.RemediationVerificationSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the RemediationVerification
+   */
+  omit?: Prisma.RemediationVerificationOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.RemediationVerificationInclude<ExtArgs> | null
+  where?: Prisma.RemediationVerificationWhereInput
+  orderBy?: Prisma.RemediationVerificationOrderByWithRelationInput | Prisma.RemediationVerificationOrderByWithRelationInput[]
+  cursor?: Prisma.RemediationVerificationWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.RemediationVerificationScalarFieldEnum | Prisma.RemediationVerificationScalarFieldEnum[]
 }
 
 /**

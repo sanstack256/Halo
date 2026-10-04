@@ -90,6 +90,19 @@ export interface GeneratedPostmortem {
         completedAt?: string | null;
         historicalContext?: any;
     }>;
+    remediationVerifications?: Array<{
+        id: string;
+        recommendationId: string;
+        result: string;
+        strength: string;
+        baselineSampleCount: number;
+        postSampleCount: number;
+        baselineFailureRate: number;
+        postFailureRate: number;
+        uncertainty?: string | null;
+        explanation?: string | null;
+        regressionSignals?: any;
+    }>;
     markdownReport: string;
 }
 
@@ -108,7 +121,11 @@ export async function generateInvestigationPostmortem(investigationId: string): 
             incidentMemory: true,
             remediationRecommendations: {
                 orderBy: { createdAt: "asc" },
-                include: { notes: true },
+                include: { notes: true, verifications: { orderBy: { verifiedAt: "desc" }, take: 1 } },
+            },
+            remediationVerifications: {
+                orderBy: { verifiedAt: "desc" },
+                include: { recommendation: { select: { title: true, type: true } } },
             },
         },
     });
@@ -350,6 +367,32 @@ ${r.status === "COMPLETED" && r.completedBy ? `- **Verification:** Verified comp
         : "- *No evidence-backed remediation recommendations recorded for this investigation.*"
 }
 
+## 11. Remediation Verification
+${
+    (investigation.remediationVerifications || []).length > 0
+        ? (investigation.remediationVerifications || []).map((v) => {
+              const anchor = (v.temporalAnchor as any) || {};
+              const regSignals = (v.regressionSignals as any[]) || [];
+              return `### Verification: ${v.recommendation?.title || "Recommendation"} [${v.recommendation?.type || "ACTION"}] — Outcome: ${v.result} (${v.strength} Evidence Strength)
+- **Change Observed / Anchor:** ${anchor.label || "Verified Change"} (${anchor.timestamp ? new Date(anchor.timestamp).toISOString() : v.postStart.toISOString()})
+- **Baseline Window (${v.baselineStart.toISOString()} to ${v.baselineEnd.toISOString()}):**
+  - Sample Count: ${v.baselineSampleCount} requests
+  - Failure Count: ${v.baselineFailureCount}
+  - Failure Rate: ${(v.baselineFailureRate * 100).toFixed(1)}%
+  - p95 Latency: ${v.baselineP95 !== null ? `${v.baselineP95}ms` : "Not recorded"}
+- **Post-Change Window (${v.postStart.toISOString()} to ${v.postEnd.toISOString()}):**
+  - Sample Count: ${v.postSampleCount} requests
+  - Failure Count: ${v.postFailureCount}
+  - Failure Rate: ${(v.postFailureRate * 100).toFixed(1)}%
+  - p95 Latency: ${v.postP95 !== null ? `${v.postP95}ms` : "Not recorded"}
+- **Evidence References:** ${v.evidenceReferences.length > 0 ? v.evidenceReferences.join(", ") : "None"}
+- **Regression Signals:** ${regSignals.length > 0 ? regSignals.map((rs) => rs.description).join("; ") : "None detected"}
+- **Remaining Epistemic Uncertainty:** ${v.uncertainty || "None recorded"}
+- **Summary:** ${v.explanation || "Verification completed."}`;
+          }).join("\n\n")
+        : "- *No remediation verification observations recorded for this investigation.*"
+}
+
 ---
 *Notice: This postmortem is deterministically synthesized from immutable telemetry events and verified human peer records. It does not fabricate unobserved metrics or external dependencies.*
 `;
@@ -410,6 +453,19 @@ ${r.status === "COMPLETED" && r.completedBy ? `- **Verification:** Verified comp
             completedBy: r.completedBy,
             completedAt: r.completedAt ? r.completedAt.toISOString() : null,
             historicalContext: r.historicalContext,
+        })),
+        remediationVerifications: (investigation.remediationVerifications || []).map((v) => ({
+            id: v.id,
+            recommendationId: v.recommendationId,
+            result: v.result,
+            strength: v.strength,
+            baselineSampleCount: v.baselineSampleCount,
+            postSampleCount: v.postSampleCount,
+            baselineFailureRate: v.baselineFailureRate,
+            postFailureRate: v.postFailureRate,
+            uncertainty: v.uncertainty,
+            explanation: v.explanation,
+            regressionSignals: v.regressionSignals,
         })),
         markdownReport,
     };

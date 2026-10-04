@@ -341,3 +341,24 @@ export const RemediationRiskLevel = {
 } as const
 
 export type RemediationRiskLevel = (typeof RemediationRiskLevel)[keyof typeof RemediationRiskLevel]
+
+
+export const VerificationResult = {
+  RESOLVED: 'RESOLVED',
+  IMPROVED: 'IMPROVED',
+  NOT_RESOLVED: 'NOT_RESOLVED',
+  REGRESSED: 'REGRESSED',
+  UNKNOWN: 'UNKNOWN',
+  INSUFFICIENT_DATA: 'INSUFFICIENT_DATA'
+} as const
+
+export type VerificationResult = (typeof VerificationResult)[keyof typeof VerificationResult]
+
+
+export const VerificationStrength = {
+  HIGH: 'HIGH',
+  MEDIUM: 'MEDIUM',
+  LOW: 'LOW'
+} as const
+
+export type VerificationStrength = (typeof VerificationStrength)[keyof typeof VerificationStrength]
