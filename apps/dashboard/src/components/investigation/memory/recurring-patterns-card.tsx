@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import { Repeat, Clock, Layers, ArrowUpRight } from "lucide-react";
+import { Repeat, Clock, Layers, ArrowUpRight, Activity } from "lucide-react";
 
 interface RecurringPattern {
     id: string;
@@ -13,6 +13,12 @@ interface RecurringPattern {
     firstSeenAt: string;
     lastSeenAt: string;
     investigationIds: string[];
+    verifiedResolutionCount?: number;
+    improvementCount?: number;
+    nonResolutionCount?: number;
+    regressionCount?: number;
+    status?: string;
+    historicalRemediations?: any;
 }
 
 interface RecurringPatternsCardProps {
@@ -33,16 +39,33 @@ export function RecurringPatternsCard({ pattern, onSelectIncident }: RecurringPa
         }
     };
 
+    const getStatusBadge = (status?: string) => {
+        switch (status) {
+            case "UNSTABLE":
+                return "bg-rose-950/50 border-rose-500/40 text-rose-300";
+            case "EVOLVING":
+                return "bg-blue-950/50 border-blue-500/40 text-blue-300";
+            case "STABLE":
+            default:
+                return "bg-emerald-950/50 border-emerald-500/40 text-emerald-300";
+        }
+    };
+
     return (
         <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-lg p-4 space-y-3 hover:border-zinc-700 transition-all">
             {/* Header */}
             <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         <span className="text-[11px] font-mono px-2 py-0.5 rounded border border-amber-500/30 bg-amber-950/40 text-amber-300 font-semibold flex items-center gap-1">
                             <Repeat className="w-3 h-3 text-amber-400" />
                             {pattern.incidentCount} Occurrences
                         </span>
+                        {pattern.status && (
+                            <span className={`text-[10px] font-mono px-2 py-0.5 rounded border font-semibold tracking-wider uppercase ${getStatusBadge(pattern.status)}`}>
+                                {pattern.status}
+                            </span>
+                        )}
                         <span className="text-xs text-zinc-400 font-mono">
                             {pattern.primaryService}
                         </span>
@@ -52,6 +75,30 @@ export function RecurringPatternsCard({ pattern, onSelectIncident }: RecurringPa
                     </h4>
                 </div>
             </div>
+
+            {/* Verified Outcome Distribution */}
+            {((pattern.verifiedResolutionCount ?? 0) > 0 || (pattern.regressionCount ?? 0) > 0 || (pattern.nonResolutionCount ?? 0) > 0) && (
+                <div className="flex flex-wrap items-center gap-2 text-[11px] font-mono bg-zinc-900/60 p-2 rounded border border-zinc-800/60">
+                    <span className="text-zinc-500 flex items-center gap-1">
+                        <Activity className="w-3 h-3 text-zinc-400" /> Outcomes:
+                    </span>
+                    {(pattern.verifiedResolutionCount ?? 0) > 0 && (
+                        <span className="text-emerald-400 font-medium">
+                            {pattern.verifiedResolutionCount} Resolved
+                        </span>
+                    )}
+                    {(pattern.regressionCount ?? 0) > 0 && (
+                        <span className="text-rose-400 font-medium">
+                            {pattern.regressionCount} Regressed
+                        </span>
+                    )}
+                    {(pattern.nonResolutionCount ?? 0) > 0 && (
+                        <span className="text-amber-400 font-medium">
+                            {pattern.nonResolutionCount} Not Resolved
+                        </span>
+                    )}
+                </div>
+            )}
 
             {/* Time Span */}
             <div className="flex items-center gap-4 text-xs text-zinc-400 font-mono bg-zinc-900/40 p-2 rounded border border-zinc-800/40">

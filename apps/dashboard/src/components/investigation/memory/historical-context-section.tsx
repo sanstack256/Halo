@@ -85,11 +85,11 @@ export function HistoricalContextSection({
                             Organizational Failure Memory & Context
                         </h3>
                         <span className="text-[10px] font-mono px-2 py-0.5 rounded bg-indigo-950/60 border border-indigo-500/30 text-indigo-300 font-semibold uppercase tracking-wider">
-                            Pillar D
+                            Pillar D & J — Continuous Learning
                         </span>
                     </div>
                     <p className="text-xs text-zinc-400">
-                        Contextual retrieval of historical incidents, recurring failure patterns, and previous human resolutions.
+                        Contextual retrieval of historical incidents, verified remediation outcomes, negative learning cautions, and pattern evolution.
                     </p>
                 </div>
 

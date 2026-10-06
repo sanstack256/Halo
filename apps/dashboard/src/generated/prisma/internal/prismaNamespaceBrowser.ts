@@ -82,6 +82,7 @@ export const ModelName = {
   InvestigationProposedRelation: 'InvestigationProposedRelation',
   IncidentMemory: 'IncidentMemory',
   FailurePattern: 'FailurePattern',
+  HistoricalRemediationOutcome: 'HistoricalRemediationOutcome',
   ServiceOwnership: 'ServiceOwnership',
   ServiceOwnershipAssertion: 'ServiceOwnershipAssertion',
   ServiceOwnershipHistory: 'ServiceOwnershipHistory',
@@ -668,6 +669,13 @@ export const IncidentMemoryScalarFieldEnum = {
   evidenceReferences: 'evidenceReferences',
   humanVerdicts: 'humanVerdicts',
   recommendations: 'recommendations',
+  verifiedOutcome: 'verifiedOutcome',
+  verificationStrength: 'verificationStrength',
+  changeCharacteristics: 'changeCharacteristics',
+  ownershipContext: 'ownershipContext',
+  deploymentContext: 'deploymentContext',
+  resolvedAt: 'resolvedAt',
+  patternIdentifiers: 'patternIdentifiers',
   memoryVersion: 'memoryVersion',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
@@ -689,12 +697,38 @@ export const FailurePatternScalarFieldEnum = {
   lastSeenAt: 'lastSeenAt',
   commonCausalSummary: 'commonCausalSummary',
   investigationIds: 'investigationIds',
+  verifiedResolutionCount: 'verifiedResolutionCount',
+  improvementCount: 'improvementCount',
+  nonResolutionCount: 'nonResolutionCount',
+  regressionCount: 'regressionCount',
+  status: 'status',
+  commonChanges: 'commonChanges',
+  historicalRemediations: 'historicalRemediations',
   version: 'version',
   createdAt: 'createdAt',
   updatedAt: 'updatedAt'
 } as const
 
 export type FailurePatternScalarFieldEnum = (typeof FailurePatternScalarFieldEnum)[keyof typeof FailurePatternScalarFieldEnum]
+
+
+export const HistoricalRemediationOutcomeScalarFieldEnum = {
+  id: 'id',
+  organizationId: 'organizationId',
+  projectId: 'projectId',
+  incidentMemoryId: 'incidentMemoryId',
+  recommendationId: 'recommendationId',
+  verificationId: 'verificationId',
+  remediationType: 'remediationType',
+  verificationResult: 'verificationResult',
+  verificationStrength: 'verificationStrength',
+  actionSummary: 'actionSummary',
+  evidenceReferences: 'evidenceReferences',
+  observedAt: 'observedAt',
+  createdAt: 'createdAt'
+} as const
+
+export type HistoricalRemediationOutcomeScalarFieldEnum = (typeof HistoricalRemediationOutcomeScalarFieldEnum)[keyof typeof HistoricalRemediationOutcomeScalarFieldEnum]
 
 
 export const ServiceOwnershipScalarFieldEnum = {

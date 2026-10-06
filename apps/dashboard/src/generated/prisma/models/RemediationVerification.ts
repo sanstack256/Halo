@@ -1263,14 +1263,6 @@ export type RemediationVerificationCreateevidenceReferencesInput = {
   set: string[]
 }
 
-export type EnumVerificationResultFieldUpdateOperationsInput = {
-  set?: $Enums.VerificationResult
-}
-
-export type EnumVerificationStrengthFieldUpdateOperationsInput = {
-  set?: $Enums.VerificationStrength
-}
-
 export type FloatFieldUpdateOperationsInput = {
   set?: number
   increment?: number

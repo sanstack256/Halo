@@ -21,6 +21,7 @@ export type TeamCapability =
     | "TEAM_EVIDENCE_SYNTHESIS"
     | "TEAM_REMEDIATION_INTELLIGENCE"
     | "TEAM_REMEDIATION_VERIFICATION"
+    | "TEAM_CONTINUOUS_INCIDENT_LEARNING"
     | "TEAM_CROSS_SERVICE_TOPOLOGY"
     | "TEAM_EVIDENCE_AUTOMATION"
     | "SHARED_DASHBOARDS"
@@ -85,6 +86,11 @@ export const CAPABILITY_METADATA: Record<
     TEAM_REMEDIATION_VERIFICATION: {
         name: "Remediation Verification & Resolution Intelligence",
         description: "Determine, using real post-change telemetry and existing evidence, whether a remediation resolved, improved, or regressed the investigated failure.",
+        minimumPlan: "TEAM",
+    },
+    TEAM_CONTINUOUS_INCIDENT_LEARNING: {
+        name: "Continuous Incident Learning & Organizational Intelligence",
+        description: "Turn verified incident outcomes into durable, explainable organizational knowledge, pattern evolution, and negative learning.",
         minimumPlan: "TEAM",
     },
     TEAM_CROSS_SERVICE_TOPOLOGY: {

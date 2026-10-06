@@ -2,7 +2,7 @@
 
 import React, { useState } from "react";
 import { type IncidentComparisonResult } from "@/lib/investigation/incident-memory/similarity-engine";
-import { History, AlertTriangle, ArrowRight, ShieldCheck, CheckCircle2, XCircle } from "lucide-react";
+import { History, AlertTriangle, ArrowRight, CheckCircle2, XCircle, ShieldAlert, Sparkles, Wrench } from "lucide-react";
 
 interface SimilarIncidentCardProps {
     match: IncidentComparisonResult;
@@ -25,18 +25,38 @@ export function SimilarIncidentCard({ match, onInspect }: SimilarIncidentCardPro
         }
     };
 
+    const getOutcomeBadgeStyle = (outcome?: string | null) => {
+        switch (outcome) {
+            case "RESOLVED":
+                return "bg-emerald-950/60 border-emerald-500/40 text-emerald-300";
+            case "IMPROVED":
+                return "bg-blue-950/60 border-blue-500/40 text-blue-300";
+            case "NOT_RESOLVED":
+                return "bg-amber-950/60 border-amber-500/40 text-amber-300";
+            case "REGRESSED":
+                return "bg-rose-950/60 border-rose-500/40 text-rose-300";
+            default:
+                return "bg-zinc-900 border-zinc-800 text-zinc-400";
+        }
+    };
+
     return (
         <div className="bg-zinc-950/60 border border-zinc-800/80 rounded-lg p-4 space-y-3.5 hover:border-zinc-700 transition-all">
             {/* Header */}
             <div className="flex items-start justify-between gap-3">
                 <div className="space-y-1">
-                    <div className="flex items-center gap-2">
+                    <div className="flex flex-wrap items-center gap-2">
                         <span className={`text-[11px] font-mono px-2 py-0.5 rounded border uppercase tracking-wider font-semibold ${getBadgeStyle(match.classification)}`}>
                             {match.classification.replace(/_/g, " ")}
                         </span>
                         <span className="text-xs text-zinc-400 font-mono">
                             {match.score}% Structural Overlap
                         </span>
+                        {match.historicalOutcome && (
+                            <span className={`text-[11px] font-mono px-2 py-0.5 rounded border uppercase tracking-wider font-semibold ${getOutcomeBadgeStyle(match.historicalOutcome)}`}>
+                                Verified: {match.historicalOutcome}
+                            </span>
+                        )}
                     </div>
                     <h4 className="text-sm font-medium text-zinc-200">
                         {match.historicalTitle}
@@ -53,6 +73,24 @@ export function SimilarIncidentCard({ match, onInspect }: SimilarIncidentCardPro
                     </button>
                 )}
             </div>
+
+            {/* Negative Learning / Historical Caution Banner */}
+            {match.historicalCaution && (
+                <div className="bg-rose-950/30 border border-rose-500/40 rounded p-2.5 flex items-start gap-2.5 text-rose-300 text-xs">
+                    <ShieldAlert className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+                    <div className="space-y-0.5">
+                        <span className="font-semibold block">Negative Learning / Historical Caution</span>
+                        <p className="text-[11px] text-rose-200/90 leading-relaxed">
+                            {match.historicalCaution}
+                        </p>
+                        {match.regressionEvidence && (
+                            <p className="text-[10px] text-rose-300/70 font-mono">
+                                Evidence: {match.regressionEvidence}
+                            </p>
+                        )}
+                    </div>
+                </div>
+            )}
 
             {/* Explanation Narrative */}
             <p className="text-xs text-zinc-400 leading-relaxed bg-zinc-900/40 border border-zinc-800/50 p-2.5 rounded">
@@ -128,7 +166,7 @@ export function SimilarIncidentCard({ match, onInspect }: SimilarIncidentCardPro
                 </button>
             </div>
 
-            {/* Expanded Historical Evidence & Peer Verdicts */}
+            {/* Expanded Historical Evidence & Remediations */}
             {expanded && (
                 <div className="space-y-3 pt-2 border-t border-zinc-850 text-xs text-zinc-300 animate-in fade-in duration-200">
                     {/* Signals breakdown */}
@@ -149,6 +187,30 @@ export function SimilarIncidentCard({ match, onInspect }: SimilarIncidentCardPro
                         </div>
                     </div>
 
+                    {/* Verified Historical Remediations (Pillar J) */}
+                    {match.historicalRemediations && match.historicalRemediations.length > 0 && (
+                        <div className="space-y-1.5">
+                            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 flex items-center gap-1">
+                                <Wrench className="w-3 h-3 text-indigo-400" /> Verified Historical Remediation Actions
+                            </span>
+                            <div className="space-y-1">
+                                {match.historicalRemediations.map((rem: any, idx: number) => (
+                                    <div key={idx} className="bg-zinc-900/60 p-2 rounded border border-zinc-800 text-[11px] space-y-1">
+                                        <div className="flex items-center justify-between">
+                                            <span className="font-mono text-indigo-300 font-semibold">{rem.type}</span>
+                                            {rem.result && (
+                                                <span className={`text-[10px] font-mono px-1.5 py-0.2 rounded border uppercase font-semibold ${getOutcomeBadgeStyle(rem.result)}`}>
+                                                    {rem.result}
+                                                </span>
+                                            )}
+                                        </div>
+                                        <p className="text-zinc-300">{rem.actionSummary}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </div>
+                    )}
+
                     {/* Historical Peer Verdicts */}
                     {match.historicalVerdicts && match.historicalVerdicts.length > 0 && (
                         <div className="space-y-1.5">
@@ -163,25 +225,6 @@ export function SimilarIncidentCard({ match, onInspect }: SimilarIncidentCardPro
                                             <span className="font-mono text-[10px] uppercase text-indigo-300 font-semibold">{v.verdict}</span>
                                         </div>
                                         {v.reasoning && <p className="text-zinc-400 mt-0.5">{v.reasoning}</p>}
-                                    </div>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Historical Recommendations */}
-                    {match.historicalRecommendations && match.historicalRecommendations.length > 0 && (
-                        <div className="space-y-1.5">
-                            <span className="text-[10px] font-mono uppercase tracking-wider text-zinc-400 block">
-                                Previous Investigation Recommendations
-                            </span>
-                            <div className="space-y-1">
-                                {match.historicalRecommendations.map((r: any, idx: number) => (
-                                    <div key={idx} className="bg-indigo-950/20 border border-indigo-500/20 p-2 rounded text-[11px]">
-                                        <span className="text-[10px] font-mono text-indigo-400 block">Historical Recommendation #{idx + 1}</span>
-                                        <p className="text-zinc-300 mt-0.5">
-                                            {typeof r.content === "string" ? r.content : r.content?.title || JSON.stringify(r.content)}
-                                        </p>
                                     </div>
                                 ))}
                             </div>

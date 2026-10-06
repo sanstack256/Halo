@@ -12,6 +12,8 @@ import {
 } from "@/lib/investigation/incident-memory/generator";
 import {
     compareIncidents,
+    rankHistoricalMatches,
+    incidentMemoryCache,
     type IncidentComparisonResult,
 } from "@/lib/investigation/incident-memory/similarity-engine";
 import {
@@ -20,7 +22,7 @@ import {
 } from "@/lib/investigation/incident-memory/postmortem-generator";
 
 /**
- * Authorize caller for an investigation and verify Team Organizational Memory entitlement.
+ * Authorize caller for an investigation and verify Team Organizational Memory & Continuous Learning entitlement.
  */
 async function authorizeIncidentMemoryAccess(investigationId: string) {
     const { user } = await requireAuthenticatedUser();
@@ -44,7 +46,13 @@ async function authorizeIncidentMemoryAccess(investigationId: string) {
     }
 
     const access = await requireProjectAccess(investigation.projectId);
-    await requireCapability(investigation.project.organizationId, "TEAM_ORGANIZATIONAL_MEMORY");
+    
+    // Verify capability - either TEAM_CONTINUOUS_INCIDENT_LEARNING or TEAM_ORGANIZATIONAL_MEMORY
+    try {
+        await requireCapability(investigation.project.organizationId, "TEAM_CONTINUOUS_INCIDENT_LEARNING");
+    } catch {
+        await requireCapability(investigation.project.organizationId, "TEAM_ORGANIZATIONAL_MEMORY");
+    }
 
     return { user, investigation, access };
 }
@@ -63,7 +71,8 @@ export async function generateIncidentMemory(investigationId: string) {
  * the caller's organization and accessible projects.
  */
 export async function getRelevantHistoricalIncidents(
-    currentInvestigationId: string
+    currentInvestigationId: string,
+    options?: { forceFresh?: boolean }
 ): Promise<{
     currentInvestigationId: string;
     totalHistoricalCandidates: number;
@@ -77,9 +86,27 @@ export async function getRelevantHistoricalIncidents(
     // Ensure current investigation has a materialized memory representation
     let currentMemory = await prisma.incidentMemory.findUnique({
         where: { investigationId: currentInvestigationId },
+        include: { remediationOutcomes: true },
     });
     if (!currentMemory) {
-        currentMemory = await generateIncidentMemoryRecord(currentInvestigationId);
+        await generateIncidentMemoryRecord(currentInvestigationId);
+        currentMemory = await prisma.incidentMemory.findUnique({
+            where: { investigationId: currentInvestigationId },
+            include: { remediationOutcomes: true },
+        });
+    }
+
+    if (!currentMemory) {
+        throw new Error("Failed to generate incident memory representation");
+    }
+
+    // Check tenant-safe in-memory cache
+    const cacheKey = `${investigation.project.organizationId}:${investigation.projectId}:${currentInvestigationId}:${currentMemory.memoryVersion}`;
+    if (!options?.forceFresh) {
+        const cached = incidentMemoryCache.get(cacheKey);
+        if (cached && cached.expiresAt > Date.now()) {
+            return cached.data;
+        }
     }
 
     const currentComparisonInput = formatMemoryForComparison(currentMemory);
@@ -92,11 +119,14 @@ export async function getRelevantHistoricalIncidents(
             investigationId: { not: currentInvestigationId },
             status: "COMPLETED",
         },
+        include: {
+            remediationOutcomes: true,
+        },
         orderBy: { createdAt: "desc" },
         take: 50, // bounded retrieval to prevent N+1 query explosion
     });
 
-    const matches: IncidentComparisonResult[] = [];
+    const rawMatches: IncidentComparisonResult[] = [];
 
     for (const candidate of candidates) {
         const histInput = formatMemoryForComparison(candidate);
@@ -107,27 +137,36 @@ export async function getRelevantHistoricalIncidents(
         result.historicalRecommendations = (candidate.recommendations as any[]) || [];
 
         if (result.classification !== "NO_MEANINGFUL_MATCH") {
-            matches.push(result);
+            rawMatches.push(result);
         }
     }
 
-    // Sort descending by deterministic similarity score
-    matches.sort((a, b) => b.score - a.score);
+    // Apply deterministic ranking (tier > score > outcome relevance > recency > ID)
+    const matches = rankHistoricalMatches(rawMatches);
 
     let explanationSummary = "";
     if (matches.length === 0) {
         explanationSummary = "No relevant historical incidents found matching current failure characteristics.";
     } else {
         const strongCount = matches.filter((m) => m.classification === "STRONG_STRUCTURAL_MATCH").length;
-        explanationSummary = `Found ${matches.length} historically relevant incident(s) (${strongCount} strong structural match). Historical context is provided for comparison.`;
+        const regressedCount = matches.filter((m) => m.historicalOutcome === "REGRESSED").length;
+        explanationSummary = `Found ${matches.length} historically relevant incident(s) (${strongCount} strong structural match${regressedCount > 0 ? `, ${regressedCount} historical regression caution` : ""}). Historical context is provided for comparison.`;
     }
 
-    return {
+    const response = {
         currentInvestigationId,
         totalHistoricalCandidates: candidates.length,
         matches,
         explanationSummary,
     };
+
+    // Store in tenant-safe cache with 60s TTL
+    incidentMemoryCache.set(cacheKey, {
+        data: response,
+        expiresAt: Date.now() + 60000,
+    });
+
+    return response;
 }
 
 /**
@@ -141,6 +180,7 @@ export async function getHistoricalIncidentDetails(historicalInvestigationId: st
     const memory = await prisma.incidentMemory.findUnique({
         where: { investigationId: historicalInvestigationId },
         include: {
+            remediationOutcomes: true,
             investigation: {
                 select: {
                     id: true,
@@ -177,6 +217,20 @@ export async function getHistoricalIncidentDetails(historicalInvestigationId: st
         evidenceReferences: memory.evidenceReferences,
         humanVerdicts: memory.humanVerdicts,
         recommendations: memory.recommendations,
+        verifiedOutcome: memory.verifiedOutcome,
+        verificationStrength: memory.verificationStrength,
+        changeCharacteristics: memory.changeCharacteristics,
+        ownershipContext: memory.ownershipContext,
+        resolvedAt: memory.resolvedAt ? memory.resolvedAt.toISOString() : null,
+        remediationOutcomes: memory.remediationOutcomes.map((o) => ({
+            id: o.id,
+            remediationType: o.remediationType,
+            verificationResult: o.verificationResult,
+            verificationStrength: o.verificationStrength,
+            actionSummary: o.actionSummary,
+            evidenceReferences: o.evidenceReferences,
+            observedAt: o.observedAt.toISOString(),
+        })),
         createdAt: memory.createdAt.toISOString(),
     };
 }
@@ -186,7 +240,11 @@ export async function getHistoricalIncidentDetails(historicalInvestigationId: st
  */
 export async function getRecurringFailurePatterns(projectId: string) {
     const access = await requireProjectAccess(projectId);
-    await requireCapability(access.organization.id, "TEAM_ORGANIZATIONAL_MEMORY");
+    try {
+        await requireCapability(access.organization.id, "TEAM_CONTINUOUS_INCIDENT_LEARNING");
+    } catch {
+        await requireCapability(access.organization.id, "TEAM_ORGANIZATIONAL_MEMORY");
+    }
 
     const patterns = await prisma.failurePattern.findMany({
         where: { organizationId: access.organization.id },
@@ -205,6 +263,13 @@ export async function getRecurringFailurePatterns(projectId: string) {
         lastSeenAt: p.lastSeenAt.toISOString(),
         investigationIds: p.investigationIds,
         commonCausalSummary: p.commonCausalSummary,
+        verifiedResolutionCount: p.verifiedResolutionCount,
+        improvementCount: p.improvementCount,
+        nonResolutionCount: p.nonResolutionCount,
+        regressionCount: p.regressionCount,
+        status: p.status,
+        commonChanges: p.commonChanges,
+        historicalRemediations: p.historicalRemediations,
     }));
 }
 

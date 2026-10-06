@@ -25,6 +25,7 @@ model Organization {
   changeObservations         ChangeObservation[]
   remediationRecommendations RemediationRecommendation[]
   remediationVerifications   RemediationVerification[]
+  historicalRemediationOutcomes HistoricalRemediationOutcome[]
 }
 
 model Project {
@@ -67,6 +68,7 @@ model Project {
   changeObservations         ChangeObservation[]
   remediationRecommendations RemediationRecommendation[]
   remediationVerifications   RemediationVerification[]
+  historicalRemediationOutcomes HistoricalRemediationOutcome[]
 
   @@unique([organizationId, slug])
 }
@@ -883,6 +885,14 @@ model IncidentMemory {
   evidenceReferences  String[]            @default([]) // event IDs linked to incident
   humanVerdicts       Json?               // snapshot of peer verdicts with attribution
   recommendations     Json?               // snapshot of recommendations
+  verifiedOutcome      VerificationResult?
+  verificationStrength VerificationStrength?
+  changeCharacteristics Json?
+  ownershipContext    Json?
+  deploymentContext   Json?
+  resolvedAt          DateTime?
+  patternIdentifiers  String[]            @default([])
+  remediationOutcomes HistoricalRemediationOutcome[]
   memoryVersion       Int                 @default(1)
   createdAt           DateTime            @default(now())
   updatedAt           DateTime            @updatedAt
@@ -898,27 +908,58 @@ model IncidentMemory {
 }
 
 model FailurePattern {
-  id                  String        @id @default(cuid())
-  organizationId      String
-  projectId           String?       // null if cross-project pattern within org
-  patternKey          String        // deterministic pattern identifier (e.g. service:errorType)
-  title               String
-  primaryService      String
-  affectedServices    String[]      @default([])
-  incidentCount       Int           @default(1)
-  firstSeenAt         DateTime
-  lastSeenAt          DateTime
-  commonCausalSummary Json?
-  investigationIds    String[]      @default([])
-  version             Int           @default(1)
-  createdAt           DateTime      @default(now())
-  updatedAt           DateTime      @updatedAt
+  id                      String        @id @default(cuid())
+  organizationId          String
+  projectId               String?       // null if cross-project pattern within org
+  patternKey              String        // deterministic pattern identifier (e.g. service:errorType)
+  title                   String
+  primaryService          String
+  affectedServices        String[]      @default([])
+  incidentCount           Int           @default(1)
+  firstSeenAt             DateTime
+  lastSeenAt              DateTime
+  commonCausalSummary     Json?
+  investigationIds        String[]      @default([])
+  verifiedResolutionCount Int           @default(0)
+  improvementCount        Int           @default(0)
+  nonResolutionCount      Int           @default(0)
+  regressionCount         Int           @default(0)
+  status                  String        @default("STABLE") // STABLE, EVOLVING, UNSTABLE
+  commonChanges           Json?
+  historicalRemediations  Json?
+  version                 Int           @default(1)
+  createdAt               DateTime      @default(now())
+  updatedAt               DateTime      @updatedAt
 
-  organization        Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  organization            Organization  @relation(fields: [organizationId], references: [id], onDelete: Cascade)
 
   @@unique([organizationId, patternKey])
   @@index([organizationId, lastSeenAt])
   @@index([primaryService])
+}
+
+model HistoricalRemediationOutcome {
+  id                   String               @id @default(cuid())
+  organizationId       String
+  projectId            String
+  incidentMemoryId     String
+  recommendationId     String?
+  verificationId       String?
+  remediationType      RemediationType?
+  verificationResult   VerificationResult
+  verificationStrength VerificationStrength @default(LOW)
+  actionSummary        String?
+  evidenceReferences   String[]             @default([])
+  observedAt           DateTime             @default(now())
+  createdAt            DateTime             @default(now())
+
+  incidentMemory       IncidentMemory       @relation(fields: [incidentMemoryId], references: [id], onDelete: Cascade)
+  organization         Organization         @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  project              Project              @relation(fields: [projectId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId, projectId])
+  @@index([incidentMemoryId])
+  @@index([verificationResult])
 }
 
 // ---------------------------------------------------------------------------

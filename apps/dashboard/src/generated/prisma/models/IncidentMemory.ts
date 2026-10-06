@@ -50,6 +50,9 @@ export type IncidentMemoryMinAggregateOutputType = {
   rootCause: string | null
   confidenceScore: number | null
   status: $Enums.InvestigationStatus | null
+  verifiedOutcome: $Enums.VerificationResult | null
+  verificationStrength: $Enums.VerificationStrength | null
+  resolvedAt: Date | null
   memoryVersion: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -69,6 +72,9 @@ export type IncidentMemoryMaxAggregateOutputType = {
   rootCause: string | null
   confidenceScore: number | null
   status: $Enums.InvestigationStatus | null
+  verifiedOutcome: $Enums.VerificationResult | null
+  verificationStrength: $Enums.VerificationStrength | null
+  resolvedAt: Date | null
   memoryVersion: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -94,6 +100,13 @@ export type IncidentMemoryCountAggregateOutputType = {
   evidenceReferences: number
   humanVerdicts: number
   recommendations: number
+  verifiedOutcome: number
+  verificationStrength: number
+  changeCharacteristics: number
+  ownershipContext: number
+  deploymentContext: number
+  resolvedAt: number
+  patternIdentifiers: number
   memoryVersion: number
   createdAt: number
   updatedAt: number
@@ -125,6 +138,9 @@ export type IncidentMemoryMinAggregateInputType = {
   rootCause?: true
   confidenceScore?: true
   status?: true
+  verifiedOutcome?: true
+  verificationStrength?: true
+  resolvedAt?: true
   memoryVersion?: true
   createdAt?: true
   updatedAt?: true
@@ -144,6 +160,9 @@ export type IncidentMemoryMaxAggregateInputType = {
   rootCause?: true
   confidenceScore?: true
   status?: true
+  verifiedOutcome?: true
+  verificationStrength?: true
+  resolvedAt?: true
   memoryVersion?: true
   createdAt?: true
   updatedAt?: true
@@ -169,6 +188,13 @@ export type IncidentMemoryCountAggregateInputType = {
   evidenceReferences?: true
   humanVerdicts?: true
   recommendations?: true
+  verifiedOutcome?: true
+  verificationStrength?: true
+  changeCharacteristics?: true
+  ownershipContext?: true
+  deploymentContext?: true
+  resolvedAt?: true
+  patternIdentifiers?: true
   memoryVersion?: true
   createdAt?: true
   updatedAt?: true
@@ -281,6 +307,13 @@ export type IncidentMemoryGroupByOutputType = {
   evidenceReferences: string[]
   humanVerdicts: runtime.JsonValue | null
   recommendations: runtime.JsonValue | null
+  verifiedOutcome: $Enums.VerificationResult | null
+  verificationStrength: $Enums.VerificationStrength | null
+  changeCharacteristics: runtime.JsonValue | null
+  ownershipContext: runtime.JsonValue | null
+  deploymentContext: runtime.JsonValue | null
+  resolvedAt: Date | null
+  patternIdentifiers: string[]
   memoryVersion: number
   createdAt: Date
   updatedAt: Date
@@ -329,9 +362,17 @@ export type IncidentMemoryWhereInput = {
   evidenceReferences?: Prisma.StringNullableListFilter<"IncidentMemory">
   humanVerdicts?: Prisma.JsonNullableFilter<"IncidentMemory">
   recommendations?: Prisma.JsonNullableFilter<"IncidentMemory">
+  verifiedOutcome?: Prisma.EnumVerificationResultNullableFilter<"IncidentMemory"> | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.EnumVerificationStrengthNullableFilter<"IncidentMemory"> | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.JsonNullableFilter<"IncidentMemory">
+  ownershipContext?: Prisma.JsonNullableFilter<"IncidentMemory">
+  deploymentContext?: Prisma.JsonNullableFilter<"IncidentMemory">
+  resolvedAt?: Prisma.DateTimeNullableFilter<"IncidentMemory"> | Date | string | null
+  patternIdentifiers?: Prisma.StringNullableListFilter<"IncidentMemory">
   memoryVersion?: Prisma.IntFilter<"IncidentMemory"> | number
   createdAt?: Prisma.DateTimeFilter<"IncidentMemory"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"IncidentMemory"> | Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeListRelationFilter
   investigation?: Prisma.XOR<Prisma.InvestigationScalarRelationFilter, Prisma.InvestigationWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -357,9 +398,17 @@ export type IncidentMemoryOrderByWithRelationInput = {
   evidenceReferences?: Prisma.SortOrder
   humanVerdicts?: Prisma.SortOrderInput | Prisma.SortOrder
   recommendations?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedOutcome?: Prisma.SortOrderInput | Prisma.SortOrder
+  verificationStrength?: Prisma.SortOrderInput | Prisma.SortOrder
+  changeCharacteristics?: Prisma.SortOrderInput | Prisma.SortOrder
+  ownershipContext?: Prisma.SortOrderInput | Prisma.SortOrder
+  deploymentContext?: Prisma.SortOrderInput | Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  patternIdentifiers?: Prisma.SortOrder
   memoryVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeOrderByRelationAggregateInput
   investigation?: Prisma.InvestigationOrderByWithRelationInput
   project?: Prisma.ProjectOrderByWithRelationInput
   organization?: Prisma.OrganizationOrderByWithRelationInput
@@ -388,9 +437,17 @@ export type IncidentMemoryWhereUniqueInput = Prisma.AtLeast<{
   evidenceReferences?: Prisma.StringNullableListFilter<"IncidentMemory">
   humanVerdicts?: Prisma.JsonNullableFilter<"IncidentMemory">
   recommendations?: Prisma.JsonNullableFilter<"IncidentMemory">
+  verifiedOutcome?: Prisma.EnumVerificationResultNullableFilter<"IncidentMemory"> | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.EnumVerificationStrengthNullableFilter<"IncidentMemory"> | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.JsonNullableFilter<"IncidentMemory">
+  ownershipContext?: Prisma.JsonNullableFilter<"IncidentMemory">
+  deploymentContext?: Prisma.JsonNullableFilter<"IncidentMemory">
+  resolvedAt?: Prisma.DateTimeNullableFilter<"IncidentMemory"> | Date | string | null
+  patternIdentifiers?: Prisma.StringNullableListFilter<"IncidentMemory">
   memoryVersion?: Prisma.IntFilter<"IncidentMemory"> | number
   createdAt?: Prisma.DateTimeFilter<"IncidentMemory"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"IncidentMemory"> | Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeListRelationFilter
   investigation?: Prisma.XOR<Prisma.InvestigationScalarRelationFilter, Prisma.InvestigationWhereInput>
   project?: Prisma.XOR<Prisma.ProjectScalarRelationFilter, Prisma.ProjectWhereInput>
   organization?: Prisma.XOR<Prisma.OrganizationScalarRelationFilter, Prisma.OrganizationWhereInput>
@@ -416,6 +473,13 @@ export type IncidentMemoryOrderByWithAggregationInput = {
   evidenceReferences?: Prisma.SortOrder
   humanVerdicts?: Prisma.SortOrderInput | Prisma.SortOrder
   recommendations?: Prisma.SortOrderInput | Prisma.SortOrder
+  verifiedOutcome?: Prisma.SortOrderInput | Prisma.SortOrder
+  verificationStrength?: Prisma.SortOrderInput | Prisma.SortOrder
+  changeCharacteristics?: Prisma.SortOrderInput | Prisma.SortOrder
+  ownershipContext?: Prisma.SortOrderInput | Prisma.SortOrder
+  deploymentContext?: Prisma.SortOrderInput | Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrderInput | Prisma.SortOrder
+  patternIdentifiers?: Prisma.SortOrder
   memoryVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -449,6 +513,13 @@ export type IncidentMemoryScalarWhereWithAggregatesInput = {
   evidenceReferences?: Prisma.StringNullableListFilter<"IncidentMemory">
   humanVerdicts?: Prisma.JsonNullableWithAggregatesFilter<"IncidentMemory">
   recommendations?: Prisma.JsonNullableWithAggregatesFilter<"IncidentMemory">
+  verifiedOutcome?: Prisma.EnumVerificationResultNullableWithAggregatesFilter<"IncidentMemory"> | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.EnumVerificationStrengthNullableWithAggregatesFilter<"IncidentMemory"> | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.JsonNullableWithAggregatesFilter<"IncidentMemory">
+  ownershipContext?: Prisma.JsonNullableWithAggregatesFilter<"IncidentMemory">
+  deploymentContext?: Prisma.JsonNullableWithAggregatesFilter<"IncidentMemory">
+  resolvedAt?: Prisma.DateTimeNullableWithAggregatesFilter<"IncidentMemory"> | Date | string | null
+  patternIdentifiers?: Prisma.StringNullableListFilter<"IncidentMemory">
   memoryVersion?: Prisma.IntWithAggregatesFilter<"IncidentMemory"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"IncidentMemory"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"IncidentMemory"> | Date | string
@@ -471,9 +542,17 @@ export type IncidentMemoryCreateInput = {
   evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
   memoryVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeCreateNestedManyWithoutIncidentMemoryInput
   investigation: Prisma.InvestigationCreateNestedOneWithoutIncidentMemoryInput
   project: Prisma.ProjectCreateNestedOneWithoutIncidentMemoriesInput
   organization: Prisma.OrganizationCreateNestedOneWithoutIncidentMemoriesInput
@@ -499,9 +578,17 @@ export type IncidentMemoryUncheckedCreateInput = {
   evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
   memoryVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeUncheckedCreateNestedManyWithoutIncidentMemoryInput
 }
 
 export type IncidentMemoryUpdateInput = {
@@ -521,9 +608,17 @@ export type IncidentMemoryUpdateInput = {
   evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
   memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeUpdateManyWithoutIncidentMemoryNestedInput
   investigation?: Prisma.InvestigationUpdateOneRequiredWithoutIncidentMemoryNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIncidentMemoriesNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutIncidentMemoriesNestedInput
@@ -549,9 +644,17 @@ export type IncidentMemoryUncheckedUpdateInput = {
   evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
   memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeUncheckedUpdateManyWithoutIncidentMemoryNestedInput
 }
 
 export type IncidentMemoryCreateManyInput = {
@@ -574,6 +677,13 @@ export type IncidentMemoryCreateManyInput = {
   evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
   memoryVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -596,6 +706,13 @@ export type IncidentMemoryUpdateManyMutationInput = {
   evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
   memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -621,6 +738,13 @@ export type IncidentMemoryUncheckedUpdateManyInput = {
   evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
   memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -661,6 +785,13 @@ export type IncidentMemoryCountOrderByAggregateInput = {
   evidenceReferences?: Prisma.SortOrder
   humanVerdicts?: Prisma.SortOrder
   recommendations?: Prisma.SortOrder
+  verifiedOutcome?: Prisma.SortOrder
+  verificationStrength?: Prisma.SortOrder
+  changeCharacteristics?: Prisma.SortOrder
+  ownershipContext?: Prisma.SortOrder
+  deploymentContext?: Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrder
+  patternIdentifiers?: Prisma.SortOrder
   memoryVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -685,6 +816,9 @@ export type IncidentMemoryMaxOrderByAggregateInput = {
   rootCause?: Prisma.SortOrder
   confidenceScore?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  verifiedOutcome?: Prisma.SortOrder
+  verificationStrength?: Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrder
   memoryVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -704,6 +838,9 @@ export type IncidentMemoryMinOrderByAggregateInput = {
   rootCause?: Prisma.SortOrder
   confidenceScore?: Prisma.SortOrder
   status?: Prisma.SortOrder
+  verifiedOutcome?: Prisma.SortOrder
+  verificationStrength?: Prisma.SortOrder
+  resolvedAt?: Prisma.SortOrder
   memoryVersion?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -712,6 +849,11 @@ export type IncidentMemoryMinOrderByAggregateInput = {
 export type IncidentMemorySumOrderByAggregateInput = {
   confidenceScore?: Prisma.SortOrder
   memoryVersion?: Prisma.SortOrder
+}
+
+export type IncidentMemoryScalarRelationFilter = {
+  is?: Prisma.IncidentMemoryWhereInput
+  isNot?: Prisma.IncidentMemoryWhereInput
 }
 
 export type IncidentMemoryCreateNestedManyWithoutOrganizationInput = {
@@ -838,6 +980,10 @@ export type IncidentMemoryCreateevidenceReferencesInput = {
   set: string[]
 }
 
+export type IncidentMemoryCreatepatternIdentifiersInput = {
+  set: string[]
+}
+
 export type IncidentMemoryUpdateaffectedServicesInput = {
   set?: string[]
   push?: string | string[]
@@ -846,6 +992,33 @@ export type IncidentMemoryUpdateaffectedServicesInput = {
 export type IncidentMemoryUpdateevidenceReferencesInput = {
   set?: string[]
   push?: string | string[]
+}
+
+export type NullableEnumVerificationResultFieldUpdateOperationsInput = {
+  set?: $Enums.VerificationResult | null
+}
+
+export type NullableEnumVerificationStrengthFieldUpdateOperationsInput = {
+  set?: $Enums.VerificationStrength | null
+}
+
+export type IncidentMemoryUpdatepatternIdentifiersInput = {
+  set?: string[]
+  push?: string | string[]
+}
+
+export type IncidentMemoryCreateNestedOneWithoutRemediationOutcomesInput = {
+  create?: Prisma.XOR<Prisma.IncidentMemoryCreateWithoutRemediationOutcomesInput, Prisma.IncidentMemoryUncheckedCreateWithoutRemediationOutcomesInput>
+  connectOrCreate?: Prisma.IncidentMemoryCreateOrConnectWithoutRemediationOutcomesInput
+  connect?: Prisma.IncidentMemoryWhereUniqueInput
+}
+
+export type IncidentMemoryUpdateOneRequiredWithoutRemediationOutcomesNestedInput = {
+  create?: Prisma.XOR<Prisma.IncidentMemoryCreateWithoutRemediationOutcomesInput, Prisma.IncidentMemoryUncheckedCreateWithoutRemediationOutcomesInput>
+  connectOrCreate?: Prisma.IncidentMemoryCreateOrConnectWithoutRemediationOutcomesInput
+  upsert?: Prisma.IncidentMemoryUpsertWithoutRemediationOutcomesInput
+  connect?: Prisma.IncidentMemoryWhereUniqueInput
+  update?: Prisma.XOR<Prisma.XOR<Prisma.IncidentMemoryUpdateToOneWithWhereWithoutRemediationOutcomesInput, Prisma.IncidentMemoryUpdateWithoutRemediationOutcomesInput>, Prisma.IncidentMemoryUncheckedUpdateWithoutRemediationOutcomesInput>
 }
 
 export type IncidentMemoryCreateWithoutOrganizationInput = {
@@ -865,9 +1038,17 @@ export type IncidentMemoryCreateWithoutOrganizationInput = {
   evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
   memoryVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeCreateNestedManyWithoutIncidentMemoryInput
   investigation: Prisma.InvestigationCreateNestedOneWithoutIncidentMemoryInput
   project: Prisma.ProjectCreateNestedOneWithoutIncidentMemoriesInput
 }
@@ -891,9 +1072,17 @@ export type IncidentMemoryUncheckedCreateWithoutOrganizationInput = {
   evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
   memoryVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeUncheckedCreateNestedManyWithoutIncidentMemoryInput
 }
 
 export type IncidentMemoryCreateOrConnectWithoutOrganizationInput = {
@@ -945,6 +1134,13 @@ export type IncidentMemoryScalarWhereInput = {
   evidenceReferences?: Prisma.StringNullableListFilter<"IncidentMemory">
   humanVerdicts?: Prisma.JsonNullableFilter<"IncidentMemory">
   recommendations?: Prisma.JsonNullableFilter<"IncidentMemory">
+  verifiedOutcome?: Prisma.EnumVerificationResultNullableFilter<"IncidentMemory"> | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.EnumVerificationStrengthNullableFilter<"IncidentMemory"> | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.JsonNullableFilter<"IncidentMemory">
+  ownershipContext?: Prisma.JsonNullableFilter<"IncidentMemory">
+  deploymentContext?: Prisma.JsonNullableFilter<"IncidentMemory">
+  resolvedAt?: Prisma.DateTimeNullableFilter<"IncidentMemory"> | Date | string | null
+  patternIdentifiers?: Prisma.StringNullableListFilter<"IncidentMemory">
   memoryVersion?: Prisma.IntFilter<"IncidentMemory"> | number
   createdAt?: Prisma.DateTimeFilter<"IncidentMemory"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"IncidentMemory"> | Date | string
@@ -967,9 +1163,17 @@ export type IncidentMemoryCreateWithoutProjectInput = {
   evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
   memoryVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeCreateNestedManyWithoutIncidentMemoryInput
   investigation: Prisma.InvestigationCreateNestedOneWithoutIncidentMemoryInput
   organization: Prisma.OrganizationCreateNestedOneWithoutIncidentMemoriesInput
 }
@@ -993,9 +1197,17 @@ export type IncidentMemoryUncheckedCreateWithoutProjectInput = {
   evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
   memoryVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeUncheckedCreateNestedManyWithoutIncidentMemoryInput
 }
 
 export type IncidentMemoryCreateOrConnectWithoutProjectInput = {
@@ -1041,9 +1253,17 @@ export type IncidentMemoryCreateWithoutInvestigationInput = {
   evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
   memoryVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeCreateNestedManyWithoutIncidentMemoryInput
   project: Prisma.ProjectCreateNestedOneWithoutIncidentMemoriesInput
   organization: Prisma.OrganizationCreateNestedOneWithoutIncidentMemoriesInput
 }
@@ -1067,9 +1287,17 @@ export type IncidentMemoryUncheckedCreateWithoutInvestigationInput = {
   evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
   memoryVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeUncheckedCreateNestedManyWithoutIncidentMemoryInput
 }
 
 export type IncidentMemoryCreateOrConnectWithoutInvestigationInput = {
@@ -1105,9 +1333,17 @@ export type IncidentMemoryUpdateWithoutInvestigationInput = {
   evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
   memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeUpdateManyWithoutIncidentMemoryNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIncidentMemoriesNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutIncidentMemoriesNestedInput
 }
@@ -1131,6 +1367,158 @@ export type IncidentMemoryUncheckedUpdateWithoutInvestigationInput = {
   evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
+  memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeUncheckedUpdateManyWithoutIncidentMemoryNestedInput
+}
+
+export type IncidentMemoryCreateWithoutRemediationOutcomesInput = {
+  id?: string
+  fingerprint: string
+  title: string
+  normalizedTitle: string
+  primaryService: string
+  primaryOperation?: string | null
+  errorType?: string | null
+  rootCause?: string | null
+  confidenceScore?: number | null
+  status?: $Enums.InvestigationStatus
+  affectedServices?: Prisma.IncidentMemoryCreateaffectedServicesInput | string[]
+  causalChainSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  topologyEdges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
+  humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
+  memoryVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+  investigation: Prisma.InvestigationCreateNestedOneWithoutIncidentMemoryInput
+  project: Prisma.ProjectCreateNestedOneWithoutIncidentMemoriesInput
+  organization: Prisma.OrganizationCreateNestedOneWithoutIncidentMemoriesInput
+}
+
+export type IncidentMemoryUncheckedCreateWithoutRemediationOutcomesInput = {
+  id?: string
+  investigationId: string
+  projectId: string
+  organizationId: string
+  fingerprint: string
+  title: string
+  normalizedTitle: string
+  primaryService: string
+  primaryOperation?: string | null
+  errorType?: string | null
+  rootCause?: string | null
+  confidenceScore?: number | null
+  status?: $Enums.InvestigationStatus
+  affectedServices?: Prisma.IncidentMemoryCreateaffectedServicesInput | string[]
+  causalChainSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  topologyEdges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
+  humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
+  memoryVersion?: number
+  createdAt?: Date | string
+  updatedAt?: Date | string
+}
+
+export type IncidentMemoryCreateOrConnectWithoutRemediationOutcomesInput = {
+  where: Prisma.IncidentMemoryWhereUniqueInput
+  create: Prisma.XOR<Prisma.IncidentMemoryCreateWithoutRemediationOutcomesInput, Prisma.IncidentMemoryUncheckedCreateWithoutRemediationOutcomesInput>
+}
+
+export type IncidentMemoryUpsertWithoutRemediationOutcomesInput = {
+  update: Prisma.XOR<Prisma.IncidentMemoryUpdateWithoutRemediationOutcomesInput, Prisma.IncidentMemoryUncheckedUpdateWithoutRemediationOutcomesInput>
+  create: Prisma.XOR<Prisma.IncidentMemoryCreateWithoutRemediationOutcomesInput, Prisma.IncidentMemoryUncheckedCreateWithoutRemediationOutcomesInput>
+  where?: Prisma.IncidentMemoryWhereInput
+}
+
+export type IncidentMemoryUpdateToOneWithWhereWithoutRemediationOutcomesInput = {
+  where?: Prisma.IncidentMemoryWhereInput
+  data: Prisma.XOR<Prisma.IncidentMemoryUpdateWithoutRemediationOutcomesInput, Prisma.IncidentMemoryUncheckedUpdateWithoutRemediationOutcomesInput>
+}
+
+export type IncidentMemoryUpdateWithoutRemediationOutcomesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryService?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryOperation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootCause?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  status?: Prisma.EnumInvestigationStatusFieldUpdateOperationsInput | $Enums.InvestigationStatus
+  affectedServices?: Prisma.IncidentMemoryUpdateaffectedServicesInput | string[]
+  causalChainSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  topologyEdges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
+  humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
+  memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
+  createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  investigation?: Prisma.InvestigationUpdateOneRequiredWithoutIncidentMemoryNestedInput
+  project?: Prisma.ProjectUpdateOneRequiredWithoutIncidentMemoriesNestedInput
+  organization?: Prisma.OrganizationUpdateOneRequiredWithoutIncidentMemoriesNestedInput
+}
+
+export type IncidentMemoryUncheckedUpdateWithoutRemediationOutcomesInput = {
+  id?: Prisma.StringFieldUpdateOperationsInput | string
+  investigationId?: Prisma.StringFieldUpdateOperationsInput | string
+  projectId?: Prisma.StringFieldUpdateOperationsInput | string
+  organizationId?: Prisma.StringFieldUpdateOperationsInput | string
+  fingerprint?: Prisma.StringFieldUpdateOperationsInput | string
+  title?: Prisma.StringFieldUpdateOperationsInput | string
+  normalizedTitle?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryService?: Prisma.StringFieldUpdateOperationsInput | string
+  primaryOperation?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  errorType?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  rootCause?: Prisma.NullableStringFieldUpdateOperationsInput | string | null
+  confidenceScore?: Prisma.NullableFloatFieldUpdateOperationsInput | number | null
+  status?: Prisma.EnumInvestigationStatusFieldUpdateOperationsInput | $Enums.InvestigationStatus
+  affectedServices?: Prisma.IncidentMemoryUpdateaffectedServicesInput | string[]
+  causalChainSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  topologyEdges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
+  humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
   memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1155,6 +1543,13 @@ export type IncidentMemoryCreateManyOrganizationInput = {
   evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
   memoryVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1177,9 +1572,17 @@ export type IncidentMemoryUpdateWithoutOrganizationInput = {
   evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
   memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeUpdateManyWithoutIncidentMemoryNestedInput
   investigation?: Prisma.InvestigationUpdateOneRequiredWithoutIncidentMemoryNestedInput
   project?: Prisma.ProjectUpdateOneRequiredWithoutIncidentMemoriesNestedInput
 }
@@ -1203,9 +1606,17 @@ export type IncidentMemoryUncheckedUpdateWithoutOrganizationInput = {
   evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
   memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeUncheckedUpdateManyWithoutIncidentMemoryNestedInput
 }
 
 export type IncidentMemoryUncheckedUpdateManyWithoutOrganizationInput = {
@@ -1227,6 +1638,13 @@ export type IncidentMemoryUncheckedUpdateManyWithoutOrganizationInput = {
   evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
   memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -1251,6 +1669,13 @@ export type IncidentMemoryCreateManyProjectInput = {
   evidenceReferences?: Prisma.IncidentMemoryCreateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: $Enums.VerificationResult | null
+  verificationStrength?: $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryCreatepatternIdentifiersInput | string[]
   memoryVersion?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -1273,9 +1698,17 @@ export type IncidentMemoryUpdateWithoutProjectInput = {
   evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
   memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeUpdateManyWithoutIncidentMemoryNestedInput
   investigation?: Prisma.InvestigationUpdateOneRequiredWithoutIncidentMemoryNestedInput
   organization?: Prisma.OrganizationUpdateOneRequiredWithoutIncidentMemoriesNestedInput
 }
@@ -1299,9 +1732,17 @@ export type IncidentMemoryUncheckedUpdateWithoutProjectInput = {
   evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
   memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
+  remediationOutcomes?: Prisma.HistoricalRemediationOutcomeUncheckedUpdateManyWithoutIncidentMemoryNestedInput
 }
 
 export type IncidentMemoryUncheckedUpdateManyWithoutProjectInput = {
@@ -1323,11 +1764,47 @@ export type IncidentMemoryUncheckedUpdateManyWithoutProjectInput = {
   evidenceReferences?: Prisma.IncidentMemoryUpdateevidenceReferencesInput | string[]
   humanVerdicts?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   recommendations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  verifiedOutcome?: Prisma.NullableEnumVerificationResultFieldUpdateOperationsInput | $Enums.VerificationResult | null
+  verificationStrength?: Prisma.NullableEnumVerificationStrengthFieldUpdateOperationsInput | $Enums.VerificationStrength | null
+  changeCharacteristics?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  ownershipContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  deploymentContext?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  resolvedAt?: Prisma.NullableDateTimeFieldUpdateOperationsInput | Date | string | null
+  patternIdentifiers?: Prisma.IncidentMemoryUpdatepatternIdentifiersInput | string[]
   memoryVersion?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
 }
 
+
+/**
+ * Count Type IncidentMemoryCountOutputType
+ */
+
+export type IncidentMemoryCountOutputType = {
+  remediationOutcomes: number
+}
+
+export type IncidentMemoryCountOutputTypeSelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  remediationOutcomes?: boolean | IncidentMemoryCountOutputTypeCountRemediationOutcomesArgs
+}
+
+/**
+ * IncidentMemoryCountOutputType without action
+ */
+export type IncidentMemoryCountOutputTypeDefaultArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the IncidentMemoryCountOutputType
+   */
+  select?: Prisma.IncidentMemoryCountOutputTypeSelect<ExtArgs> | null
+}
+
+/**
+ * IncidentMemoryCountOutputType without action
+ */
+export type IncidentMemoryCountOutputTypeCountRemediationOutcomesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  where?: Prisma.HistoricalRemediationOutcomeWhereInput
+}
 
 
 export type IncidentMemorySelect<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1350,12 +1827,21 @@ export type IncidentMemorySelect<ExtArgs extends runtime.Types.Extensions.Intern
   evidenceReferences?: boolean
   humanVerdicts?: boolean
   recommendations?: boolean
+  verifiedOutcome?: boolean
+  verificationStrength?: boolean
+  changeCharacteristics?: boolean
+  ownershipContext?: boolean
+  deploymentContext?: boolean
+  resolvedAt?: boolean
+  patternIdentifiers?: boolean
   memoryVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
+  remediationOutcomes?: boolean | Prisma.IncidentMemory$remediationOutcomesArgs<ExtArgs>
   investigation?: boolean | Prisma.InvestigationDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  _count?: boolean | Prisma.IncidentMemoryCountOutputTypeDefaultArgs<ExtArgs>
 }, ExtArgs["result"]["incidentMemory"]>
 
 export type IncidentMemorySelectCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetSelect<{
@@ -1378,6 +1864,13 @@ export type IncidentMemorySelectCreateManyAndReturn<ExtArgs extends runtime.Type
   evidenceReferences?: boolean
   humanVerdicts?: boolean
   recommendations?: boolean
+  verifiedOutcome?: boolean
+  verificationStrength?: boolean
+  changeCharacteristics?: boolean
+  ownershipContext?: boolean
+  deploymentContext?: boolean
+  resolvedAt?: boolean
+  patternIdentifiers?: boolean
   memoryVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1406,6 +1899,13 @@ export type IncidentMemorySelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   evidenceReferences?: boolean
   humanVerdicts?: boolean
   recommendations?: boolean
+  verifiedOutcome?: boolean
+  verificationStrength?: boolean
+  changeCharacteristics?: boolean
+  ownershipContext?: boolean
+  deploymentContext?: boolean
+  resolvedAt?: boolean
+  patternIdentifiers?: boolean
   memoryVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -1434,16 +1934,25 @@ export type IncidentMemorySelectScalar = {
   evidenceReferences?: boolean
   humanVerdicts?: boolean
   recommendations?: boolean
+  verifiedOutcome?: boolean
+  verificationStrength?: boolean
+  changeCharacteristics?: boolean
+  ownershipContext?: boolean
+  deploymentContext?: boolean
+  resolvedAt?: boolean
+  patternIdentifiers?: boolean
   memoryVersion?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type IncidentMemoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "investigationId" | "projectId" | "organizationId" | "fingerprint" | "title" | "normalizedTitle" | "primaryService" | "primaryOperation" | "errorType" | "rootCause" | "confidenceScore" | "status" | "affectedServices" | "causalChainSummary" | "topologyEdges" | "evidenceReferences" | "humanVerdicts" | "recommendations" | "memoryVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["incidentMemory"]>
+export type IncidentMemoryOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "investigationId" | "projectId" | "organizationId" | "fingerprint" | "title" | "normalizedTitle" | "primaryService" | "primaryOperation" | "errorType" | "rootCause" | "confidenceScore" | "status" | "affectedServices" | "causalChainSummary" | "topologyEdges" | "evidenceReferences" | "humanVerdicts" | "recommendations" | "verifiedOutcome" | "verificationStrength" | "changeCharacteristics" | "ownershipContext" | "deploymentContext" | "resolvedAt" | "patternIdentifiers" | "memoryVersion" | "createdAt" | "updatedAt", ExtArgs["result"]["incidentMemory"]>
 export type IncidentMemoryInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  remediationOutcomes?: boolean | Prisma.IncidentMemory$remediationOutcomesArgs<ExtArgs>
   investigation?: boolean | Prisma.InvestigationDefaultArgs<ExtArgs>
   project?: boolean | Prisma.ProjectDefaultArgs<ExtArgs>
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
+  _count?: boolean | Prisma.IncidentMemoryCountOutputTypeDefaultArgs<ExtArgs>
 }
 export type IncidentMemoryIncludeCreateManyAndReturn<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   investigation?: boolean | Prisma.InvestigationDefaultArgs<ExtArgs>
@@ -1459,6 +1968,7 @@ export type IncidentMemoryIncludeUpdateManyAndReturn<ExtArgs extends runtime.Typ
 export type $IncidentMemoryPayload<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   name: "IncidentMemory"
   objects: {
+    remediationOutcomes: Prisma.$HistoricalRemediationOutcomePayload<ExtArgs>[]
     investigation: Prisma.$InvestigationPayload<ExtArgs>
     project: Prisma.$ProjectPayload<ExtArgs>
     organization: Prisma.$OrganizationPayload<ExtArgs>
@@ -1483,6 +1993,13 @@ export type $IncidentMemoryPayload<ExtArgs extends runtime.Types.Extensions.Inte
     evidenceReferences: string[]
     humanVerdicts: runtime.JsonValue | null
     recommendations: runtime.JsonValue | null
+    verifiedOutcome: $Enums.VerificationResult | null
+    verificationStrength: $Enums.VerificationStrength | null
+    changeCharacteristics: runtime.JsonValue | null
+    ownershipContext: runtime.JsonValue | null
+    deploymentContext: runtime.JsonValue | null
+    resolvedAt: Date | null
+    patternIdentifiers: string[]
     memoryVersion: number
     createdAt: Date
     updatedAt: Date
@@ -1880,6 +2397,7 @@ readonly fields: IncidentMemoryFieldRefs;
  */
 export interface Prisma__IncidentMemoryClient<T, Null = never, ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs, GlobalOmitOptions = {}> extends Prisma.PrismaPromise<T> {
   readonly [Symbol.toStringTag]: "PrismaPromise"
+  remediationOutcomes<T extends Prisma.IncidentMemory$remediationOutcomesArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.IncidentMemory$remediationOutcomesArgs<ExtArgs>>): Prisma.PrismaPromise<runtime.Types.Result.GetResult<Prisma.$HistoricalRemediationOutcomePayload<ExtArgs>, T, "findMany", GlobalOmitOptions> | Null>
   investigation<T extends Prisma.InvestigationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.InvestigationDefaultArgs<ExtArgs>>): Prisma.Prisma__InvestigationClient<runtime.Types.Result.GetResult<Prisma.$InvestigationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   project<T extends Prisma.ProjectDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.ProjectDefaultArgs<ExtArgs>>): Prisma.Prisma__ProjectClient<runtime.Types.Result.GetResult<Prisma.$ProjectPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
   organization<T extends Prisma.OrganizationDefaultArgs<ExtArgs> = {}>(args?: Prisma.Subset<T, Prisma.OrganizationDefaultArgs<ExtArgs>>): Prisma.Prisma__OrganizationClient<runtime.Types.Result.GetResult<Prisma.$OrganizationPayload<ExtArgs>, T, "findUniqueOrThrow", GlobalOmitOptions> | Null, Null, ExtArgs, GlobalOmitOptions>
@@ -1931,6 +2449,13 @@ export interface IncidentMemoryFieldRefs {
   readonly evidenceReferences: Prisma.FieldRef<"IncidentMemory", 'String[]'>
   readonly humanVerdicts: Prisma.FieldRef<"IncidentMemory", 'Json'>
   readonly recommendations: Prisma.FieldRef<"IncidentMemory", 'Json'>
+  readonly verifiedOutcome: Prisma.FieldRef<"IncidentMemory", 'VerificationResult'>
+  readonly verificationStrength: Prisma.FieldRef<"IncidentMemory", 'VerificationStrength'>
+  readonly changeCharacteristics: Prisma.FieldRef<"IncidentMemory", 'Json'>
+  readonly ownershipContext: Prisma.FieldRef<"IncidentMemory", 'Json'>
+  readonly deploymentContext: Prisma.FieldRef<"IncidentMemory", 'Json'>
+  readonly resolvedAt: Prisma.FieldRef<"IncidentMemory", 'DateTime'>
+  readonly patternIdentifiers: Prisma.FieldRef<"IncidentMemory", 'String[]'>
   readonly memoryVersion: Prisma.FieldRef<"IncidentMemory", 'Int'>
   readonly createdAt: Prisma.FieldRef<"IncidentMemory", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"IncidentMemory", 'DateTime'>
@@ -2332,6 +2857,30 @@ export type IncidentMemoryDeleteManyArgs<ExtArgs extends runtime.Types.Extension
    * Limit how many IncidentMemories to delete.
    */
   limit?: number
+}
+
+/**
+ * IncidentMemory.remediationOutcomes
+ */
+export type IncidentMemory$remediationOutcomesArgs<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
+  /**
+   * Select specific fields to fetch from the HistoricalRemediationOutcome
+   */
+  select?: Prisma.HistoricalRemediationOutcomeSelect<ExtArgs> | null
+  /**
+   * Omit specific fields from the HistoricalRemediationOutcome
+   */
+  omit?: Prisma.HistoricalRemediationOutcomeOmit<ExtArgs> | null
+  /**
+   * Choose, which related nodes to fetch as well
+   */
+  include?: Prisma.HistoricalRemediationOutcomeInclude<ExtArgs> | null
+  where?: Prisma.HistoricalRemediationOutcomeWhereInput
+  orderBy?: Prisma.HistoricalRemediationOutcomeOrderByWithRelationInput | Prisma.HistoricalRemediationOutcomeOrderByWithRelationInput[]
+  cursor?: Prisma.HistoricalRemediationOutcomeWhereUniqueInput
+  take?: number
+  skip?: number
+  distinct?: Prisma.HistoricalRemediationOutcomeScalarFieldEnum | Prisma.HistoricalRemediationOutcomeScalarFieldEnum[]
 }
 
 /**

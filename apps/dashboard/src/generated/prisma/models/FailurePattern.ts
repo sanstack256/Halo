@@ -28,11 +28,19 @@ export type AggregateFailurePattern = {
 
 export type FailurePatternAvgAggregateOutputType = {
   incidentCount: number | null
+  verifiedResolutionCount: number | null
+  improvementCount: number | null
+  nonResolutionCount: number | null
+  regressionCount: number | null
   version: number | null
 }
 
 export type FailurePatternSumAggregateOutputType = {
   incidentCount: number | null
+  verifiedResolutionCount: number | null
+  improvementCount: number | null
+  nonResolutionCount: number | null
+  regressionCount: number | null
   version: number | null
 }
 
@@ -46,6 +54,11 @@ export type FailurePatternMinAggregateOutputType = {
   incidentCount: number | null
   firstSeenAt: Date | null
   lastSeenAt: Date | null
+  verifiedResolutionCount: number | null
+  improvementCount: number | null
+  nonResolutionCount: number | null
+  regressionCount: number | null
+  status: string | null
   version: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -61,6 +74,11 @@ export type FailurePatternMaxAggregateOutputType = {
   incidentCount: number | null
   firstSeenAt: Date | null
   lastSeenAt: Date | null
+  verifiedResolutionCount: number | null
+  improvementCount: number | null
+  nonResolutionCount: number | null
+  regressionCount: number | null
+  status: string | null
   version: number | null
   createdAt: Date | null
   updatedAt: Date | null
@@ -79,6 +97,13 @@ export type FailurePatternCountAggregateOutputType = {
   lastSeenAt: number
   commonCausalSummary: number
   investigationIds: number
+  verifiedResolutionCount: number
+  improvementCount: number
+  nonResolutionCount: number
+  regressionCount: number
+  status: number
+  commonChanges: number
+  historicalRemediations: number
   version: number
   createdAt: number
   updatedAt: number
@@ -88,11 +113,19 @@ export type FailurePatternCountAggregateOutputType = {
 
 export type FailurePatternAvgAggregateInputType = {
   incidentCount?: true
+  verifiedResolutionCount?: true
+  improvementCount?: true
+  nonResolutionCount?: true
+  regressionCount?: true
   version?: true
 }
 
 export type FailurePatternSumAggregateInputType = {
   incidentCount?: true
+  verifiedResolutionCount?: true
+  improvementCount?: true
+  nonResolutionCount?: true
+  regressionCount?: true
   version?: true
 }
 
@@ -106,6 +139,11 @@ export type FailurePatternMinAggregateInputType = {
   incidentCount?: true
   firstSeenAt?: true
   lastSeenAt?: true
+  verifiedResolutionCount?: true
+  improvementCount?: true
+  nonResolutionCount?: true
+  regressionCount?: true
+  status?: true
   version?: true
   createdAt?: true
   updatedAt?: true
@@ -121,6 +159,11 @@ export type FailurePatternMaxAggregateInputType = {
   incidentCount?: true
   firstSeenAt?: true
   lastSeenAt?: true
+  verifiedResolutionCount?: true
+  improvementCount?: true
+  nonResolutionCount?: true
+  regressionCount?: true
+  status?: true
   version?: true
   createdAt?: true
   updatedAt?: true
@@ -139,6 +182,13 @@ export type FailurePatternCountAggregateInputType = {
   lastSeenAt?: true
   commonCausalSummary?: true
   investigationIds?: true
+  verifiedResolutionCount?: true
+  improvementCount?: true
+  nonResolutionCount?: true
+  regressionCount?: true
+  status?: true
+  commonChanges?: true
+  historicalRemediations?: true
   version?: true
   createdAt?: true
   updatedAt?: true
@@ -244,6 +294,13 @@ export type FailurePatternGroupByOutputType = {
   lastSeenAt: Date
   commonCausalSummary: runtime.JsonValue | null
   investigationIds: string[]
+  verifiedResolutionCount: number
+  improvementCount: number
+  nonResolutionCount: number
+  regressionCount: number
+  status: string
+  commonChanges: runtime.JsonValue | null
+  historicalRemediations: runtime.JsonValue | null
   version: number
   createdAt: Date
   updatedAt: Date
@@ -285,6 +342,13 @@ export type FailurePatternWhereInput = {
   lastSeenAt?: Prisma.DateTimeFilter<"FailurePattern"> | Date | string
   commonCausalSummary?: Prisma.JsonNullableFilter<"FailurePattern">
   investigationIds?: Prisma.StringNullableListFilter<"FailurePattern">
+  verifiedResolutionCount?: Prisma.IntFilter<"FailurePattern"> | number
+  improvementCount?: Prisma.IntFilter<"FailurePattern"> | number
+  nonResolutionCount?: Prisma.IntFilter<"FailurePattern"> | number
+  regressionCount?: Prisma.IntFilter<"FailurePattern"> | number
+  status?: Prisma.StringFilter<"FailurePattern"> | string
+  commonChanges?: Prisma.JsonNullableFilter<"FailurePattern">
+  historicalRemediations?: Prisma.JsonNullableFilter<"FailurePattern">
   version?: Prisma.IntFilter<"FailurePattern"> | number
   createdAt?: Prisma.DateTimeFilter<"FailurePattern"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FailurePattern"> | Date | string
@@ -304,6 +368,13 @@ export type FailurePatternOrderByWithRelationInput = {
   lastSeenAt?: Prisma.SortOrder
   commonCausalSummary?: Prisma.SortOrderInput | Prisma.SortOrder
   investigationIds?: Prisma.SortOrder
+  verifiedResolutionCount?: Prisma.SortOrder
+  improvementCount?: Prisma.SortOrder
+  nonResolutionCount?: Prisma.SortOrder
+  regressionCount?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  commonChanges?: Prisma.SortOrderInput | Prisma.SortOrder
+  historicalRemediations?: Prisma.SortOrderInput | Prisma.SortOrder
   version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -327,6 +398,13 @@ export type FailurePatternWhereUniqueInput = Prisma.AtLeast<{
   lastSeenAt?: Prisma.DateTimeFilter<"FailurePattern"> | Date | string
   commonCausalSummary?: Prisma.JsonNullableFilter<"FailurePattern">
   investigationIds?: Prisma.StringNullableListFilter<"FailurePattern">
+  verifiedResolutionCount?: Prisma.IntFilter<"FailurePattern"> | number
+  improvementCount?: Prisma.IntFilter<"FailurePattern"> | number
+  nonResolutionCount?: Prisma.IntFilter<"FailurePattern"> | number
+  regressionCount?: Prisma.IntFilter<"FailurePattern"> | number
+  status?: Prisma.StringFilter<"FailurePattern"> | string
+  commonChanges?: Prisma.JsonNullableFilter<"FailurePattern">
+  historicalRemediations?: Prisma.JsonNullableFilter<"FailurePattern">
   version?: Prisma.IntFilter<"FailurePattern"> | number
   createdAt?: Prisma.DateTimeFilter<"FailurePattern"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FailurePattern"> | Date | string
@@ -346,6 +424,13 @@ export type FailurePatternOrderByWithAggregationInput = {
   lastSeenAt?: Prisma.SortOrder
   commonCausalSummary?: Prisma.SortOrderInput | Prisma.SortOrder
   investigationIds?: Prisma.SortOrder
+  verifiedResolutionCount?: Prisma.SortOrder
+  improvementCount?: Prisma.SortOrder
+  nonResolutionCount?: Prisma.SortOrder
+  regressionCount?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  commonChanges?: Prisma.SortOrderInput | Prisma.SortOrder
+  historicalRemediations?: Prisma.SortOrderInput | Prisma.SortOrder
   version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -372,6 +457,13 @@ export type FailurePatternScalarWhereWithAggregatesInput = {
   lastSeenAt?: Prisma.DateTimeWithAggregatesFilter<"FailurePattern"> | Date | string
   commonCausalSummary?: Prisma.JsonNullableWithAggregatesFilter<"FailurePattern">
   investigationIds?: Prisma.StringNullableListFilter<"FailurePattern">
+  verifiedResolutionCount?: Prisma.IntWithAggregatesFilter<"FailurePattern"> | number
+  improvementCount?: Prisma.IntWithAggregatesFilter<"FailurePattern"> | number
+  nonResolutionCount?: Prisma.IntWithAggregatesFilter<"FailurePattern"> | number
+  regressionCount?: Prisma.IntWithAggregatesFilter<"FailurePattern"> | number
+  status?: Prisma.StringWithAggregatesFilter<"FailurePattern"> | string
+  commonChanges?: Prisma.JsonNullableWithAggregatesFilter<"FailurePattern">
+  historicalRemediations?: Prisma.JsonNullableWithAggregatesFilter<"FailurePattern">
   version?: Prisma.IntWithAggregatesFilter<"FailurePattern"> | number
   createdAt?: Prisma.DateTimeWithAggregatesFilter<"FailurePattern"> | Date | string
   updatedAt?: Prisma.DateTimeWithAggregatesFilter<"FailurePattern"> | Date | string
@@ -389,6 +481,13 @@ export type FailurePatternCreateInput = {
   lastSeenAt: Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternCreateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: number
+  improvementCount?: number
+  nonResolutionCount?: number
+  regressionCount?: number
+  status?: string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -408,6 +507,13 @@ export type FailurePatternUncheckedCreateInput = {
   lastSeenAt: Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternCreateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: number
+  improvementCount?: number
+  nonResolutionCount?: number
+  regressionCount?: number
+  status?: string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -425,6 +531,13 @@ export type FailurePatternUpdateInput = {
   lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternUpdateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  improvementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  nonResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  regressionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -444,6 +557,13 @@ export type FailurePatternUncheckedUpdateInput = {
   lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternUpdateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  improvementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  nonResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  regressionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -462,6 +582,13 @@ export type FailurePatternCreateManyInput = {
   lastSeenAt: Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternCreateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: number
+  improvementCount?: number
+  nonResolutionCount?: number
+  regressionCount?: number
+  status?: string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -479,6 +606,13 @@ export type FailurePatternUpdateManyMutationInput = {
   lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternUpdateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  improvementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  nonResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  regressionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -497,6 +631,13 @@ export type FailurePatternUncheckedUpdateManyInput = {
   lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternUpdateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  improvementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  nonResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  regressionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -530,6 +671,13 @@ export type FailurePatternCountOrderByAggregateInput = {
   lastSeenAt?: Prisma.SortOrder
   commonCausalSummary?: Prisma.SortOrder
   investigationIds?: Prisma.SortOrder
+  verifiedResolutionCount?: Prisma.SortOrder
+  improvementCount?: Prisma.SortOrder
+  nonResolutionCount?: Prisma.SortOrder
+  regressionCount?: Prisma.SortOrder
+  status?: Prisma.SortOrder
+  commonChanges?: Prisma.SortOrder
+  historicalRemediations?: Prisma.SortOrder
   version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -537,6 +685,10 @@ export type FailurePatternCountOrderByAggregateInput = {
 
 export type FailurePatternAvgOrderByAggregateInput = {
   incidentCount?: Prisma.SortOrder
+  verifiedResolutionCount?: Prisma.SortOrder
+  improvementCount?: Prisma.SortOrder
+  nonResolutionCount?: Prisma.SortOrder
+  regressionCount?: Prisma.SortOrder
   version?: Prisma.SortOrder
 }
 
@@ -550,6 +702,11 @@ export type FailurePatternMaxOrderByAggregateInput = {
   incidentCount?: Prisma.SortOrder
   firstSeenAt?: Prisma.SortOrder
   lastSeenAt?: Prisma.SortOrder
+  verifiedResolutionCount?: Prisma.SortOrder
+  improvementCount?: Prisma.SortOrder
+  nonResolutionCount?: Prisma.SortOrder
+  regressionCount?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -565,6 +722,11 @@ export type FailurePatternMinOrderByAggregateInput = {
   incidentCount?: Prisma.SortOrder
   firstSeenAt?: Prisma.SortOrder
   lastSeenAt?: Prisma.SortOrder
+  verifiedResolutionCount?: Prisma.SortOrder
+  improvementCount?: Prisma.SortOrder
+  nonResolutionCount?: Prisma.SortOrder
+  regressionCount?: Prisma.SortOrder
+  status?: Prisma.SortOrder
   version?: Prisma.SortOrder
   createdAt?: Prisma.SortOrder
   updatedAt?: Prisma.SortOrder
@@ -572,6 +734,10 @@ export type FailurePatternMinOrderByAggregateInput = {
 
 export type FailurePatternSumOrderByAggregateInput = {
   incidentCount?: Prisma.SortOrder
+  verifiedResolutionCount?: Prisma.SortOrder
+  improvementCount?: Prisma.SortOrder
+  nonResolutionCount?: Prisma.SortOrder
+  regressionCount?: Prisma.SortOrder
   version?: Prisma.SortOrder
 }
 
@@ -647,6 +813,13 @@ export type FailurePatternCreateWithoutOrganizationInput = {
   lastSeenAt: Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternCreateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: number
+  improvementCount?: number
+  nonResolutionCount?: number
+  regressionCount?: number
+  status?: string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -664,6 +837,13 @@ export type FailurePatternUncheckedCreateWithoutOrganizationInput = {
   lastSeenAt: Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternCreateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: number
+  improvementCount?: number
+  nonResolutionCount?: number
+  regressionCount?: number
+  status?: string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -711,6 +891,13 @@ export type FailurePatternScalarWhereInput = {
   lastSeenAt?: Prisma.DateTimeFilter<"FailurePattern"> | Date | string
   commonCausalSummary?: Prisma.JsonNullableFilter<"FailurePattern">
   investigationIds?: Prisma.StringNullableListFilter<"FailurePattern">
+  verifiedResolutionCount?: Prisma.IntFilter<"FailurePattern"> | number
+  improvementCount?: Prisma.IntFilter<"FailurePattern"> | number
+  nonResolutionCount?: Prisma.IntFilter<"FailurePattern"> | number
+  regressionCount?: Prisma.IntFilter<"FailurePattern"> | number
+  status?: Prisma.StringFilter<"FailurePattern"> | string
+  commonChanges?: Prisma.JsonNullableFilter<"FailurePattern">
+  historicalRemediations?: Prisma.JsonNullableFilter<"FailurePattern">
   version?: Prisma.IntFilter<"FailurePattern"> | number
   createdAt?: Prisma.DateTimeFilter<"FailurePattern"> | Date | string
   updatedAt?: Prisma.DateTimeFilter<"FailurePattern"> | Date | string
@@ -728,6 +915,13 @@ export type FailurePatternCreateManyOrganizationInput = {
   lastSeenAt: Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternCreateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: number
+  improvementCount?: number
+  nonResolutionCount?: number
+  regressionCount?: number
+  status?: string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: number
   createdAt?: Date | string
   updatedAt?: Date | string
@@ -745,6 +939,13 @@ export type FailurePatternUpdateWithoutOrganizationInput = {
   lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternUpdateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  improvementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  nonResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  regressionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -762,6 +963,13 @@ export type FailurePatternUncheckedUpdateWithoutOrganizationInput = {
   lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternUpdateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  improvementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  nonResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  regressionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -779,6 +987,13 @@ export type FailurePatternUncheckedUpdateManyWithoutOrganizationInput = {
   lastSeenAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   commonCausalSummary?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   investigationIds?: Prisma.FailurePatternUpdateinvestigationIdsInput | string[]
+  verifiedResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  improvementCount?: Prisma.IntFieldUpdateOperationsInput | number
+  nonResolutionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  regressionCount?: Prisma.IntFieldUpdateOperationsInput | number
+  status?: Prisma.StringFieldUpdateOperationsInput | string
+  commonChanges?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
+  historicalRemediations?: Prisma.NullableJsonNullValueInput | runtime.InputJsonValue
   version?: Prisma.IntFieldUpdateOperationsInput | number
   createdAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
   updatedAt?: Prisma.DateTimeFieldUpdateOperationsInput | Date | string
@@ -799,6 +1014,13 @@ export type FailurePatternSelect<ExtArgs extends runtime.Types.Extensions.Intern
   lastSeenAt?: boolean
   commonCausalSummary?: boolean
   investigationIds?: boolean
+  verifiedResolutionCount?: boolean
+  improvementCount?: boolean
+  nonResolutionCount?: boolean
+  regressionCount?: boolean
+  status?: boolean
+  commonChanges?: boolean
+  historicalRemediations?: boolean
   version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -818,6 +1040,13 @@ export type FailurePatternSelectCreateManyAndReturn<ExtArgs extends runtime.Type
   lastSeenAt?: boolean
   commonCausalSummary?: boolean
   investigationIds?: boolean
+  verifiedResolutionCount?: boolean
+  improvementCount?: boolean
+  nonResolutionCount?: boolean
+  regressionCount?: boolean
+  status?: boolean
+  commonChanges?: boolean
+  historicalRemediations?: boolean
   version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -837,6 +1066,13 @@ export type FailurePatternSelectUpdateManyAndReturn<ExtArgs extends runtime.Type
   lastSeenAt?: boolean
   commonCausalSummary?: boolean
   investigationIds?: boolean
+  verifiedResolutionCount?: boolean
+  improvementCount?: boolean
+  nonResolutionCount?: boolean
+  regressionCount?: boolean
+  status?: boolean
+  commonChanges?: boolean
+  historicalRemediations?: boolean
   version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
@@ -856,12 +1092,19 @@ export type FailurePatternSelectScalar = {
   lastSeenAt?: boolean
   commonCausalSummary?: boolean
   investigationIds?: boolean
+  verifiedResolutionCount?: boolean
+  improvementCount?: boolean
+  nonResolutionCount?: boolean
+  regressionCount?: boolean
+  status?: boolean
+  commonChanges?: boolean
+  historicalRemediations?: boolean
   version?: boolean
   createdAt?: boolean
   updatedAt?: boolean
 }
 
-export type FailurePatternOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "projectId" | "patternKey" | "title" | "primaryService" | "affectedServices" | "incidentCount" | "firstSeenAt" | "lastSeenAt" | "commonCausalSummary" | "investigationIds" | "version" | "createdAt" | "updatedAt", ExtArgs["result"]["failurePattern"]>
+export type FailurePatternOmit<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = runtime.Types.Extensions.GetOmit<"id" | "organizationId" | "projectId" | "patternKey" | "title" | "primaryService" | "affectedServices" | "incidentCount" | "firstSeenAt" | "lastSeenAt" | "commonCausalSummary" | "investigationIds" | "verifiedResolutionCount" | "improvementCount" | "nonResolutionCount" | "regressionCount" | "status" | "commonChanges" | "historicalRemediations" | "version" | "createdAt" | "updatedAt", ExtArgs["result"]["failurePattern"]>
 export type FailurePatternInclude<ExtArgs extends runtime.Types.Extensions.InternalArgs = runtime.Types.Extensions.DefaultArgs> = {
   organization?: boolean | Prisma.OrganizationDefaultArgs<ExtArgs>
 }
@@ -890,6 +1133,13 @@ export type $FailurePatternPayload<ExtArgs extends runtime.Types.Extensions.Inte
     lastSeenAt: Date
     commonCausalSummary: runtime.JsonValue | null
     investigationIds: string[]
+    verifiedResolutionCount: number
+    improvementCount: number
+    nonResolutionCount: number
+    regressionCount: number
+    status: string
+    commonChanges: runtime.JsonValue | null
+    historicalRemediations: runtime.JsonValue | null
     version: number
     createdAt: Date
     updatedAt: Date
@@ -1329,6 +1579,13 @@ export interface FailurePatternFieldRefs {
   readonly lastSeenAt: Prisma.FieldRef<"FailurePattern", 'DateTime'>
   readonly commonCausalSummary: Prisma.FieldRef<"FailurePattern", 'Json'>
   readonly investigationIds: Prisma.FieldRef<"FailurePattern", 'String[]'>
+  readonly verifiedResolutionCount: Prisma.FieldRef<"FailurePattern", 'Int'>
+  readonly improvementCount: Prisma.FieldRef<"FailurePattern", 'Int'>
+  readonly nonResolutionCount: Prisma.FieldRef<"FailurePattern", 'Int'>
+  readonly regressionCount: Prisma.FieldRef<"FailurePattern", 'Int'>
+  readonly status: Prisma.FieldRef<"FailurePattern", 'String'>
+  readonly commonChanges: Prisma.FieldRef<"FailurePattern", 'Json'>
+  readonly historicalRemediations: Prisma.FieldRef<"FailurePattern", 'Json'>
   readonly version: Prisma.FieldRef<"FailurePattern", 'Int'>
   readonly createdAt: Prisma.FieldRef<"FailurePattern", 'DateTime'>
   readonly updatedAt: Prisma.FieldRef<"FailurePattern", 'DateTime'>

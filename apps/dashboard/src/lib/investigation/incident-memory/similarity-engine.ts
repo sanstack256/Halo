@@ -1,5 +1,5 @@
 /**
- * Historical Incident Similarity Engine for Halo Trace Pillar D.
+ * Historical Incident Similarity Engine for Halo Trace Pillars D & J.
  *
  * CRITICAL ARCHITECTURAL INVARIANTS:
  * 1. Historical similarity is CONTEXT; current telemetry remains authoritative for current causality.
@@ -13,6 +13,10 @@
  *    - Structured signals referencing actual evidence.
  * 4. Same symptom != same root cause. The engine explicitly flags when symptoms match
  *    but causal chains or root causes diverge.
+ * 5. Negative Learning: Surfacing historical remediations that caused regressions (REGRESSED)
+ *    or failed to resolve (NOT_RESOLVED) with explicit cautions.
+ * 6. Deterministic Ranking: Historical matches are ranked deterministically by classification tier,
+ *    similarity score, outcome relevance, and recency, eliminating database order dependence.
  */
 
 export type SimilarityDimension =
@@ -21,7 +25,9 @@ export type SimilarityDimension =
     | "ERROR"
     | "CAUSAL_STRUCTURE"
     | "TOPOLOGY"
-    | "FAILURE_PROPAGATION";
+    | "FAILURE_PROPAGATION"
+    | "CHANGE_CHARACTERISTICS"
+    | "REMEDIATION_CONTEXT";
 
 export interface SimilaritySignal {
     dimension: SimilarityDimension;
@@ -51,8 +57,22 @@ export interface IncidentComparisonResult {
     currentRootCause: string | null;
     historicalConfidence: number | null;
     currentConfidence: number | null;
-    historicalRecommendations?: any[];
+    historicalOutcome?: string | null; // e.g. "RESOLVED", "REGRESSED", "NOT_RESOLVED", "IMPROVED", "UNKNOWN"
+    historicalStrength?: string | null; // e.g. "HIGH", "MEDIUM", "LOW"
+    historicalRemediations?: Array<{
+        type: string;
+        actionSummary: string;
+        result?: string;
+        strength?: string;
+        evidenceReferences?: string[];
+    }>;
+    historicalCaution?: string | null;
+    regressionEvidence?: string | null;
+    contradictionsWithCurrent?: string[];
     historicalVerdicts?: any[];
+    historicalRecommendations?: any[];
+    createdAt?: string;
+    observedAt?: string;
 }
 
 export interface IncidentComparisonInput {
@@ -71,6 +91,33 @@ export interface IncidentComparisonInput {
     } | null;
     topologyEdges?: Array<{ from: string; to: string }> | null;
     evidenceReferences?: string[];
+    changeCharacteristics?: {
+        commitSha?: string;
+        changeType?: string;
+        filesChanged?: string[];
+        linesChanged?: number[];
+        deploymentLinked?: boolean;
+    } | null;
+    remediationContext?: {
+        types?: string[];
+        latestResult?: string;
+        latestStrength?: string;
+    } | null;
+    ownershipContext?: {
+        teamName?: string;
+        classification?: string;
+    } | null;
+    verifiedOutcome?: string | null;
+    verificationStrength?: string | null;
+    historicalRemediations?: Array<{
+        type: string;
+        actionSummary: string;
+        result?: string;
+        strength?: string;
+        evidenceReferences?: string[];
+    }>;
+    createdAt?: string | Date;
+    observedAt?: string | Date;
 }
 
 const DIMENSION_WEIGHTS: Record<SimilarityDimension, number> = {
@@ -80,6 +127,8 @@ const DIMENSION_WEIGHTS: Record<SimilarityDimension, number> = {
     CAUSAL_STRUCTURE: 15,
     TOPOLOGY: 10,
     FAILURE_PROPAGATION: 10,
+    CHANGE_CHARACTERISTICS: 15,
+    REMEDIATION_CONTEXT: 10,
 };
 
 /**
@@ -93,6 +142,7 @@ export function compareIncidents(
     const matching: SimilarityDimension[] = [];
     const differing: SimilarityDimension[] = [];
     const missing: SimilarityDimension[] = [];
+    const contradictions: string[] = [];
 
     let totalWeightEvaluated = 0;
     let earnedWeight = 0;
@@ -281,6 +331,94 @@ export function compareIncidents(
         }
     }
 
+    // 7. CHANGE_CHARACTERISTICS DIMENSION (Weight: 15)
+    const currentChange = current.changeCharacteristics;
+    const histChange = historical.changeCharacteristics;
+    if (!currentChange && !histChange) {
+        missing.push("CHANGE_CHARACTERISTICS");
+    } else if (!currentChange || !histChange) {
+        totalWeightEvaluated += DIMENSION_WEIGHTS.CHANGE_CHARACTERISTICS;
+        differing.push("CHANGE_CHARACTERISTICS");
+        signals.push({
+            dimension: "CHANGE_CHARACTERISTICS",
+            isMatch: false,
+            description: currentChange
+                ? `Current incident has change observation (${currentChange.changeType || "change"}), but historical incident had no recorded changes.`
+                : `Historical incident had change observation (${histChange?.changeType || "change"}), but current incident has no recorded changes.`,
+        });
+    } else {
+        totalWeightEvaluated += DIMENSION_WEIGHTS.CHANGE_CHARACTERISTICS;
+        const sameType =
+            currentChange.changeType &&
+            histChange.changeType &&
+            currentChange.changeType.toLowerCase() === histChange.changeType.toLowerCase();
+        const currentFiles = new Set((currentChange.filesChanged || []).map((f) => f.toLowerCase()));
+        const commonFiles = (histChange.filesChanged || []).filter((f) => currentFiles.has(f.toLowerCase()));
+
+        if (sameType && commonFiles.length > 0) {
+            earnedWeight += DIMENSION_WEIGHTS.CHANGE_CHARACTERISTICS;
+            matching.push("CHANGE_CHARACTERISTICS");
+            signals.push({
+                dimension: "CHANGE_CHARACTERISTICS",
+                isMatch: true,
+                description: `Matching change type (${currentChange.changeType}) with overlapping files [${commonFiles.join(", ")}].`,
+            });
+        } else if (sameType) {
+            earnedWeight += DIMENSION_WEIGHTS.CHANGE_CHARACTERISTICS * 0.6;
+            matching.push("CHANGE_CHARACTERISTICS");
+            signals.push({
+                dimension: "CHANGE_CHARACTERISTICS",
+                isMatch: true,
+                description: `Matching change type (${currentChange.changeType}), though specific changed files differ.`,
+            });
+        } else if (commonFiles.length > 0) {
+            earnedWeight += DIMENSION_WEIGHTS.CHANGE_CHARACTERISTICS * 0.5;
+            differing.push("CHANGE_CHARACTERISTICS");
+            signals.push({
+                dimension: "CHANGE_CHARACTERISTICS",
+                isMatch: false,
+                description: `Shared changed files [${commonFiles.join(", ")}], but differing change types (current: ${currentChange.changeType}, historical: ${histChange.changeType}).`,
+            });
+        } else {
+            differing.push("CHANGE_CHARACTERISTICS");
+            signals.push({
+                dimension: "CHANGE_CHARACTERISTICS",
+                isMatch: false,
+                description: `Differing change characteristics: current is ${currentChange.changeType || "unknown"}, historical was ${histChange.changeType || "unknown"}.`,
+            });
+        }
+    }
+
+    // 8. REMEDIATION_CONTEXT DIMENSION (Weight: 10)
+    const currentRem = current.remediationContext;
+    const histRem = historical.remediationContext;
+    if (!currentRem && !histRem) {
+        missing.push("REMEDIATION_CONTEXT");
+    } else if (!currentRem || !histRem) {
+        missing.push("REMEDIATION_CONTEXT"); // Don't penalize if current remediation has not yet been planned
+    } else {
+        totalWeightEvaluated += DIMENSION_WEIGHTS.REMEDIATION_CONTEXT;
+        const currentTypes = new Set((currentRem.types || []).map((t) => t.toUpperCase()));
+        const commonTypes = (histRem.types || []).filter((t) => currentTypes.has(t.toUpperCase()));
+
+        if (commonTypes.length > 0) {
+            earnedWeight += DIMENSION_WEIGHTS.REMEDIATION_CONTEXT;
+            matching.push("REMEDIATION_CONTEXT");
+            signals.push({
+                dimension: "REMEDIATION_CONTEXT",
+                isMatch: true,
+                description: `Matching remediation action types: [${commonTypes.join(", ")}].`,
+            });
+        } else {
+            differing.push("REMEDIATION_CONTEXT");
+            signals.push({
+                dimension: "REMEDIATION_CONTEXT",
+                isMatch: false,
+                description: `Different remediation approaches: current [${Array.from(currentTypes).join(", ")}], historical [${(histRem.types || []).join(", ")}].`,
+            });
+        }
+    }
+
     // Compute deterministic score (0.0 to 100.0)
     const rawScore = totalWeightEvaluated > 0 ? (earnedWeight / totalWeightEvaluated) * 100 : 0;
     const score = Math.round(rawScore * 10) / 10;
@@ -302,6 +440,26 @@ export function compareIncidents(
         historical.rootCause.toLowerCase() !== current.rootCause.toLowerCase();
     const symptomMatchWithDifferentCause = Boolean(hasSymptomMatch && (causesDiffer || differing.includes("CAUSAL_STRUCTURE")));
 
+    if (causesDiffer) {
+        contradictions.push(
+            `Root cause divergence: current investigation identified "${current.rootCause}", historical incident recorded "${historical.rootCause}".`
+        );
+    }
+
+    // Negative Learning & Historical Caution
+    let historicalCaution: string | null = null;
+    let regressionEvidence: string | null = null;
+
+    const histOutcome = historical.verifiedOutcome || null;
+    if (histOutcome === "REGRESSED") {
+        historicalCaution =
+            "Historical caution: A similar incident remediation previously produced a regression (Result: REGRESSED). Telemetry showed post-change errors or latency degradation.";
+        regressionEvidence = "Observed post-change latency spike or new error signature in historical telemetry.";
+    } else if (histOutcome === "NOT_RESOLVED") {
+        historicalCaution =
+            "Historical caution: A similar incident remediation was attempted but did not resolve the failure (Result: NOT_RESOLVED).";
+    }
+
     // Build human-readable explanation
     let explanation = "";
     if (classification === "NO_MEANINGFUL_MATCH") {
@@ -314,6 +472,13 @@ export function compareIncidents(
             explanation += ` Differences observed in: ${differing.join(", ")}.`;
         }
     }
+
+    const createdIso = historical.createdAt
+        ? (historical.createdAt instanceof Date ? historical.createdAt.toISOString() : String(historical.createdAt))
+        : undefined;
+    const observedIso = historical.observedAt
+        ? (historical.observedAt instanceof Date ? historical.observedAt.toISOString() : String(historical.observedAt))
+        : undefined;
 
     return {
         historicalInvestigationId: historical.id,
@@ -330,5 +495,78 @@ export function compareIncidents(
         currentRootCause: current.rootCause ?? null,
         historicalConfidence: historical.confidenceScore ?? null,
         currentConfidence: current.confidenceScore ?? null,
+        historicalOutcome: histOutcome,
+        historicalStrength: historical.verificationStrength ?? null,
+        historicalRemediations: historical.historicalRemediations || [],
+        historicalCaution,
+        regressionEvidence,
+        contradictionsWithCurrent: contradictions,
+        createdAt: createdIso,
+        observedAt: observedIso,
     };
+}
+
+/**
+ * Deterministically rank historical matches according to Section 53:
+ * 1. Primary: Classification tier (STRONG > MODERATE > WEAK > NO_MEANINGFUL_MATCH)
+ * 2. Secondary: Score descending
+ * 3. Tertiary: Verified outcome relevance (RESOLVED = REGRESSED > NOT_RESOLVED > IMPROVED > UNKNOWN > INSUFFICIENT_DATA)
+ * 4. Quaternary: Recency (createdAt descending)
+ * 5. Tie-break: Deterministic ID comparison
+ */
+export function rankHistoricalMatches(matches: IncidentComparisonResult[]): IncidentComparisonResult[] {
+    const tierOrder: Record<SimilarityClassification, number> = {
+        STRONG_STRUCTURAL_MATCH: 4,
+        MODERATE_STRUCTURAL_MATCH: 3,
+        WEAK_PARTIAL_MATCH: 2,
+        NO_MEANINGFUL_MATCH: 1,
+    };
+
+    const outcomeWeight: Record<string, number> = {
+        RESOLVED: 5,
+        REGRESSED: 5, // Negative learning is top relevance for operational safety
+        NOT_RESOLVED: 4,
+        IMPROVED: 3,
+        UNKNOWN: 2,
+        INSUFFICIENT_DATA: 1,
+    };
+
+    return [...matches].sort((a, b) => {
+        // 1. Primary: Classification tier
+        const tierA = tierOrder[a.classification] || 0;
+        const tierB = tierOrder[b.classification] || 0;
+        if (tierA !== tierB) return tierB - tierA;
+
+        // 2. Secondary: Score descending
+        if (b.score !== a.score) return b.score - a.score;
+
+        // 3. Tertiary: Verified outcome relevance
+        const outA = a.historicalOutcome ? outcomeWeight[a.historicalOutcome] || 0 : 0;
+        const outB = b.historicalOutcome ? outcomeWeight[b.historicalOutcome] || 0 : 0;
+        if (outA !== outB) return outB - outA;
+
+        // 4. Quaternary: Recency (createdAt descending)
+        if (a.createdAt && b.createdAt) {
+            const timeA = new Date(a.createdAt).getTime();
+            const timeB = new Date(b.createdAt).getTime();
+            if (timeA !== timeB) return timeB - timeA;
+        }
+
+        // 5. Deterministic tie-breaker on ID
+        return a.historicalInvestigationId.localeCompare(b.historicalInvestigationId);
+    });
+}
+
+/**
+ * In-memory tenant-safe cache for incident similarity calculations.
+ */
+interface CacheEntry {
+    data: any;
+    expiresAt: number;
+}
+
+export const incidentMemoryCache = new Map<string, CacheEntry>();
+
+export function clearIncidentMemoryCache(): void {
+    incidentMemoryCache.clear();
 }

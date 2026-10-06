@@ -197,6 +197,11 @@ export type IncidentMemory = Prisma.IncidentMemoryModel
  */
 export type FailurePattern = Prisma.FailurePatternModel
 /**
+ * Model HistoricalRemediationOutcome
+ * 
+ */
+export type HistoricalRemediationOutcome = Prisma.HistoricalRemediationOutcomeModel
+/**
  * Model ServiceOwnership
  * 
  */
