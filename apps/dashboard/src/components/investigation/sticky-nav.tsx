@@ -24,6 +24,13 @@ interface CategoryNavItem {
 
 const CATEGORIES: CategoryNavItem[] = [
     {
+        id: "coverage",
+        label: "Coverage",
+        targetSectionId: "section-coverage-availability",
+        sectionIds: ["section-coverage-availability"],
+        icon: Activity,
+    },
+    {
         id: "synthesis",
         label: "Synthesis",
         targetSectionId: "section-evidence-synthesis",

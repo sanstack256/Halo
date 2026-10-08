@@ -16,6 +16,7 @@
 import { prisma } from "@/lib/prisma";
 import { compareIncidents, rankHistoricalMatches } from "./similarity-engine";
 import { formatMemoryForComparison } from "./generator";
+import { computeInvestigationAvailability, type InvestigationAvailabilityMatrix } from "@/lib/investigation/availability-matrix";
 
 export interface GeneratedPostmortem {
     investigationId: string;
@@ -124,6 +125,7 @@ export interface GeneratedPostmortem {
         regressionCautions: string[];
         epistemicBoundary: string;
     };
+    investigationCoverage?: InvestigationAvailabilityMatrix;
     markdownReport: string;
 }
 
@@ -365,6 +367,18 @@ export async function generateInvestigationPostmortem(investigationId: string): 
         // fail-safe
     }
 
+    const availability = await computeInvestigationAvailability(investigation.id, investigation.projectId).catch(() => null);
+
+    const coverageSectionText = availability
+        ? `
+## 13. Investigation Coverage & Evidence Availability
+- **Overall Observability State:** ${availability.isFullyObserved ? "Fully Observed" : "Bounded Coverage"}
+${Object.values(availability.dimensions).map((d) => `- **${d.displayName}:** \`${d.status}\` — ${d.details}`).join("\n")}
+${availability.missingIntegrations.length > 0 ? `\n### Missing Telemetry Integrations\n${availability.missingIntegrations.map((m) => `- ${m}`).join("\n")}` : ""}
+${availability.epistemicNotes.length > 0 ? `\n### Epistemic Disclosures\n${availability.epistemicNotes.map((n) => `- ${n}`).join("\n")}` : ""}
+`
+        : "";
+
     // Synthesize Markdown Report
     const markdownReport = `# POSTMORTEM: ${investigation.title.toUpperCase()}
 
@@ -470,7 +484,7 @@ ${
 ${historicalLearningText}
 
 - **Epistemic Boundary:** Historical incidents provide contextual reference, pattern intelligence, and operational caution only. Current telemetry and evidence remain strictly authoritative for the current investigation.
-
+${coverageSectionText}
 ---
 *Notice: This postmortem is deterministically synthesized from immutable telemetry events and verified human peer records. It does not fabricate unobserved metrics or external dependencies.*
 `;
@@ -552,6 +566,7 @@ ${historicalLearningText}
             epistemicBoundary:
                 "Historical incidents provide contextual reference only. Current telemetry remains authoritative.",
         },
+        investigationCoverage: availability || undefined,
         markdownReport,
     };
 }

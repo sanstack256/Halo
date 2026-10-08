@@ -23,6 +23,7 @@ export type TeamCapability =
     | "TEAM_REMEDIATION_VERIFICATION"
     | "TEAM_CONTINUOUS_INCIDENT_LEARNING"
     | "TEAM_CROSS_SERVICE_TOPOLOGY"
+    | "TEAM_PRODUCTION_HARDENING"
     | "TEAM_EVIDENCE_AUTOMATION"
     | "SHARED_DASHBOARDS"
     | "AUDIT_LOG"
@@ -98,6 +99,11 @@ export const CAPABILITY_METADATA: Record<
         description: "Dynamic microservice dependency graphs and bottleneck heatmaps derived from W3C traces.",
         minimumPlan: "TEAM",
     },
+    TEAM_PRODUCTION_HARDENING: {
+        name: "Production System Hardening & Operational Diagnostics",
+        description: "Enterprise data-integrity verification, cross-pillar consistency diagnostics, and platform health self-observability.",
+        minimumPlan: "TEAM",
+    },
     TEAM_EVIDENCE_AUTOMATION: {
         name: "Evidence-Backed Automation",
         description: "Autonomous reproduction payloads, curl fixtures, and regression test suites.",
@@ -144,3 +150,13 @@ export function planHasCapability(plan: PlanId, capability: TeamCapability): boo
     if (!meta) return false;
     return PLAN_HIERARCHY[plan] >= PLAN_HIERARCHY[meta.minimumPlan];
 }
+
+/**
+ * Returns all capabilities unlocked by a specific plan.
+ */
+export function getPlanCapabilities(plan: PlanId): TeamCapability[] {
+    return (Object.keys(CAPABILITY_METADATA) as TeamCapability[]).filter((cap) =>
+        planHasCapability(plan, cap)
+    );
+}
+

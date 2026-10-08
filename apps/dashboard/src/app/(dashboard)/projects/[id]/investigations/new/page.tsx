@@ -96,6 +96,8 @@ import { OwnershipContextPanel } from "@/components/investigation/ownership/owne
 import { ChangeIntelligencePanel } from "@/components/investigation/changes/change-intelligence-panel";
 import { EvidenceSynthesisPanel } from "@/components/investigation/synthesis/evidence-synthesis-panel";
 import { RemediationPanel } from "@/components/investigation/remediation/remediation-panel";
+import { InvestigationCoverageCard } from "@/components/investigation/coverage/investigation-coverage-card";
+import { computeInvestigationAvailability, type InvestigationAvailabilityMatrix } from "@/lib/investigation/availability-matrix";
 import { getInvestigationCollaborationState } from "@/actions/collaboration";
 import { getSession } from "@/lib/session";
 import { planHasCapability } from "@/lib/capabilities";
@@ -469,6 +471,15 @@ export default async function InvestigationPage({
             ? await getInvestigationCollaborationState(investigationRecord.id).catch(() => null)
             : null;
 
+        let availabilityMatrix: InvestigationAvailabilityMatrix | null = null;
+        if (investigationRecord) {
+            try {
+                availabilityMatrix = await computeInvestigationAvailability(investigationRecord.id, id);
+            } catch (err) {
+                console.error("Failed to compute availability matrix:", err);
+            }
+        }
+
         return (
             <InvestigationView
                 investigation={investigation}
@@ -498,6 +509,7 @@ export default async function InvestigationPage({
                 investigationId={investigationRecord?.id}
                 initialCollaborationState={initialCollaborationState}
                 currentUserId={session?.user?.id}
+                availabilityMatrix={availabilityMatrix}
             />
         );
     } catch (error) {
@@ -543,6 +555,7 @@ function InvestigationView({
     investigationId,
     initialCollaborationState,
     currentUserId,
+    availabilityMatrix,
 }: {
     investigation: Investigation;
     resolvedReplay: ResolvedOccurrenceReplay | null;
@@ -640,6 +653,7 @@ function InvestigationView({
     investigationId?: string;
     initialCollaborationState?: any;
     currentUserId?: string;
+    availabilityMatrix?: InvestigationAvailabilityMatrix | null;
 }) {
     const {
         status,
@@ -810,6 +824,15 @@ function InvestigationView({
                             <span>Change Intelligence</span>
                         </Link>
                     </div>
+                </div>
+            )}
+
+            {/* INVESTIGATION COVERAGE & AVAILABILITY (PHASE 12 / PILLAR K) */}
+            {investigationId && (
+                <div id="section-coverage-availability" className="scroll-mt-24">
+                    <InvestigationCoverageCard
+                        availability={availabilityMatrix}
+                    />
                 </div>
             )}
 
